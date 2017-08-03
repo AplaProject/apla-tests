@@ -3,20 +3,20 @@ require 'net/http'
 require 'json'
 require_relative '../../API/methods/test_data'
 
-class General
+class ApiV1
   def get_uid
-    url = URI("#{TestData[:url_serv]}:7079/api/v1/getuid")
+    url = URI("#{TestData[:url_serv]}getuid")
     http = Net::HTTP.new(url.host, url.port)
     request = Net::HTTP::Get.new(url)
     response = http.request(request)
-    @cookie = response.response['set-cookie']
+    @cookie = response.response['set-cookie'].split('; ')[0]
     body = response.read_body
     parse_uid = JSON.parse(body)
     parse_uid["uid"]
   end
 
   def get_sign(forsign)
-    url = URI("#{TestData[:url_serv]}:7079/api/v1/signtest/")
+    url = URI("#{TestData[:url_serv]}signtest/")
     http = Net::HTTP.new(url.host, url.port)
     request = Net::HTTP::Post.new(url)
     request['Cookie'] = @cookie
@@ -29,7 +29,7 @@ class General
   end
 
   def login
-    url = URI("#{TestData[:url_serv]}:7079/api/v1/login")
+    url = URI("#{TestData[:url_serv]}login")
     http = Net::HTTP.new(url.host, url.port)
     request = Net::HTTP::Post.new(url)
     request['Cookie'] = @cookie
@@ -41,16 +41,11 @@ class General
   end
 
   def balance
-    url = URI("#{TestData[:url_serv]}:7079/api/v1/balance/#{@address}")
-    http = Net::HTTP.new(url.host, url.port)
-    request = Net::HTTP::Get.new(url)
-    request['Cookie'] = @cookie
-    response = http.request(request)
-    response.read_body
+    get_req("#{TestData[:url_serv]}balance/#{@address}")
   end
 
   def prepare
-    url = URI("#{TestData[:url_serv]}:7079/api/v1/prepare/sendegs")
+    url = URI("#{TestData[:url_serv]}prepare/sendegs")
     http = Net::HTTP.new(url.host, url.port)
     request = Net::HTTP::Post.new(url)
     request['Cookie'] = @cookie
@@ -63,7 +58,7 @@ class General
   end
 
   def sendegs
-    url = URI("#{TestData[:url_serv]}:7079/api/v1/sendegs")
+    url = URI("#{TestData[:url_serv]}sendegs")
     http = Net::HTTP.new(url.host, url.port)
     request = Net::HTTP::Post.new(url)
     request['Cookie'] = @cookie
@@ -75,11 +70,19 @@ class General
   end
 
   def txstatus
-    url = URI("#{TestData[:url_serv]}:7079/api/v1/txstatus/#{@hash}")
+    get_req("#{TestData[:url_serv]}txstatus/#{@hash}")
+  end
+
+
+  private
+
+  def get_req(url)
+    url = URI(url)
     http = Net::HTTP.new(url.host, url.port)
     request = Net::HTTP::Get.new(url)
     request['Cookie'] = @cookie
     response = http.request(request)
     response.read_body
   end
+
 end

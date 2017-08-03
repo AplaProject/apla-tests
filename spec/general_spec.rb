@@ -2,15 +2,15 @@ require 'rspec'
 require 'uri'
 require 'net/http'
 require 'json'
-require_relative '../../API/methods/general'
+require_relative '../../API/methods/api_v1'
 require_relative '../../API/methods/test_data'
 
-describe 'Test General API' do
+describe 'Test ApiV1 API' do
 
   test = nil
 
   before(:all) do
-    test = General.new
+    test = ApiV1.new
   end
 
   it 'getuid' do
