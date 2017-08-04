@@ -16,26 +16,16 @@ class ApiV1
   end
 
   def get_sign(forsign)
-    url = URI("#{TestData[:url_serv]}signtest/")
-    http = Net::HTTP.new(url.host, url.port)
-    request = Net::HTTP::Post.new(url)
-    request['Cookie'] = @cookie
-    request.body = "forsign=#{forsign}&private=#{TestData[:private_key]}"
-    response = http.request(request)
-    body = response.read_body
+    sign_params = "forsign=#{forsign}&private=#{TestData[:private_key]}"
+    body = post_req("#{TestData[:url_serv]}signtest/", sign_params)
     parse_body = JSON.parse(body)
     @pubkey = parse_body["pubkey"]
     @signature = parse_body["signature"]
   end
 
   def login
-    url = URI("#{TestData[:url_serv]}login")
-    http = Net::HTTP.new(url.host, url.port)
-    request = Net::HTTP::Post.new(url)
-    request['Cookie'] = @cookie
-    request.body = "pubkey=#{@pubkey}&signature=#{@signature}&state=#{TestData[:state]}"
-    response = http.request(request)
-    body = response.read_body
+    login = "pubkey=#{@pubkey}&signature=#{@signature}&state=#{TestData[:state]}"
+    body = post_req("#{TestData[:url_serv]}login", login)
     parse_address = JSON.parse(body)
     @address = parse_address["address"]
   end
@@ -45,26 +35,16 @@ class ApiV1
   end
 
   def prepare
-    url = URI("#{TestData[:url_serv]}prepare/sendegs")
-    http = Net::HTTP.new(url.host, url.port)
-    request = Net::HTTP::Post.new(url)
-    request['Cookie'] = @cookie
-    request.body = "pubkey=#{@pubkey}&recipient=#{TestData[:recipient]}&amount=#{TestData[:amount]}&commission=#{TestData[:commission]}&comment=qwe"
-    response = http.request(request)
-    body = response.read_body
+    prepare = "pubkey=#{@pubkey}&recipient=#{TestData[:recipient]}&amount=#{TestData[:amount]}&commission=#{TestData[:commission]}&comment=qwe"
+    body = post_req("#{TestData[:url_serv]}prepare/sendegs", prepare)
     parse_forsign = JSON.parse(body)
     @time = parse_forsign["time"]
     @forsign = parse_forsign["forsign"]
   end
 
   def sendegs
-    url = URI("#{TestData[:url_serv]}sendegs")
-    http = Net::HTTP.new(url.host, url.port)
-    request = Net::HTTP::Post.new(url)
-    request['Cookie'] = @cookie
-    request.body = "pubkey=#{@pubkey}&recipient=#{TestData[:recipient]}&amount=#{TestData[:amount]}&commission=#{TestData[:commission]}&comment=qwe&signature=#{@signature}&time=#{@time}"
-    response = http.request(request)
-    body = response.read_body
+    sendegs_params = "pubkey=#{@pubkey}&recipient=#{TestData[:recipient]}&amount=#{TestData[:amount]}&commission=#{TestData[:commission]}&comment=qwe&signature=#{@signature}&time=#{@time}"
+    body = post_req("#{TestData[:url_serv]}sendegs", sendegs_params)
     parse_hash = JSON.parse(body)
     @hash = parse_hash["hash"]
   end
@@ -81,6 +61,16 @@ class ApiV1
     http = Net::HTTP.new(url.host, url.port)
     request = Net::HTTP::Get.new(url)
     request['Cookie'] = @cookie
+    response = http.request(request)
+    response.read_body
+  end
+
+  def post_req(url, params)
+    url = URI(url)
+    http = Net::HTTP.new(url.host, url.port)
+    request = Net::HTTP::Post.new(url)
+    request['Cookie'] = @cookie
+    request.body = params
     response = http.request(request)
     response.read_body
   end

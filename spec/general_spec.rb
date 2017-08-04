@@ -2,6 +2,7 @@ require 'rspec'
 require 'uri'
 require 'net/http'
 require 'json'
+require 'rest-client'
 require_relative '../../API/methods/api_v1'
 require_relative '../../API/methods/test_data'
 
@@ -21,7 +22,7 @@ describe 'Test ApiV1 API' do
     test.get_sign(test.get_uid)
     wallet = test.login
     expect(wallet).to match(/[0-9]/)
-  end
+   end
 
   it 'balance' do
     balance = test.balance
