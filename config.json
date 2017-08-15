@@ -1,5 +1,6 @@
 {
  "url": "http://localhost:7079/api/v1",
  "state" : 1,
- "private_key": "cfdaa7a77fbad34d3047e1ffd1b840bbfb5c60022c349637e4bc8e0457ea85a9"
+ "private_key": "cfdaa7a77fbad34d3047e1ffd1b840bbfb5c60022c349637e4bc8e0457ea85a9",
+ "time_wait_tx_in_block": 5
 }

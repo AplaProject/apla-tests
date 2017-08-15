@@ -1,6 +1,8 @@
 import requests
 import time
 import config
+import random
+import string
 
 def get_uid():
 	resp = requests.get(config.config['url'] + '/getuid')
@@ -45,6 +47,14 @@ def prepare_tx(method, entity, entity_name, cookie, data):
 
 
 def txstatus(hsh, cookie):
-	time.sleep(1)
+	time.sleep(config.config['time_wait_tx_in_block'])
 	resp = requests.get(config.config['url'] + '/txstatus/'+ hsh, headers={"Cookie": cookie})
 	return resp.json()
+
+
+def generate_random_name():
+	name = []
+	for _ in range(1, 30):
+		sym = random.choice(string.ascii_lowercase)
+		name.append(sym)
+	return "".join(name)

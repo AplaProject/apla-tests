@@ -4,6 +4,17 @@ import config
 import requests
 
 
+class ApiTestCase():
+	def setUp(self):
+		self.data = utils.login()
+
+	def assertTxInBlock(self, result):
+		self.assertIn("hash",  result)
+		status = utils.txstatus(result['hash'], self.data['cookie'])
+		self.assertEqual(status['errmsg'], "")
+		self.assertGreater(len(status['blockid']), 0)
+
+
 class GetUidTestCase(unittest.TestCase):
 	def test_get_uid(self):
 		resp = requests.get(config.config['url'] + '/getuid')
@@ -100,9 +111,17 @@ class StateTestCase(unittest.TestCase):
 		self.assertIn('conditions', result)
 
 
-class MenuTestCase(unittest.TestCase):
-	def setUp(self):
-		self.data = utils.login()
+class MenuTestCase(ApiTestCase, unittest.TestCase):
+	def create_menu(self):
+		name = utils.generate_random_name()
+		data = {'value':'1', 'conditions': """ContractConditions(`MainCondition`)""", 'global': '1', "name": name}
+		sign_res = utils.prepare_tx('POST', 'menu', "", self.data['cookie'], data)
+		data.update(sign_res)
+		resp = requests.post(config.config['url']  + '/menu', data=data, headers={'Cookie': self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertTxInBlock(result)
+		return name
 
 	def get_first_menu_item(self):
 		resp = requests.get(config.config['url']+'/menulist', headers={'Cookie': self.data['cookie']})
@@ -131,23 +150,17 @@ class MenuTestCase(unittest.TestCase):
 		self.assertIn('conditions', result)
 
 	def test_change_menu(self):
-		item = self.get_first_menu_item()
-		data = {'value':'1', 'conditions': 'some_conditions', 'global': '1'}
-		sign_res = utils.prepare_tx('PUT', 'menu', item['name'], self.data['cookie'], data)
+		name = self.create_menu()
+		data = {'value':'111', 'conditions': """ContractConditions(`MainCondition`)""", 'global': '1'}
+		sign_res = utils.prepare_tx('PUT', 'menu', name, self.data['cookie'], data)
 		data.update(sign_res)
-		resp = requests.put(config.config['url']+'/menu/'+item['name'], data=data, headers={'Cookie': self.data['cookie']})
+		resp = requests.put(config.config['url']+'/menu/'+name, data=data, headers={'Cookie': self.data['cookie']})
 		self.assertEqual(resp.status_code, 200)
 		result = resp.json()
-		self.assertIn("hash",  result)
+		self.assertTxInBlock(result)
 
 	def test_new_menu(self):
-		data = {'value':'1', 'conditions': 'some_conditions', 'global': '1', "name": "mymenu"}
-		sign_res = utils.prepare_tx('POST', 'menu', "", self.data['cookie'], data)
-		data.update(sign_res)
-		resp = requests.post(config.config['url']  + '/menu', data=data, headers={'Cookie': self.data['cookie']})
-		self.assertEqual(resp.status_code, 200)
-		result = resp.json()
-		self.assertIn("hash",  result)
+		self.create_menu()
 
 	def test_append_menu(self):
 		item = self.get_first_menu_item()
@@ -157,13 +170,10 @@ class MenuTestCase(unittest.TestCase):
 		resp = requests.put(config.config['url']  + '/appendmenu/' + item['name'], data=data, headers={'Cookie': self.data['cookie']})
 		self.assertEqual(resp.status_code, 200)
 		result = resp.json()
-		self.assertIn("hash",  result)
+		self.assertTxInBlock(result)
 
 
-class PageTestCase(unittest.TestCase):
-	def setUp(self):
-		self.data = utils.login()
-
+class PageTestCase(ApiTestCase, unittest.TestCase):
 	def get_first_page_item(self):
 		resp = requests.get(config.config['url']+'/pagelist', headers={'Cookie': self.data['cookie']})
 		self.assertEqual(resp.status_code, 200)
@@ -172,6 +182,17 @@ class PageTestCase(unittest.TestCase):
 		self.assertGreaterEqual(int(result['count']), 1)
 		item = result['list'][0]
 		return item
+
+	def create_page(self):
+		name = utils.generate_random_name()
+		data = {'value':'1', 'conditions': """ContractConditions(`MainCondition`)""", 'global': '1', "name": name, "menu": "default_menu"}
+		sign_res = utils.prepare_tx('POST', 'page', "", self.data['cookie'], data)
+		data.update(sign_res)
+		resp = requests.post(config.config['url']  + '/page', data=data, headers={'Cookie': self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertTxInBlock(result)
+		return name
 
 	def test_page_list(self):
 		item = self.get_first_page_item()
@@ -189,23 +210,17 @@ class PageTestCase(unittest.TestCase):
 		self.assertIn('conditions', result)
 
 	def test_new_page(self):
-		data = {'value':'1', 'conditions': 'some_conditions', 'global': '1', "name": "mypage", "menu": "default_menu"}
-		sign_res = utils.prepare_tx('POST', 'page', "", self.data['cookie'], data)
-		data.update(sign_res)
-		resp = requests.post(config.config['url']  + '/page', data=data, headers={'Cookie': self.data['cookie']})
-		self.assertEqual(resp.status_code, 200)
-		result = resp.json()
-		self.assertIn("hash",  result)
+		self.create_page()
 	
 	def test_change_page(self):
-		item = self.get_first_page_item()
-		data = {'value':'1', 'conditions': 'some_conditions', 'global': '1', 'menu': 'default_menu'}
-		sign_res = utils.prepare_tx('PUT', 'page', item['name'], self.data['cookie'], data)
+		name = self.create_page()
+		data = {'value':'1', 'conditions': """ContractConditions(`MainCondition`)""", 'global': '1', 'menu': 'default_menu'}
+		sign_res = utils.prepare_tx('PUT', 'page', name, self.data['cookie'], data)
 		data.update(sign_res)
-		resp = requests.put(config.config['url']+'/page/'+item['name'], data=data, headers={'Cookie': self.data['cookie']})
+		resp = requests.put(config.config['url']+'/page/'+ name, data=data, headers={'Cookie': self.data['cookie']})
 		self.assertEqual(resp.status_code, 200)
 		result = resp.json()
-		self.assertIn("hash",  result)
+		self.assertTxInBlock(result)
 	
 	def test_append_page(self):
 		item = self.get_first_page_item()
@@ -215,13 +230,10 @@ class PageTestCase(unittest.TestCase):
 		resp = requests.put(config.config['url']  + '/appendpage/' + item['name'], data=data, headers={'Cookie': self.data['cookie']})
 		self.assertEqual(resp.status_code, 200)
 		result = resp.json()
-		self.assertIn("hash",  result)
+		self.assertTxInBlock(result)
 
 
-class LangTestCase(unittest.TestCase):
-	def setUp(self):
-		self.data = utils.login()
-
+class LangTestCase(ApiTestCase, unittest.TestCase):
 	def get_first_lang_item(self):
 		resp = requests.get(config.config['url']+'/langlist', headers={'Cookie': self.data['cookie']})
 		self.assertEqual(resp.status_code, 200)
@@ -231,43 +243,55 @@ class LangTestCase(unittest.TestCase):
 		item = result['list'][0]
 		return item
 
+	def create_lang(self):
+		name = utils.generate_random_name()
+		data = {'name':name,  "trans": """{"ru":"trans"}"""}
+		sign_res = utils.prepare_tx('POST', 'lang', "", self.data['cookie'], data)
+		data.update(sign_res)
+		resp = requests.post(config.config['url']  + '/lang', data=data, headers={'Cookie': self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertTxInBlock(result)
+		return name
+
 	def test_lang_list(self):
 		item = self.get_first_lang_item()
 		self.assertIn('name', item)
 		self.assertIn('trans', item)
 
 	def test_change_lang(self):
-		item = self.get_first_lang_item()
+		name = self.create_lang()
 		data = {'trans': """{"ru":"trans"}"""}
-		sign_res = utils.prepare_tx('PUT', 'lang', item['name'], self.data['cookie'], data)
+		sign_res = utils.prepare_tx('PUT', 'lang', name, self.data['cookie'], data)
 		data.update(sign_res)
-		resp = requests.put(config.config['url']+'/lang/'+item['name'], data=data, headers={'Cookie': self.data['cookie']})
+		resp = requests.put(config.config['url']+'/lang/'+name, data=data, headers={'Cookie': self.data['cookie']})
 		self.assertEqual(resp.status_code, 200)
 		result = resp.json()
-		self.assertIn("hash",  result)
+		self.assertTxInBlock(result)
 
 	def test_new_lang(self):
-		data = {'name':'mylang',  "trans": "mytrans"}
-		sign_res = utils.prepare_tx('POST', 'lang', "", self.data['cookie'], data)
-		data.update(sign_res)
-		resp = requests.post(config.config['url']  + '/lang', data=data, headers={'Cookie': self.data['cookie']})
-		self.assertEqual(resp.status_code, 200)
-		result = resp.json()
-		self.assertIn("hash",  result)
+		self.create_lang()
 
 
-class TableTestCase(unittest.TestCase):
-	def setUp(self):
-		self.data = utils.login()
-
+class TableTestCase(ApiTestCase, unittest.TestCase):
 	def get_first_table_item(self):
 		resp = requests.get(config.config['url']+'/tables', headers={'Cookie': self.data['cookie']})
 		self.assertEqual(resp.status_code, 200)
 		result = resp.json()
-		self.assertEqual(int(result['count']), len(result['list']))
 		self.assertGreaterEqual(int(result['count']), 1)
 		item = result['list'][0]
 		return item
+
+	def create_table(self):
+		name = utils.generate_random_name()
+		data = {'name':name, 'global': '0', "columns": """[["mytext", "text", "0"], ["mynum","int64", "1"]]"""}
+		sign_res = utils.prepare_tx('POST', 'table', "", self.data['cookie'], data)
+		data.update(sign_res)
+		resp = requests.post(config.config['url']+'/table', data=data, headers={'Cookie': self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertTxInBlock(result)
+		return name
 
 	def test_tables_list(self):
 		item = self.get_first_table_item()
@@ -285,33 +309,29 @@ class TableTestCase(unittest.TestCase):
 		self.assertIn('columns', result)
 
 	def test_new_table(self):
-		data = {'name':'mytable', 'global': '0', "columns": [["mytext", "text", "0"], ["mynum","int64", "1"]]}
-		sign_res = utils.prepare_tx('POST', 'table', "", self.data['cookie'], data)
-		data.update(sign_res)
-		resp = requests.post(config.config['url']+'/table', data=data, headers={'Cookie': self.data['cookie']})
-		self.assertEqual(resp.status_code, 200)
-		result = resp.json()
-		self.assertIn('hash', result)
+		self.create_table()
 
 	def test_change_table(self):
-		data = {'insert': 'some_rights', 'new_column': 'some_rights', 'general_update': 'some_rights'}
-		item = self.get_first_table_item()
-		sign_res = utils.prepare_tx('PUT', 'table', item['name'], self.data['cookie'], data)
+		name = self.create_table()
+		full_name = str(config.config['state']) + '_' + name
+		data = {'insert': """ContractConditions(`MainCondition`)""", 'new_column': """ContractConditions(`MainCondition`)""", 'general_update': """ContractConditions(`MainCondition`)"""}
+		sign_res = utils.prepare_tx('PUT', 'table', full_name, self.data['cookie'], data)
 		data.update(sign_res)
-		resp = requests.put(config.config['url']+'/table/' + item['name'], data=data, headers={'Cookie': self.data['cookie']})
+		resp = requests.put(config.config['url']+'/table/' + full_name, data=data, headers={'Cookie': self.data['cookie']})
 		self.assertEqual(resp.status_code, 200)
 		result = resp.json()
-		self.assertIn('hash', result)
+		self.assertTxInBlock(result)
 
 	def test_add_column_to_table(self):
 		item = self.get_first_table_item()
-		data = {'name': 'my_column', 'type': 'int64', 'permissions': 'perm', 'index': '1'}
+		name = utils.generate_random_name()
+		data = {'name': name, 'type': 'int64', 'permissions': """ContractConditions(`MainCondition`)""", 'index': '1'}
 		sign_res = utils.prepare_tx('POST', 'column/'+item['name'], "", self.data['cookie'], data)
 		data.update(sign_res)
 		resp = requests.post(config.config['url']+'/column/' + item['name'], data=data, headers={'Cookie': self.data['cookie']})
 		self.assertEqual(resp.status_code, 200)
 		result = resp.json()
-		self.assertIn('hash', result)
+		self.assertTxInBlock(result)
 
 
 if __name__ == '__main__':
