@@ -29,7 +29,6 @@ def prepare_tx(method, entity, entity_name, cookie, data):
 	url = config.config['url']+'/prepare/' + entity
 	if entity_name != "":
 		url += '/' + entity_name
-	
 	if method == 'PUT':
 		resp = requests.put(url, 
 				data=data,
@@ -38,8 +37,6 @@ def prepare_tx(method, entity, entity_name, cookie, data):
 		resp = requests.post(url, 
 				data=data,
 				headers={'Cookie': cookie})
-	if resp.status_code != 200:
-		print("ERROR:", resp.text)
 	result = resp.json()
 	forsign = result['forsign']
 	signature, _ = sign(forsign)

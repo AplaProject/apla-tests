@@ -334,6 +334,104 @@ class TableTestCase(ApiTestCase, unittest.TestCase):
 		self.assertTxInBlock(result)
 
 
+class ContractTestCase(ApiTestCase, unittest.TestCase):
+	def get_name_and_code(self):
+		name = utils.generate_random_name()
+		code = """contract %s {
+				       conditions {}
+				       action {}
+			        }""" % (name,)
+		return name, code
+
+	def find_contract_by_name(self, name):
+		resp = requests.get(config.config['url']+'/contractlist', headers={'Cookie': self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		for item in result["list"]:
+			if item['name'] == name:
+				return item
+		raise Exception("did not found contract by name")
+
+	def create_contract(self):
+		name, code = self.get_name_and_code()
+		data = {'name': name, 'value': code, 'conditions': """ContractConditions(`MainCondition`)""", 'global':'0'}
+		sign_res = utils.prepare_tx('POST', 'contract', "", self.data['cookie'], data)
+		data.update(sign_res)
+		resp = requests.post(config.config['url'] + '/contract', data=data, headers={"Cookie": self.data["cookie"]})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertTxInBlock(result)
+		return name
+
+	def get_first_contract_item(self):
+		resp = requests.get(config.config['url']+'/contractlist', headers={'Cookie': self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertGreaterEqual(int(result['count']), 1)
+		item = result['list'][0]
+		return item
+
+	def test_contract_list(self):
+		item = self.get_first_contract_item()
+		self.assertIn('name', item)
+		self.assertIn('active', item)
+		self.assertIn('wallet', item)
+		self.assertIn('id', item)
+
+	def test_contract(self):
+		item = self.get_first_contract_item()
+		resp = requests.get(config.config['url']+'/contract/' + item["id"], headers={'Cookie': self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		self.assertIn('name', item)
+		self.assertIn('active', item)
+		self.assertIn('wallet', item)
+		self.assertIn('id', item)
+
+	def test_new_contract(self):
+		self.create_contract()
+
+	def test_change_contract(self):
+		item = self.get_first_contract_item()
+		_, code = self.get_name_and_code()
+		data = {'value': code, "conditions": """ContractConditions(`MainCondition`)""", "global": "0"}
+		sign_res = utils.prepare_tx('PUT', 'contract', item['id'], self.data['cookie'], data)
+		data.update(sign_res)
+		resp = requests.put(config.config['url']+'/contract/'+item['id'], data=data, headers={"Cookie": self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertTxInBlock(result)
+
+	def test_activate_contract(self):
+		name = self.create_contract()
+		contract = self.find_contract_by_name(name)
+		data = {}
+		sign_res = utils.prepare_tx('PUT', 'activatecontract', contract['id'], self.data['cookie'], data)
+		data.update(sign_res)
+		resp = requests.put(config.config['url']+'/activatecontract/'+contract['id'], data=data, headers={"Cookie": self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertTxInBlock(result)
+	
+	def test_get_smartcontract(self):
+		item = self.get_first_contract_item()
+		resp = requests.get(config.config['url']+'/smartcontract/'+item['name'], headers={"Cookie": self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertIn('active', result)
+		self.assertIn('name', result)
+		self.assertIn('fields', result)
+
+	def test_execute_smartcontract(self):
+		item = self.get_first_contract_item()
+		data = {}
+		sign_res = utils.prepare_tx('POST', 'smartcontract', item['name'], self.data['cookie'], data)
+		data.update(sign_res)
+		resp = requests.post(config.config['url']+'/smartcontract/'+item['name'], data=data, headers={"Cookie": self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertTxInBlock(result)
+
+
 if __name__ == '__main__':
 	config.read()
 	unittest.main()
