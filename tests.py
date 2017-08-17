@@ -59,10 +59,7 @@ class LoginTestCase(unittest.TestCase):
 		self.assertEqual(resp.status_code, 400)
 
 
-class BalanceTestCase(unittest.TestCase):
-	def setUp(self):
-		self.data = utils.login()
-	
+class EGSTestCase(ApiTestCase, unittest.TestCase):
 	def test_balance(self):
 		resp = requests.get(config.config['url']+'/balance/' + self.data['address'], headers={'Cookie': self.data['cookie']})
 		self.assertEqual(resp.status_code, 200)
@@ -70,10 +67,25 @@ class BalanceTestCase(unittest.TestCase):
 		self.assertIn("amount", result)
 		self.assertIn("egs", result)
 	
+	def test_send_egs(self):
+		commission = "1000000000000000"
+		data = {"pubkey": self.data["pubkey"], "recipient": self.data["address"], "amount": "1", "commission": commission, "comment": "cmnt"}
+		sign_res = utils.prepare_tx('POST', 'sendegs', '', self.data['cookie'], data)
+		data.update(sign_res)
+		resp = requests.post(config.config['url']+'/sendegs', data=data, headers={'Cookie': self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertTxInBlock(result)
 
-class StateTestCase(unittest.TestCase):
-	def setUp(self):
-		self.data = utils.login()
+
+class StateTestCase(ApiTestCase, unittest.TestCase):
+	def get_first_stateparam(self):
+		resp = requests.get(config.config['url']+'/stateparamslist', headers={'Cookie': self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertGreaterEqual(int(result['count']), 1)
+		item = result['list'][0]
+		return item
 
 	def test_state_list(self):
 		resp = requests.get(config.config['url']+'/statelist', headers={'Cookie': self.data['cookie']})
@@ -88,27 +100,50 @@ class StateTestCase(unittest.TestCase):
 		self.assertIn('coords', item)
 
 	def test_stateparams_list(self):
-		resp = requests.get(config.config['url']+'/stateparamslist', headers={'Cookie': self.data['cookie']})
-		self.assertEqual(resp.status_code, 200)
-		result = resp.json()
-		self.assertGreaterEqual(int(result['count']), 1)
-		item = result['list'][0]
+		item = self.get_first_stateparam()
 		self.assertIn('name', item)
 		self.assertIn('value', item)
 		self.assertIn('conditions', item)
 	
 	def test_state_param(self):
-		resp = requests.get(config.config['url']+'/stateparamslist', headers={'Cookie': self.data['cookie']})
-		self.assertEqual(resp.status_code, 200)
-		result = resp.json()
-		self.assertGreaterEqual(int(result['count']), 1)
-		item = result['list'][0]
+		item = self.get_first_stateparam()
 		resp = requests.get(config.config['url']+'/stateparams/' + item['name'], headers={'Cookie': self.data['cookie']})
 		self.assertEqual(resp.status_code, 200)
 		result = resp.json()
 		self.assertIn('name', result)
 		self.assertIn('value', result)
 		self.assertIn('conditions', result)
+
+	def test_add_state_param(self):
+		name = utils.generate_random_name()
+		data = {'value':'1', 'conditions': """ContractConditions(`MainCondition`)""", "name": name}
+		sign_res = utils.prepare_tx('POST', 'stateparams', '', self.data['cookie'], data)
+		data.update(sign_res)
+		resp = requests.post(config.config['url'] + '/stateparams', data=data, headers={'Cookie': self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertTxInBlock(result)
+
+	def test_change_state_param(self):
+		item = self.get_first_stateparam()
+		data = {'value':'1', 'conditions': """ContractConditions(`MainCondition`)"""}
+		sign_res = utils.prepare_tx('PUT', 'stateparams', item['name'], self.data['cookie'], data)
+		data.update(sign_res)
+		resp = requests.put(config.config['url'] + '/stateparams/' + item['name'], data=data, headers={'Cookie': self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertTxInBlock(result)
+
+	def test_new_state(self):
+		name = utils.generate_random_name()[:18]
+		curname = utils.generate_random_name()[:18]
+		data = {'currency':curname, 'name': name}
+		sign_res = utils.prepare_tx('POST', 'newstate', '', self.data['cookie'], data)
+		data.update(sign_res)
+		resp = requests.post(config.config['url'] + '/newstate', data=data, headers={'Cookie': self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertTxInBlock(result)
 
 
 class MenuTestCase(ApiTestCase, unittest.TestCase):
@@ -172,6 +207,13 @@ class MenuTestCase(ApiTestCase, unittest.TestCase):
 		result = resp.json()
 		self.assertTxInBlock(result)
 
+	def test_menu_content(self):
+		item = self.get_first_menu_item()
+		resp = requests.get(config.config['url']  + '/content/menu/' + item['name'], headers={'Cookie': self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertIn('html', result)
+
 
 class PageTestCase(ApiTestCase, unittest.TestCase):
 	def get_first_page_item(self):
@@ -231,6 +273,13 @@ class PageTestCase(ApiTestCase, unittest.TestCase):
 		self.assertEqual(resp.status_code, 200)
 		result = resp.json()
 		self.assertTxInBlock(result)
+
+	def test_page_content(self):
+		item = self.get_first_page_item()
+		resp = requests.get(config.config['url']  + '/content/page/' + item['name'], headers={'Cookie': self.data['cookie']})
+		self.assertEqual(resp.status_code, 200)
+		result = resp.json()
+		self.assertIn('html', result)
 
 
 class LangTestCase(ApiTestCase, unittest.TestCase):
