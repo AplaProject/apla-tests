@@ -462,8 +462,8 @@ class ContractTestCase(ApiTestCase, unittest.TestCase):
 		self.assertTxInBlock(result)
 	
 	def test_get_smartcontract(self):
-		item = self.get_first_contract_item()
-		resp = requests.get(config.config['url']+'/smartcontract/'+item['name'], headers={"Cookie": self.data['cookie']})
+		name = self.create_contract()
+		resp = requests.get(config.config['url']+'/smartcontract/'+name, headers={"Cookie": self.data['cookie']})
 		self.assertEqual(resp.status_code, 200)
 		result = resp.json()
 		self.assertIn('active', result)
@@ -471,11 +471,11 @@ class ContractTestCase(ApiTestCase, unittest.TestCase):
 		self.assertIn('fields', result)
 
 	def test_execute_smartcontract(self):
-		item = self.get_first_contract_item()
+		contract = self.get_first_contract_item()
 		data = {}
-		sign_res = utils.prepare_tx('POST', 'smartcontract', item['name'], self.data['cookie'], data)
+		sign_res = utils.prepare_tx('POST', 'smartcontract', contract['name'], self.data['cookie'], data)
 		data.update(sign_res)
-		resp = requests.post(config.config['url']+'/smartcontract/'+item['name'], data=data, headers={"Cookie": self.data['cookie']})
+		resp = requests.post(config.config['url']+'/smartcontract/'+contract['name'], data=data, headers={"Cookie": self.data['cookie']})
 		self.assertEqual(resp.status_code, 200)
 		result = resp.json()
 		self.assertTxInBlock(result)
