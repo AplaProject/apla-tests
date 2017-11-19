@@ -4,8 +4,8 @@ import hostconfig
 import requests
 
 class BlockChainTestCase(unittest.TestCase):
-    url = hostconfig.getConfig()['url1'] 
-    privateKey = hostconfig.getConfig()['private_key1']
+    url = ""
+    privateKey = ""
     wait = hostconfig.getConfig()['time_wait_tx_in_block']
     
     def setUp(self):
@@ -59,6 +59,8 @@ class BlockChainTestCase(unittest.TestCase):
         self.assertTxInBlock(result, self.data["jvtToken"])
     
     def test_block_chain(self):
+        url = hostconfig.getConfig()['url1'] 
+        privateKey = hostconfig.getConfig()['private_key1']
         i = 1
         while i < 10:
             contName = self.create_contract()
@@ -66,6 +68,15 @@ class BlockChainTestCase(unittest.TestCase):
             countContracts = self.get_count_contract()
             self.change_contract(countContracts, code)
             i = i + 1
+        url = hostconfig.getConfig()['url2']
+        privateKey = hostconfig.getConfig()['private_key2']
+        i = 1
+        while i < 10:
+            contName = self.create_contract()
+            code = self.generate_code(contName)
+            countContracts = self.get_count_contract()
+            self.change_contract(countContracts, code)
+            i = i + 1 
         self.assertTrue(utils.compare_keys_cout(), "There are different count of keys in block_chain")
         
 if __name__ == "__main__":
