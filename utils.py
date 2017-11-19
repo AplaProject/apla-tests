@@ -5,6 +5,7 @@ import random
 import string
 import postgresql
 import psycopg2
+from collections import Counter
 
 def get_uid(url):
 	resp = requests.get(url + '/getuid')
@@ -61,12 +62,29 @@ def generate_random_name():
 		name.append(sym)
 	return "".join(name)
 
-def get_block_chain():
+def compare_keys_cout():
 	db = postgresql.open('pq://postgres:postgres@localhost:5432/aplafront')
 	conf = "host='localhost' dbname='aplahost' user='postgres' password='postgres'"
-	connect = psycopg2.connect(conf)
+	connect = psycopg2.connect(host='localhost', dbname='aplafront', user='postgres', password='postgres')
 	cursor = connect.cursor()
-	cursor.execute("SELECT count(*) FROM block_chain")
-	records = cursor.fetchall()
-	print(records)
+	cursor.execute("SELECT key_id FROM block_chain Order by id DESC LIMIT 10")
+	keys = cursor.fetchall()
+	firstKey = keys[1]
+	secondKey = ""
+	for key in keys:
+		if key != firstKey:
+			secondKey = key
+	if secondKey == "":
+		return False
+	else:	
+		keysCounter = Counter(records)
+		firstKeyCount = keysCounter[firstKey]
+		secondKeyCount = keysCounter[secondKey]
+		compare = firstKeyCount - secondKeyCount
+		if(compare > 1)|(compare < -1):
+			return False
+		else:
+			return True 
+
+	
 	
