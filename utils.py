@@ -3,27 +3,26 @@ import time
 import config
 import random
 import string
-import postgresql
 import psycopg2
 from collections import Counter
 
-def get_uid(url):
-	resp = requests.get(url + '/getuid')
+def get_uid():
+	resp = requests.get(config.config["url"] + '/getuid')
 	result = resp.json()
 	return result['token'], result['uid']
 
 
-def sign(forsign, url, privateKey):
-	resp = requests.post(url + '/signtest/', params={'forsign': forsign, 'private': privateKey})
+def sign(forsign):
+	resp = requests.post(config.config["url"] + '/signtest/', params={'forsign': forsign, 'private': config.config['private_key']})
 	result = resp.json()
 	return result['signature'], result['pubkey']
 
 
-def login(url, privateKey):
-	token, uid = get_uid(url)
-	signature, pubkey = sign(uid, url, privateKey)
+def login():
+	token, uid = get_uid()
+	signature, pubkey = sign(uid)
 	fullToken = 'Bearer ' + token
-	resp = requests.post(url +'/login', params={'pubkey': pubkey, 'signature': signature}, headers={'Authorization': fullToken})
+	resp = requests.post(config.config["url"] +'/login', params={'pubkey': pubkey, 'signature': signature}, headers={'Authorization': fullToken})
 	res = resp.json()
 	address = res["address"]
 	timeToken = res["refresh"]
@@ -31,18 +30,18 @@ def login(url, privateKey):
 	return {"uid": uid, "timeToken": timeToken, "jvtToken": jvtToken, "pubkey": pubkey, "address": address}
 
 
-def prepare_tx(entity, jvtToken, data, url, privateKey):
-	urlToCont = url +'/prepare/' + entity
+def prepare_tx(entity, jvtToken, data):
+	urlToCont = config.config["url"] +'/prepare/' + entity
 	resp = requests.post(urlToCont, data=data, headers={'Authorization': jvtToken})
 	result = resp.json()
 	forsign = result['forsign']
-	signature, _ = sign(forsign, url, privateKey)
+	signature, _ = sign(forsign)
 	return {"time": result['time'], "signature": signature}
 
 
-def txstatus(hsh, url, jvtToken, wait):
-	time.sleep(wait)
-	resp = requests.get(url + '/txstatus/'+ hsh, headers={'Authorization': jvtToken})
+def txstatus(hsh, jvtToken):
+	time.sleep(config.config["time_wait_tx_in_block"])
+	resp = requests.get(config.config["url"] + '/txstatus/'+ hsh, headers={'Authorization': jvtToken})
 	return resp.json()
 
 
@@ -54,7 +53,6 @@ def generate_random_name():
 	return "".join(name)
 
 def compare_keys_cout():
-	db = postgresql.open('pq://postgres:postgres@localhost:5432/aplafront')
 	conf = "host='localhost' dbname='aplahost' user='postgres' password='postgres'"
 	connect = psycopg2.connect(host='localhost', dbname='aplafront', user='postgres', password='postgres')
 	cursor = connect.cursor()

@@ -1,17 +1,18 @@
 import unittest
 import utils
-import hostconfig
+import config
 import requests
 
 class BlockChainTestCase(unittest.TestCase):
     url = ""
     privateKey = ""
-    wait = hostconfig.getConfig()['time_wait_tx_in_block']
+    wait = ""
+    
         
 
     def assertTxInBlock(self, result, jvtToken):
         self.assertIn("hash",  result)
-        status = utils.txstatus(result['hash'], self.url, jvtToken,self.wait)
+        status = utils.txstatus(result['hash'], jvtToken)
         self.assertEqual(status['errmsg'], "")
         self.assertGreater(len(status['blockid']), 0)
         
@@ -34,9 +35,9 @@ class BlockChainTestCase(unittest.TestCase):
     def create_contract(self):
         code,name = self.get_name_and_code()
         data = {'Wallet': '', 'Value': code, 'Conditions': """ContractConditions(`MainCondition`)"""}
-        sign_res = utils.prepare_tx('NewContract', self.data['jvtToken'], data, self.url, self.privateKey)
+        sign_res = utils.prepare_tx('NewContract', self.data['jvtToken'], data)
         data.update(sign_res)
-        resp = requests.post(self.url + '/contract/NewContract', data=data, headers={"Authorization": self.data["jvtToken"]})
+        resp = requests.post(config.config["url"] + '/contract/NewContract', data=data, headers={"Authorization": self.data["jvtToken"]})
         self.assertEqual(resp.status_code, 200)
         result = resp.json()
         self.assertTxInBlock(result, self.data["jvtToken"])
@@ -44,22 +45,21 @@ class BlockChainTestCase(unittest.TestCase):
 
 
     def get_count_contract(self):
-        resp = requests.get(self.url + '/list/contracts', headers={"Authorization": self.data["jvtToken"]})
+        resp = requests.get(config.config["url"] + '/list/contracts', headers={"Authorization": self.data["jvtToken"]})
         result = resp.json()
         return result["count"]
     
     def change_contract(self, id, code):
         data = {'Value': code, "Conditions": """ContractConditions(`MainCondition`)""", "Id": id}
-        sign_res = utils.prepare_tx('EditContract', self.data['jvtToken'], data, self.url, self.privateKey)
+        sign_res = utils.prepare_tx('EditContract', self.data['jvtToken'], data)
         data.update(sign_res)
-        resp = requests.post(self.url+'/contract/EditContract', data=data, headers={"Authorization": self.data["jvtToken"]})
+        resp = requests.post(config.config["url"] + '/contract/EditContract', data=data, headers={"Authorization": self.data["jvtToken"]})
         result = resp.json()
         self.assertTxInBlock(result, self.data["jvtToken"])
     
     def test_block_chain(self):
-        self.url = hostconfig.getConfig()['url1'] 
-        self.privateKey = hostconfig.getConfig()['private_key1']
-        self.data = utils.login(self.url, self.privateKey)
+        config.getNodeConfig("1")
+        self.data = utils.login()
         i = 1
         while i < 10:
             contName = self.create_contract()
@@ -67,9 +67,10 @@ class BlockChainTestCase(unittest.TestCase):
             countContracts = self.get_count_contract()
             self.change_contract(countContracts, code)
             i = i + 1
-        self.url = hostconfig.getConfig()['url2']
-        self.privateKey = hostconfig.getConfig()['private_key2']
-        self.data = utils.login(self.url, self.privateKey)
+        config.getNodeConfig("2")
+        self.url = config.config["url"]
+        self.privateKey = config.config['private_key']
+        self.data = utils.login()
         i = 1
         while i < 10:
             contName = self.create_contract()
