@@ -31,18 +31,9 @@ def login(url, privateKey):
 	return {"uid": uid, "timeToken": timeToken, "jvtToken": jvtToken, "pubkey": pubkey, "address": address}
 
 
-def prepare_tx(method, entity, entity_name, jvtToken, data, url, privateKey):
+def prepare_tx(entity, jvtToken, data, url, privateKey):
 	urlToCont = url +'/prepare/' + entity
-	if entity_name != "":
-		url += '/' + entity_name
-	if method == 'PUT':
-		resp = requests.put(urlToCont, 
-				data=data,
-				headers={'Authorization': jvtToken})
-	elif method == 'POST':
-		resp = requests.post(urlToCont, 
-				data=data,
-				headers={'Authorization': jvtToken})
+	resp = requests.post(urlToCont, data=data, headers={'Authorization': jvtToken})
 	result = resp.json()
 	forsign = result['forsign']
 	signature, _ = sign(forsign, url, privateKey)
