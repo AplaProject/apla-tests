@@ -53,8 +53,7 @@ def generate_random_name():
 	return "".join(name)
 
 def compare_keys_cout():
-	conf = "host='localhost' dbname='aplahost' user='postgres' password='postgres'"
-	connect = psycopg2.connect(host='localhost', dbname='aplafront', user='postgres', password='postgres')
+	connect = psycopg2.connect(host=config.config["dbHost"], dbname=config.config["dbName"], user=config.config["login"], password=config.config["pass"])
 	cursor = connect.cursor()
 	cursor.execute("SELECT key_id FROM block_chain Order by id DESC LIMIT 10")
 	keys = cursor.fetchall()
