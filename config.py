@@ -16,4 +16,3 @@ def getNodeConfig(nodeNum):
     fullJ = json.loads(data)
     global config
     config = fullJ[nodeNum]
-    print(config)

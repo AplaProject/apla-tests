@@ -4,11 +4,6 @@ import config
 import requests
 
 class BlockChainTestCase(unittest.TestCase):
-    url = ""
-    privateKey = ""
-    wait = ""
-    
-        
 
     def assertTxInBlock(self, result, jvtToken):
         self.assertIn("hash",  result)
@@ -68,8 +63,6 @@ class BlockChainTestCase(unittest.TestCase):
             self.change_contract(countContracts, code)
             i = i + 1
         config.getNodeConfig("2")
-        self.url = config.config["url"]
-        self.privateKey = config.config['private_key']
         self.data = utils.login()
         i = 1
         while i < 10:

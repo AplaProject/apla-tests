@@ -38,6 +38,13 @@ def prepare_tx(entity, jvtToken, data):
 	signature, _ = sign(forsign)
 	return {"time": result['time'], "signature": signature}
 
+def call_contract(name, data, jvtToken):
+	sign_res = prepare_tx(name, jvtToken, data)
+	data.update(sign_res)
+	resp = requests.post(config.config["url"] + '/contract/' + name, data=data, headers={"Authorization": jvtToken})
+	result = resp.json()
+	return result
+
 
 def txstatus(hsh, jvtToken):
 	time.sleep(config.config["time_wait_tx_in_block"])
