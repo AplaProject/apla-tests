@@ -34,6 +34,21 @@ class ContractFunctionsTestCase(unittest.TestCase):
     
     def test_contract_dbfind(self):
         self.check_contract(*Contracts.dbFind)
+        
+    def test_contract_dbAmount(self):
+        self.check_contract(*Contracts.dbAmount)
+        
+    def test_contract_ecosysParam(self):
+        self.check_contract(*Contracts.ecosysParam)
+        
+    def test_contract_dbIntExt(self):
+        self.check_contract(*Contracts.dbIntExt)
+        
+    def test_contract_dbIntWhere(self):
+        self.check_contract(*Contracts.dbIntWhere)
+        
+    def test_contract_DBIntWhere(self):
+        self.check_contract(*Contracts.DBIntWhere)
 
 if __name__ == '__main__':
     unittest.main()

@@ -33,15 +33,62 @@ class Contracts(object):
     conditions {}
     action {
         var res array
-        res = DBFind("blocks").Columns("id,value").Where("id=?", 1).Order("id")
-        $result = "i returned"
+        res = DBFind("pages").Columns("name").Where("id=?", 1).Order("id")
+        $result = res
     }
-    }""", "i")
-    
-    dbAmount = ()
-    ecosysParam = ()
-    dbIntExt = ()
-    dbIntWhere = ()
+    }""", "default")
+    dbAmount = ("""{
+    data {}
+    conditions {}
+    action {
+        var myMoney money
+        myMoney = DBAmount("keys", "amount", 1)
+        $result=Str(myMoney)
+    }
+    }""", "100,000,000,000,000,000,000,000,000.00")
+    ecosysParam = ("""{
+    data {}
+    conditions {}
+    action {
+        var res string
+        res = EcosysParam("changing_menu")
+        $result=res
+    }
+    }""", "ContractConditions(`MainCondition`)")
+    #needs to add record to history table
+    dbIntExt = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        var val int
+        val = DBInt(Table("history"), "recipient_id", 1)
+        $result=Str(val)
+    }
+    }""", "52070200000060200")
+    dbIntWhere = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        var val int
+        val = DBIntExt(Table("pages"), "id", "default_page", "name")
+        $result=Str(val)
+    }
+    }""", "1")
+    DBIntWhere = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        var val int
+        val = DBIntWhere(Table("pages"), "id",  "name = ?", "default_page")
+        $result=Str(val)
+    }
+    }""", "1")
     dbRowExt = ()
     dbString = ()
     dbStringExt = ()
