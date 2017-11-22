@@ -3,49 +3,52 @@ import time
 import config
 import random
 import string
+import psycopg2
+from collections import Counter
 
 def get_uid():
-	resp = requests.get(config.config['url'] + '/getuid')
-	cookie = resp.headers['Set-Cookie'].split(';')[0]
+	resp = requests.get(config.config["url"] + '/getuid')
 	result = resp.json()
-	return cookie, result['uid']
+	return result['token'], result['uid']
 
 
 def sign(forsign):
-	resp = requests.post(config.config['url']+'/signtest/', params={'forsign': forsign, 'private': config.config['private_key']})
+	resp = requests.post(config.config["url"] + '/signtest/', params={'forsign': forsign, 'private': config.config['private_key']})
 	result = resp.json()
 	return result['signature'], result['pubkey']
 
 
 def login():
-	cookie, uid = get_uid()
+	token, uid = get_uid()
 	signature, pubkey = sign(uid)
-	resp = requests.post(config.config['url']+'/login', params={'pubkey': pubkey, 'state': config.config['state'], 'signature': signature}, headers={'Cookie': cookie})
-	address = resp.json()["address"]
-	return {"cookie": cookie, "uid": uid, "signature": signature, "pubkey": pubkey, "address": address}
+	fullToken = 'Bearer ' + token
+	resp = requests.post(config.config["url"] +'/login', params={'pubkey': pubkey, 'signature': signature}, headers={'Authorization': fullToken})
+	res = resp.json()
+	address = res["address"]
+	timeToken = res["refresh"]
+	jvtToken = 'Bearer ' + res["token"]
+	return {"uid": uid, "timeToken": timeToken, "jvtToken": jvtToken, "pubkey": pubkey, "address": address}
 
 
-def prepare_tx(method, entity, entity_name, cookie, data):
-	url = config.config['url']+'/prepare/' + entity
-	if entity_name != "":
-		url += '/' + entity_name
-	if method == 'PUT':
-		resp = requests.put(url, 
-				data=data,
-				headers={'Cookie': cookie})
-	elif method == 'POST':
-		resp = requests.post(url, 
-				data=data,
-				headers={'Cookie': cookie})
+def prepare_tx(entity, jvtToken, data):
+	urlToCont = config.config["url"] +'/prepare/' + entity
+	resp = requests.post(urlToCont, data=data, headers={'Authorization': jvtToken})
 	result = resp.json()
 	forsign = result['forsign']
 	signature, _ = sign(forsign)
 	return {"time": result['time'], "signature": signature}
 
+def call_contract(name, data, jvtToken):
+	sign_res = prepare_tx(name, jvtToken, data)
+	data.update(sign_res)
+	resp = requests.post(config.config["url"] + '/contract/' + name, data=data, headers={"Authorization": jvtToken})
+	result = resp.json()
+	return result
 
-def txstatus(hsh, cookie):
-	time.sleep(config.config['time_wait_tx_in_block'])
-	resp = requests.get(config.config['url'] + '/txstatus/'+ hsh, headers={"Cookie": cookie})
+
+def txstatus(hsh, jvtToken):
+	time.sleep(config.config["time_wait_tx_in_block"])
+	resp = requests.get(config.config["url"] + '/txstatus/'+ hsh, headers={'Authorization': jvtToken})
 	return resp.json()
 
 
@@ -55,3 +58,28 @@ def generate_random_name():
 		sym = random.choice(string.ascii_lowercase)
 		name.append(sym)
 	return "".join(name)
+
+def compare_keys_cout():
+	connect = psycopg2.connect(host=config.config["dbHost"], dbname=config.config["dbName"], user=config.config["login"], password=config.config["pass"])
+	cursor = connect.cursor()
+	cursor.execute("SELECT key_id FROM block_chain Order by id DESC LIMIT 10")
+	keys = cursor.fetchall()
+	firstKey = keys[1]
+	secondKey = ""
+	for key in keys:
+		if key != firstKey:
+			secondKey = key
+	if secondKey == "":
+		return False
+	else:	
+		keysCounter = Counter(records)
+		firstKeyCount = keysCounter[firstKey]
+		secondKeyCount = keysCounter[secondKey]
+		compare = firstKeyCount - secondKeyCount
+		if(compare > 1)|(compare < -1):
+			return False
+		else:
+			return True 
+
+	
+	

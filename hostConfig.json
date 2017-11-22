@@ -1,0 +1,22 @@
+{
+	"1":
+	{
+		"url": "http://localhost:7079/api/v2",
+		"private_key": "efbb22bf5911a375834ac6be77310df32b8b1c561d84bd1066ecd464bdc5bc48",
+		"dbHost": "localhost",
+		"dbName": "aplafront",
+		"login": "postgres",
+		"pass": "postgres",
+		"time_wait_tx_in_block": 5
+	},
+	"2":
+	{
+		"url": "http://localhost:7079/api/v2",
+		"private_key": "efbb22bf5911a375834ac6be77310df32b8b1c561d84bd1066ecd464bdc5bc48",
+		"dbHost": "localhost",
+		"dbName": "aplafront",
+		"login": "postgres",
+		"pass": "postgres",
+		"time_wait_tx_in_block": 5
+	}
+}

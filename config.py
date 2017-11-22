@@ -4,8 +4,15 @@ import json
 config = {}
 
 
-def read():
-	global config
+def readMainConfig():
 	with open('config.json', 'r') as f:
 		data = f.read()
-		config = json.loads(data)
+	global config
+	config = json.loads(data)
+
+def getNodeConfig(nodeNum):
+    with open('hostConfig.json', 'r') as f:
+        data = f.read()
+    fullJ = json.loads(data)
+    global config
+    config = fullJ[nodeNum]
