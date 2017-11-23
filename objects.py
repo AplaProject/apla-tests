@@ -33,8 +33,10 @@ class Contracts(object):
     conditions {}
     action {
         var res array
+        var val map
         res = DBFind("pages").Columns("name").Where("id=?", 1).Order("id")
-        $result = res
+        val = res[0]
+        $result = val["name"]
     }
     }""", "default")
     dbAmount = ("""{
@@ -54,7 +56,7 @@ class Contracts(object):
         res = EcosysParam("changing_menu")
         $result=res
     }
-    }""", "ContractConditions(`MainCondition`)")
+    }""", "MainCondition")
     #needs to add record to history table
     dbIntExt = ("""{
     data {
@@ -63,7 +65,7 @@ class Contracts(object):
     }
     action {
         var val int
-        val = DBInt(Table("history"), "recipient_id", 1)
+        val = DBInt("history", "recipient_id", 1)
         $result=Str(val)
     }
     }""", "52070200000060200")
@@ -74,7 +76,7 @@ class Contracts(object):
     }
     action {
         var val int
-        val = DBIntExt(Table("pages"), "id", "default_page", "name")
+        val = DBIntExt("pages", "id", "default_page", "name")
         $result=Str(val)
     }
     }""", "1")
@@ -85,33 +87,315 @@ class Contracts(object):
     }
     action {
         var val int
-        val = DBIntWhere(Table("pages"), "id",  "name = ?", "default_page")
+        val = DBIntWhere("pages", "id",  "name = ?", "default_page")
         $result=Str(val)
     }
     }""", "1")
-    dbRowExt = ()
-    dbString = ()
-    dbStringExt = ()
+    dbRowExt = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        var vals map
+        vals = DBRowExt("pages", "name, menu", 1, "id" )
+        $result=vals["name"]
+    }
+    }""", "default_page")
+    dbString = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result=DBString("pages", "name", 1)
+    }
+    }""","default_page")
+    dbStringExt = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result=DBStringExt("pages", "name", 1, "id" )
+    }
+    }""", "default_page")
     dbFreeRequest = ()
-    dbStringWhere = ()
-    langRes = ()
-    dbInsert = ()
-    dbInsertReport = ()
-    dbUpdate = ()
-    dbUpdateExt = ()
-    findEcosystem = ()
-    callContract = ()
+    dbStringWhere = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result=DBStringWhere("pages", "name",  "id = ?", 1)
+    }
+    }""", "default_page")
+    #needs to create language resourse with name - test and localisacions:en- test_en, de- test_de
+    langRes = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result=LangRes("test", "de")
+    }
+    }""", "test_de")
+    #needs to create table "test" with "name" and "test" string columns
+    dbInsert = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result=DBInsert("tests", "name,test", "name", "val")
+    }
+    }""","1")
+    #needs to create table "reports_test" with "name" and "test" string columns
+    dbInsertReport = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result=DBInsertReport("reports_tests", "name,test", "name", "val")
+    }
+    }""","1")
+    #needs to create table "test2" with "name" and "case" string columns and to add 1 record there
+    dbUpdate = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result=DBUpdate("test2", 1, "name,case", "test_edited", "case_edited")
+    }
+    }""", "1")
+    #needs to create table "test3" with "name" and "case" string columns and to add 1 record with name=myTest
+    dbUpdateExt = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result=DBUpdateExt("test3", "name", "myTest", "name,case", "mytest_edited", "myCase_edited")
+    }
+    }""", "1")
+    #needs to ctreate ecosystem with name "MyEcosystem"
+    findEcosystem = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result=FindEcosystem(`MyEcosystem`)
+    }
+    }""", "2")
+    #needs to create Contarct "MyContract"
+    callContract = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        CallContract("MyContract", "")
+    }
+    }""", "")
+    #needs to create contract "AccesContr"
+    contractAccess = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        ContractAccess("AccesContr")
+    }
+    }""", "")
     contractConditions = ()
-    evalCondition = ()
-    validateCondition = ()
-    addressToId = ()
-    contains =()
-    float = ()
-    hasPrefix = ()
-    hexToBytes = ()
-    Int = ()
-    len = ()
-    pubToID = ()
+    evalCondition = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        EvalCondition("pages", "default_page", `conditions`)
+    }
+    }""", "")
+    validateCondition = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        ValidateCondition("ContractConditions(`MainCondition`)", 0)
+    }
+    }""", "")
+    addressToId = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result = AddressToId("0005-2070-2000-0006-0200")
+    }
+    }""","52070200000060200")
+    contains =("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        if Contains("Hello world", `Hello`) {
+            $result = "Hello world"
+        }
+    }
+    }""", "Hello world")
+    float = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        var val int
+        val = Float("567") + Float(232)
+            $result = Str(val)
+    }
+    }""", "799.000000")
+    hasPrefix = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        if HasPrefix("myString", `my`) {
+            $result = "Prefix"
+        }
+    }
+    }""", "Prefix")
+    hexToBytes = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+            $result = Str(HexToBytes("34fe4501a4d80094"))
+    }
+    }""", "[52 254 69 1 164 216 0 148]")
+    Int = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        var val int
+        val = Int("105") + Int("45")
+            $result = Str(val)
+    }
+    }""", "150")
+    len = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        var arr array
+        arr[0] = "1"
+        arr[1] = "2"
+        arr[2] = "3"
+        $result = Len(arr)
+    }
+    }""", "3")
+    pubToID = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result = PubToID("05f1521f6a7e769ebbde2ab3df01f4740d1408e7e7150745cac9fb953d8ad366")
+    }
+    }""", "-6799051354910978041")
+    replace = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result = Replace("this is my decision, this is my gole, this is my life", `this is my`, `your`)
+    }
+    }""", "your decision, your gole, your life")
+    size = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result = Size("hello")
+    }
+    }""", "5")
+    sha256 = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result = Sha256("Test")
+    }
+    }""", "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25")
+    Sprintf =("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result = Sprintf("%s is %d", "Five", 5)
+    }
+    }""", "Five is 5")
+    str = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result = Str(5.678)
+    }
+    }""", "5.678")
+    substr = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result = Substr("ecosystema", 2, 5)
+    }
+    }""", "osyst")
+    updateLang = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        UpdateLang("test", "{'ru': 'Тест'}")
+    }
+    }""","")
+    sysParamString = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result = SysParamString("blockchain_url")
+    }
+    }""", "")
+    sysParamInt  = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        $result = Str(SysParamInt("max_columns"))
+    }
+    }""", "50")
+    sysCost = ()
+    updateSysParam =()
 class Blocks(object):
     superBlock = ("test_block", "My supper block")
     
