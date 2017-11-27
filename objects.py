@@ -44,7 +44,7 @@ class Contracts(object):
     conditions {}
     action {
         var myMoney money
-        myMoney = DBAmount("keys", "amount", 1)
+        myMoney = DBAmount("1_keys", "amount", 1)
         $result=Str(myMoney)
     }
     }""", "100,000,000,000,000,000,000,000,000.00")
@@ -58,7 +58,7 @@ class Contracts(object):
     }
     }""", "MainCondition")
     #needs to add record to history table
-    dbIntExt = ("""{
+    dbInt = ("""{
     data {
     }
     conditions {
@@ -69,7 +69,7 @@ class Contracts(object):
         $result=Str(val)
     }
     }""", "52070200000060200")
-    dbIntWhere = ("""{
+    dbIntExt = ("""{
     data {
     }
     conditions {

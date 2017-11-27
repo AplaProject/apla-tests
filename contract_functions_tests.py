@@ -35,20 +35,86 @@ class ContractFunctionsTestCase(unittest.TestCase):
     def test_contract_dbfind(self):
         self.check_contract(*Contracts.dbFind)
         
-    def test_contract_dbAmount(self):
-        self.check_contract(*Contracts.dbAmount)
-        
     def test_contract_ecosysParam(self):
         self.check_contract(*Contracts.ecosysParam)
         
+    def test_contract_dbInt(self):
+        self.check_contract(*Contracts.dbInt)
+    
     def test_contract_dbIntExt(self):
         self.check_contract(*Contracts.dbIntExt)
         
     def test_contract_dbIntWhere(self):
-        self.check_contract(*Contracts.dbIntWhere)
-        
-    def test_contract_DBIntWhere(self):
         self.check_contract(*Contracts.DBIntWhere)
+        
+    def test_contract_dbRowExt(self):
+        self.check_contract(*Contracts.dbRowExt)
+        
+    def test_contract_dbString(self):
+        self.check_contract(*Contracts.dbString)
+        
+    def test_contract_dbStringExt(self):
+        self.check_contract(*Contracts.dbStringExt)
+        
+    def test_contract_dbStringWhere(self):
+        self.check_contract(*Contracts.dbStringWhere)
+        
+    def test_contract_evalCondition(self):
+        self.check_contract(*Contracts.evalCondition)
+        
+    def test_contract_validateCondition(self):
+        self.check_contract(*Contracts.validateCondition)
+        
+    def test_contract_addressToId(self):
+        self.check_contract(*Contracts.addressToId)
+        
+    def test_contract_contains(self):
+        self.check_contract(*Contracts.contains)
+        
+    def test_contract_float(self):
+        self.check_contract(*Contracts.float)
+        
+    def test_contract_hasPrefix(self):
+        self.check_contract(*Contracts.hasPrefix)
+        
+    def test_contract_hexToBytes(self):
+        self.check_contract(*Contracts.hexToBytes)
+        
+    def test_contract_Int(self):
+        self.check_contract(*Contracts.Int)
+        
+    def test_contract_len(self):
+        self.check_contract(*Contracts.len)
+        
+    def test_contract_pubToID(self):
+        self.check_contract(*Contracts.pubToID)
+        
+    def test_contract_replace(self):
+        self.check_contract(*Contracts.replace)
+        
+    def test_contract_size(self):
+        self.check_contract(*Contracts.size)
+        
+    def test_contract_sha256(self):
+        self.check_contract(*Contracts.sha256)
+        
+    def test_contract_Sprintf(self):
+        self.check_contract(*Contracts.Sprintf)
+        
+    def test_contract_str(self):
+        self.check_contract(*Contracts.str)
+        
+    def test_contract_substr(self):
+        self.check_contract(*Contracts.substr)
+        
+    def test_contract_updateLang(self):
+        self.check_contract(*Contracts.updateLang)
+        
+    def test_contract_sysParamString(self):
+        self.check_contract(*Contracts.sysParamString)
+        
+    def test_contract_sysParamInt(self):
+        self.check_contract(*Contracts.sysParamInt)
 
 if __name__ == '__main__':
     unittest.main()
