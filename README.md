@@ -1,3 +1,20 @@
+### Installation print proccesed transactions
+
+```
+git clone https://github.com/EGaaS/apla-tests.git tests
+virtualenv -p python3 tests
+cd tests
+source bin/activate
+pip install -r requirements.txt
+python proccesed_transactions_test.py -v
+```
+
+### dBconfig.json
+
+* dbHost: host name of data base
+* dbName: name of data base
+* login: login of data base,
+* pass: password of data base
 ### Installation tests for block_chain
 
 ```
@@ -26,8 +43,8 @@ git clone https://github.com/EGaaS/apla-tests.git tests
 virtualenv -p python3 tests
 cd tests
 source bin/activate
-pip install -r contract_functions_tests.txt
-python tests.py -v
+pip install -r  requirements.txt
+python contract_functions_tests.py -v
 ```
 
 ### Config

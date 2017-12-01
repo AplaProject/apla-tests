@@ -1,5 +1,9 @@
 certifi==2017.7.27.1
 chardet==3.0.4
 idna==2.5
+psycopg2==2.7.3.2
+py-postgresql==1.2.1
 requests==2.18.3
+selenium==3.6.0
 urllib3==1.22
+virtualenv==15.1.0
