@@ -16,3 +16,9 @@ def getNodeConfig(nodeNum):
     fullJ = json.loads(data)
     global config
     config = fullJ[nodeNum]
+    
+def getDBConfig():
+	with open('dBconfig.json', 'r') as f:
+		data = f.read()
+	global config
+	config = json.loads(data)

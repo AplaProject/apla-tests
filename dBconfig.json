@@ -1,0 +1,6 @@
+{
+	"dbHost": "localhost",
+	"dbName": "aplafront",
+	"login": "postgres",
+	"pass": "postgres"
+}
