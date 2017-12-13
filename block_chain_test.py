@@ -33,7 +33,7 @@ class BlockChainTestCase(unittest.TestCase):
         sign_res = utils.prepare_tx('NewContract', self.data['jvtToken'], data)
         data.update(sign_res)
         resp = requests.post(config.config["url"] + '/contract/NewContract', data=data, headers={"Authorization": self.data["jvtToken"]})
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200, resp)
         result = resp.json()
         self.assertTxInBlock(result, self.data["jvtToken"])
         return name

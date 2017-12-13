@@ -37,27 +37,12 @@ class ContractFunctionsTestCase(unittest.TestCase):
         
     def test_contract_ecosysParam(self):
         self.check_contract(*Contracts.ecosysParam)
-        
-    def test_contract_dbInt(self):
-        self.check_contract(*Contracts.dbInt)
     
-    def test_contract_dbIntExt(self):
-        self.check_contract(*Contracts.dbIntExt)
+    def test_contract_dbRow(self):
+        self.check_contract(*Contracts.dbRow)
         
-    def test_contract_dbIntWhere(self):
-        self.check_contract(*Contracts.DBIntWhere)
-        
-    def test_contract_dbRowExt(self):
-        self.check_contract(*Contracts.dbRowExt)
-        
-    def test_contract_dbString(self):
-        self.check_contract(*Contracts.dbString)
-        
-    def test_contract_dbStringExt(self):
-        self.check_contract(*Contracts.dbStringExt)
-        
-    def test_contract_dbStringWhere(self):
-        self.check_contract(*Contracts.dbStringWhere)
+    def test_contract_ifMap(self):
+        self.check_contract(*Contracts.ifMap)    
         
     def test_contract_evalCondition(self):
         self.check_contract(*Contracts.evalCondition)
@@ -115,6 +100,9 @@ class ContractFunctionsTestCase(unittest.TestCase):
         
     def test_contract_sysParamInt(self):
         self.check_contract(*Contracts.sysParamInt)
+        
+    def test_contract_updSysParam(self):
+        self.check_contract(*Contracts.updSysParam)
 
 if __name__ == '__main__':
     unittest.main()

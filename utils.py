@@ -38,14 +38,18 @@ def prepare_tx(entity, jvtToken, data):
 	signature, _ = sign(forsign)
 	return {"time": result['time'], "signature": signature}
 
+def install(type, log_level, db_host, db_port, db_name, db_user, db_pass, generate_first_block, first_block_dir):
+	data = {'type': type, 'log_level': log_level, 'db_host': db_host, 'db_port': db_port, 'db_name': db_name, 'db_user': db_user, 'db_pass': db_pass, 'generate_first_block': generate_first_block, 'first_block_dir': first_block_dir}
+	res = requests.post(config.config['url'] + "/install", params=data)
+	return res.json()
+
 def call_contract(name, data, jvtToken):
 	sign_res = prepare_tx(name, jvtToken, data)
 	data.update(sign_res)
 	resp = requests.post(config.config["url"] + '/contract/' + name, data=data, headers={"Authorization": jvtToken})
 	result = resp.json()
 	return result
-
-
+            
 def txstatus(hsh, jvtToken):
 	time.sleep(config.config["time_wait_tx_in_block"])
 	resp = requests.get(config.config["url"] + '/txstatus/'+ hsh, headers={'Authorization': jvtToken})
@@ -80,6 +84,8 @@ def compare_keys_cout():
 			return False
 		else:
 			return True 
+		
+	
 
 	
 	

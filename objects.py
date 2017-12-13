@@ -28,6 +28,18 @@ class Pages(object):
     strong = ("strong_page", "This is an Strong(strong)", "default_menu")
     
 class Contracts(object):
+    updSysParam = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        var par map
+        par["Name"] = "number_of_nodes"
+        par["Value"] = "13"
+        CallContract("UpdateSysParam", "")
+    }
+    }""", "")
     dbFind = (""" {
     data {}
     conditions {}
@@ -39,15 +51,6 @@ class Contracts(object):
         $result = val["name"]
     }
     }""", "default")
-    dbAmount = ("""{
-    data {}
-    conditions {}
-    action {
-        var myMoney money
-        myMoney = DBAmount("1_keys", "amount", 1)
-        $result=Str(myMoney)
-    }
-    }""", "100,000,000,000,000,000,000,000,000.00")
     ecosysParam = ("""{
     data {}
     conditions {}
@@ -58,78 +61,34 @@ class Contracts(object):
     }
     }""", "MainCondition")
     #needs to add record to history table
-    dbInt = ("""{
+    ifMap = ("""{
     data {
     }
     conditions {
     }
     action {
-        var val int
-        val = DBInt("history", "recipient_id", 1)
-        $result=Str(val)
+        var my map
+        my["test"] = 1
+        if my {
+            $result="true"
+        }
+        else {
+            $result="false"
+        }
     }
-    }""", "52070200000060200")
-    dbIntExt = ("""{
-    data {
-    }
-    conditions {
-    }
-    action {
-        var val int
-        val = DBIntExt("pages", "id", "default_page", "name")
-        $result=Str(val)
-    }
-    }""", "1")
-    DBIntWhere = ("""{
-    data {
-    }
-    conditions {
-    }
-    action {
-        var val int
-        val = DBIntWhere("pages", "id",  "name = ?", "default_page")
-        $result=Str(val)
-    }
-    }""", "1")
-    dbRowExt = ("""{
+    }""", "true")
+    dbRow = ("""{
     data {
     }
     conditions {
     }
     action {
         var vals map
-        vals = DBRowExt("pages", "name, menu", 1, "id" )
+        vals = DBRow("pages").Columns("name, menu").Where("id = ?", 1)
         $result=vals["name"]
     }
     }""", "default_page")
-    dbString = ("""{
-    data {
-    }
-    conditions {
-    }
-    action {
-        $result=DBString("pages", "name", 1)
-    }
-    }""","default_page")
-    dbStringExt = ("""{
-    data {
-    }
-    conditions {
-    }
-    action {
-        $result=DBStringExt("pages", "name", 1, "id" )
-    }
-    }""", "default_page")
     dbFreeRequest = ()
-    dbStringWhere = ("""{
-    data {
-    }
-    conditions {
-    }
-    action {
-        $result=DBStringWhere("pages", "name",  "id = ?", 1)
-    }
-    }""", "default_page")
     #needs to create language resourse with name - test and localisacions:en- test_en, de- test_de
     langRes = ("""{
     data {
@@ -151,15 +110,6 @@ class Contracts(object):
     }
     }""","1")
     #needs to create table "reports_test" with "name" and "test" string columns
-    dbInsertReport = ("""{
-    data {
-    }
-    conditions {
-    }
-    action {
-        $result=DBInsertReport("reports_tests", "name,test", "name", "val")
-    }
-    }""","1")
     #needs to create table "test2" with "name" and "case" string columns and to add 1 record there
     dbUpdate = ("""{
     data {
