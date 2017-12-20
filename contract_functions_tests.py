@@ -103,6 +103,9 @@ class ContractFunctionsTestCase(unittest.TestCase):
         
     def test_contract_updSysParam(self):
         self.check_contract(*Contracts.updSysParam)
+        
+    def test_contract_updateSysParam(self):
+        self.check_contract(*Contracts.updateSysParam)
 
 if __name__ == '__main__':
     unittest.main()

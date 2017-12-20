@@ -241,6 +241,30 @@ class Contracts(object):
             $result = Str(val)
     }
     }""", "150")
+    join = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+    var val string
+    var myarr array
+    myarr[0] = "first"
+    myarr[1] = "second"
+    $result = Join(myarr, ",")
+    }
+    }""", "first,second")
+    split = ("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+    var myarr array
+    myarr = Split("first,second,third", ",")
+    $result = myarr[1]
+    }
+    }""", "second")
     len = ("""{
     data {
     }
@@ -345,7 +369,24 @@ class Contracts(object):
     }
     }""", "50")
     sysCost = ()
-    updateSysParam =()
+    updateSysParam =("""{
+    data {
+    }
+    conditions {
+    }
+    action {
+        DBUpdateSysParam("number_of_nodes", "102", "true")
+    }
+    }""", "")
+    upFullNodes = ("""{
+        data {
+        }
+        conditions {
+        }
+        action {
+            DBUpdateSysParam(`full_nodes`, `[["127.0.0.1:7081","-1773948777048415501","992472079991fb488c6291877a759c237ac6ec3b96bb956a72a75260a1491d580fac2028d27ae3c739c2964fb37c74bb3734d1de53c88c6c783b800f0800edde"],["127.0.0.1:7078","6690847396755055571","f9146d2918bb290887ad285eab50fa2a25771e1a9bd41aa2992add5f5d9b2005ac6dfd74c8e94f52084e76b1f1d4dd098562f4c1b22289ce71908da492cccc78"]]`, ``)
+        }
+        }""","")
 class Blocks(object):
     superBlock = ("test_block", "My supper block")
     
