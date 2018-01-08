@@ -2,6 +2,7 @@ import unittest
 import utils
 import config
 import requests
+import json
 from objects import Contracts
 
 class ContractFunctionsTestCase(unittest.TestCase):  
@@ -12,7 +13,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
     def assertTxInBlock(self, result, jvtToken):
         self.assertIn("hash",  result)
         status = utils.txstatus(result['hash'], jvtToken)
-        self.assertEqual(status['errmsg'], "")
+        self.assertNotIn(json.dumps(status),'errmsg')
         self.assertGreater(len(status['blockid']), 0)
         
     def generate_name_and_code(self, sourseCode):

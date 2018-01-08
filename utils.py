@@ -63,11 +63,12 @@ def generate_random_name():
 		name.append(sym)
 	return "".join(name)
 
-def compare_keys_cout():
-	connect = psycopg2.connect(host=config.config["dbHost"], dbname=config.config["dbName"], user=config.config["login"], password=config.config["pass"])
+def compare_keys_cout(dbHost, dbName, login, password):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute("SELECT key_id FROM block_chain Order by id DESC LIMIT 10")
 	keys = cursor.fetchall()
+	print(keys)
 	firstKey = keys[1]
 	secondKey = ""
 	for key in keys:
@@ -76,7 +77,7 @@ def compare_keys_cout():
 	if secondKey == "":
 		return False
 	else:	
-		keysCounter = Counter(records)
+		keysCounter = Counter(keys)
 		firstKeyCount = keysCounter[firstKey]
 		secondKeyCount = keysCounter[secondKey]
 		compare = firstKeyCount - secondKeyCount
@@ -85,7 +86,21 @@ def compare_keys_cout():
 		else:
 			return True 
 		
-	
-
-	
-	
+def getCountDBObjects(dbHost, dbName, login, password):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("select count(*) from INFORMATION_SCHEMA.TABLES WHERE table_schema='public'")
+	tables = cursor.fetchall()
+	cursor.execute("SELECT count(*) FROM \"1_contracts\"")
+	contracts = cursor.fetchall()
+	cursor.execute("SELECT count(*) FROM \"1_pages\"")
+	pages = cursor.fetchall()
+	cursor.execute("SELECT count(*) FROM \"1_menu\"")
+	menus = cursor.fetchall()
+	cursor.execute("SELECT count(*) FROM \"1_blocks\"")
+	blocks = cursor.fetchall()
+	cursor.execute("SELECT count(*) FROM \"1_parameters\"")
+	params = cursor.fetchall()
+	cursor.execute("SELECT count(*) FROM \"1_languages\"")
+	locals = cursor.fetchall()
+	return {"tables": tables[0][0], "contracts": contracts[0][0], "pages": pages[0][0], "menus":menus[0][0], "blocks":blocks[0][0], "params": params[0][0], "locals": locals[0][0]}	
