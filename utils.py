@@ -23,6 +23,7 @@ def login():
 	signature, pubkey = sign(uid)
 	fullToken = 'Bearer ' + token
 	resp = requests.post(config.config["url"] +'/login', params={'pubkey': pubkey, 'signature': signature}, headers={'Authorization': fullToken})
+	print(resp)
 	res = resp.json()
 	address = res["address"]
 	timeToken = res["refresh"]
@@ -45,8 +46,10 @@ def install(type, log_level, db_host, db_port, db_name, db_user, db_pass, genera
 
 def call_contract(name, data, jvtToken):
 	sign_res = prepare_tx(name, jvtToken, data)
+	print(sign_res)
 	data.update(sign_res)
 	resp = requests.post(config.config["url"] + '/contract/' + name, data=data, headers={"Authorization": jvtToken})
+	print(resp)
 	result = resp.json()
 	return result
             
@@ -85,6 +88,37 @@ def compare_keys_cout(dbHost, dbName, login, password):
 			return False
 		else:
 			return True 
+		
+def compare_node_positions(dbHost, dbName, login, password):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT node_position FROM block_chain Order by id DESC LIMIT 10")
+	positions = cursor.fetchall()
+	print(positions)
+	firstKey = positions[1]
+	secondKey = ""
+	for position in positions:
+		i = 0
+		while i > 9:
+			if position[i] == position[i+1]:
+				return False
+				break
+			else:
+				i =+ 2
+	return True 
+
+def get_count_records_block_chain(dbHost, dbName, login, password):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT count(*) FROM \"block_chain\"")
+	return cursor.fetchall()
+		
+def get_ten_items(dbHost, dbName, login, password):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT * FROM block_chain Order by id DESC LIMIT 10")
+	keys = cursor.fetchall()
+	print(keys)
 		
 def getCountDBObjects(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
