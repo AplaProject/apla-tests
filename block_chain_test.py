@@ -56,13 +56,13 @@ class BlockChainTestCase(unittest.TestCase):
         host ="localhost"
         ts_count = 30
         config.readMainConfig()
-        print(config.config["private_key"])
         self.data = utils.login()
         i = 1
         while i < ts_count:
             contName = self.create_contract()
             i = i + 1
-        time.sleep(5)
+			time.sleep(1)
+        time.sleep(15)
         self.assertTrue(utils.get_count_records_block_chain(host, db1, login, pas), "There isn't 30 records in block_chain1")
         self.assertTrue(utils.get_count_records_block_chain(host, db2, login, pas), "There isn't 30 records in block_chain2")
         count_contracts1 = utils.getCountDBObjects(host, db1, login, pas)["contracts"]
