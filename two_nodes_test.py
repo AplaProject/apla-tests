@@ -1,0 +1,155 @@
+import subprocess
+import signal
+import time
+import os
+import ctypes
+import json
+import utils
+import argparse
+import shutil
+
+curDir = os.path.dirname(os.path.abspath(__file__))
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-binary', required=True)
+parser.add_argument('-workDir', default=os.path.join(curDir, 'data'))
+
+parser.add_argument('-dbHost', default='localhost')
+parser.add_argument('-dbPort', default='5432')
+parser.add_argument('-dbUser', default='postgres')
+parser.add_argument('-dbPassword', default='postgres')
+
+parser.add_argument('-tcpPort1', default='7078')
+parser.add_argument('-httpPort1', default='7079')
+parser.add_argument('-dbName1', default='apla')
+
+parser.add_argument('-tcpPort2', default='7081')
+parser.add_argument('-httpPort2', default='7018')
+parser.add_argument('-dbName2', default='apla2')
+
+args = parser.parse_args()
+
+binary = os.path.abspath(args.binary)
+workDir = os.path.abspath(args.workDir)
+workDir1 = os.path.join(workDir, 'node1')
+workDir2 = os.path.join(workDir, 'node2')
+firstBlockPath = os.path.join(workDir, '1block')
+
+if os.path.exists(workDir):
+	shutil.rmtree(workDir)
+os.makedirs(workDir1)
+os.makedirs(workDir2)
+
+# Start first node
+node1 = subprocess.Popen([
+	binary,
+	'-workDir='+workDir1,
+	'-initConfig=1',
+	'-configPath='+os.devnull,
+	'-tcpPort='+args.tcpPort1,
+	'-httpPort='+args.httpPort1,
+	'-initDatabase=1',
+	'-dbHost='+args.dbHost,
+	'-dbPort='+args.dbPort,
+	'-dbName='+args.dbName1,
+	'-dbUser='+args.dbUser,
+	'-dbPassword='+args.dbPassword,
+	'-generateFirstBlock=1',
+	'-firstBlockPath='+firstBlockPath
+])
+time.sleep(15)
+
+# Init second node
+code = subprocess.call([
+	binary,
+	'-workDir='+workDir2,
+	'-initConfig=1',
+	'-configPath='+os.devnull,
+	'-tcpPort='+args.tcpPort2,
+	'-httpPort='+args.httpPort2,
+	'-initDatabase=1',
+	'-dbHost='+args.dbHost,
+	'-dbPort='+args.dbPort,
+	'-dbName='+args.dbName2,
+	'-dbUser='+args.dbUser,
+	'-dbPassword='+args.dbPassword,
+	'-generateFirstBlock=1',
+	'-firstBlockPath='+os.devnull,
+	'-noStart=1'
+])
+if code != 0:
+	print("Error init node2")
+	exit(1)
+
+with open(os.path.join(workDir1, 'PrivateKey'), 'r') as f:
+	privKey1 = f.read()
+with open(os.path.join(workDir1, 'KeyID'), 'r') as f:
+	keyID1 = f.read()
+with open(os.path.join(workDir1, 'NodePublicKey'), 'r') as f:
+	pubKey1 = f.read()
+with open(os.path.join(workDir2, 'KeyID'), 'r') as f:
+	keyID2 = f.read()
+with open(os.path.join(workDir2, 'NodePublicKey'), 'r') as f:
+	pubKey2 = f.read()
+
+code = subprocess.call([
+	'python',
+	os.path.join(curDir, 'updateFullNode.py'),
+	privKey1,
+	keyID1,
+	pubKey1,
+	keyID2,
+	pubKey2,
+	'127.0.0.1',
+	args.httpPort1,
+	'127.0.0.1',
+	args.tcpPort2
+])
+if code != 0:
+	print("Error update full_nodes")
+	exit(1)
+time.sleep(10)
+
+# Start second node
+node2 = subprocess.Popen([
+	binary,
+	'-workDir='+workDir2,
+	'-tcpPort='+args.tcpPort2,
+	'-httpPort='+args.httpPort2,
+	'-initDatabase=1',
+	'-dbHost='+args.dbHost,
+	'-dbPort='+args.dbPort,
+	'-dbName='+args.dbName2,
+	'-dbUser='+args.dbUser,
+	'-dbPassword='+args.dbPassword,
+	'-firstBlockPath='+firstBlockPath,
+	'-keyID='+keyID2
+])
+time.sleep(15)
+
+# Update config
+configPath = os.path.join(curDir, 'config.json')
+with open(configPath) as fconf:
+	lines = fconf.readlines()
+del lines[2]
+lines.insert(2, "\"private_key\": \""+privKey1+"\",\n")
+with open(configPath, 'w') as fconf:
+	fconf.write(''.join(lines))
+
+code = subprocess.call([
+	'python',
+	os.path.join(curDir, 'block_chain_test.py'),
+	'-dbHost='+args.dbHost,
+	'-dbUser='+args.dbUser,
+	'-dbPassword='+args.dbPassword,
+	'-dbName1='+args.dbName1,
+	'-dbName2='+args.dbName2,
+])
+
+node1.kill()
+node2.kill()
+
+if code != 0:
+	print("Error block chain test")
+	exit(1)

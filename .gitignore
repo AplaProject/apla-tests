@@ -1,0 +1,9 @@
+.DS_Store
+.Python
+bin
+include
+lib
+selenium
+pip-selfcheck.json
+data
+__pycache__

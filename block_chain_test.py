@@ -3,9 +3,11 @@ import utils
 import config
 import requests
 import time
+import argparse
+import sys
 
 class BlockChainTestCase(unittest.TestCase):
-        
+
     def get_name_and_code(self):
         name = utils.generate_random_name()
         code = """contract %s {
@@ -29,16 +31,18 @@ class BlockChainTestCase(unittest.TestCase):
         return name
     
     def test_block_chain(self):
-        db1 = "aplafront"
-        db2 = "apla2"
-        login = "postgres"
-        pas = "postgres"
-        host ="localhost"
+        db1 = args.dbName1
+        db2 = args.dbName2
+        login = args.dbUser
+        pas = args.dbPassword
+        host = args.dbHost
+
         ts_count = 30
         config.readMainConfig()
         self.data = utils.login()
         i = 1
         while i < ts_count:
+            start = time.time()
             contName = self.create_contract()
             i = i + 1
             time.sleep(1)
@@ -52,5 +56,16 @@ class BlockChainTestCase(unittest.TestCase):
         self.assertEqual(count_contracts1, count_contracts2,"Different count")
         
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-dbHost', default='localhost')
+    parser.add_argument('-dbPort', default='5432')
+    parser.add_argument('-dbUser', default='postgres')
+    parser.add_argument('-dbPassword', default='postgres')
+    parser.add_argument('-dbName1', default='apla')
+    parser.add_argument('-dbName2', default='apla2')
+
+    args = parser.parse_args()
+    del(sys.argv[1:])
+
     unittest.main()
     
