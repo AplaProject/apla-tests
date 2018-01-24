@@ -6,24 +6,23 @@ import string
 import psycopg2
 from collections import Counter
 
-def get_uid():
-	resp = requests.get(config.config["url"] + '/getuid')
+def get_uid(url):
+	resp = requests.get(url + '/getuid')
 	result = resp.json()
 	return result['token'], result['uid']
 
 
-def sign(forsign):
-	resp = requests.post(config.config["url"] + '/signtest/', params={'forsign': forsign, 'private': config.config['private_key']})
+def sign(forsign, url, prKey):
+	resp = requests.post(url + '/signtest/', params={'forsign': forsign, 'private': prKey})
 	result = resp.json()
 	return result['signature'], result['pubkey']
 
 
-def login():
-	token, uid = get_uid()
-	signature, pubkey = sign(uid)
+def login(url, prKey):
+	token, uid = get_uid(url)
+	signature, pubkey = sign(uid, url, prKey)
 	fullToken = 'Bearer ' + token
-	resp = requests.post(config.config["url"] +'/login', params={'pubkey': pubkey, 'signature': signature}, headers={'Authorization': fullToken})
-	print(resp)
+	resp = requests.post(url +'/login', params={'pubkey': pubkey, 'signature': signature}, headers={'Authorization': fullToken})
 	res = resp.json()
 	address = res["address"]
 	timeToken = res["refresh"]
@@ -31,12 +30,12 @@ def login():
 	return {"uid": uid, "timeToken": timeToken, "jvtToken": jvtToken, "pubkey": pubkey, "address": address}
 
 
-def prepare_tx(entity, jvtToken, data):
-	urlToCont = config.config["url"] +'/prepare/' + entity
+def prepare_tx(url, prKey, entity, jvtToken, data):
+	urlToCont = url +'/prepare/' + entity
 	resp = requests.post(urlToCont, data=data, headers={'Authorization': jvtToken})
 	result = resp.json()
 	forsign = result['forsign']
-	signature, _ = sign(forsign)
+	signature, _ = sign(forsign, url, prKey)
 	return {"time": result['time'], "signature": signature}
 
 def install(type, log_level, db_host, db_port, db_name, db_user, db_pass, generate_first_block, first_block_dir):
@@ -44,18 +43,16 @@ def install(type, log_level, db_host, db_port, db_name, db_user, db_pass, genera
 	res = requests.post(config.config['url'] + "/install", params=data)
 	return res.json()
 
-def call_contract(name, data, jvtToken):
-	sign_res = prepare_tx(name, jvtToken, data)
-	print(sign_res)
+def call_contract(url, prKey, name, data, jvtToken):
+	sign_res = prepare_tx(url,prKey, name, jvtToken, data)
 	data.update(sign_res)
-	resp = requests.post(config.config["url"] + '/contract/' + name, data=data, headers={"Authorization": jvtToken})
-	print(resp)
+	resp = requests.post(url + '/contract/' + name, data=data, headers={"Authorization": jvtToken})
 	result = resp.json()
 	return result
             
-def txstatus(hsh, jvtToken):
-	time.sleep(config.config["time_wait_tx_in_block"])
-	resp = requests.get(config.config["url"] + '/txstatus/'+ hsh, headers={'Authorization': jvtToken})
+def txstatus(url, sleepTime, hsh, jvtToken):
+	time.sleep(sleepTime)
+	resp = requests.get(url + '/txstatus/'+ hsh, headers={'Authorization': jvtToken})
 	return resp.json()
 
 

@@ -8,11 +8,11 @@ from objects import Contracts
 class ApiTestCase(unittest.TestCase):
     def setUp(self):
         config.readMainConfig()
-        self.data = utils.login() 
+        self.data = utils.login(config.config["url"], config.config['private_key']) 
         
     def assertTxInBlock(self, result, jvtToken):
         self.assertIn("hash",  result)
-        status = utils.txstatus(result['hash'], jvtToken)
+        status = utils.txstatus(config.config["url"],config.config["time_wait_tx_in_block"], result['hash'], jvtToken)
         self.assertNotIn(json.dumps(status),'errmsg')
         self.assertGreater(len(status['blockid']), 0)
         
@@ -24,7 +24,7 @@ class ApiTestCase(unittest.TestCase):
             sCode = sourseCode
         code = "contract " + name + sCode
         return code, name
-    
+
     def call_get_api(self, endPoint, data):
         resp = requests.get(config.config['url']+ endPoint, data=data,  headers={"Authorization": self.data["jvtToken"]})
         self.assertEqual(resp.status_code, 200)
@@ -46,8 +46,9 @@ class ApiTestCase(unittest.TestCase):
             self.assertIn(asert, result)
             
     def call(self, name, data):
-        resp = utils.call_contract(name, data, self.data["jvtToken"])
+        resp = utils.call_contract(config.config["url"], config.config['private_key'], name, data, self.data["jvtToken"])
         self.assertTxInBlock(resp, self.data["jvtToken"])
+        return resp
         
     def get_count(self, type):
         res = self.call_get_api("/list/" + type, "")
@@ -65,8 +66,12 @@ class ApiTestCase(unittest.TestCase):
         res = self.call_get_api("/ecosystemparam/"+name, "")
         return res["value"]
             
-    def get_content(self, type, name):
-        res = self.call_post_api("/content/" + type + "/" + name, "")
+    def get_content(self, type, name, lang):
+        if(lang != ""):        
+            data = {"lang":lang}
+        else:
+            data = ""
+        res = self.call_post_api("/content/" + type + "/" + name, data)
         return res
        
        
@@ -125,7 +130,7 @@ class ApiTestCase(unittest.TestCase):
     def test_create_ecosystem(self):
         name = "Ecosys" + utils.generate_random_name()
         data = {"name": name}
-        self.call("NewEcosystem", data)
+        res = self.call("NewEcosystem", data)
         
     def test_money_transfer(self):
         data = {"Recipient":"0005-2070-2000-0006-0200","Amount":"1000"}
@@ -189,7 +194,7 @@ class ApiTestCase(unittest.TestCase):
         data = {"Name": name, "Value":"Item1","Conditions":"ContractConditions(`MainCondition`)"}
         self.call("NewMenu", data)   
         content = {'tree': [{'tag': 'text', 'text': 'Item1'}]}
-        self.assertEqual(self.get_content("menu", name), content)
+        self.assertEqual(self.get_content("menu", name, ""), content)
         
     def test_edit_menu(self):
         name = "Menu_" + utils.generate_random_name()
@@ -199,7 +204,7 @@ class ApiTestCase(unittest.TestCase):
         dataEdit = {"Id": count, "Value":"ItemEdited","Conditions":"ContractConditions(`MainCondition`)"}
         self.call("EditMenu", dataEdit)
         content = {'tree': [{'tag': 'text', 'text': 'ItemEdited'}]}
-        self.assertEqual(self.get_content("menu", name), content)
+        self.assertEqual(self.get_content("menu", name, ""), content)
         
     def test_append_menu(self):
         name = "Menu_" + utils.generate_random_name()
@@ -209,14 +214,14 @@ class ApiTestCase(unittest.TestCase):
         dataEdit = {"Id": count, "Value":"AppendedItem","Conditions":"ContractConditions(`MainCondition`)"}
         self.call("AppendMenu", dataEdit)
         content = {'tree': [{'tag': 'text', 'text': 'Item1\r\nAppendedItem'}]}
-        self.assertEqual(self.get_content("menu", name), content)
+        self.assertEqual(self.get_content("menu", name, ""), content)
     
     def test_new_page(self):
         name = "Page_" + utils.generate_random_name()
         data = {"Name": name, "Value":"Hello page!","Conditions":"ContractConditions(`MainCondition`)", "Menu":"default_menu"}
         self.call("NewPage", data)   
         content = {'menu': 'default_menu', 'menutree': [{'tag': 'menuitem', 'attr': {'page': 'Default Ecosystem Menu', 'title': 'main'}}], 'tree': [{'tag': 'text', 'text': 'Hello page!'}]}
-        self.assertEqual(self.get_content("page", name), content) 
+        self.assertEqual(self.get_content("page", name, ""), content) 
         
     def test_edit_page(self):
         name = "Page_" + utils.generate_random_name()
@@ -226,7 +231,7 @@ class ApiTestCase(unittest.TestCase):
         dataEdit = {"Id": count, "Value":"Good by page!","Conditions":"ContractConditions(`MainCondition`)", "Menu":"default_menu"}
         self.call("EditPage", dataEdit)   
         content = {'menu': 'default_menu', 'menutree': [{'tag': 'menuitem', 'attr': {'page': 'Default Ecosystem Menu', 'title': 'main'}}], 'tree': [{'tag': 'text', 'text': 'Good by page!'}]}
-        self.assertEqual(self.get_content("page", name), content)   
+        self.assertEqual(self.get_content("page", name, ""), content)   
         
     def test_edit_page(self):
         name = "Page_" + utils.generate_random_name()
@@ -236,7 +241,7 @@ class ApiTestCase(unittest.TestCase):
         dataEdit = {"Id": count, "Value":"Good by page!","Conditions":"ContractConditions(`MainCondition`)", "Menu":"default_menu"}
         self.call("EditPage", dataEdit)   
         content = {'menu': 'default_menu', 'menutree': [{'tag': 'menuitem', 'attr': {'page': 'Default Ecosystem Menu', 'title': 'main'}}], 'tree': [{'tag': 'text', 'text': 'Good by page!'}]}
-        self.assertEqual(self.get_content("page", name), content)   
+        self.assertEqual(self.get_content("page", name, ""), content)   
         
     def test_append_page(self):
         name = "Page_" + utils.generate_random_name()
@@ -246,7 +251,7 @@ class ApiTestCase(unittest.TestCase):
         dataEdit = {"Id": count, "Value":"Good by page!","Conditions":"ContractConditions(`MainCondition`)", "Menu":"default_menu"}
         self.call("AppendPage", dataEdit)   
         content = {'menu': 'default_menu', 'menutree': [{'tag': 'menuitem', 'attr': {'page': 'Default Ecosystem Menu', 'title': 'main'}}], 'tree': [{'tag': 'text', 'text': 'Hello page!\r\nGood by page!'}]}
-        self.assertEqual(self.get_content("page", name), content)   
+        self.assertEqual(self.get_content("page", name, ""), content)   
         
     def test_new_block(self):
         name = "Block_" + utils.generate_random_name()
@@ -308,6 +313,12 @@ class ApiTestCase(unittest.TestCase):
         data = {"Name": name, "Value":"{ \"forsign\" :\"" + name + "\"  ,  \"field\" :  \"" + name + "\" ,  \"title\": \"" + name + "\", \"params\":[  { \"name\": \"test\", \"text\" : \"test\"}]}", "Conditions":"true"}
         self.call("NewSign", data)
         
+    def test_new_sign2(self):
+        name = "MoneyTransfer"
+        value = '{"Title": "Uppercase", "title": "Attention! This contract will withdraw money from your account", "params": [{"name": "Recipient", "text": "Address of the recipient where your money will go"}, {"name": "Amount", "text": "How much money will be deducted from your account"}]}'
+        data = {"Name": name, "Value":value, "Conditions":"true"}
+        self.call("NewSign", data)
+        
     def test_edit_sign(self):
         name = "Sign_" + utils.generate_random_name()
         data = {"Name": name, "Value":"{ \"forsign\" :\"" + name + "\"  ,  \"field\" :  \"" + name + "\" ,  \"title\": \"" + name + "\", \"params\":[  { \"name\": \"test\", \"text\" : \"test\"}]}", "Conditions":"true"}
@@ -315,6 +326,25 @@ class ApiTestCase(unittest.TestCase):
         count = self.get_count("signatures")
         dataEdit = {"Id": count, "Value":"{ \"forsign\" :\"" + name + "\"  ,  \"field\" :  \"" + name + "\" ,  \"title\": \"" + name + "\", \"params\":[  { \"name\": \"test1\", \"text\" : \"test1\"}]}", "Conditions":"true"}
         self.call("EditSign", dataEdit)
+        
+    def test_content_lang(self):
+        nameLang = "Lang_" + utils.generate_random_name()
+        data = {"Name": nameLang, "Trans":"{\"en\": \"fist\", \"ru\" : \"second\"}"}
+        self.call("NewLang", data)
+        namePage = "Page_" + utils.generate_random_name()
+        valuePage = "Hello, LangRes(" + nameLang +")"
+        data = {"Name": namePage, "Value":valuePage,"Conditions":"ContractConditions(`MainCondition`)", "Menu":"default_menu"}
+        self.call("NewPage", data)   
+        content = {'menu': 'default_menu', 'menutree': [{'tag': 'menuitem', 'attr': {'page': 'Default Ecosystem Menu', 'title': 'main'}}], 'tree': [{'tag': 'text', 'text': 'Hello, fist'}]}
+        contentRu = {'menu': 'default_menu', 'menutree': [{'tag': 'menuitem', 'attr': {'page': 'Default Ecosystem Menu', 'title': 'main'}}], 'tree': [{'tag': 'text', 'text': 'Hello, second'}]}
+        self.assertEqual(self.get_content("page", namePage, "ru"), contentRu) 
+        self.assertEqual(self.get_content("page", namePage, ""), content) 
+        
+    def get_table_vde(self):
+        asserts = ["name"]
+        data = {"vde":"true"}
+        self.check_get_api("/table/contracts", data, asserts)
+        
         
 if __name__ == '__main__':
     unittest.main()
