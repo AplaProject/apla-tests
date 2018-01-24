@@ -42,6 +42,7 @@ os.makedirs(workDir1)
 os.makedirs(workDir2)
 
 # Start first node
+utils.clear_db(args.dbHost, args.dbName1, args.dbUser, args.dbPassword)
 node1 = subprocess.Popen([
 	binary,
 	'-workDir='+workDir1,
@@ -58,7 +59,10 @@ node1 = subprocess.Popen([
 	'-generateFirstBlock=1',
 	'-firstBlockPath='+firstBlockPath
 ])
-time.sleep(15)
+if not utils.wait_db_ready(args.dbHost, args.dbName1, args.dbUser, args.dbPassword):
+	print("Error init db1")
+	node1.kill()
+	exit(1)
 
 # Init second node
 code = subprocess.call([
@@ -80,6 +84,7 @@ code = subprocess.call([
 ])
 if code != 0:
 	print("Error init node2")
+	node1.kill()
 	exit(1)
 
 with open(os.path.join(workDir1, 'PrivateKey'), 'r') as f:
@@ -108,10 +113,11 @@ code = subprocess.call([
 ])
 if code != 0:
 	print("Error update full_nodes")
+	node1.kill()
 	exit(1)
-time.sleep(10)
 
 # Start second node
+utils.clear_db(args.dbHost, args.dbName2, args.dbUser, args.dbPassword)
 node2 = subprocess.Popen([
 	binary,
 	'-workDir='+workDir2,
@@ -126,7 +132,12 @@ node2 = subprocess.Popen([
 	'-firstBlockPath='+firstBlockPath,
 	'-keyID='+keyID2
 ])
-time.sleep(15)
+
+if not utils.wait_db_ready(args.dbHost, args.dbName2, args.dbUser, args.dbPassword, data={"tables":32, "blocks":2}):
+	print("Error init db2")
+	node1.kill()
+	node2.kill()
+	exit(1)
 
 # Update config
 configPath = os.path.join(curDir, 'config.json')

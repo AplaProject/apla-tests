@@ -131,10 +131,42 @@ def getCountDBObjects(dbHost, dbName, login, password):
 	pages = cursor.fetchall()
 	cursor.execute("SELECT count(*) FROM \"1_menu\"")
 	menus = cursor.fetchall()
-	cursor.execute("SELECT count(*) FROM \"1_blocks\"")
+	cursor.execute("SELECT count(*) FROM \"block_chain\"")
 	blocks = cursor.fetchall()
 	cursor.execute("SELECT count(*) FROM \"1_parameters\"")
 	params = cursor.fetchall()
 	cursor.execute("SELECT count(*) FROM \"1_languages\"")
 	locals = cursor.fetchall()
-	return {"tables": tables[0][0], "contracts": contracts[0][0], "pages": pages[0][0], "menus":menus[0][0], "blocks":blocks[0][0], "params": params[0][0], "locals": locals[0][0]}	
+	return {"tables": tables[0][0], "contracts": contracts[0][0], "pages": pages[0][0], "menus":menus[0][0], "blocks":blocks[0][0], "params": params[0][0], "locals": locals[0][0]}
+
+def clear_db(dbHost, dbName, login, password):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
+	rows = cursor.fetchall()
+	for row in rows:
+		cursor.execute('drop table "' + row[0] + '" cascade')
+	connect.commit()
+	cursor.close()
+	connect.close()
+
+def wait_db_ready(dbHost, dbName, login, password, data={"tables": 32}, timeout=30):
+	i = 0
+	while i < timeout:
+		i = i + 1
+		time.sleep(1)
+
+		try:
+			print("Check database, attempt", i)
+			result = getCountDBObjects(dbHost, dbName, login, password)
+			isValid = True
+			for key in data:
+				if data[key] != result[key]:
+					print("  Count", key, "expected:", data[key], "got:", result[key])
+					isValid = False
+			if isValid:
+				return True
+		except:
+			continue
+
+	return False

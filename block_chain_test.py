@@ -45,7 +45,7 @@ class BlockChainTestCase(unittest.TestCase):
             start = time.time()
             contName = self.create_contract()
             i = i + 1
-            time.sleep(1)
+            time.sleep(1 - (time.time() - start))
         time.sleep(15)
         self.assertTrue(utils.get_count_records_block_chain(host, db1, login, pas), "There isn't 30 records in block_chain1")
         self.assertTrue(utils.get_count_records_block_chain(host, db2, login, pas), "There isn't 30 records in block_chain2")
