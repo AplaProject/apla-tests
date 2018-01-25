@@ -45,7 +45,11 @@ class BlockChainTestCase(unittest.TestCase):
             start = time.time()
             contName = self.create_contract()
             i = i + 1
-            time.sleep(1 - (time.time() - start))
+            sleep = int(args.sleep) - (time.time() - start)
+            if sleep < 0:
+                print("Request is too long")
+                exit(1)
+            time.sleep(sleep)
         time.sleep(15)
         self.assertTrue(utils.get_count_records_block_chain(host, db1, login, pas), "There isn't 30 records in block_chain1")
         self.assertTrue(utils.get_count_records_block_chain(host, db2, login, pas), "There isn't 30 records in block_chain2")
@@ -63,6 +67,7 @@ if __name__ == "__main__":
     parser.add_argument('-dbPassword', default='postgres')
     parser.add_argument('-dbName1', default='apla')
     parser.add_argument('-dbName2', default='apla2')
+    parser.add_argument('-sleep', default='1')
 
     args = parser.parse_args()
     del(sys.argv[1:])

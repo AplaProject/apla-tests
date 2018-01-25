@@ -28,6 +28,8 @@ parser.add_argument('-tcpPort2', default='7081')
 parser.add_argument('-httpPort2', default='7018')
 parser.add_argument('-dbName2', default='apla2')
 
+parser.add_argument('-gapBetweenBlocks', default='10')
+
 args = parser.parse_args()
 
 binary = os.path.abspath(args.binary)
@@ -98,6 +100,23 @@ with open(os.path.join(workDir2, 'KeyID'), 'r') as f:
 with open(os.path.join(workDir2, 'NodePublicKey'), 'r') as f:
 	pubKey2 = f.read()
 
+print('Update keys')
+code = subprocess.call([
+	'python',
+	os.path.join(curDir, 'updateKeys.py'),
+	privKey1,
+	'127.0.0.1',
+	args.httpPort1,
+	keyID2,
+	pubKey2,
+	'100000000',
+])
+if code != 0:
+	print("Error update keys")
+	node1.kill()
+	exit(1)
+
+print('Update full_nodes')
 code = subprocess.call([
 	'python',
 	os.path.join(curDir, 'updateFullNode.py'),
@@ -116,6 +135,23 @@ if code != 0:
 	node1.kill()
 	exit(1)
 
+print('Update gap_between_blocks')
+code = subprocess.call([
+	'python',
+	os.path.join(curDir, 'updateSysParam.py'),
+	'-httpHost=127.0.0.1',
+	'-httpPort='+args.httpPort1,
+	'-privKey='+privKey1,
+	'-name=gap_between_blocks',
+	'-value='+args.gapBetweenBlocks
+])
+if code != 0:
+	print("Error update gap_between_blocks")
+	node1.kill()
+	exit(1)
+
+time.sleep(20)
+
 # Start second node
 utils.clear_db(args.dbHost, args.dbName2, args.dbUser, args.dbPassword)
 node2 = subprocess.Popen([
@@ -133,7 +169,7 @@ node2 = subprocess.Popen([
 	'-keyID='+keyID2
 ])
 
-if not utils.wait_db_ready(args.dbHost, args.dbName2, args.dbUser, args.dbPassword, data={"tables":32, "blocks":2}):
+if not utils.wait_db_ready(args.dbHost, args.dbName2, args.dbUser, args.dbPassword, data={"tables":32, "blocks":5}):
 	print("Error init db2")
 	node1.kill()
 	node2.kill()
@@ -156,6 +192,7 @@ code = subprocess.call([
 	'-dbPassword='+args.dbPassword,
 	'-dbName1='+args.dbName1,
 	'-dbName2='+args.dbName2,
+	'-sleep='+args.gapBetweenBlocks
 ])
 
 node1.kill()
