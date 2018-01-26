@@ -1,7 +1,6 @@
 import requests
 import time
 import sys
-import utils
 
 if __name__ == "__main__":
 	if len (sys.argv) < 6:

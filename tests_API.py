@@ -6,32 +6,24 @@ import json
 from objects import Contracts
 
 class ApiTestCase(unittest.TestCase):
+    config = {}
     def setUp(self):
-        config.readMainConfig()
-        self.data = utils.login(config.config["url"], config.config['private_key']) 
+        self.config = config.readMainConfig()
+        self.data = utils.login(self.config["url"], self.config['private_key']) 
         
     def assertTxInBlock(self, result, jvtToken):
         self.assertIn("hash",  result)
-        status = utils.txstatus(config.config["url"],config.config["time_wait_tx_in_block"], result['hash'], jvtToken)
+        status = utils.txstatus(self.config["url"],self.config["time_wait_tx_in_block"], result['hash'], jvtToken)
         self.assertNotIn(json.dumps(status),'errmsg')
         self.assertGreater(len(status['blockid']), 0)
-        
-    def generate_name_and_code(self, sourseCode):
-        name = "Cont_" + utils.generate_random_name()
-        if sourseCode == "":
-            sCode = """{data { }    conditions {    }    action {    }    }"""
-        else:
-            sCode = sourseCode
-        code = "contract " + name + sCode
-        return code, name
 
     def call_get_api(self, endPoint, data):
-        resp = requests.get(config.config['url']+ endPoint, data=data,  headers={"Authorization": self.data["jvtToken"]})
+        resp = requests.get(self.config['url']+ endPoint, data=data,  headers={"Authorization": self.data["jvtToken"]})
         self.assertEqual(resp.status_code, 200)
         return resp.json()
     
     def call_post_api(self, endPoint, data):
-        resp = requests.post(config.config['url']+ endPoint, data=data,  headers={"Authorization": self.data["jvtToken"]})
+        resp = requests.post(self.config['url']+ endPoint, data=data,  headers={"Authorization": self.data["jvtToken"]})
         self.assertEqual(resp.status_code, 200)
         return resp.json()
             
@@ -46,7 +38,7 @@ class ApiTestCase(unittest.TestCase):
             self.assertIn(asert, result)
             
     def call(self, name, data):
-        resp = utils.call_contract(config.config["url"], config.config['private_key'], name, data, self.data["jvtToken"])
+        resp = utils.call_contract(self.config["url"], self.config['private_key'], name, data, self.data["jvtToken"])
         self.assertTxInBlock(resp, self.data["jvtToken"])
         return resp
         
@@ -141,12 +133,12 @@ class ApiTestCase(unittest.TestCase):
         self.call("MoneyTransfer", data)
         
     def test_new_contract(self):
-        code, name = self.generate_name_and_code("")
+        code, name = utils.generate_name_and_code("")
         data = {"Value":code,"Conditions":"true"}
         self.call("NewContract", data)
         
     def test_activate_contract(self):
-        code, name = self.generate_name_and_code("")
+        code, name = utils.generate_name_and_code("")
         data = {"Value":code,"Conditions":"true"}
         self.call("NewContract", data)
         id = self.get_contract_id(name)
@@ -154,7 +146,7 @@ class ApiTestCase(unittest.TestCase):
         self.call("ActivateContract", data2)
         
     def test_deactivate_contract(self):
-        code, name = self.generate_name_and_code("")
+        code, name = utils.generate_name_and_code("")
         data = {"Value":code,"Conditions":"true"}
         self.call("NewContract", data)
         id = self.get_contract_id(name)
@@ -164,7 +156,7 @@ class ApiTestCase(unittest.TestCase):
         
     def test_edit_contract(self):
         newWallet = "0005-2070-2000-0006-0200"
-        code, name = self.generate_name_and_code("")
+        code, name = utils.generate_name_and_code("")
         data = {"Value":code,"Conditions":"true"}
         self.call("NewContract", data)
         id = self.get_contract_id(name)
@@ -313,12 +305,6 @@ class ApiTestCase(unittest.TestCase):
         data = {"Name": name, "Value":"{ \"forsign\" :\"" + name + "\"  ,  \"field\" :  \"" + name + "\" ,  \"title\": \"" + name + "\", \"params\":[  { \"name\": \"test\", \"text\" : \"test\"}]}", "Conditions":"true"}
         self.call("NewSign", data)
         
-    def test_new_sign2(self):
-        name = "MoneyTransfer"
-        value = '{"Title": "Uppercase", "title": "Attention! This contract will withdraw money from your account", "params": [{"name": "Recipient", "text": "Address of the recipient where your money will go"}, {"name": "Amount", "text": "How much money will be deducted from your account"}]}'
-        data = {"Name": name, "Value":value, "Conditions":"true"}
-        self.call("NewSign", data)
-        
     def test_edit_sign(self):
         name = "Sign_" + utils.generate_random_name()
         data = {"Name": name, "Value":"{ \"forsign\" :\"" + name + "\"  ,  \"field\" :  \"" + name + "\" ,  \"title\": \"" + name + "\", \"params\":[  { \"name\": \"test\", \"text\" : \"test\"}]}", "Conditions":"true"}
@@ -340,10 +326,16 @@ class ApiTestCase(unittest.TestCase):
         self.assertEqual(self.get_content("page", namePage, "ru"), contentRu) 
         self.assertEqual(self.get_content("page", namePage, ""), content) 
         
-    def get_table_vde(self):
+    def test_get_table_vde(self):
         asserts = ["name"]
         data = {"vde":"true"}
         self.check_get_api("/table/contracts", data, asserts)
+        
+    def test_create_vde(self):
+        asserts = ["result"]
+        data = {}
+        self.check_post_api("/vde/create", data, asserts)
+        
         
         
 if __name__ == '__main__':

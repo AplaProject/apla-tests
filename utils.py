@@ -63,6 +63,15 @@ def generate_random_name():
 		name.append(sym)
 	return "".join(name)
 
+def generate_name_and_code(sourseCode):
+	name = "Cont_" + generate_random_name()
+	if sourseCode == "":
+		sCode = """{data { }	conditions {	}	action {	}	}"""
+	else:
+		sCode = sourseCode
+	code = "contract " + name + sCode
+	return code, name
+
 def compare_keys_cout(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
