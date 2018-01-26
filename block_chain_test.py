@@ -5,51 +5,40 @@ import requests
 import time
 
 class BlockChainTestCase(unittest.TestCase):
-        
-    def get_name_and_code(self):
-        name = utils.generate_random_name()
-        code = """contract %s {
-                       conditions {}
-                       action {}
-                    }""" % (name,)
-        return code,name
-    
-    def generate_code(self, name):
-        code = """contract %s {
-                       conditions {}
-                       action {
-                       var test string}
-                    }""" % (name,)
-        return code
 
-    def create_contract(self):
-        code,name = self.get_name_and_code()
+    def create_contract(self, url, prKey):
+        code,name = utils.generate_name_and_code("")
         data = {'Wallet': '', 'Value': code, 'Conditions': """ContractConditions(`MainCondition`)"""}
-        resp = utils.call_contract(config.config["url"], config.config['private_key'], "NewContract", data, self.data["jvtToken"])
+        resp = utils.call_contract(url, prKey, "NewContract", data, self.data["jvtToken"])
         return name
     
     def test_block_chain(self):
-        db1 = "aplafront"
-        db2 = "apla2"
-        login = "postgres"
-        pas = "postgres"
-        host ="localhost"
+        fullConfig = config.getNodeConfig()
+        config1 = fullConfig["1"]
+        config2 = fullConfig["2"]
+        db1 = config1["dbName"]
+        db2 = config2["dbName"]
+        login1 = config1["login"]
+        login2 = config2["login"]
+        pas1 = config1["pass"]
+        pas2 = config2["pass"]
+        host1 = config1["dbHost"]
+        host2 = config2["dbHost"]
         ts_count = 30
-        config.readMainConfig()
-        self.data = utils.login(config.config["url"], config.config['private_key'])
+        self.data = utils.login(config1["url"], config1['private_key'])
         i = 1
         while i < ts_count:
-            contName = self.create_contract()
+            contName = self.create_contract(config1["url"], config1['private_key'])
             i = i + 1
             time.sleep(1)
         time.sleep(15)
-        self.assertTrue(utils.get_count_records_block_chain(host, db1, login, pas), "There isn't 30 records in block_chain1")
-        self.assertTrue(utils.get_count_records_block_chain(host, db2, login, pas), "There isn't 30 records in block_chain2")
-        count_contracts1 = utils.getCountDBObjects(host, db1, login, pas)["contracts"]
-        count_contracts2 = utils.getCountDBObjects(host, db2, login, pas)["contracts"]
-        self.assertTrue(utils.compare_node_positions(host, db1, login, pas), "Incorrect order of nodes in block_chain")
+        self.assertEqual(utils.get_count_records_block_chain(host1, db1, login1, pas1), 30, "There isn't 30 records in block_chain1")
+        self.assertEqual(utils.get_count_records_block_chain(host2, db2, login2, pas2), 30, "There isn't 30 records in block_chain2")
+        count_contracts1 = utils.getCountDBObjects(host1, db1, login1, pas1)["contracts"]
+        count_contracts2 = utils.getCountDBObjects(host2, db2, login2, pas2)["contracts"]
+        self.assertTrue(utils.compare_node_positions(host1, db1, login1, pas1), "Incorrect order of nodes in block_chain")
         self.assertEqual(count_contracts1, count_contracts2,"Different count")
-        #self.assertTrue(utils.compare_keys_cout(host, db2, login, pas), "There are different count of keys in block_chain")
+        self.assertTrue(utils.compare_keys_cout(host1, db2, login1, pas1), "There are different count of keys in block_chain")
         
 if __name__ == "__main__":
     unittest.main()
