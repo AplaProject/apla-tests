@@ -94,10 +94,12 @@ with open(os.path.join(workDir1, 'PrivateKey'), 'r') as f:
 with open(os.path.join(workDir1, 'KeyID'), 'r') as f:
 	keyID1 = f.read()
 with open(os.path.join(workDir1, 'NodePublicKey'), 'r') as f:
-	pubKey1 = f.read()
+	nodePubKey1 = f.read()
 with open(os.path.join(workDir2, 'KeyID'), 'r') as f:
 	keyID2 = f.read()
 with open(os.path.join(workDir2, 'NodePublicKey'), 'r') as f:
+	nodePubKey2 = f.read()
+with open(os.path.join(workDir2, 'PublicKey'), 'r') as f:
 	pubKey2 = f.read()
 
 print('Update keys')
@@ -122,9 +124,9 @@ code = subprocess.call([
 	os.path.join(curDir, 'updateFullNode.py'),
 	privKey1,
 	keyID1,
-	pubKey1,
+	nodePubKey1,
 	keyID2,
-	pubKey2,
+	nodePubKey2,
 	'127.0.0.1',
 	args.httpPort1,
 	'127.0.0.1',
