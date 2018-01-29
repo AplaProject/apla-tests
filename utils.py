@@ -92,7 +92,7 @@ def compare_keys_cout(dbHost, dbName, login, password):
 def compare_node_positions(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
-	cursor.execute("SELECT node_position FROM block_chain Order by id DESC LIMIT 10")
+	cursor.execute("SELECT node_position FROM block_chain ORDER BY id ASC LIMIT ((SELECT COUNT (*) FROM \"block_chain\") - 5)")
 	positions = cursor.fetchall()
 	print(positions)
 	firstKey = positions[1]
@@ -106,6 +106,13 @@ def compare_node_positions(dbHost, dbName, login, password):
 			else:
 				i =+ 2
 	return True 
+	
+def get_blockchain_hash(dbHost, dbName, login, password):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT md5(array_agg(md5((t.*)::varchar))::varchar)  FROM (SELECT * FROM block_chain ORDER BY id LIMIT ((SELECT COUNT(*) FROM block_chain) - 5)) AS t")
+	hash = cursor.fetchall()
+	return hash
 
 def get_count_records_block_chain(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
@@ -161,7 +168,7 @@ def wait_db_ready(dbHost, dbName, login, password, data={"tables": 32}, timeout=
 			result = getCountDBObjects(dbHost, dbName, login, password)
 			isValid = True
 			for key in data:
-				if data[key] != result[key]:
+				if data[key] > result[key]:
 					print("  Count", key, "expected:", data[key], "got:", result[key])
 					isValid = False
 			if isValid:

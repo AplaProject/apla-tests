@@ -51,13 +51,9 @@ class BlockChainTestCase(unittest.TestCase):
                 exit(1)
             time.sleep(sleep)
         time.sleep(15)
-        self.assertTrue(utils.get_count_records_block_chain(host, db1, login, pas), "There isn't 30 records in block_chain1")
-        self.assertTrue(utils.get_count_records_block_chain(host, db2, login, pas), "There isn't 30 records in block_chain2")
-        count_contracts1 = utils.getCountDBObjects(host, db1, login, pas)["contracts"]
-        count_contracts2 = utils.getCountDBObjects(host, db2, login, pas)["contracts"]
-        self.assertTrue(utils.compare_keys_cout(host, db2, login, pas), "There are different count of keys in block_chain")
-        self.assertTrue(utils.compare_node_positions(host, db1, login, pas), "Incorrect order of nodes in block_chain")
-        self.assertEqual(count_contracts1, count_contracts2,"Different count")
+        self.assertTrue(utils.compare_node_positions(host, db1, login, pas), "Incorrect order of nodes in block_chain2")
+        self.assertTrue(utils.compare_node_positions(host, db2, login, pas), "Incorrect order of nodes in block_chain1")
+        self.assertEqual(utils.get_blockchain_hash(host, db1, login, pas), utils.get_blockchain_hash(host, db2, login, pas),"Different hash")
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
