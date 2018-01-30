@@ -3,7 +3,6 @@ import utils
 import config
 import requests
 import json
-from objects import Contracts
 
 class ApiTestCase(unittest.TestCase):
     config = {}

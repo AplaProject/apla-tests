@@ -1,0 +1,146 @@
+{
+    "updSysParam":{
+		"code": "{\n data {}\n conditions {}\n action {\n var par map\n par[\"Name\"] = \"number_of_nodes\"\n par[\"Value\"] = \"13\"\n CallContract(\"UpdateSysParam\", \"\")\n }\n }",
+		"asert":""
+	},
+    "dbFind":{
+		"code": "{ \n data {}\n conditions {}\n action { \n var res array\n var val map\n res = DBFind(\"pages\").Columns(\"name\").Where(\"id=?\", 1).Order(\"id\")\n val = res[0]\n $result = val[\"name\"]\n }\n }",
+		"asert": "default"
+	},
+	"ecosysParam":{
+		"code": "{ \n data {}\n conditions {}\n action { \n var res string\n res = EcosysParam(\"changing_menu\")\n $result=res\n }\n }",
+		"asert":"MainCondition"
+	},
+    "ifMap":{
+		"code":"{\n data {}\n conditions {}\n action {\n var my map\n my[\"test\"] = 1\n if my {\n $result=\"true\"\n }\n else {\n $result=\"false\"\n }\n }\n }",
+		"asert":"true",
+		"information":"needs to add record to history table"
+	},
+    "dbRow":{
+		"code":"{\n data {}\n conditions {}\n action {\n var vals map\n vals = DBRow(\"pages\").Columns(\"name, menu\").Where(\"id = ?\", 1)\n $result = vals[\"name\"]\n }\n }",
+		"asert": "default_page"
+	},	
+    "langRes":{
+		"code": "{\n data {}\n conditions {}\n action {\n $result=LangRes(\"test\", \"de\")\n }\n }",
+		"asert":"test_de",
+		"information":"needs to create language resourse with name - test and localisacions:en- test_en, de- test_de"
+	},		
+    "dbInsert": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result=DBInsert(\"tests\", \"name,test\", \"name\", \"val\")\n }\n }",
+		"asert":"1",
+		"information":"needs to create table \"test\" with \"name\" and \"test\" string columns"
+	},
+    "dbUpdate": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result=DBUpdate(\"test2\", 1, \"name,case\", \"test_edited\", \"case_edited\")\n }\n }",
+		"asert": "1",
+		"information": "needs to create table \"test2\" with \"name\" and \"case\" string columns and to add 1 record there"
+	},
+    "dbUpdateExt": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result=DBUpdateExt(\"test3\", \"name\", \"myTest\", \"name,case\", \"mytest_edited\", \"myCase_edited\")\n }\n }",
+		"asert": "1",
+		"information": "needs to create table \"test3\" with \"name\" and \"case\" string columns and to add 1 record with name=myTest"
+	},	
+    "findEcosystem": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result=FindEcosystem(`MyEcosystem`)\n }\n }",
+		"asert": "2",
+		"information": "needs to create ecosystem with name MyEcosystem"
+	},
+    "callContract": {
+		"code": "{\n data {}\n conditions {}\n action {\n CallContract(\"MyContract\", \"\")\n }\n }",
+		"asert": "",
+		"information": "needs to create Contact MyContract"
+	},
+    "contractAccess":{
+		"code": "{\n data {}\n conditions {}\n action {\n ContractAccess(\"AccesContr\")\n }\n }",
+		"assert": "",
+		"information": "needs to create contract AccesContr"
+	},
+    "evalCondition": {
+		"code": "{\n data {}\n conditions {\n }\n action {\n EvalCondition(\"pages\", \"default_page\", `conditions`)\n }\n }",
+		"asert": ""
+	},	
+    "validateCondition": {
+		"code": "{\n data {}\n conditions {}\n action {\n ValidateCondition(\"ContractConditions(`MainCondition`)\", 0)\n }\n }",
+		"asert": ""
+	},
+    "addressToId": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result = AddressToId(\"0005-2070-2000-0006-0200\")\n }\n }",
+		"asert": "52070200000060200"
+	},
+    "contains": {
+		"code": "{\n data {}\n conditions {}\n action {\n if Contains(\"Hello world\", `Hello`) {\n $result = \"Hello world\"\n }\n }\n }",
+		"asert": "Hello world"
+	},
+    "float": {
+		"code": "{\n data {}\n conditions {}\n action {\n var val int\n val = Float(\"567\") + Float(232)\n $result = Str(val)\n }\n }",
+		"asert": "799.000000"
+	},
+    "hasPrefix": {
+		"code": "{\n data {}\n conditions {}\n action {\n if HasPrefix(\"myString\", `my`) {\n $result = \"Prefix\"\n }\n }\n }",
+		"asert": "Prefix"
+	},
+    "hexToBytes": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result = Str(HexToBytes(\"34fe4501a4d80094\"))\n }\n }",
+		"asert": "[52 254 69 1 164 216 0 148]"
+	},
+    "int": {
+		"code": "{\n data {}\n conditions {}\n action {\n var val int\n val = Int(\"105\") + Int(\"45\")\n $result = Str(val)\n }\n }",
+		"asert": "150"
+	},	
+	"join": {
+		"code": "{\n data {}\n conditions {}\n action {\n var val string\n var myarr array\n myarr[0] = \"first\"\n myarr[1] = \"second\"\n $result = Join(myarr, \",\")\n }\n }",
+		"asert": "first,second"
+	},
+    "split": {
+		"code": "{\n data {}\n conditions {}\n action {\n var myarr array\n myarr = Split(\"first,second,third\", \",\")\n $result = myarr[1]\n }\n }",
+		"asert": "second"
+	},
+    "len": {
+		"code": "{\n data {}\n conditions {}\n action {\n var arr array\n arr[0] = \"1\"\n arr[1] = \"2\"\n arr[2] = \"3\"\n $result = Len(arr)\n }\n }",
+		"asert": "3"
+	},
+    "pubToID": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result = PubToID(\"05f1521f6a7e769ebbde2ab3df01f4740d1408e7e7150745cac9fb953d8ad366\")\n }\n }",
+		"asert": "-6799051354910978041"
+	},		
+    "replace": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result = Replace(\"this is my decision, this is my gole, this is my life\", `this is my`, `your`)\n }\n }",
+		"asert": "your decision, your gole, your life"
+	},	
+    "size": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result = Size(\"hello\") }\n }",
+		"asert": "5"
+	},
+    "sha256": {
+		"code": "{\n data {}\n conditions {\n }\n action {\n $result = Sha256(\"Test\")\n }\n }",
+		"asert": "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25"
+	},
+    "sprintf": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result = Sprintf(\"%s is %d\", \"Five\", 5)\n }\n }",
+		"asert": "Five is 5"
+	},	
+    "str": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result = Str(5.678)\n }\n }",
+		"asert": "5.678"
+	},
+    "substr": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result = Substr(\"ecosystema\", 2, 5)\n }\n }",
+		"asert": "osyst"
+	},
+    "updateLang": {
+		"code": "{\n data {}\n conditions {}\n action {\n UpdateLang(\"test\", \"{'ru': 'Тест'}\")\n }\n }",
+			"asert": ""
+	},
+    "sysParamString": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result = SysParamString(\"blockchain_url\")\n }\n }",
+		"asert": ""
+	},
+    "sysParamInt": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result = Str(SysParamInt(\"max_columns\"))\n }\n }",
+		"asert": "50"
+	},
+    "updateSysParam": {
+		"code": "{\n data {}\n conditions {}\n action {\n DBUpdateSysParam(\"number_of_nodes\", \"102\", \"true\")\n }\n }",
+		"asert": ""
+		}
+}

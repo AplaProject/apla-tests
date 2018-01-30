@@ -3,12 +3,12 @@ import utils
 import config
 import requests
 import json
-from objects import Contracts
 
 class ContractFunctionsTestCase(unittest.TestCase):
     config = {}  
     def setUp(self):
         self.config = config.readMainConfig()
+        self.contracts = config.readFixtures("contracts")
         self.data = utils.login(self.config["url"], self.config['private_key'])  
 
     def assertTxInBlock(self, result, jvtToken):
@@ -35,79 +35,104 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.assertIn(checkPoint, result["result"], "error")
     
     def test_contract_dbfind(self):
-        self.check_contract(*Contracts.dbFind)
+        contract = self.contracts["dbFind"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_ecosysParam(self):
-        self.check_contract(*Contracts.ecosysParam)
+        contract = self.contracts["ecosysParam"]
+        self.check_contract(contract["code"], contract["asert"])
     
     def test_contract_dbRow(self):
-        self.check_contract(*Contracts.dbRow)
+        contract = self.contracts["dbRow"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_ifMap(self):
-        self.check_contract(*Contracts.ifMap)    
+        contract = self.contracts["ifMap"]
+        self.check_contract(contract["code"], contract["asert"])    
         
     def test_contract_evalCondition(self):
-        self.check_contract(*Contracts.evalCondition)
+        contract = self.contracts["evalCondition"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_validateCondition(self):
-        self.check_contract(*Contracts.validateCondition)
+        contract = self.contracts["validateCondition"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_addressToId(self):
-        self.check_contract(*Contracts.addressToId)
+        contract = self.contracts["addressToId"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_contains(self):
-        self.check_contract(*Contracts.contains)
+        contract = self.contracts["contains"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_float(self):
-        self.check_contract(*Contracts.float)
+        contract = self.contracts["float"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_hasPrefix(self):
-        self.check_contract(*Contracts.hasPrefix)
+        contract = self.contracts["hasPrefix"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_hexToBytes(self):
-        self.check_contract(*Contracts.hexToBytes)
+        contract = self.contracts["hexToBytes"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_Int(self):
-        self.check_contract(*Contracts.Int)
+        contract = self.contracts["int"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_len(self):
-        self.check_contract(*Contracts.len)
+        contract = self.contracts["len"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_pubToID(self):
-        self.check_contract(*Contracts.pubToID)
+        contract = self.contracts["pubToID"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_replace(self):
-        self.check_contract(*Contracts.replace)
+        contract = self.contracts["replace"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_size(self):
-        self.check_contract(*Contracts.size)
+        contract = self.contracts["size"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_sha256(self):
-        self.check_contract(*Contracts.sha256)
+        contract = self.contracts["sha256"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_Sprintf(self):
-        self.check_contract(*Contracts.Sprintf)
+        contract = self.contracts["sprintf"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_str(self):
-        self.check_contract(*Contracts.str)
+        contract = self.contracts["str"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_substr(self):
-        self.check_contract(*Contracts.substr)
+        contract = self.contracts["substr"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_updateLang(self):
-        self.check_contract(*Contracts.updateLang)
+        contract = self.contracts["updateLang"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_sysParamString(self):
-        self.check_contract(*Contracts.sysParamString)
+        contract = self.contracts["sysParamString"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_sysParamInt(self):
-        self.check_contract(*Contracts.sysParamInt)
+        contract = self.contracts["updSysParam"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_updSysParam(self):
-        self.check_contract(*Contracts.updSysParam)
+        contract = self.contracts["updSysParam"]
+        self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_updateSysParam(self):
-        self.check_contract(*Contracts.updateSysParam)
+        contract = self.contracts["updateSysParam"]
+        self.check_contract(contract["code"], contract["asert"])
 
 if __name__ == '__main__':
     unittest.main()
