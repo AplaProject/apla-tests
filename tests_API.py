@@ -10,44 +10,44 @@ class ApiTestCase(unittest.TestCase):
         self.config = config.readMainConfig()
         self.data = utils.login(self.config["url"], self.config['private_key'])
 
-    def assertTxInBlock(self, result, jvtToken):
+    def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
         url = self.config["url"]
         pause = self.config["time_wait_tx_in_block"]
-        status = utils.txstatus(url, pause, result['hash'], jvtToken)
+        status = utils.txstatus(url, pause, result['hash'], jwtToken)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
     def call_get_api(self, endPoint, data):
         url = self.config['url'] + endPoint
-        token = self.data["jvtToken"]
+        token = self.data["jwtToken"]
         resp = requests.get(url, data=data,  headers={"Authorization": token})
         self.assertEqual(resp.status_code, 200)
         return resp.json()
 
     def call_post_api(self, endPoint, data):
         url = self.config['url'] + endPoint
-        token = self.data["jvtToken"]
+        token = self.data["jwtToken"]
         resp = requests.post(url, data=data,  headers={"Authorization": token})
         self.assertEqual(resp.status_code, 200)
         return resp.json()
 
-    def check_get_api(self, endPoint, data, asserts):
+    def check_get_api(self, endPoint, data, keys):
         result = self.call_get_api(endPoint, data)
-        for asert in asserts:
-            self.assertIn(asert, result)
+        for key in keys:
+            self.assertIn(key, result)
 
-    def check_post_api(self, endPoint, data, asserts):
+    def check_post_api(self, endPoint, data, keys):
         result = self.call_post_api(endPoint, data)
-        for asert in asserts:
-            self.assertIn(asert, result)
+        for key in keys:
+            self.assertIn(key, result)
 
     def call(self, name, data):
         url = self.config["url"]
         prKey = self.config['private_key']
-        token = self.data["jvtToken"]
+        token = self.data["jwtToken"]
         resp = utils.call_contract(url, prKey, name, data, token)
-        self.assertTxInBlock(resp, self.data["jvtToken"])
+        self.assertTxInBlock(resp, self.data["jwtToken"])
         return resp
 
     def get_count(self, type):
@@ -59,11 +59,11 @@ class ApiTestCase(unittest.TestCase):
         return res["tableid"]
 
     def get_parameter_id(self, name):
-        res = self.call_get_api("/ecosystemparam/"+name, "")
+        res = self.call_get_api("/ecosystemparam/" + name, "")
         return res["id"]
 
     def get_parameter_value(self, name):
-        res = self.call_get_api("/ecosystemparam/"+name, "")
+        res = self.call_get_api("/ecosystemparam/" + name, "")
         return res["value"]
 
     def get_content(self, type, name, lang):

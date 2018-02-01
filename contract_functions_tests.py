@@ -11,11 +11,11 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.contracts = config.readFixtures("contracts")
         self.data = utils.login(self.config["url"], self.config['private_key'])
 
-    def assertTxInBlock(self, result, jvtToken):
+    def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
         sleep = self.config["time_wait_tx_in_block"]
         url = self.config["url"]
-        status = utils.txstatus(url, sleep, result['hash'], jvtToken)
+        status = utils.txstatus(url, sleep, result['hash'], jwtToken)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
@@ -31,16 +31,16 @@ class ContractFunctionsTestCase(unittest.TestCase):
         data["Conditions"] = "ContractConditions(`MainCondition`)"
         url = self.config["url"]
         prKey = self.config['private_key']
-        token = self.data["jvtToken"]
+        token = self.data["jwtToken"]
         result = utils.call_contract(url, prKey, "NewContract", data, token)
-        self.assertTxInBlock(result, self.data["jvtToken"])
+        self.assertTxInBlock(result, self.data["jwtToken"])
 
     def check_contract(self, sourse, checkPoint):
         code, name = self.generate_name_and_code(sourse)
         self.create_contract(code)
         url = self.config["url"]
         prKey = self.config['private_key']
-        token = self.data["jvtToken"]
+        token = self.data["jwtToken"]
         sleep = self.config["time_wait_tx_in_block"]
         res = utils.call_contract(url, prKey, name, {}, token)
         hash = res["hash"]

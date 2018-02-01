@@ -31,7 +31,7 @@ def login(url, prKey):
 	result = {}
 	result["uid"] = uid
 	result["timeToken"] = res["refresh"]
-	result["jvtToken"] = 'Bearer ' + res["token"]
+	result["jwtToken"] = 'Bearer ' + res["token"]
 	result["pubkey"] = pubkey
 	result["address"] = res["address"]
 	return result
@@ -71,12 +71,12 @@ def generate_random_name():
 	return "".join(name)
 
 
-def generate_name_and_code(sourseCode):
+def generate_name_and_code(sourceCode):
 	name = "Cont_" + generate_random_name()
-	if sourseCode == "":
+	if sourceCode == "":
 		sCode = """{data { }	conditions {	}	action {	}	}"""
 	else:
-		sCode = sourseCode
+		sCode = sourceCode
 	code = "contract " + name + sCode
 	return code, name
 
