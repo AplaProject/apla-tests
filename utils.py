@@ -156,6 +156,7 @@ def getCountDBObjects(dbHost, dbName, login, password):
 	params = cursor.fetchall()
 	cursor.execute("SELECT count(*) FROM \"1_languages\"")
 	locals = cursor.fetchall()
+	result = {}
 	result["tables"] = tables[0][0]
 	result["contracts"] = contracts[0][0]
 	result["pages"] = pages[0][0]
