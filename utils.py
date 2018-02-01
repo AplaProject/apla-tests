@@ -110,7 +110,7 @@ def compare_node_positions(dbHost, dbName, login, password):
 def get_blockchain_hash(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
-	cursor.execute("SELECT md5(array_agg(md5((t.*)::varchar))::varchar)  FROM (SELECT * FROM block_chain ORDER BY id LIMIT ((SELECT COUNT(*) FROM block_chain) - 5)) AS t")
+	cursor.execute("SELECT md5(array_agg(md5((t.id, t.hash, t.data, t.ecosystem_id, t.key_id, t.node_position, t.time, t.tx)::varchar))::varchar)  FROM (SELECT * FROM block_chain ORDER BY id LIMIT ((SELECT COUNT(*) FROM block_chain) - 5)) AS t")
 	hash = cursor.fetchall()
 	return hash
 

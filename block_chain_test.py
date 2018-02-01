@@ -46,10 +46,9 @@ class BlockChainTestCase(unittest.TestCase):
             contName = self.create_contract()
             i = i + 1
             sleep = int(args.sleep) - (time.time() - start)
-            if sleep < 0:
-                print("Request is too long")
-                exit(1)
-            time.sleep(sleep)
+            if sleep > 0:
+                time.sleep(sleep)
+
         time.sleep(15)
         self.assertTrue(utils.compare_node_positions(host, db1, login, pas), "Incorrect order of nodes in block_chain2")
         self.assertTrue(utils.compare_node_positions(host, db2, login, pas), "Incorrect order of nodes in block_chain1")
