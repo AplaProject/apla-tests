@@ -11,7 +11,7 @@ class ApiTestCase(unittest.TestCase):
         self.data = utils.login(self.config["url"], self.config['private_key'])
 
     def assertTxInBlock(self, result, jwtToken):
-        self.assertIn("hash",  result)
+        self.assertIn("hash", result)
         url = self.config["url"]
         pause = self.config["time_wait_tx_in_block"]
         status = utils.txstatus(url, pause, result['hash'], jwtToken)
@@ -230,9 +230,11 @@ class ApiTestCase(unittest.TestCase):
         menutree = {}
         menutree["tag"] = 'menuitem'
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
-        content["menutree"] = [menutree]
+        content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Hello page!'}]
-        self.assertEqual(self.get_content("page", name, ""), content)
+        cont = self.get_content("page", name, "")
+        print(cont)
+        self.assertEqual(cont, content)
 
     def test_edit_page(self):
         name = "Page_" + utils.generate_random_name()
@@ -253,7 +255,7 @@ class ApiTestCase(unittest.TestCase):
         menutree = {}
         menutree["tag"] = 'menuitem'
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
-        content["menutree"] = [menutree]
+        content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Good by page!'}]
         self.assertEqual(self.get_content("page", name, ""), content)
 
@@ -277,7 +279,7 @@ class ApiTestCase(unittest.TestCase):
         menutree = {}
         menutree["tag"] = 'menuitem'
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
-        content["menutree"] = [menutree]
+        content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Hello!\r\nGood by!'}]
         self.assertEqual(self.get_content("page", name, ""), content)
 
@@ -443,11 +445,11 @@ class ApiTestCase(unittest.TestCase):
         menutree = {}
         menutree["tag"] = 'menuitem'
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
-        content["menutree"] = [menutree]
+        content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Hello, fist'}]
         contentRu = {}
         contentRu["menu"] = 'default_menu'
-        contentRu["menutree"] = [menutree]
+        contentRu["menutree"] = []
         contentRu["tree"] = [{'tag': 'text', 'text': 'Hello, second'}]
         self.assertEqual(self.get_content("page", namePage, "ru"), contentRu)
         self.assertEqual(self.get_content("page", namePage, ""), content)
