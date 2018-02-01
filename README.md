@@ -1,20 +1,3 @@
-### Installation print proccesed transactions
-
-```
-git clone https://github.com/EGaaS/apla-tests.git tests
-virtualenv -p python3 tests
-cd tests
-source bin/activate
-pip install -r requirements.txt
-python proccesed_transactions_test.py -v
-```
-
-### dBconfig.json
-
-* dbHost: host name of data base
-* dbName: name of data base
-* login: login of data base,
-* pass: password of data base
 ### Installation tests for block_chain
 
 ```
@@ -53,24 +36,23 @@ python contract_functions_tests.py -v
 * private_key:private key of user
 * time_wait_tx_in_block:time in seconds to wait, while transaction will be writed to block
 
-
-### Installation Api test V1
+### Installation contract functions tests
 
 ```
 git clone https://github.com/EGaaS/apla-tests.git tests
 virtualenv -p python3 tests
 cd tests
 source bin/activate
-pip install -r requirements.txt
-python tests.py -v
+pip install -r  requirements.txt
+python tests_API.py -v
 ```
 
 ### Config
 
 * url:url of api
-* state:id of state
 * private_key:private key of user
 * time_wait_tx_in_block:time in seconds to wait, while transaction will be writed to block
+
 
 ### Launch Updating system_parameters.full_nodes
 
