@@ -1,5 +1,9 @@
 {
  "url": "http://localhost:7079/api/v2",
-"private_key": "11527c41b6d69a868cbca9ead4ea67189a9479994308a49a530c371e35782063",
- "time_wait_tx_in_block": 5
+"private_key": "474db93b47e0c8d840fbc9f585bcfa1ca5d24cf1aff4718816d3f8c1328e2df8",
+ "time_wait_tx_in_block": 5,
+ "dbHost": "localhost",
+ "dbName": "aplafront",
+ "login": "postgres",
+ "pass": "postgres"
 }
