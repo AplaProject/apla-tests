@@ -3,76 +3,45 @@ import utils
 import config
 import requests
 import json
+import funcs
 
 
 class ApiTestCase(unittest.TestCase):
     def setUp(self):
+        global url
+        global token
+        global prKey
+        global pause
         self.config = config.readMainConfig()
-        self.data = utils.login(self.config["url"], self.config['private_key'])
+        url = self.config["url"]
+        pause = self.config["time_wait_tx_in_block"]
+        prKey = self.config['private_key']
+        self.data = utils.login(url, prKey)
+        token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
-        url = self.config["url"]
-        pause = self.config["time_wait_tx_in_block"]
-        status = utils.txstatus(url, pause, result['hash'], jwtToken)
+        hash = result['hash']
+        status = utils.txstatus(url, pause, hash, jwtToken)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
-    def call_get_api(self, endPoint, data):
-        url = self.config['url'] + endPoint
-        token = self.data["jwtToken"]
-        resp = requests.get(url, data=data,  headers={"Authorization": token})
-        self.assertEqual(resp.status_code, 200)
-        return resp.json()
-
-    def call_post_api(self, endPoint, data):
-        url = self.config['url'] + endPoint
-        token = self.data["jwtToken"]
-        resp = requests.post(url, data=data,  headers={"Authorization": token})
-        self.assertEqual(resp.status_code, 200)
-        return resp.json()
-
     def check_get_api(self, endPoint, data, keys):
-        result = self.call_get_api(endPoint, data)
+        end = url + endPoint
+        result = funcs.call_get_api(end, data, token)
         for key in keys:
             self.assertIn(key, result)
 
     def check_post_api(self, endPoint, data, keys):
-        result = self.call_post_api(endPoint, data)
+        end = url + endPoint
+        result = funcs.call_post_api(end, data, token)
         for key in keys:
             self.assertIn(key, result)
 
     def call(self, name, data):
-        url = self.config["url"]
-        prKey = self.config['private_key']
-        token = self.data["jwtToken"]
         resp = utils.call_contract(url, prKey, name, data, token)
-        self.assertTxInBlock(resp, self.data["jwtToken"])
+        self.assertTxInBlock(resp, token)
         return resp
-
-    def get_count(self, type):
-        res = self.call_get_api("/list/" + type, "")
-        return res["count"]
-
-    def get_contract_id(self, name):
-        res = self.call_get_api("/contract/" + name, "")
-        return res["tableid"]
-
-    def get_parameter_id(self, name):
-        res = self.call_get_api("/ecosystemparam/" + name, "")
-        return res["id"]
-
-    def get_parameter_value(self, name):
-        res = self.call_get_api("/ecosystemparam/" + name, "")
-        return res["value"]
-
-    def get_content(self, type, name, lang):
-        if(lang != ""):
-            data = {"lang": lang}
-        else:
-            data = ""
-        res = self.call_post_api("/content/" + type + "/" + name, data)
-        return res
 
     def test_balance(self):
         asserts = ["amount", "money"]
@@ -149,7 +118,7 @@ class ApiTestCase(unittest.TestCase):
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "Conditions": "true"}
         self.call("NewContract", data)
-        id = self.get_contract_id(name)
+        id = funcs.get_contract_id(url, name, token)
         data2 = {"Id": id}
         self.call("ActivateContract", data2)
 
@@ -157,7 +126,7 @@ class ApiTestCase(unittest.TestCase):
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "Conditions": "true"}
         self.call("NewContract", data)
-        id = self.get_contract_id(name)
+        id = funcs.get_contract_id(url, name, token)
         data2 = {"Id": id}
         self.call("ActivateContract", data2)
         self.call("DeactivateContract", data2)
@@ -168,7 +137,7 @@ class ApiTestCase(unittest.TestCase):
         data = {"Value": code, "Conditions": "true"}
         self.call("NewContract", data)
         data2 = {}
-        data2["Id"] = self.get_contract_id(name)
+        data2["Id"] = funcs.get_contract_id(url, name, token)
         data2["Value"] = code
         data2["Conditions"] = "true"
         data2["WalletId"] = newWallet
@@ -184,10 +153,10 @@ class ApiTestCase(unittest.TestCase):
         name = "Par_" + utils.generate_random_name()
         data = {"Name": name, "Value": "test", "Conditions": "true"}
         self.call("NewParameter", data)
-        id = self.get_parameter_id(name)
+        id = funcs.get_parameter_id(url, name, token)
         data2 = {"Id": id, "Value": newVal, "Conditions": "true"}
         self.call("EditParameter", data2)
-        value = self.get_parameter_value(name)
+        value = funcs.get_parameter_value(url, name, token)
         self.assertEqual(value, newVal, "Parameter didn't change")
 
     def test_new_menu(self):
@@ -195,27 +164,30 @@ class ApiTestCase(unittest.TestCase):
         data = {"Name": name, "Value": "Item1", "Conditions": "true"}
         self.call("NewMenu", data)
         content = {'tree': [{'tag': 'text', 'text': 'Item1'}]}
-        self.assertEqual(self.get_content("menu", name, ""), content)
+        mContent = funcs.get_content(url, "menu", name, "", token)
+        self.assertEqual(mContent, content)
 
     def test_edit_menu(self):
         name = "Menu_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Item1", "Conditions": "true"}
         self.call("NewMenu", data)
-        count = self.get_count("menu")
+        count = funcs.get_count(url, "menu", token)
         dataEdit = {"Id": count, "Value": "ItemEdited", "Conditions": "true"}
         self.call("EditMenu", dataEdit)
         content = {'tree': [{'tag': 'text', 'text': 'ItemEdited'}]}
-        self.assertEqual(self.get_content("menu", name, ""), content)
+        mContent = funcs.get_content(url, "menu", name, "", token)
+        self.assertEqual(mContent, content)
 
     def test_append_menu(self):
         name = "Menu_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Item1", "Conditions": "true"}
         self.call("NewMenu", data)
-        count = self.get_count("menu")
+        count = funcs.get_count(url, "menu", token)
         dataEdit = {"Id": count, "Value": "AppendedItem", "Conditions": "true"}
         self.call("AppendMenu", dataEdit)
         content = {'tree': [{'tag': 'text', 'text': 'Item1\r\nAppendedItem'}]}
-        self.assertEqual(self.get_content("menu", name, ""), content)
+        mContent = funcs.get_content(url, "menu", name, "", token)
+        self.assertEqual(mContent, content)
 
     def test_new_page(self):
         name = "Page_" + utils.generate_random_name()
@@ -232,7 +204,7 @@ class ApiTestCase(unittest.TestCase):
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
         content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Hello page!'}]
-        cont = self.get_content("page", name, "")
+        cont = funcs.get_content(url, "page", name, "", token)
         self.assertEqual(cont, content)
 
     def test_edit_page(self):
@@ -244,7 +216,7 @@ class ApiTestCase(unittest.TestCase):
         data["Menu"] = "default_menu"
         self.call("NewPage", data)
         dataEdit = {}
-        dataEdit["Id"] = self.get_count("pages")
+        dataEdit["Id"] = funcs.get_count(url, "pages", token)
         dataEdit["Value"] = "Good by page!"
         dataEdit["Conditions"] = "true"
         dataEdit["Menu"] = "default_menu"
@@ -256,7 +228,8 @@ class ApiTestCase(unittest.TestCase):
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
         content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Good by page!'}]
-        self.assertEqual(self.get_content("page", name, ""), content)
+        pContent = funcs.get_content(url, "page", name, "", token)
+        self.assertEqual(pContent, content)
 
     def test_append_page(self):
         name = "Page_" + utils.generate_random_name()
@@ -266,9 +239,9 @@ class ApiTestCase(unittest.TestCase):
         data["Conditions"] = "true"
         data["Menu"] = "default_menu"
         self.call("NewPage", data)
-        count = self.get_count("pages")
+        count = funcs.get_count(url, "pages", token)
         dataEdit = {}
-        dataEdit["Id"] = self.get_count("pages")
+        dataEdit["Id"] = funcs.get_count(url, "pages", token)
         dataEdit["Value"] = "Good by!"
         dataEdit["Conditions"] = "true"
         dataEdit["Menu"] = "default_menu"
@@ -280,7 +253,8 @@ class ApiTestCase(unittest.TestCase):
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
         content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Hello!\r\nGood by!'}]
-        self.assertEqual(self.get_content("page", name, ""), content)
+        pContent = funcs.get_content(url, "page", name, "", token)
+        self.assertEqual(pContent, content)
 
     def test_new_block(self):
         name = "Block_" + utils.generate_random_name()
@@ -291,7 +265,7 @@ class ApiTestCase(unittest.TestCase):
         name = "Block_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Hello block!", "Conditions": "true"}
         self.call("NewBlock", data)
-        count = self.get_count("blocks")
+        count = funcs.get_count(url, "blocks", token)
         dataEdit = {"Id": count, "Value": "Good by!", "Conditions": "true"}
         self.call("EditBlock", dataEdit)
 
@@ -414,7 +388,7 @@ class ApiTestCase(unittest.TestCase):
         data["Value"] = value
         data["Conditions"] = "true"
         self.call("NewSign", data)
-        count = self.get_count("signatures")
+        count = funcs.get_count(url, "signatures", token)
         dataEdit = {}
         dataEdit["Id"] = count
         valueE = "{ \"forsign\" :\"" + name
@@ -450,8 +424,10 @@ class ApiTestCase(unittest.TestCase):
         contentRu["menu"] = 'default_menu'
         contentRu["menutree"] = []
         contentRu["tree"] = [{'tag': 'text', 'text': 'Hello, second'}]
-        self.assertEqual(self.get_content("page", namePage, "ru"), contentRu)
-        self.assertEqual(self.get_content("page", namePage, ""), content)
+        ruPContent = funcs.get_content(url, "page", namePage, "ru", token)
+        pContent = funcs.get_content(url, "page", namePage, "", token)
+        self.assertEqual(ruPContent, contentRu)
+        self.assertEqual(pContent, content)
 
     def test_get_table_vde(self):
         asserts = ["name"]
