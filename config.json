@@ -1,6 +1,6 @@
 {
  "url": "http://localhost:7079/api/v2",
-"private_key": "474db93b47e0c8d840fbc9f585bcfa1ca5d24cf1aff4718816d3f8c1328e2df8",
+"private_key": "ffe469f57db599820807fda143ec1d3857c47348c554e21f0ef4c1bc86b855f6",
  "time_wait_tx_in_block": 5,
  "dbHost": "localhost",
  "dbName": "aplafront",
