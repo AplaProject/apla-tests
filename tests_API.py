@@ -547,7 +547,7 @@ class ApiTestCase(unittest.TestCase):
         nameLang = "Lang_" + utils.generate_random_name()
         data = {}
         data["Name"] = nameLang
-        data["Trans"] = "{\"en\": \"fist\", \"ru\" : \"second\"}"
+        data["Trans"] = "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"
         self.call("NewLang", data)
         namePage = "Page_" + utils.generate_random_name()
         valuePage = "Hello, LangRes(" + nameLang + ")"
@@ -563,15 +563,29 @@ class ApiTestCase(unittest.TestCase):
         menutree["tag"] = 'menuitem'
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
         content["menutree"] = []
-        content["tree"] = [{'tag': 'text', 'text': 'Hello, fist'}]
+        content["tree"] = [{'tag': 'text', 'text': 'Hello, World_en'}]
         contentRu = {}
         contentRu["menu"] = 'default_menu'
         contentRu["menutree"] = []
-        contentRu["tree"] = [{'tag': 'text', 'text': 'Hello, second'}]
-        ruPContent = funcs.get_content(url, "page", namePage, "ru", token)
-        pContent = funcs.get_content(url, "page", namePage, "", token)
-        self.assertEqual(ruPContent, contentRu)
+        contentRu["tree"] = [{'tag': 'text', 'text': 'Hello, Мир_ru'}]
+        contentFrFr = {}
+        contentFrFr["menu"] = 'default_menu'
+        contentFrFr["menutree"] = []
+        contentFrFr["tree"] = [{'tag': 'text', 'text': 'Hello, Monde_fr-FR'}]
+        contentDeDe = {}
+        contentDeDe["menu"] = 'default_menu'
+        contentDeDe["menutree"] = []
+        contentDeDe["tree"] = [{'tag': 'text', 'text': 'Hello, Welt_de'}]
+        pContent = funcs.get_content(url, "page", namePage, "", token)          # should be: en
+        ruPContent = funcs.get_content(url, "page", namePage, "ru", token)      # should be: ru
+        frfrPcontent = funcs.get_content(url, "page", namePage, "fr-FR", token) # should be: fr-FR
+        dePcontent = funcs.get_content(url, "page", namePage, "de-DE", token)   # should be: de
+        pePcontent = funcs.get_content(url, "page", namePage, "pe", token)      # should be: en
         self.assertEqual(pContent, content)
+        self.assertEqual(ruPContent, contentRu)
+        self.assertEqual(frfrPcontent, contentFrFr)
+        self.assertEqual(dePcontent, contentDeDe)
+        self.assertEqual(pePcontent, content)
 
     def test_get_table_vde(self):
         asserts = ["name"]
