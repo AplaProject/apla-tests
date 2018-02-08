@@ -146,10 +146,12 @@ class ApiTestCase(unittest.TestCase):
         name = "Ecosys" + utils.generate_random_name()
         data = {"name": name}
         res = self.call("NewEcosystem", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_money_transfer(self):
         data = {"Recipient": "0005-2070-2000-0006-0200", "Amount": "1000"}
-        self.call("MoneyTransfer", data)
+        res = self.call("MoneyTransfer", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
     def test_money_transfer_incorrect_wallet(self):
         wallet = "0005-2070-2000-0006"
@@ -168,17 +170,20 @@ class ApiTestCase(unittest.TestCase):
     def test_money_transfer_with_comment(self):
         wallet = "0005-2070-2000-0006-0200"
         data = {"Recipient": wallet, "Amount": "1000", "Comment": "Test"}
-        self.call("MoneyTransfer", data)
+        res = self.call("MoneyTransfer", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_new_contract(self):
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "Conditions": "true"}
-        self.call("NewContract", data)
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
     def test_new_contract_exists_name(self):
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "Conditions": "true"}
-        self.call("NewContract", data)
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         ans = self.call("NewContract", data)
         msg = "Contract or function " + name + " exists"
         self.assertEqual(ans, msg, "Incorrect message: " + ans)
@@ -186,7 +191,6 @@ class ApiTestCase(unittest.TestCase):
     def test_new_contract_without_name(self):
         code = "contract {data { }    conditions {    }    action {    }    }"
         data = {"Value": code, "Conditions": "true"}
-        self.call("NewContract", data)
         ans = self.call("NewContract", data)
         msg = "must be the name"
         self.assertIn(msg, ans, "Incorrect message: " + ans)
@@ -194,7 +198,6 @@ class ApiTestCase(unittest.TestCase):
     def test_new_contract_incorrect_condition(self):
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "Conditions": "condition"}
-        self.call("NewContract", data)
         ans = self.call("NewContract", data)
         msg = "unknown identifier condition"
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
@@ -202,10 +205,12 @@ class ApiTestCase(unittest.TestCase):
     def test_activate_contract(self):
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "Conditions": "true"}
-        self.call("NewContract", data)
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         id = funcs.get_contract_id(url, name, token)
         data2 = {"Id": id}
-        self.call("ActivateContract", data2)
+        res = self.call("ActivateContract", data2)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
     def test_activate_incorrect_contract(self):
         id = "9999"
@@ -217,11 +222,14 @@ class ApiTestCase(unittest.TestCase):
     def test_deactivate_contract(self):
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "Conditions": "true"}
-        self.call("NewContract", data)
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         id = funcs.get_contract_id(url, name, token)
         data2 = {"Id": id}
-        self.call("ActivateContract", data2)
-        self.call("DeactivateContract", data2)
+        res = self.call("ActivateContract", data2)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        res = self.call("DeactivateContract", data2)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
     def test_deactivate_incorrect_contract(self):
         id = "9999"
@@ -234,7 +242,8 @@ class ApiTestCase(unittest.TestCase):
         newWallet = "0005-2070-2000-0006-0200"
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "Conditions": "true"}
-        self.call("NewContract", data)
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         data2 = {}
         data2["Id"] = funcs.get_contract_id(url, name, token)
         data2["Value"] = code
@@ -244,17 +253,34 @@ class ApiTestCase(unittest.TestCase):
         msg = "unknown identifier tryam"
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
         
-    def test_edit_contract(self):
-        newWallet = "0005-2070-2000-0006-0200"
+    def test_edit_contract_incorrect_condition1(self):
+        newWallet = "0005"
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "Conditions": "true"}
-        self.call("NewContract", data)
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         data2 = {}
         data2["Id"] = funcs.get_contract_id(url, name, token)
         data2["Value"] = code
         data2["Conditions"] = "true"
         data2["WalletId"] = newWallet
-        self.call("EditContract", data2)
+        ans = self.call("EditContract", data2)
+        msg = "New contract owner " + newWallet + " is invalid"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_edit_contract(self):
+        newWallet = "0005-2070-2000-0006-0200"
+        code, name = utils.generate_name_and_code("")
+        data = {"Value": code, "Conditions": "true"}
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        data2 = {}
+        data2["Id"] = funcs.get_contract_id(url, name, token)
+        data2["Value"] = code
+        data2["Conditions"] = "true"
+        data2["WalletId"] = newWallet
+        res = self.call("EditContract", data2)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         end = url + "/contract/" + name
         ans = funcs.call_get_api(end, "", token)
         self.assertEqual(ans["address"], newWallet, "Wallet didn't change.")
@@ -263,7 +289,8 @@ class ApiTestCase(unittest.TestCase):
         newWallet = "0005-2070-2000-0006-0200"
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "Conditions": "true"}
-        self.call("NewContract", data)
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         data2 = {}
         data2["Id"] = funcs.get_contract_id(url, name, token)
         code1, name = utils.generate_name_and_code("")
@@ -290,34 +317,74 @@ class ApiTestCase(unittest.TestCase):
     def test_new_parameter(self):
         name = "Par_" + utils.generate_random_name()
         data = {"Name": name, "Value": "test", "Conditions": "true"}
-        self.call("NewParameter", data)
+        res = self.call("NewParameter", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_new_parameter_exist_name(self):
+        name = "Par_" + utils.generate_random_name()
+        data = {"Name": name, "Value": "test", "Conditions": "true"}
+        res = self.call("NewParameter", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        msg = "Parameter " + name + " already exists"
+        ans = self.call("NewParameter", data)
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_new_parameter_incorrect_condition(self):
+        condition = "tryam"
+        name = "Par_" + utils.generate_random_name()
+        data = {"Name": name, "Value": "test", "Conditions": condition}
+        ans = self.call("NewParameter", data)
+        msg = "unknown identifier " + condition
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
-    def test_edit_parameter(self):
+    def test_edit_incorrect_parameter(self):
+        newVal = "test_edited"
+        id = "9999"
+        data2 = {"Id": id, "Value": newVal, "Conditions": "true"}
+        ans = self.call("EditParameter", data2)
+        msg = "Item " + id + " has not been found"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_edit_parameter_incorrect_condition(self):
         newVal = "test_edited"
         name = "Par_" + utils.generate_random_name()
         data = {"Name": name, "Value": "test", "Conditions": "true"}
-        self.call("NewParameter", data)
+        res = self.call("NewParameter", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         id = funcs.get_parameter_id(url, name, token)
-        data2 = {"Id": id, "Value": newVal, "Conditions": "true"}
-        self.call("EditParameter", data2)
-        value = funcs.get_parameter_value(url, name, token)
-        self.assertEqual(value, newVal, "Parameter didn't change")
+        condition = "tryam"
+        data2 = {"Id": id, "Value": newVal, "Conditions": condition}
+        ans  = self.call("EditParameter", data2)
+        msg = "unknown identifier " + condition
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_new_menu(self):
         name = "Menu_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Item1", "Conditions": "true"}
-        self.call("NewMenu", data)
+        res = self.call("NewMenu", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {'tree': [{'tag': 'text', 'text': 'Item1'}]}
         mContent = funcs.get_content(url, "menu", name, "", token)
         self.assertEqual(mContent, content)
+        
+    def test_new_menu_exist_name(self):
+        name = "Menu_" + utils.generate_random_name()
+        data = {"Name": name, "Value": "Item1", "Conditions": "true"}
+        res = self.call("NewMenu", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        ans  = self.call("NewMenu", data)
+        msg = "Menu " + name + " already exists"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_edit_menu(self):
         name = "Menu_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Item1", "Conditions": "true"}
-        self.call("NewMenu", data)
+        res = self.call("NewMenu", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         count = funcs.get_count(url, "menu", token)
         dataEdit = {"Id": count, "Value": "ItemEdited", "Conditions": "true"}
-        self.call("EditMenu", dataEdit)
+        res = self.call("EditMenu", dataEdit)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {'tree': [{'tag': 'text', 'text': 'ItemEdited'}]}
         mContent = funcs.get_content(url, "menu", name, "", token)
         self.assertEqual(mContent, content)
@@ -325,10 +392,12 @@ class ApiTestCase(unittest.TestCase):
     def test_append_menu(self):
         name = "Menu_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Item1", "Conditions": "true"}
-        self.call("NewMenu", data)
+        res = self.call("NewMenu", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         count = funcs.get_count(url, "menu", token)
         dataEdit = {"Id": count, "Value": "AppendedItem", "Conditions": "true"}
-        self.call("AppendMenu", dataEdit)
+        res = self.call("AppendMenu", dataEdit)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {'tree': [{'tag': 'text', 'text': 'Item1\r\nAppendedItem'}]}
         mContent = funcs.get_content(url, "menu", name, "", token)
         self.assertEqual(mContent, content)
@@ -340,7 +409,8 @@ class ApiTestCase(unittest.TestCase):
         data["Value"] = "Hello page!"
         data["Conditions"] = "true"
         data["Menu"] = "default_menu"
-        self.call("NewPage", data)
+        res = self.call("NewPage", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {}
         content["menu"] = 'default_menu'
         menutree = {}
@@ -358,13 +428,15 @@ class ApiTestCase(unittest.TestCase):
         data["Value"] = "Hello page!"
         data["Conditions"] = "true"
         data["Menu"] = "default_menu"
-        self.call("NewPage", data)
+        res = self.call("NewPage", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         dataEdit = {}
         dataEdit["Id"] = funcs.get_count(url, "pages", token)
         dataEdit["Value"] = "Good by page!"
         dataEdit["Conditions"] = "true"
         dataEdit["Menu"] = "default_menu"
-        self.call("EditPage", dataEdit)
+        res = self.call("EditPage", dataEdit)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {}
         content["menu"] = 'default_menu'
         menutree = {}
@@ -382,14 +454,16 @@ class ApiTestCase(unittest.TestCase):
         data["Value"] = "Hello!"
         data["Conditions"] = "true"
         data["Menu"] = "default_menu"
-        self.call("NewPage", data)
+        res = self.call("NewPage", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         count = funcs.get_count(url, "pages", token)
         dataEdit = {}
         dataEdit["Id"] = funcs.get_count(url, "pages", token)
         dataEdit["Value"] = "Good by!"
         dataEdit["Conditions"] = "true"
         dataEdit["Menu"] = "default_menu"
-        self.call("AppendPage", dataEdit)
+        res = self.call("AppendPage", dataEdit)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {}
         content["menu"] = 'default_menu'
         menutree = {}
@@ -403,15 +477,18 @@ class ApiTestCase(unittest.TestCase):
     def test_new_block(self):
         name = "Block_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Hello page!", "Conditions": "true"}
-        self.call("NewBlock", data)
+        res = self.call("NewBlock", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_edit_block(self):
         name = "Block_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Hello block!", "Conditions": "true"}
-        self.call("NewBlock", data)
+        res  = self.call("NewBlock", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         count = funcs.get_count(url, "blocks", token)
         dataEdit = {"Id": count, "Value": "Good by!", "Conditions": "true"}
-        self.call("EditBlock", dataEdit)
+        res = self.call("EditBlock", dataEdit)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_new_table(self):
         data = {}
@@ -423,7 +500,8 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
-        self.call("NewTable", data)
+        res = self.call("NewTable", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_edit_table(self):
         name = "Tab_" + utils.generate_random_name()
@@ -436,7 +514,8 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
-        self.call("NewTable", data)
+        res = self.call("NewTable", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         dataEdit = {}
         dataEdit["Name"] = name
         col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
@@ -446,7 +525,8 @@ class ApiTestCase(unittest.TestCase):
         per2E = " \"update\" : \"true\","
         per3E = " \"new_column\": \"true\"}"
         dataEdit["Permissions"] = per1E + per2E + per3E
-        self.call("EditTable", dataEdit)
+        res = self.call("EditTable", dataEdit)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_new_column(self):
         nameTab = "Tab_" + utils.generate_random_name()
@@ -459,7 +539,8 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
-        self.call("NewTable", data)
+        res = self.call("NewTable", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         name = "Col_" + utils.generate_random_name()
         dataCol = {}
         dataCol["TableName"] = nameTab
@@ -467,7 +548,8 @@ class ApiTestCase(unittest.TestCase):
         dataCol["Type"] = "number"
         dataCol["Index"] = "0"
         dataCol["Permissions"] = "true"
-        self.call("NewColumn", dataCol)
+        res = self.call("NewColumn", dataCol)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_edit_column(self):
         nameTab = "tab_" + utils.generate_random_name()
@@ -480,7 +562,8 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
-        self.call("NewTable", data)
+        res = self.call("NewTable", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         name = "Col_" + utils.generate_random_name()
         dataCol = {}
         dataCol["TableName"] = nameTab
@@ -488,26 +571,31 @@ class ApiTestCase(unittest.TestCase):
         dataCol["Type"] = "number"
         dataCol["Index"] = "0"
         dataCol["Permissions"] = "true"
-        self.call("NewColumn", dataCol)
+        res = self.call("NewColumn", dataCol)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         dataEdit = {"TableName": nameTab, "Name": name, "Permissions": "false"}
-        self.call("EditColumn", dataEdit)
+        res = self.call("EditColumn", dataEdit)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_new_lang(self):
         data = {}
         data["Name"] = "Lang_" + utils.generate_random_name()
         data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
-        self.call("NewLang", data)
+        res = self.call("NewLang", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_edit_lang(self):
         name = "Lang_" + utils.generate_random_name()
         data = {}
         data["Name"] = name
         data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
-        self.call("NewLang", data)
+        res = self.call("NewLang", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         dataEdit = {}
         dataEdit["Name"] = name
         dataEdit["Trans"] = "{\"en\": \"true\", \"ru\" : \"true\"}"
-        self.call("EditLang", dataEdit)
+        res = self.call("EditLang", dataEdit)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_new_sign(self):
         name = "Sign_" + utils.generate_random_name()
@@ -519,7 +607,8 @@ class ApiTestCase(unittest.TestCase):
         value += "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
         data["Value"] = value
         data["Conditions"] = "true"
-        self.call("NewSign", data)
+        res = self.call("NewSign", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_edit_sign(self):
         name = "Sign_" + utils.generate_random_name()
@@ -531,7 +620,8 @@ class ApiTestCase(unittest.TestCase):
         value += "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
         data["Value"] = value
         data["Conditions"] = "true"
-        self.call("NewSign", data)
+        res = self.call("NewSign", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         count = funcs.get_count(url, "signatures", token)
         dataEdit = {}
         dataEdit["Id"] = count
@@ -541,14 +631,16 @@ class ApiTestCase(unittest.TestCase):
         valueE += "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
         dataEdit["Value"] = valueE
         dataEdit["Conditions"] = "true"
-        self.call("EditSign", dataEdit)
+        res = self.call("EditSign", dataEdit)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_content_lang(self):
         nameLang = "Lang_" + utils.generate_random_name()
         data = {}
         data["Name"] = nameLang
         data["Trans"] = "{\"en\": \"fist\", \"ru\" : \"second\"}"
-        self.call("NewLang", data)
+        res = self.call("NewLang", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         namePage = "Page_" + utils.generate_random_name()
         valuePage = "Hello, LangRes(" + nameLang + ")"
         dataPage = {}
@@ -556,7 +648,8 @@ class ApiTestCase(unittest.TestCase):
         dataPage["Value"] = valuePage
         dataPage["Conditions"] = "true"
         dataPage["Menu"] = "default_menu"
-        self.call("NewPage", dataPage)
+        res = self.call("NewPage", dataPage)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {}
         content["menu"] = 'default_menu'
         menutree = {}
