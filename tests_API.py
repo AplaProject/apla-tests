@@ -8,10 +8,7 @@ import funcs
 
 class ApiTestCase(unittest.TestCase):
     def setUp(self):
-        global url
-        global token
-        global prKey
-        global pause
+        global url, token, prKey, pause
         self.config = config.readMainConfig()
         url = self.config["url"]
         pause = self.config["time_wait_tx_in_block"]
@@ -23,8 +20,11 @@ class ApiTestCase(unittest.TestCase):
         self.assertIn("hash", result)
         hash = result['hash']
         status = utils.txstatus(url, pause, hash, jwtToken)
-        self.assertNotIn(json.dumps(status), 'errmsg')
-        self.assertGreater(len(status['blockid']), 0)
+        if len(status['blockid']) > 0:
+            self.assertNotIn(json.dumps(status), 'errmsg')
+            return status["blockid"]
+        else:
+            return status["errmsg"]["error"]
 
     def check_get_api(self, endPoint, data, keys):
         end = url + endPoint
@@ -37,15 +37,28 @@ class ApiTestCase(unittest.TestCase):
         result = funcs.call_post_api(end, data, token)
         for key in keys:
             self.assertIn(key, result)
+            
+    def get_error_api(self, endPoint, data):
+        end = url + endPoint
+        result = funcs.call_get_api(end, data, token)
+        error = result["error"]
+        message = result["msg"]
+        return error, message
 
     def call(self, name, data):
         resp = utils.call_contract(url, prKey, name, data, token)
-        self.assertTxInBlock(resp, token)
+        resp = self.assertTxInBlock(resp, token)
         return resp
 
     def test_balance(self):
         asserts = ["amount", "money"]
         self.check_get_api('/balance/' + self.data['address'], "", asserts)
+        
+    def test_balance_incorrect_wallet(self):
+        wallet = "0000-0990-3244-5453-2310"
+        msg = "Wallet " + wallet + " is not valid"
+        error, message = self.get_error_api('/balance/' + wallet, "")
+        self.assertEqual(error, "E_INVALIDWALLET", "Incorrect error")
 
     def test_getEcosystem(self):
         asserts = ["number"]
@@ -79,21 +92,55 @@ class ApiTestCase(unittest.TestCase):
         asserts = ["name"]
         data = {}
         self.check_get_api("/table/contracts", data, asserts)
+        
+    def test_get_incorrect_table_information(self):
+        table = "tab"
+        data = {}
+        error, message = self.get_error_api("/table/" + table, data)
+        err = "E_TABLENOTFOUND"
+        msg = "Table " + table + " has not been found"
+        self.assertEqual(err, error, "Incorrect error")
+        self.assertEqual(message, msg, "Incorrect error massege")
 
     def test_get_table_data(self):
         asserts = ["list"]
         data = {}
         self.check_get_api("/list/menu", data, asserts)
+        
+    def test_get_incorrect_table_data(self):
+        table = "tab"
+        data = {}
+        error, message = self.get_error_api("/list/" + table, data)
+        err = "E_TABLENOTFOUND"
+        msg = "Table " + table + " has not been found"
+        self.assertEqual(err, error, "Incorrect error")
+        self.assertEqual(message, msg, "Incorrect error massege")
 
     def test_get_table_data_row(self):
         asserts = ["value"]
         data = {}
         self.check_get_api("/row/contracts/2", data, asserts)
+        
+    def test_get_incorrect_table_data_row(self):
+        table = "tab"
+        data = {}
+        error, message = self.get_error_api("/row/" + table + "/2", data)
+        err = "E_QUERY"
+        msg = "DB query is wrong"
+        self.assertEqual(err, error, "Incorrect errror")
+        self.assertEqual(msg, message, "Incorrect error message")
 
     def test_get_contract_information(self):
         asserts = ["name"]
         data = {}
         self.check_get_api("/contract/MainCondition", data, asserts)
+        
+    def test_get_incorrect_contract_information(self):
+        contract = "contract"
+        data = {}
+        error, message = self.get_error_api("/contract/" + contract, data)
+        err = "E_CONTRACT"
+        msg = "There is not " + contract + " contract"
 
     def test_create_ecosystem(self):
         name = "Ecosys" + utils.generate_random_name()
@@ -103,6 +150,20 @@ class ApiTestCase(unittest.TestCase):
     def test_money_transfer(self):
         data = {"Recipient": "0005-2070-2000-0006-0200", "Amount": "1000"}
         self.call("MoneyTransfer", data)
+        
+    def test_money_transfer_incorrect_wallet(self):
+        wallet = "0005-2070-2000-0006"
+        msg = "Recipient " + wallet + " is invalid"
+        data = {"Recipient": wallet, "Amount": "1000"}
+        ans = self.call("MoneyTransfer", data)
+        self.assertEqual(ans, msg, "Incorrect message" + msg)
+        
+    def test_money_transfer_zero_amount(self):
+        wallet = "0005-2070-2000-0006-0200"
+        msg = "Amount is zero"
+        data = {"Recipient": wallet, "Amount": "ttt"}
+        ans = self.call("MoneyTransfer", data)
+        self.assertEqual(ans, msg, "Incorrect message" + msg)
 
     def test_money_transfer_with_comment(self):
         wallet = "0005-2070-2000-0006-0200"
@@ -113,6 +174,30 @@ class ApiTestCase(unittest.TestCase):
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "Conditions": "true"}
         self.call("NewContract", data)
+        
+    def test_new_contract_exists_name(self):
+        code, name = utils.generate_name_and_code("")
+        data = {"Value": code, "Conditions": "true"}
+        self.call("NewContract", data)
+        ans = self.call("NewContract", data)
+        msg = "Contract or function " + name + " exists"
+        self.assertEqual(ans, msg, "Incorrect message: " + ans)
+        
+    def test_new_contract_without_name(self):
+        code = "contract {data { }    conditions {    }    action {    }    }"
+        data = {"Value": code, "Conditions": "true"}
+        self.call("NewContract", data)
+        ans = self.call("NewContract", data)
+        msg = "must be the name"
+        self.assertIn(msg, ans, "Incorrect message: " + ans)
+        
+    def test_new_contract_incorrect_condition(self):
+        code, name = utils.generate_name_and_code("")
+        data = {"Value": code, "Conditions": "condition"}
+        self.call("NewContract", data)
+        ans = self.call("NewContract", data)
+        msg = "unknown identifier condition"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_activate_contract(self):
         code, name = utils.generate_name_and_code("")
@@ -121,6 +206,13 @@ class ApiTestCase(unittest.TestCase):
         id = funcs.get_contract_id(url, name, token)
         data2 = {"Id": id}
         self.call("ActivateContract", data2)
+        
+    def test_activate_incorrect_contract(self):
+        id = "9999"
+        data = {"Id": id}
+        ans = self.call("ActivateContract", data)
+        msg = "Contract " + id + " does not exist"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_deactivate_contract(self):
         code, name = utils.generate_name_and_code("")
@@ -130,7 +222,28 @@ class ApiTestCase(unittest.TestCase):
         data2 = {"Id": id}
         self.call("ActivateContract", data2)
         self.call("DeactivateContract", data2)
+        
+    def test_deactivate_incorrect_contract(self):
+        id = "9999"
+        data = {"Id": id}
+        ans = self.call("DeactivateContract", data)
+        msg = "Contract " + id + " does not exist"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
+    def test_edit_contract_incorrect_condition(self):
+        newWallet = "0005-2070-2000-0006-0200"
+        code, name = utils.generate_name_and_code("")
+        data = {"Value": code, "Conditions": "true"}
+        self.call("NewContract", data)
+        data2 = {}
+        data2["Id"] = funcs.get_contract_id(url, name, token)
+        data2["Value"] = code
+        data2["Conditions"] = "tryam"
+        data2["WalletId"] = newWallet
+        ans = self.call("EditContract", data2)
+        msg = "unknown identifier tryam"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
     def test_edit_contract(self):
         newWallet = "0005-2070-2000-0006-0200"
         code, name = utils.generate_name_and_code("")
@@ -142,6 +255,37 @@ class ApiTestCase(unittest.TestCase):
         data2["Conditions"] = "true"
         data2["WalletId"] = newWallet
         self.call("EditContract", data2)
+        end = url + "/contract/" + name
+        ans = funcs.call_get_api(end, "", token)
+        self.assertEqual(ans["address"], newWallet, "Wallet didn't change.")
+        
+    def test_edit_name_of_contract(self):
+        newWallet = "0005-2070-2000-0006-0200"
+        code, name = utils.generate_name_and_code("")
+        data = {"Value": code, "Conditions": "true"}
+        self.call("NewContract", data)
+        data2 = {}
+        data2["Id"] = funcs.get_contract_id(url, name, token)
+        code1, name = utils.generate_name_and_code("")
+        data2["Value"] = code1
+        data2["Conditions"] = "true"
+        data2["WalletId"] = newWallet
+        msg = "Contracts or functions names cannot be changed"
+        ans = self.call("EditContract", data2)
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_edit_incorrect_contract(self):
+        code, name = utils.generate_name_and_code("")
+        newWallet = "0005-2070-2000-0006-0200"
+        id = "9999"
+        data2 = {}
+        data2["Id"] = id
+        data2["Value"] = code
+        data2["Conditions"] = "true"
+        data2["WalletId"] = newWallet
+        ans = self.call("EditContract", data2)
+        msg = "Item " + id + " has not been found"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_new_parameter(self):
         name = "Par_" + utils.generate_random_name()
