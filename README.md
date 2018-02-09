@@ -1,7 +1,7 @@
 ### Installation tests for block_chain
 
 ```
-git clone https://github.com/EGaaS/apla-tests.git tests
+git clone https://github.com/GenesisKernel/genesis-tests.git tests 
 virtualenv -p python3 tests
 cd tests
 source bin/activate
@@ -22,7 +22,7 @@ For each node:
 ### Installation contract functions tests
 
 ```
-git clone https://github.com/EGaaS/apla-tests.git tests
+git clone https://github.com/GenesisKernel/genesis-tests.git tests
 virtualenv -p python3 tests
 cd tests
 source bin/activate
@@ -39,7 +39,7 @@ python contract_functions_tests.py -v
 ### Installation contract functions tests
 
 ```
-git clone https://github.com/EGaaS/apla-tests.git tests
+git clone https://github.com/GenesisKernel/genesis-tests.git tests
 virtualenv -p python3 tests
 cd tests
 source bin/activate
@@ -57,7 +57,7 @@ python tests_API.py -v
 ### Launch Updating system_parameters.full_nodes
 
 '''
-git clone https://github.com/EGaaS/apla-tests.git tests
+git clone https://github.com/GenesisKernel/genesis-tests.git tests
 virtualenv -p python3 tests
 cd tests
 source bin/activate
