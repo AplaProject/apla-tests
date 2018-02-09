@@ -375,6 +375,14 @@ class ApiTestCase(unittest.TestCase):
         ans  = self.call("NewMenu", data)
         msg = "Menu " + name + " already exists"
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_new_menu_incorrect_condition(self):
+        name = "Menu_" + utils.generate_random_name()
+        condition = "tryam"
+        data = {"Name": name, "Value": "Item1", "Conditions": condition}
+        ans = self.call("NewMenu", data)
+        msg = "unknown identifier " + condition
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_edit_menu(self):
         name = "Menu_" + utils.generate_random_name()
@@ -388,6 +396,25 @@ class ApiTestCase(unittest.TestCase):
         content = {'tree': [{'tag': 'text', 'text': 'ItemEdited'}]}
         mContent = funcs.get_content(url, "menu", name, "", token)
         self.assertEqual(mContent, content)
+        
+    def test_edit_incorrect_menu(self):
+        id = "9999"
+        dataEdit = {"Id": id, "Value": "ItemEdited", "Conditions": "true"}
+        ans = self.call("EditMenu", dataEdit)
+        msg = "Item " + id + " has not been found"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_edit_menu_incorrect_condition(self):
+        name = "Menu_" + utils.generate_random_name()
+        condition = "tryam"
+        data = {"Name": name, "Value": "Item1", "Conditions": "true"}
+        res = self.call("NewMenu", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        count = funcs.get_count(url, "menu", token)
+        dataEdit = {"Id": count, "Value": "ItemEdited", "Conditions": condition}
+        ans = self.call("EditMenu", dataEdit)
+        msg = "unknown identifier " + condition
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_append_menu(self):
         name = "Menu_" + utils.generate_random_name()
@@ -401,6 +428,24 @@ class ApiTestCase(unittest.TestCase):
         content = {'tree': [{'tag': 'text', 'text': 'Item1\r\nAppendedItem'}]}
         mContent = funcs.get_content(url, "menu", name, "", token)
         self.assertEqual(mContent, content)
+        
+    def test_append_incorrect_menu(self):
+        id = "999"
+        dataEdit = {"Id": id, "Value": "AppendedItem", "Conditions": "true"}
+        ans = self.call("AppendMenu", dataEdit)
+        msg = "Item " + id + " has not been found"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_append_menu_incorrect_condition(self):
+        name = "Menu_" + utils.generate_random_name()
+        data = {"Name": name, "Value": "Item1", "Conditions": "true"}
+        res = self.call("NewMenu", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        count = funcs.get_count(url, "menu", token)
+        condition = "tryam"
+        dataEdit = {"Id": count, "Value": "AppendedItem", "Conditions": condition}
+        ans = self.call("AppendMenu", dataEdit)
+        print(ans)
 
     def test_new_page(self):
         name = "Page_" + utils.generate_random_name()
@@ -420,6 +465,31 @@ class ApiTestCase(unittest.TestCase):
         content["tree"] = [{'tag': 'text', 'text': 'Hello page!'}]
         cont = funcs.get_content(url, "page", name, "", token)
         self.assertEqual(cont, content)
+        
+    def test_new_page_exist_name(self):
+        name = "Page_" + utils.generate_random_name()
+        data = {}
+        data["Name"] = name
+        data["Value"] = "Hello page!"
+        data["Conditions"] = "true"
+        data["Menu"] = "default_menu"
+        res = self.call("NewPage", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        ans = self.call("NewPage", data)
+        msg = "Page " + name + " already exists"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_new_page_incorrect_condition(self):
+        name = "Page_" + utils.generate_random_name()
+        condition = "tryam"
+        data = {}
+        data["Name"] = name
+        data["Value"] = "Hello page!"
+        data["Conditions"] = condition
+        data["Menu"] = "default_menu"
+        ans = self.call("NewPage", data)
+        msg = "unknown identifier " + condition
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_edit_page(self):
         name = "Page_" + utils.generate_random_name()
@@ -446,6 +516,36 @@ class ApiTestCase(unittest.TestCase):
         content["tree"] = [{'tag': 'text', 'text': 'Good by page!'}]
         pContent = funcs.get_content(url, "page", name, "", token)
         self.assertEqual(pContent, content)
+        
+    def test_edit_incorrect_page(self):
+        id = "9999"
+        dataEdit = {}
+        dataEdit["Id"] = id
+        dataEdit["Value"] = "Good by page!"
+        dataEdit["Conditions"] = "true"
+        dataEdit["Menu"] = "default_menu"
+        ans = self.call("EditPage", dataEdit)
+        msg = "Item " + id + " has not been found"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_edit_page_incorrect_condition(self):
+        name = "Page_" + utils.generate_random_name()
+        data = {}
+        data["Name"] = name
+        data["Value"] = "Hello page!"
+        data["Conditions"] = "true"
+        data["Menu"] = "default_menu"
+        res = self.call("NewPage", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        condition = "tryam"
+        dataEdit = {}
+        dataEdit["Id"] = funcs.get_count(url, "pages", token)
+        dataEdit["Value"] = "Good by page!"
+        dataEdit["Conditions"] = condition
+        dataEdit["Menu"] = "default_menu"
+        ans = self.call("EditPage", dataEdit)
+        msg = "unknown identifier " + condition
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_append_page(self):
         name = "Page_" + utils.generate_random_name()
@@ -473,6 +573,17 @@ class ApiTestCase(unittest.TestCase):
         content["tree"] = [{'tag': 'text', 'text': 'Hello!\r\nGood by!'}]
         pContent = funcs.get_content(url, "page", name, "", token)
         self.assertEqual(pContent, content)
+        
+    def test_append_page_incorrect_id(self):
+        id = "9999"
+        dataEdit = {}
+        dataEdit["Id"] = id
+        dataEdit["Value"] = "Good by!"
+        dataEdit["Conditions"] = "true"
+        dataEdit["Menu"] = "default_menu"
+        ans = self.call("AppendPage", dataEdit)
+        msg = "Item " + id + " has not been found"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_new_block(self):
         name = "Block_" + utils.generate_random_name()
