@@ -146,5 +146,9 @@
 	"getContractById": {
 		"code": "{\n data {}\n conditions {}\n action {$result = GetContractById(1)}\n }",
 		"asert": "MainCondition"
+	},
+	"getContractByName": {
+		"code": "{\n data {}\n conditions {}\n action {$result = Str(GetContractByName(\"MoneyTransfer\"))}\n }",
+		"asert": "3"
 	}
 }
