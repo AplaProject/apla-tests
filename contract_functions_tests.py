@@ -33,18 +33,27 @@ class ContractFunctionsTestCase(unittest.TestCase):
         prKey = self.config['private_key']
         token = self.data["jwtToken"]
         result = utils.call_contract(url, prKey, "NewContract", data, token)
+        print(result)
+
         self.assertTxInBlock(result, self.data["jwtToken"])
 
     def check_contract(self, sourse, checkPoint):
         code, name = self.generate_name_and_code(sourse)
+
+        print(code)
+
         self.create_contract(code)
         url = self.config["url"]
         prKey = self.config['private_key']
         token = self.data["jwtToken"]
         sleep = self.config["time_wait_tx_in_block"]
         res = utils.call_contract(url, prKey, name, {}, token)
+        print(res)
+
         hash = res["hash"]
         result = utils.txstatus(url, sleep, hash, token)
+
+        print(result)
         self.assertIn(checkPoint, result["result"], "error")
 
     def test_contract_dbfind(self):
@@ -146,6 +155,13 @@ class ContractFunctionsTestCase(unittest.TestCase):
     def test_contract_updateSysParam(self):
         contract = self.contracts["updateSysParam"]
         self.check_contract(contract["code"], contract["asert"])
+
+    # branch 421-contractnames
+    def test_contract_getContractById(self):
+        contract = self.contracts["getContractById"]
+        self.check_contract(contract["code"], contract["asert"])
+
+
 
 if __name__ == '__main__':
     unittest.main()

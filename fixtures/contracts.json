@@ -142,5 +142,9 @@
     "updateSysParam": {
 		"code": "{\n data {}\n conditions {}\n action {\n DBUpdateSysParam(\"number_of_nodes\", \"102\", \"true\")\n }\n }",
 		"asert": ""
-		}
+	},
+	"getContractById": {
+		"code": "{\n data {}\n conditions {}\n action {$result = GetContractById(1)}\n }",
+		"asert": "MainCondition"
+	}
 }
