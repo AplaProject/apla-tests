@@ -147,5 +147,19 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["updateSysParam"]
         self.check_contract(contract["code"], contract["asert"])
 
+    # branch 421-contractnames
+    def test_contract_getContractById(self):
+        contract = self.contracts["getContractById"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    # branch 421-contractnames
+    def test_contract_getContractByName(self):
+        contract = self.contracts["getContractByName"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_random(self):
+        contract = self.contracts["random"]
+        self.check_contract(contract["code"], contract["asert"])
+
 if __name__ == '__main__':
     unittest.main()
