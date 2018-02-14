@@ -148,8 +148,8 @@
 		"asert": "MainCondition"
 	},
 	"getContractByName": {
-		"code": "{\n data {}\n conditions {}\n action {$result = Str(GetContractByName(\"MoneyTransfer\"))}\n }",
-		"asert": "3"
+		"code": "{\n data {}\n conditions {}\n action {$result = Str(GetContractByName(\"MainCondition\"))}\n }",
+		"asert": "1"
 	},
 	"random": {
 		"code": "{\n data {}\n conditions {}\n action {$result = Str(Random(5,6))}\n }",
