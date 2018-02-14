@@ -749,7 +749,7 @@ class ApiTestCase(unittest.TestCase):
         nameLang = "Lang_" + utils.generate_random_name()
         data = {}
         data["Name"] = nameLang
-        data["Trans"] = "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}
+        data["Trans"] = "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         namePage = "Page_" + utils.generate_random_name()
