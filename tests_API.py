@@ -590,7 +590,31 @@ class ApiTestCase(unittest.TestCase):
         data = {"Name": name, "Value": "Hello page!", "Conditions": "true"}
         res = self.call("NewBlock", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_new_block_exist_name(self):
+        name = "Block_" + utils.generate_random_name()
+        data = {"Name": name, "Value": "Hello page!", "Conditions": "true"}
+        res = self.call("NewBlock", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        ans = self.call("NewBlock", data)
+        msg = "Block " + name + " already exists"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_new_block_incorrect_condition(self):
+        name = "Block_" + utils.generate_random_name()
+        condition = "tryam"
+        data = {"Name": name, "Value": "Hello page!", "Conditions": condition}
+        ans = self.call("NewBlock", data)
+        msg = "unknown identifier " + condition
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
+    def test_edit_block_incorrect_id(self):
+        id = "9999"
+        dataEdit = {"Id": id, "Value": "Good by!", "Conditions": "true"}
+        ans = self.call("EditBlock", dataEdit)
+        msg = "Item " + id + " has not been found"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
     def test_edit_block(self):
         name = "Block_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Hello block!", "Conditions": "true"}
@@ -600,6 +624,18 @@ class ApiTestCase(unittest.TestCase):
         dataEdit = {"Id": count, "Value": "Good by!", "Conditions": "true"}
         res = self.call("EditBlock", dataEdit)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_edit_block_incorrect_condition(self):
+        name = "Block_" + utils.generate_random_name()
+        data = {"Name": name, "Value": "Hello block!", "Conditions": "true"}
+        res  = self.call("NewBlock", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        count = funcs.get_count(url, "blocks", token)
+        condition = "tryam"
+        dataEdit = {"Id": count, "Value": "Good by!", "Conditions": condition}
+        ans = self.call("EditBlock", dataEdit)
+        msg = "unknown identifier " + condition
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_new_table(self):
         data = {}
@@ -613,6 +649,85 @@ class ApiTestCase(unittest.TestCase):
         data["Permissions"] = per1 + per2 + per3
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_new_table_incorrect_condition1(self):
+        data = {}
+        data["Name"] = "Tab_" + utils.generate_random_name()
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        data["Columns"] = col1 + col2
+        condition = "tryam"
+        per1 = "{\"insert\": \"" + condition + "\","
+        per2 = " \"update\" : \"true\","
+        per3 = " \"new_column\": \"true\"}"
+        data["Permissions"] = per1 + per2 + per3
+        ans = self.call("NewTable", data)
+        msg = "unknown identifier " + condition
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_new_table_incorrect_condition2(self):
+        data = {}
+        data["Name"] = "Tab_" + utils.generate_random_name()
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        data["Columns"] = col1 + col2
+        condition = "tryam"
+        per1 = "{\"insert\": \"true\","
+        per2 = " \"update\" : \"" + condition + "\","
+        per3 = " \"new_column\": \"true\"}"
+        data["Permissions"] = per1 + per2 + per3
+        ans = self.call("NewTable", data)
+        msg = "unknown identifier " + condition
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_new_table_incorrect_condition3(self):
+        data = {}
+        data["Name"] = "Tab_" + utils.generate_random_name()
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        data["Columns"] = col1 + col2
+        condition = "tryam"
+        per1 = "{\"insert\": \"true\","
+        per2 = " \"update\" : \"true\","
+        per3 = " \"new_column\": \"" + condition + "\"}"
+        data["Permissions"] = per1 + per2 + per3
+        ans = self.call("NewTable", data)
+        msg = "unknown identifier " + condition
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_new_table_exist_name(self):
+        name = "tab_" + utils.generate_random_name()
+        data = {}
+        data["Name"] = name
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        data["Columns"] = col1 + col2
+        per1 = "{\"insert\": \"false\","
+        per2 = " \"update\" : \"true\","
+        per3 = " \"new_column\": \"true\"}"
+        data["Permissions"] = per1 + per2 + per3
+        res = self.call("NewTable", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        ans = self.call("NewTable", data)
+        msg = "table " + name + " exists"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_new_table_identical_columns(self):
+        name = "tab_" + utils.generate_random_name()
+        data = {}
+        data["Name"] = name
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"},"
+        col3 = "{\"name\":\"MyName\",\"type\":\"varchar\","
+        col4 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        data["Columns"] = col1 + col2 + col3 + col4
+        per1 = "{\"insert\": \"false\","
+        per2 = " \"update\" : \"true\","
+        per3 = " \"new_column\": \"true\"}"
+        data["Permissions"] = per1 + per2 + per3
+        ans = self.call("NewTable", data)
+        msg = "There are the same columns"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_edit_table(self):
         name = "Tab_" + utils.generate_random_name()
@@ -631,13 +746,159 @@ class ApiTestCase(unittest.TestCase):
         dataEdit["Name"] = name
         col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
         col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        data["Columns"] = col1 + col2
+        dataEdit["Columns"] = col1 + col2
         per1E = "{\"insert\": \"true\","
         per2E = " \"update\" : \"true\","
         per3E = " \"new_column\": \"true\"}"
         dataEdit["Permissions"] = per1E + per2E + per3E
         res = self.call("EditTable", dataEdit)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_edit_table_incorrect_condition1(self):
+        name = "Tab_" + utils.generate_random_name()
+        data = {}
+        data["Name"] = name
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        data["Columns"] = col1 + col2
+        per1 = "{\"insert\": \"false\","
+        per2 = " \"update\" : \"true\","
+        per3 = " \"new_column\": \"true\"}"
+        data["Permissions"] = per1 + per2 + per3
+        res = self.call("NewTable", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        dataEdit = {}
+        dataEdit["Name"] = name
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        condition = "tryam"
+        per1 = "{\"insert\": \"" + condition + "\","
+        per2 = " \"update\" : \"true\","
+        per3 = " \"new_column\": \"true\"}"
+        data["Permissions"] = per1 + per2 + per3
+        ans = self.call("NewTable", data)
+        msg = "unknown identifier " + condition
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_edit_table_incorrect_condition1(self):
+        name = "Tab_" + utils.generate_random_name()
+        data = {}
+        data["Name"] = name
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        data["Columns"] = col1 + col2
+        per1 = "{\"insert\": \"false\","
+        per2 = " \"update\" : \"true\","
+        per3 = " \"new_column\": \"true\"}"
+        data["Permissions"] = per1 + per2 + per3
+        res = self.call("NewTable", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        dataEdit = {}
+        dataEdit["Name"] = name
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        condition = "tryam"
+        per1 = "{\"insert\": \"" + condition + "\","
+        per2 = " \"update\" : \"true\","
+        per3 = " \"new_column\": \"true\"}"
+        data["Permissions"] = per1 + per2 + per3
+        ans = self.call("EditTable", data)
+        msg = "unknown identifier " + condition
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_edit_table_incorrect_condition2(self):
+        name = "Tab_" + utils.generate_random_name()
+        data = {}
+        data["Name"] = name
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        data["Columns"] = col1 + col2
+        per1 = "{\"insert\": \"false\","
+        per2 = " \"update\" : \"true\","
+        per3 = " \"new_column\": \"true\"}"
+        data["Permissions"] = per1 + per2 + per3
+        res = self.call("NewTable", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        dataEdit = {}
+        dataEdit["Name"] = name
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        condition = "tryam"
+        per1 = "{\"insert\": \"true\","
+        per2 = " \"update\" : \"" + condition + "\","
+        per3 = " \"new_column\": \"true\"}"
+        data["Permissions"] = per1 + per2 + per3
+        ans = self.call("EditTable", data)
+        msg = "unknown identifier " + condition
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_edit_table_incorrect_condition3(self):
+        name = "Tab_" + utils.generate_random_name()
+        data = {}
+        data["Name"] = name
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        data["Columns"] = col1 + col2
+        per1 = "{\"insert\": \"false\","
+        per2 = " \"update\" : \"true\","
+        per3 = " \"new_column\": \"true\"}"
+        data["Permissions"] = per1 + per2 + per3
+        res = self.call("NewTable", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        dataEdit = {}
+        dataEdit["Name"] = name
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        condition = "tryam"
+        per1 = "{\"insert\": \"true\","
+        per2 = " \"update\" : \"true\","
+        per3 = " \"new_column\": \"" + condition + "\"}"
+        data["Permissions"] = per1 + per2 + per3
+        ans = self.call("EditTable", data)
+        msg = "unknown identifier " + condition
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+        
+    def test_edit_table_identical_columns(self):
+        name = "Tab_" + utils.generate_random_name()
+        data = {}
+        data["Name"] = name
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        data["Columns"] = col1 + col2
+        per1 = "{\"insert\": \"false\","
+        per2 = " \"update\" : \"true\","
+        per3 = " \"new_column\": \"true\"}"
+        data["Permissions"] = per1 + per2 + per3
+        res = self.call("NewTable", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        dataEdit = {}
+        dataEdit["Name"] = name
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"},"
+        col3 = "{\"name\":\"MyName\",\"type\":\"varchar\","
+        col4 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        dataEdit["Columns"] = col1 + col2 + col3 + col4
+        per1E = "{\"insert\": \"true\","
+        per2E = " \"update\" : \"true\","
+        per3E = " \"new_column\": \"true\"}"
+        dataEdit["Permissions"] = per1E + per2E + per3E
+        ans = self.call("EditTable", dataEdit)
+        print(ans)
+        
+    def test_edit_incorrect_table(self):
+        name = "incorrect_name"
+        dataEdit = {}
+        dataEdit["Name"] = name
+        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
+        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        dataEdit["Columns"] = col1 + col2
+        per1E = "{\"insert\": \"true\","
+        per2E = " \"update\" : \"true\","
+        per3E = " \"new_column\": \"true\"}"
+        dataEdit["Permissions"] = per1E + per2E + per3E
+        ans = self.call("EditTable", dataEdit)
+        msg = "Table " + name + " has not been found"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_new_column(self):
         nameTab = "Tab_" + utils.generate_random_name()
@@ -776,6 +1037,11 @@ class ApiTestCase(unittest.TestCase):
         pContent = funcs.get_content(url, "page", namePage, "", token)
         self.assertEqual(ruPContent, contentRu)
         self.assertEqual(pContent, content)
+        
+    def test_update_system_parameters(self):
+        data = {"Name": "max_block_user_tx", "Value" : "2"}
+        res = self.call("UpdateSysParam", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_get_table_vde(self):
         asserts = ["name"]
