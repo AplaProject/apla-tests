@@ -1053,20 +1053,6 @@ class ApiTestCase(unittest.TestCase):
         self.assertEqual(frfrPcontent, contentFrFr)
         self.assertEqual(dePcontent, contentDeDe)
         self.assertEqual(pePcontent, content)
-
-    # branch 421-contractnames
-    def test_contract_getContractById(self):
-        contract = self.contracts["getContractById"]
-        self.check_contract(contract["code"], contract["asert"])
-
-    # branch 421-contractnames
-    def test_contract_getContractByName(self):
-        contract = self.contracts["getContractByName"]
-        self.check_contract(contract["code"], contract["asert"])
-
-    def test_contract_random(self):
-        contract = self.contracts["random"]
-        self.check_contract(contract["code"], contract["asert"])
         
     def test_update_system_parameters(self):
         data = {"Name": "max_block_user_tx", "Value" : "2"}
