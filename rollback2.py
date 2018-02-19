@@ -22,3 +22,6 @@ class Rollback2TestCase(unittest.TestCase):
             db1 = dbInformation[key]
             db2 = dbJson[key]
             self.assertEqual(db1, db2,"Different info about " + key)
+            
+if __name__ == "__main__":
+    unittest.main()

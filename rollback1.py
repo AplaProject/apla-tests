@@ -258,4 +258,6 @@ class Rollback1TestCase(unittest.TestCase):
         self.edit_sign(sign)
         time.sleep(20)
         
+if __name__ == "__main__":
+    unittest.main()
         
