@@ -142,5 +142,17 @@
     "updateSysParam": {
 		"code": "{\n data {}\n conditions {}\n action {\n DBUpdateSysParam(\"number_of_nodes\", \"102\", \"true\")\n }\n }",
 		"asert": ""
-		}
+	},
+	"getContractById": {
+		"code": "{\n data {}\n conditions {}\n action {$result = GetContractById(1)}\n }",
+		"asert": "MainCondition"
+	},
+	"getContractByName": {
+		"code": "{\n data {}\n conditions {}\n action {$result = Str(GetContractByName(\"MainCondition\"))}\n }",
+		"asert": "1"
+	},
+	"random": {
+		"code": "{\n data {}\n conditions {}\n action {$result = Str(Random(5,6))}\n }",
+		"asert": "5"
+	}
 }
