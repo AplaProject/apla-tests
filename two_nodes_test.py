@@ -28,6 +28,9 @@ parser.add_argument('-tcpPort2', default='7081')
 parser.add_argument('-httpPort2', default='7018')
 parser.add_argument('-dbName2', default='apla2')
 
+parser.add_argument('-tcpHost', default='127.0.0.1')
+parser.add_argument('-httpHost', default='127.0.0.1')
+
 parser.add_argument('-gapBetweenBlocks', default='10')
 
 args = parser.parse_args()
@@ -50,7 +53,9 @@ node1 = subprocess.Popen([
 	'-workDir='+workDir1,
 	'-initConfig=1',
 	'-configPath='+os.devnull,
+	'-tcpHost='+args.tcpHost,
 	'-tcpPort='+args.tcpPort1,
+	'-httpHost='+args.httpHost,
 	'-httpPort='+args.httpPort1,
 	'-initDatabase=1',
 	'-dbHost='+args.dbHost,
@@ -59,6 +64,7 @@ node1 = subprocess.Popen([
 	'-dbUser='+args.dbUser,
 	'-dbPassword='+args.dbPassword,
 	'-generateFirstBlock=1',
+	'-firstBlockHost='+args.tcpHost+':'+args.tcpPort1,
 	'-firstBlockPath='+firstBlockPath
 ])
 if not utils.wait_db_ready(args.dbHost, args.dbName1, args.dbUser, args.dbPassword):
@@ -72,7 +78,9 @@ code = subprocess.call([
 	'-workDir='+workDir2,
 	'-initConfig=1',
 	'-configPath='+os.devnull,
+	'-tcpHost='+args.tcpHost,
 	'-tcpPort='+args.tcpPort2,
+	'-httpHost='+args.httpHost,
 	'-httpPort='+args.httpPort2,
 	'-initDatabase=1',
 	'-dbHost='+args.dbHost,
@@ -107,7 +115,7 @@ code = subprocess.call([
 	'python',
 	os.path.join(curDir, 'updateKeys.py'),
 	privKey1,
-	'127.0.0.1',
+	args.httpHost,
 	args.httpPort1,
 	keyID2,
 	pubKey2,
@@ -127,9 +135,9 @@ code = subprocess.call([
 	nodePubKey1,
 	keyID2,
 	nodePubKey2,
-	'127.0.0.1',
+	args.httpHost,
 	args.httpPort1,
-	'127.0.0.1',
+	args.tcpHost,
 	args.tcpPort2
 ])
 if code != 0:
@@ -141,7 +149,7 @@ print('Update gap_between_blocks')
 code = subprocess.call([
 	'python',
 	os.path.join(curDir, 'updateSysParam.py'),
-	'-httpHost=127.0.0.1',
+	'-httpHost='+args.httpHost,
 	'-httpPort='+args.httpPort1,
 	'-privKey='+privKey1,
 	'-name=gap_between_blocks',
@@ -159,7 +167,9 @@ utils.clear_db(args.dbHost, args.dbName2, args.dbUser, args.dbPassword)
 node2 = subprocess.Popen([
 	binary,
 	'-workDir='+workDir2,
+	'-tcpHost='+args.tcpHost,
 	'-tcpPort='+args.tcpPort2,
+	'-httpHost='+args.httpHost,
 	'-httpPort='+args.httpPort2,
 	'-initDatabase=1',
 	'-dbHost='+args.dbHost,

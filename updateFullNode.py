@@ -15,7 +15,7 @@ if __name__ == "__main__":
 		httpPort1 = sys.argv[7]
 		host2 = sys.argv[8]
 		tcpPort2  = sys.argv[9]
-		newVal = '[[\"'+host1+'\",\"' + keyID1 + '\",\"' + pubKey1 + '\"],[\"'+host2+':'+tcpPort2+'\",\"' + keyID2 + '\",\"' + pubKey2 + '\"]]'
+		newVal = '[[\"'+host1+':7078\",\"' + keyID1 + '\",\"' + pubKey1 + '\"],[\"'+host2+':'+tcpPort2+'\",\"' + keyID2 + '\",\"' + pubKey2 + '\"]]'
 		baseUrl = "http://"+host1+":"+httpPort1+"/api/v2"
 		respUid = requests.get(baseUrl + '/getuid')
 		resultGetuid = respUid.json()
