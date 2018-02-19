@@ -1011,7 +1011,6 @@ class ApiTestCase(unittest.TestCase):
         data = {}
         data["Name"] = nameLang
         data["Trans"] = "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"
-        data["Trans"] = "{\"en\": \"fist\", \"ru\" : \"second\"}"
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         namePage = "Page_" + utils.generate_random_name()
@@ -1030,7 +1029,6 @@ class ApiTestCase(unittest.TestCase):
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
         content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Hello, World_en'}]
-        content["tree"] = [{'tag': 'text', 'text': 'Hello, fist'}]
         contentRu = {}
         contentRu["menu"] = 'default_menu'
         contentRu["menutree"] = []
