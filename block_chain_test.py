@@ -52,7 +52,8 @@ class BlockChainTestCase(unittest.TestCase):
         time.sleep(15)
         self.assertTrue(utils.compare_node_positions(host, db1, login, pas), "Incorrect order of nodes in block_chain2")
         self.assertTrue(utils.compare_node_positions(host, db2, login, pas), "Incorrect order of nodes in block_chain1")
-        self.assertEqual(utils.get_blockchain_hash(host, db1, login, pas), utils.get_blockchain_hash(host, db2, login, pas),"Different hash")
+        maxBlockId = min(utils.get_count_records_block_chain(host, db1, login, pas), utils.get_count_records_block_chain(host, db2, login, pas))
+        self.assertEqual(utils.get_blockchain_hash(host, db1, login, pas, maxBlockId), utils.get_blockchain_hash(host, db2, login, pas, maxBlockId),"Different hash")
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
