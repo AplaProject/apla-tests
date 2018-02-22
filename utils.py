@@ -166,7 +166,7 @@ def getCountDBObjects(dbHost, dbName, login, password):
 	return result
 
 
-def getAmounts(dbHost, dbName, login, password):
+def getUserTokenAmounts(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute("select amount from \"1_keys\"")
