@@ -38,11 +38,7 @@ class BlockChainTestCase(unittest.TestCase):
         count_contracts2 = utils.getCountDBObjects(host2, db2, login2, pas2)["contracts"]
         amounts1 = utils.getUserTokenAmounts(host1, db1, login1, pas1)
         amounts2 = utils.getUserTokenAmounts(host2, db2, login2, pas2)
-        summ = 0
-        i = 0
-        while i < len(amounts1):
-            summ = summ + int(amounts1[i][0])
-            i = i + 1
+        sumAmounts = sum(amount[0] for amount in amounts1)
         maxBlockId1 = funcs.get_max_block_id(config1["url"],self.data1["jwtToken"])
         self.data2 = utils.login(config2["url"], config1['private_key'])
         maxBlockId2 = funcs.get_max_block_id(config2["url"],self.data1["jwtToken"])
@@ -51,7 +47,7 @@ class BlockChainTestCase(unittest.TestCase):
         hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
         node_position = utils.compare_node_positions(host1, db1, login1, pas1, maxBlock)
         dict1 = dict(count_contract = count_contracts1,
-                     amounts = amounts1, summ = summ,
+                     amounts = amounts1, summ = sumAmounts,
                      hash = hash1,
                      node_pos = node_position)
         dict2 = dict(count_contract = count_contracts2,
