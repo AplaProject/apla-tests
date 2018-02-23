@@ -105,22 +105,21 @@ def compare_keys_cout(dbHost, dbName, login, password):
 			return True
 
 
-def compare_node_positions(dbHost, dbName, login, password):
+def compare_node_positions(dbHost, dbName, login, password, maxBlockId):
+	minBlock = maxBlockId - 11
+	request = "SELECT node_position FROM block_chain WHERE id>" + str(minBlock) + " AND id<" + str(maxBlockId)
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
-	cursor.execute("SELECT node_position FROM block_chain Order by id DESC LIMIT 10")
+	cursor.execute(request)
 	positions = cursor.fetchall()
-	print(positions)
-	firstKey = positions[1]
-	secondKey = ""
-	for position in positions:
-		i = 0
-		while i > 9:
-			if position[i] == position[i+1]:
-				return False
-				break
-			else:
-				i = + 2
+	i = 0
+	while i < 9:
+		if positions[i][0] == positions[i+1][0]:
+			return False
+			print(positions)
+			break
+		else:
+			i = i + 2
 	return True
 
 
@@ -165,3 +164,19 @@ def getCountDBObjects(dbHost, dbName, login, password):
 	result["params"] = params[0][0]
 	result["locals"] = locals[0][0]
 	return result
+
+
+def getUserTokenAmounts(dbHost, dbName, login, password):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("select amount from \"1_keys\"")
+	amounts = cursor.fetchall()
+	return amounts
+
+def get_blockchain_hash(dbHost, dbName, login, password, maxBlockId):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	request = "SELECT md5(array_agg(md5((t.id, t.hash, t.data, t.ecosystem_id, t.key_id, t.node_position, t.time, t.tx)::varchar))::varchar)  FROM (SELECT * FROM block_chain WHERE id <= " + str(maxBlockId) + " ORDER BY id) AS t"
+	cursor.execute(request)
+	hash = cursor.fetchall()
+	return hash

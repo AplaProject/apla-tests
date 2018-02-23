@@ -4,7 +4,10 @@ import json
 
 def call_get_api(url, data, token):
     resp = requests.get(url, data=data,  headers={"Authorization": token})
-    return resp.json()
+    if resp.status_code == 200:
+        return resp.json()
+    else:
+        return None
 
 def call_post_api(url, data, token):
     resp = requests.post(url, data=data,  headers={"Authorization": token})
@@ -41,3 +44,12 @@ def get_content(url, type, name, lang, token):
     endPoint = url + "/content/" + type + "/" + name
     res = call_post_api(endPoint, data, token)
     return res
+
+def get_max_block_id(url, token):
+    data = ""
+    endPoint = url + "/maxblockid"
+    result = call_get_api(endPoint, data, token)
+    if (result != None):
+        return result["max_block_id"]
+    else:
+        return None
