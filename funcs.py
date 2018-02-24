@@ -46,7 +46,4 @@ def get_max_block_id(url, token):
     data = ""
     endPoint = url + "/maxblockid"
     result = call_get_api(endPoint, data, token)
-    if (result != None):
-        return result["max_block_id"]
-    else:
-        return None
+    return result["max_block_id"]
