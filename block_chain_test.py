@@ -40,7 +40,7 @@ class BlockChainTestCase(unittest.TestCase):
         amounts2 = utils.getUserTokenAmounts(host2, db2, login2, pas2)
         sumAmounts = sum(amount[0] for amount in amounts1)
         maxBlockId1 = funcs.get_max_block_id(config1["url"],self.data1["jwtToken"])
-        self.data2 = utils.login(config2["url"], config1['private_key'])
+        self.data2 = utils.login(config2["url"], config2['private_key'])
         maxBlockId2 = funcs.get_max_block_id(config2["url"],self.data1["jwtToken"])
         maxBlock = max(maxBlockId2, maxBlockId1)
         hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
