@@ -67,6 +67,19 @@
 		"code": "{\n data {}\n conditions {}\n action {\n $result = AddressToId(\"0005-2070-2000-0006-0200\")\n }\n }",
 		"asert": "52070200000060200"
 	},
+	"idToAddress": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result = IdToAddress(\"52070200000060200\")\n }\n }",
+		"asert": ""
+	},
+	"one": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result = DBFind(\"contracts\").Columns(\"id,name,value\").WhereId(1).One(\"name\")\n } \n }",
+		"asert": ""
+	},
+	"row": {
+		"code": "{\n data {}\n conditions {}\n action {\n var ret map\n ret = DBFind(\"contracts\").Columns(\"id,value,name\").WhereId(1).Row()\n $result = ret[\"name\"]\n } \n }",
+		"asert": ""
+	},
+	
     "contains": {
 		"code": "{\n data {}\n conditions {}\n action {\n if Contains(\"Hello world\", `Hello`) {\n $result = \"Hello world\"\n }\n }\n }",
 		"asert": "Hello world"

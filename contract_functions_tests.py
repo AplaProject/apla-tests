@@ -74,6 +74,18 @@ class ContractFunctionsTestCase(unittest.TestCase):
     def test_contract_addressToId(self):
         contract = self.contracts["addressToId"]
         self.check_contract(contract["code"], contract["asert"])
+        
+    def test_contract_idToAddress(self):
+        contract = self.contracts["idToAddress"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_contract_one(self):
+        contract = self.contracts["one"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_contract_row(self):
+        contract = self.contracts["row"]
+        self.check_contract(contract["code"], contract["asert"])
 
     def test_contract_contains(self):
         contract = self.contracts["contains"]
