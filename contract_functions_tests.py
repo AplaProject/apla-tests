@@ -3,19 +3,24 @@ import utils
 import config
 import requests
 import json
+import time
 
 
 class ContractFunctionsTestCase(unittest.TestCase):
     def setUp(self):
         self.config = config.readMainConfig()
+        global url, prKey,token
         self.contracts = config.readFixtures("contracts")
-        self.data = utils.login(self.config["url"], self.config['private_key'])
+        url = self.config["url"]
+        prKey = self.config['private_key']
+        self.data = utils.login(url,prKey)
+        token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
-        sleep = self.config["time_wait_tx_in_block"]
-        url = self.config["url"]
-        status = utils.txstatus(url, sleep, result['hash'], jwtToken)
+        status = utils.txstatus(url,
+                                self.config["time_wait_tx_in_block"],
+                                result['hash'], jwtToken)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
@@ -25,15 +30,12 @@ class ContractFunctionsTestCase(unittest.TestCase):
         return code, name
 
     def create_contract(self, code):
-        data = {}
-        data["Wallet"] = ""
-        data["Value"] = code
-        data["Conditions"] = "ContractConditions(`MainCondition`)"
-        url = self.config["url"]
-        prKey = self.config['private_key']
-        token = self.data["jwtToken"]
-        result = utils.call_contract(url, prKey, "NewContract", data, token)
-        self.assertTxInBlock(result, self.data["jwtToken"])
+        data = {"Wallet": "",
+                "Value": code,
+                "Conditions": "ContractConditions(`MainCondition`)"}
+        result = utils.call_contract(url, prKey, "NewContract",
+                                     data, token)
+        self.assertTxInBlock(result, token)
 
     def check_contract(self, sourse, checkPoint):
         code, name = self.generate_name_and_code(sourse)
@@ -45,6 +47,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         res = utils.call_contract(url, prKey, name, {}, token)
         hash = res["hash"]
         result = utils.txstatus(url, sleep, hash, token)
+        print(result)
         self.assertIn(checkPoint, result["result"], "error")
 
     def test_contract_dbfind(self):
@@ -155,22 +158,65 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["updSysParam"]
         self.check_contract(contract["code"], contract["asert"])
 
-    def test_contract_updateSysParam(self):
-        contract = self.contracts["updateSysParam"]
-        self.check_contract(contract["code"], contract["asert"])
-
-    # branch 421-contractnames
     def test_contract_getContractById(self):
         contract = self.contracts["getContractById"]
         self.check_contract(contract["code"], contract["asert"])
 
-    # branch 421-contractnames
     def test_contract_getContractByName(self):
         contract = self.contracts["getContractByName"]
         self.check_contract(contract["code"], contract["asert"])
 
     def test_contract_random(self):
         contract = self.contracts["random"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_contract_langRes(self):
+        data = {"Name": "test",
+                "Trans": "{\"en\": \"test_en\", \"de\" : \"test_de\"}"}
+        utils.call_contract(url, prKey, "NewLang", data, token)
+        time.sleep(8)
+        contract = self.contracts["langRes"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_contract_dbInsert(self):
+        columns = """[{"name":"name","type":"string",
+        "index": "1",  "conditions":"true"},
+        {"name":"test","type":"string",
+        "index": "0",  "conditions":"true"}]"""
+        permission = """{"insert": "true",
+        "update" : "true","new_column": "true"}"""
+        data = {"Name": "test",
+                "Columns": columns,
+                "Permissions": permission}
+        utils.call_contract(url, prKey, "NewTable", data, token)
+        time.sleep(8)
+        contract = self.contracts["dbInsert"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_contract_dbUpdate(self):
+        contract = self.contracts["dbUpdate"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_contract_join(self):
+        contract = self.contracts["join"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_contract_split(self):
+        contract = self.contracts["split"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_contracts_dbUpdateExt(self):
+        contract = self.contracts["dbUpdateExt"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_contract_callContract(self):
+        contract = self.contracts["dbUpdateExt"]
+        code = "contract MyContract" + contract["code"]
+        data = {"Value": code, "Conditions": "true"}
+        res = utils.call_contract(url, prKey, "NewContract", data, token)
+        self.assertTxInBlock(res, token)
+        time.sleep(8)
+        contract = self.contracts["callContract"]
         self.check_contract(contract["code"], contract["asert"])
 
 if __name__ == '__main__':
