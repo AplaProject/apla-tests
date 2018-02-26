@@ -4,6 +4,7 @@ import config
 import random
 import string
 import psycopg2
+import json
 from collections import Counter
 
 
@@ -57,10 +58,17 @@ def call_contract(url, prKey, name, data, jvtToken):
 
 
 def txstatus(url, sleepTime, hsh, jvtToken):
-	time.sleep(sleepTime)
+	sec = 0
 	urlEnd = url + '/txstatus/' + hsh
-	resp = requests.get(urlEnd, headers={'Authorization': jvtToken})
-	return resp.json()
+	while sec < sleepTime:
+		time.sleep(1)
+		resp = requests.get(urlEnd, headers={'Authorization': jvtToken})
+		jresp = resp.json()
+		if len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp):
+			return resp.json()
+		else:
+			sec = sec + 1
+	return resp.json()	
 
 
 def generate_random_name():
