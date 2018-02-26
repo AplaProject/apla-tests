@@ -26,12 +26,12 @@
 		"information":"needs to create language resourse with name - test and localisacions:en- test_en, de- test_de"
 	},		
     "dbInsert": {
-		"code": "{\n data {}\n conditions {}\n action {\n $result=DBInsert(\"blocks\", \"name,value,conditions\", \"block2\", \"val1\", \"true\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n $result=DBInsert(\"test\", \"name,test\", \"block2\", \"val1\")\n }\n }",
 		"asert":"",
 		"information":"needs to create table \"test\" with \"name\" and \"test\" string columns"
 	},
     "dbUpdate": {
-		"code": "{\n data {}\n conditions {}\n action {\n DBUpdate(\"menu\", 1, \"value\", \"updated\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n $result=DBUpdate(\"test\", 1, \"test\", \"updated\")\n }\n }",
 		"asert": ""
 	},
     "dbUpdateExt": {

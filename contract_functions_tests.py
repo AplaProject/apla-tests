@@ -175,21 +175,38 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_dbInsert(self):
-        columns = """[{"name":"name","type":"string",
-        "index": "0",  "conditions":"true"},
-        {"name":"test","type":"string",
+        columns = """[{"name":"name","type":"varchar",
+        "index": "1",  "conditions":"true"},
+        {"name":"test","type":"varchar",
         "index": "0",  "conditions":"true"}]"""
         permission = """{"insert": "true",
         "update" : "true","new_column": "true"}"""
         data = {"Name": "test",
                 "Columns": columns,
                 "Permissions": permission}
-        utils.call_contract(url, prKey, "NewTable", data, token)
-        time.sleep(8)
+        result = utils.call_contract(url, prKey, "NewTable", data, token)
+        tx = utils.txstatus(url,
+                                self.config["time_wait_tx_in_block"],
+                                result['hash'], token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
         
-    def test_contract_dbUpdate(self):
+    def test_contract_dbUpdate(self):        
+        columns = """[{"name":"name","type":"varchar",
+        "index": "1",  "conditions":"true"},
+        {"name":"test","type":"varchar",
+        "index": "0",  "conditions":"true"}]"""
+        permission = """{"insert": "true",
+        "update" : "true","new_column": "true"}"""
+        data = {"Name": "test",
+                "Columns": columns,
+                "Permissions": permission}
+        result = utils.call_contract(url, prKey, "NewTable", data, token)
+        tx = utils.txstatus(url,
+                                self.config["time_wait_tx_in_block"],
+                                result['hash'], token)
+        contract = self.contracts["dbInsert"]
+        self.check_contract(contract["code"], contract["asert"])
         contract = self.contracts["dbUpdate"]
         self.check_contract(contract["code"], contract["asert"])
         
