@@ -26,19 +26,17 @@
 		"information":"needs to create language resourse with name - test and localisacions:en- test_en, de- test_de"
 	},		
     "dbInsert": {
-		"code": "{\n data {}\n conditions {}\n action {\n $result=DBInsert(\"tests\", \"name,test\", \"name\", \"val\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n DBInsert(\"tests\", \"name,test\", \"name\", \"val\")\n }\n }",
 		"asert":"1",
 		"information":"needs to create table \"test\" with \"name\" and \"test\" string columns"
 	},
     "dbUpdate": {
-		"code": "{\n data {}\n conditions {}\n action {\n $result=DBUpdate(\"test2\", 1, \"name,case\", \"test_edited\", \"case_edited\")\n }\n }",
-		"asert": "1",
-		"information": "needs to create table \"test2\" with \"name\" and \"case\" string columns and to add 1 record there"
+		"code": "{\n data {}\n conditions {}\n action {\n DBUpdate(\"menu\", 1, \"value\", \"updated\")\n }\n }",
+		"asert": ""
 	},
     "dbUpdateExt": {
-		"code": "{\n data {}\n conditions {}\n action {\n $result=DBUpdateExt(\"test3\", \"name\", \"myTest\", \"name,case\", \"mytest_edited\", \"myCase_edited\")\n }\n }",
-		"asert": "1",
-		"information": "needs to create table \"test3\" with \"name\" and \"case\" string columns and to add 1 record with name=myTest"
+		"code": "{\n data {}\n conditions {}\n action {\n DBUpdateExt(\"menu\", \"name\", \"default_menu\", \"value\", \"updatedByName\")\n }\n }",
+		"asert": ""
 	},	
     "findEcosystem": {
 		"code": "{\n data {}\n conditions {}\n action {\n $result=FindEcosystem(`MyEcosystem`)\n }\n }",
@@ -46,9 +44,13 @@
 		"information": "needs to create ecosystem with name MyEcosystem"
 	},
     "callContract": {
-		"code": "{\n data {}\n conditions {}\n action {\n CallContract(\"MyContract\", \"\")\n }\n }",
-		"asert": "",
+		"code": "{\n data {}\n conditions {}\n action {\n $result=CallContract(\"MyContract\", \"\")\n }\n }",
+		"asert": "Hello",
 		"information": "needs to create Contact MyContract"
+	},
+	"MyContract": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result=\"Hello\"\n }\n }",
+		"asert": ""
 	},
     "contractAccess":{
 		"code": "{\n data {}\n conditions {}\n action {\n ContractAccess(\"AccesContr\")\n }\n }",
