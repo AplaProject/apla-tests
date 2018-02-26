@@ -78,14 +78,10 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["addressToId"]
         self.check_contract(contract["code"], contract["asert"])
         
-    def test_contract_idToAddress(self):
-        contract = self.contracts["idToAddress"]
-        self.check_contract(contract["code"], contract["asert"])
-        
     def test_contract_one(self):
         contract = self.contracts["one"]
         self.check_contract(contract["code"], contract["asert"])
-        
+    
     def test_contract_row(self):
         contract = self.contracts["row"]
         self.check_contract(contract["code"], contract["asert"])
@@ -180,7 +176,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         
     def test_contract_dbInsert(self):
         columns = """[{"name":"name","type":"string",
-        "index": "1",  "conditions":"true"},
+        "index": "0",  "conditions":"true"},
         {"name":"test","type":"string",
         "index": "0",  "conditions":"true"}]"""
         permission = """{"insert": "true",
@@ -210,12 +206,11 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_callContract(self):
-        contract = self.contracts["dbUpdateExt"]
+        contract = self.contracts["myContract"]
         code = "contract MyContract" + contract["code"]
         data = {"Value": code, "Conditions": "true"}
         res = utils.call_contract(url, prKey, "NewContract", data, token)
-        self.assertTxInBlock(res, token)
-        time.sleep(8)
+        time.sleep(10)
         contract = self.contracts["callContract"]
         self.check_contract(contract["code"], contract["asert"])
 

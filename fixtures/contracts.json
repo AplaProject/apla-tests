@@ -26,8 +26,8 @@
 		"information":"needs to create language resourse with name - test and localisacions:en- test_en, de- test_de"
 	},		
     "dbInsert": {
-		"code": "{\n data {}\n conditions {}\n action {\n DBInsert(\"tests\", \"name,test\", \"name\", \"val\")\n }\n }",
-		"asert":"1",
+		"code": "{\n data {}\n conditions {}\n action {\n $result=DBInsert(\"blocks\", \"name,value,conditions\", \"block2\", \"val1\", \"true\")\n }\n }",
+		"asert":"",
 		"information":"needs to create table \"test\" with \"name\" and \"test\" string columns"
 	},
     "dbUpdate": {
@@ -44,11 +44,11 @@
 		"information": "needs to create ecosystem with name MyEcosystem"
 	},
     "callContract": {
-		"code": "{\n data {}\n conditions {}\n action {\n $result=CallContract(\"MyContract\", \"\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n var par map\n CallContract(\"MyContract\", par)\n }\n }",
 		"asert": "Hello",
 		"information": "needs to create Contact MyContract"
 	},
-	"MyContract": {
+	"myContract": {
 		"code": "{\n data {}\n conditions {}\n action {\n $result=\"Hello\"\n }\n }",
 		"asert": ""
 	},
@@ -74,12 +74,12 @@
 		"asert": ""
 	},
 	"one": {
-		"code": "{\n data {}\n conditions {}\n action {\n $result = DBFind(\"contracts\").Columns(\"id,name,value\").WhereId(1).One(\"name\")\n } \n }",
-		"asert": ""
+		"code": "{\n data {}\n conditions {}\n action {\n $result = DBFind(\"pages\").Columns(\"id,name\").WhereId(1).One(\"name\")\n } \n }",
+		"asert": "default_page"
 	},
 	"row": {
-		"code": "{\n data {}\n conditions {}\n action {\n var ret map\n ret = DBFind(\"contracts\").Columns(\"id,value,name\").WhereId(1).Row()\n $result = ret[\"name\"]\n } \n }",
-		"asert": ""
+		"code": "{\n data {}\n conditions {}\n action {\n var ret map\n ret = DBFind(\"pages\").Columns(\"id,name\").WhereId(1).Row()\n $result = ret[\"name\"]\n } \n }",
+		"asert": "default_page"
 	},
 	
     "contains": {
