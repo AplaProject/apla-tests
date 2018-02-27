@@ -2,6 +2,8 @@ import requests
 import time
 import sys
 import utils
+from random import choice
+from string import ascii_uppercase
 
 
 if __name__ == "__main__":
@@ -29,7 +31,7 @@ if __name__ == "__main__":
 		timeToken = resultLogin["refresh"]
 		jvtToken = 'Bearer ' + resultLogin["token"]
 		
-		contName = 'con_' + utils.generate_random_name()
+		contName = 'con_' + ''.join(choice(ascii_uppercase) for i in range(12))
 		code = '{data {}conditions {} action {$result=DBInsert(\"keys\", \"id,pub,amount\", \"' + id + '\", \"' + pub + '\", \"' + amount + '\") }}'
 		updateKeysCode = 'contract '+contName+code
 		dataContKeys = {'Wallet': '', 'Value': updateKeysCode, 'Conditions': """ContractConditions(`MainCondition`)"""}
