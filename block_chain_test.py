@@ -55,7 +55,11 @@ class BlockChainTestCase(unittest.TestCase):
                      summ = 100000000000000000100000000,
                      hash = hash2,
                      node_pos = True)
-        self.assertDictEqual(dict1, dict2, "Test two_nodes is faild")
+        msg = "Test two_nodes is faild. contracts: \n"
+        msg += str(count_contracts1) + str(amounts1) + str(hash1) + str(node_position) + "\n"
+        msg += str(count_contracts2) + str(amounts1) + str(hash1) + str(node_position) + "\n"
+        msg += "Amounts summ: " + str(sumAmounts)
+        self.assertDictEqual(dict1, dict2, msg)
 
         
 if __name__ == "__main__":
