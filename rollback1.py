@@ -11,6 +11,9 @@ class Rollback1TestCase(unittest.TestCase):
     
     def call(self, name, data):
         resp = utils.call_contract(url, prKey, name, data, token)
+        res = utils.txstatus(url, waitTx,
+                       resp['hash'], token)
+        return res
         
     def create_contract(self, data):
         code,name = utils.generate_name_and_code("")
@@ -21,76 +24,90 @@ class Rollback1TestCase(unittest.TestCase):
                      "Conditions": "ContractConditions(`MainCondition`)"}
         else:
             dataC = data
-        self.call("NewContract", dataC)
+        res = self.call("NewContract", dataC)
+        print(res)
         return name, code
         
     def create_ecosystem(self):
         data = {"name": "Ecosys" + utils.generate_random_name()}
-        self.call("NewEcosystem", data)
+        res = self.call("NewEcosystem", data)
+        print(res)
         
     def money_transfer(self):
         data = {"Recipient": "0005-2070-2000-0006-0200",
                 "Amount": "1000"}
-        self.call("MoneyTransfer", data)
+        res = self.call("MoneyTransfer", data)
+        print(res)
+        
         
     def edit_contract(self,contract, code):
         data2 = {"Id": funcs.get_contract_id(url, contract, token),
                  "Value": code,
                  "Conditions": "true",
                  "WalletId": "0005-2070-2000-0006-0200"}
-        self.call("EditContract", data2)
+        res = self.call("EditContract", data2)
+        print(res)
         
     def activate_contract(self, name):
         data = {"Id": funcs.get_contract_id(url, name, token)}
-        self.call("ActivateContract", data)
+        res = self.call("ActivateContract", data)
+        print(res)
         
     def deactivate_contract(self, name):
         data = {"Id": funcs.get_contract_id(url, name, token)}
-        self.call("DeactivateContract", data)
+        res = self.call("DeactivateContract", data)
+        print(res)
         
     def new_parameter(self):
         name = "Par_" + utils.generate_random_name()
         data = {"Name": name,
                 "Value": "test", "Conditions": "true"}
-        self.call("NewParameter", data)
+        res = self.call("NewParameter", data)
+        print(res)
         return name
     
     def edit_parameter(self, name):
         data = {"Id": funcs.get_parameter_id(url, name, token),
                 "Value": "test_edited", "Conditions": "true"}
-        self.call("EditParameter", data)
+        res = self.call("EditParameter", data)
+        print(res)
         
     def new_menu(self):
         name = "Menu_" + utils.generate_random_name()
         data = {"Name": name,
                 "Value": "Item1", "Conditions": "true"}
-        self.call("NewMenu", data)
+        res = self.call("NewMenu", data)
+        print(res)
         return name
     
     def edit_menu(self):
         dataEdit = {"Id": funcs.get_count(url, "menu", token),
                     "Value": "ItemEdited", "Conditions": "true"}
-        self.call("EditMenu", dataEdit)
+        res = self.call("EditMenu", dataEdit)
+        print(res)
         
     def append_memu(self):
         count = funcs.get_count(url, "menu", token)
         dataEdit = {"Id": funcs.get_count(url, "menu", token),
                     "Value": "AppendedItem", "Conditions": "true"}
-        self.call("AppendMenu", dataEdit)
+        res = self.call("AppendMenu", dataEdit)
+        print(res)
         
     def new_page(self):
         data = {"Name": "Page_" + utils.generate_random_name(),
                 "Value": "Hello page!",
                 "Conditions": "true",
                 "Menu": "default_menu"}
-        self.call("NewPage", data)
+        res = self.call("NewPage", data)
+        print(res)
         
     def edit_page(self):
         dataEdit = {"Id": funcs.get_count(url, "pages", token),
                     "Value": "Good by page!",
                     "Conditions": "true",
                     "Menu": "default_menu"}
-        self.call("EditPage", dataEdit)
+        res = self.call("EditPage", dataEdit)
+        print(res)
         
     def append_page(self):
         count = funcs.get_count(url, "pages", token)
@@ -98,19 +115,22 @@ class Rollback1TestCase(unittest.TestCase):
                     "Value": "Good by!",
                     "Conditions": "true",
                     "Menu": "default_menu"}
-        self.call("AppendPage", dataEdit)
+        res = self.call("AppendPage", dataEdit)
+        print(res)
         
     def new_block(self):
         name = "Block_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Hello page!",
                 "Conditions": "true"}
-        self.call("NewBlock", data)
+        res = self.call("NewBlock", data)
+        print(res)
         
     def edit_block(self):
         count = funcs.get_count(url, "blocks", token)
         dataEdit = {"Id": count, "Value": "Good by!",
                     "Conditions": "true"}
-        self.call("EditBlock", dataEdit)
+        res = self.call("EditBlock", dataEdit)
+        print(res)
         
     def new_table(self):
         column = """[{"name":"MyName","type":"varchar",
@@ -120,7 +140,8 @@ class Rollback1TestCase(unittest.TestCase):
         data = {"Name": "Tab_" + utils.generate_random_name(),
                 "Columns": column,
                 "Permissions": permission}
-        self.call("NewTable", data)
+        res = self.call("NewTable", data)
+        print(res)
         return data["Name"]
 
     def edit_table(self, name):
@@ -131,7 +152,8 @@ class Rollback1TestCase(unittest.TestCase):
         dataEdit = {"Name": name,
                     "Columns": column,
                     "Permissions": permission}
-        self.call("EditTable", dataEdit)
+        res = self.call("EditTable", dataEdit)
+        print(res)
 
     def new_column(self, table):
         name = "Col_" + utils.generate_random_name()
@@ -140,25 +162,29 @@ class Rollback1TestCase(unittest.TestCase):
                    "Type": "number",
                    "Index": "0",
                    "Permissions": "true"}
-        self.call("NewColumn", dataCol)
+        res = self.call("NewColumn", dataCol)
+        print(res)
         return name
 
     def edit_column(self, table, column):
         dataEdit = {"TableName": table, "Name": column,
                     "Permissions": "false"}
-        self.call("EditColumn", dataEdit)
+        res = self.call("EditColumn", dataEdit)
+        print(res)
 
     def new_lang(self):
         name = "Lang_" + utils.generate_random_name()
         data = {"Name": name,
                 "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
-        self.call("NewLang", data)
+        res = self.call("NewLang", data)
+        print(res)
         return name
 
     def edit_lang(self, name):
         dataEdit = {"Name": name,
                     "Trans": "{\"en\": \"true\", \"ru\" : \"true\"}"}
-        self.call("EditLang", dataEdit)
+        res = self.call("EditLang", dataEdit)
+        print(res)
 
     def new_sign(self):
         name = "Sign_" + utils.generate_random_name()
@@ -169,7 +195,8 @@ class Rollback1TestCase(unittest.TestCase):
         data = {"Name": name,
                 "Value": value,
                 "Conditions": "true"}
-        self.call("NewSign", data)
+        res = self.call("NewSign", data)
+        print(res)
         return name
 
     def edit_sign(self, name):
@@ -181,10 +208,11 @@ class Rollback1TestCase(unittest.TestCase):
         dataEdit = {"Id": funcs.get_count(url, "signatures", token),
                    "Value": valueE,
                    "Conditions": "true"}
-        self.call("EditSign", dataEdit)
+        res = self.call("EditSign", dataEdit)
+        print(res)
         
     def test_rollback1(self):
-        global url, prKey, token
+        global url, prKey, token, waitTx
         self.conf = config.readMainConfig()
         url = self.conf["url"]
         prKey = self.conf['private_key']
@@ -192,6 +220,7 @@ class Rollback1TestCase(unittest.TestCase):
         db = self.conf["dbName"]
         login = self.conf["login"]
         pas = self.conf["pass"]
+        waitTx = self.conf["time_wait_tx_in_block"]
         dbInformation = utils.getCountDBObjects(host, db, login, pas)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'w') as fconf:
@@ -201,40 +230,26 @@ class Rollback1TestCase(unittest.TestCase):
         self.create_ecosystem()
         self.money_transfer()
         contract,code = self.create_contract("")
-        time.sleep(8)
         self.edit_contract(contract,code)
-        time.sleep(8)
         self.activate_contract(contract)
-        time.sleep(8)
         self.deactivate_contract(contract)
         param = self.new_parameter()
-        time.sleep(8)
         self.edit_parameter(param)
         menu = self.new_menu()
-        time.sleep(8)
         self.edit_menu()
-        time.sleep(8)
         self.append_memu()
         self.new_page()
-        time.sleep(8)
         self.edit_page()
-        time.sleep(8)
         self.append_page()
         self.new_block()
-        time.sleep(8)
         self.edit_block()
         table = self.new_table()
-        time.sleep(8)
         self.edit_table(table)
-        time.sleep(8)
         column = self.new_column(table)
-        time.sleep(8)
         self.edit_column(table, column)
         lang = self.new_lang()
-        time.sleep(8)
         self.edit_lang(lang)
         sign = self.new_sign()
-        time.sleep(8)
         self.edit_sign(sign)
         time.sleep(20)
         

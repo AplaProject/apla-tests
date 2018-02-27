@@ -27,7 +27,9 @@ class BlockChainTestCase(unittest.TestCase):
         host1 = config1["dbHost"]
         host2 = config2["dbHost"]
         ts_count = 30
-        self.data1 = utils.login(config1["url"], config1['private_key'])
+        print(config2['private_key'])
+        print(config1['private_key'])
+        self.data1 = utils.login(config1["url"], config2['private_key'])
         i = 1
         while i < ts_count:
             contName = self.create_contract(config1["url"], config1['private_key'])
