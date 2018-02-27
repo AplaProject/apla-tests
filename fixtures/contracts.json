@@ -35,7 +35,7 @@
 		"asert": ""
 	},
     "dbUpdateExt": {
-		"code": "{\n data {}\n conditions {}\n action {\n DBUpdateExt(\"menu\", \"name\", \"default_menu\", \"value\", \"updatedByName\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n DBUpdateExt(\"test\", \"name\", \"block2\", \"test\", \"updatedByName\")\n }\n }",
 		"asert": ""
 	},	
     "findEcosystem": {
@@ -70,8 +70,8 @@
 		"asert": "52070200000060200"
 	},
 	"idToAddress": {
-		"code": "{\n data {}\n conditions {}\n action {\n $result = IdToAddress(\"52070200000060200\")\n }\n }",
-		"asert": ""
+		"code": "{\n data {}\n conditions {}\n action {\n $result = IdToAddress(52070200000060200)\n }\n }",
+		"asert": "0005-2070-2000-0006-0200"
 	},
 	"one": {
 		"code": "{\n data {}\n conditions {}\n action {\n $result = DBFind(\"pages\").Columns(\"id,name\").WhereId(1).One(\"name\")\n } \n }",
