@@ -27,9 +27,7 @@ class BlockChainTestCase(unittest.TestCase):
         host1 = config1["dbHost"]
         host2 = config2["dbHost"]
         ts_count = 30
-        print(config2['private_key'])
-        print(config1['private_key'])
-        self.data1 = utils.login(config1["url"], config2['private_key'])
+        self.data1 = utils.login(config1["url"], config1['private_key'])
         i = 1
         while i < ts_count:
             contName = self.create_contract(config1["url"], config1['private_key'])
@@ -43,7 +41,7 @@ class BlockChainTestCase(unittest.TestCase):
         sumAmounts = sum(amount[0] for amount in amounts1)
         maxBlockId1 = funcs.get_max_block_id(config1["url"],self.data1["jwtToken"])
         self.data2 = utils.login(config2["url"], config1['private_key'])
-        maxBlockId2 = funcs.get_max_block_id(config2["url"],self.data1["jwtToken"])
+        maxBlockId2 = funcs.get_max_block_id(config2["url"],self.data2["jwtToken"])
         maxBlock = max(maxBlockId2, maxBlockId1)
         hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
         hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
