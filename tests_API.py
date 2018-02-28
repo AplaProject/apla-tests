@@ -1059,6 +1059,24 @@ class ApiTestCase(unittest.TestCase):
         res = self.call("UpdateSysParam", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
+    def test_get_systemparams_all_params(self):
+        asserts = ["list"]
+        res = self.check_get_api("/systemparams", "", asserts)
+        self.assertEqual(60, len(res["list"]))
+
+    def test_get_systemparams_some_param(self):
+        asserts = ["list"]
+        param = "gap_between_blocks"
+        res = self.check_get_api("/systemparams/?names=" + param, "", asserts)
+        self.assertEqual(1, len(res["list"]))
+        self.assertEqual(param, res["list"][0]["name"])
+
+    def test_get_systemparams_incorrect_param(self):
+        asserts = ["list"]
+        param = "not_exist_parameter"
+        res = self.check_get_api("/systemparams/?names="+param, "", asserts)
+        self.assertEqual(0, len(res["list"]))
+
     def test_get_table_vde(self):
         asserts = ["name"]
         data = {"vde": "true"}
