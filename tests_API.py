@@ -1089,6 +1089,14 @@ class ApiTestCase(unittest.TestCase):
         res = self.check_get_api("/contracts/?limit="+str(limit), "", asserts)
         self.assertEqual(limit, len(res["list"]))
 
+    def test_get_contracts_offset(self):
+        asserts = ["list"]
+        res = self.check_get_api("/contracts", "", asserts)
+        count = res["count"]
+        offset = count
+        res = self.check_get_api("/contracts/?offset=" + str(offset), "", asserts)
+        self.assertEqual(None, res["list"])
+
     def test_get_table_vde(self):
         asserts = ["name"]
         data = {"vde": "true"}
