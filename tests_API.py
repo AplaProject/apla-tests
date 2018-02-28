@@ -1077,6 +1077,12 @@ class ApiTestCase(unittest.TestCase):
         res = self.check_get_api("/systemparams/?names="+param, "", asserts)
         self.assertEqual(0, len(res["list"]))
 
+    def test_get_contracts(self):
+        limit = 25 # Default value without parameters
+        asserts = ["list"]
+        res = self.check_get_api("/contracts", "", asserts)
+        self.assertEqual(limit, len(res["list"]))
+
     def test_get_table_vde(self):
         asserts = ["name"]
         data = {"vde": "true"}
