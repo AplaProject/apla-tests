@@ -4,6 +4,7 @@ import config
 import requests
 import json
 import funcs
+import os
 
 
 class ApiTestCase(unittest.TestCase):
@@ -638,15 +639,13 @@ class ApiTestCase(unittest.TestCase):
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_new_table(self):
-        data = {}
-        data["Name"] = "Tab_" + utils.generate_random_name()
-        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
-        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        data["Columns"] = col1 + col2
-        per1 = "{\"insert\": \"false\","
-        per2 = " \"update\" : \"true\","
-        per3 = " \"new_column\": \"true\"}"
-        data["Permissions"] = per1 + per2 + per3
+        column = """[{"name":"MyName","type":"varchar",
+        "index": "1",  "conditions":"true"}]"""
+        permission = """{"insert": "false",
+        "update" : "true","new_column": "true"}"""
+        data = {"Name": "Tab_" + utils.generate_random_name(),
+                "Columns": column,
+                "Permissions": permission}
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
@@ -950,9 +949,8 @@ class ApiTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_new_lang(self):
-        data = {}
-        data["Name"] = "Lang_" + utils.generate_random_name()
-        data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
+        data = {"Name": "Lang_" + utils.generate_random_name(),
+                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
@@ -1068,6 +1066,15 @@ class ApiTestCase(unittest.TestCase):
         asserts = ["result"]
         data = {}
         #self.check_post_api("/vde/create", data, asserts)
+        
+    def test_import(self):
+        path = os.path.join(os.getcwd(), "fixtures", "backup.sim")
+        with open(path, 'r') as f:
+            fileData = f.read()
+        data = {"Data": fileData}
+        res = self.call("Import", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
 
 if __name__ == '__main__':
     unittest.main()
