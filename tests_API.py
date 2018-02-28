@@ -1083,6 +1083,13 @@ class ApiTestCase(unittest.TestCase):
         res = self.check_get_api("/contracts", "", asserts)
         self.assertEqual(limit, len(res["list"]))
 
+    def test_get_contracts_limit(self):
+        limit = 3
+        asserts = ["list"]
+        res = self.check_get_api("/contracts/?limit="+str(limit), "", asserts)
+        print(len(res["list"]))
+        self.assertEqual(limit, len(res["list"]))
+
     def test_get_table_vde(self):
         asserts = ["name"]
         data = {"vde": "true"}
