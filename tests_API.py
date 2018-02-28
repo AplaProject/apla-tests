@@ -21,6 +21,7 @@ class ApiTestCase(unittest.TestCase):
         self.assertIn("hash", result)
         hash = result['hash']
         status = utils.txstatus(url, pause, hash, jwtToken)
+        print(status)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return status["blockid"]
@@ -48,6 +49,7 @@ class ApiTestCase(unittest.TestCase):
 
     def call(self, name, data):
         resp = utils.call_contract(url, prKey, name, data, token)
+        print(resp)
         resp = self.assertTxInBlock(resp, token)
         return resp
 
@@ -949,9 +951,11 @@ class ApiTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_new_lang(self):
-        data = {"Name": "Lang_" + utils.generate_random_name(),
-                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
+        data = {}
+        data["Name"] = "Lang_" + utils.generate_random_name()
+        data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
         res = self.call("NewLang", data)
+        print(res)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_edit_lang(self):
@@ -1067,13 +1071,6 @@ class ApiTestCase(unittest.TestCase):
         data = {}
         #self.check_post_api("/vde/create", data, asserts)
         
-    def test_import(self):
-        path = os.path.join(os.getcwd(), "fixtures", "backup.sim")
-        with open(path, 'r') as f:
-            fileData = f.read()
-        data = {"Data": fileData}
-        res = self.call("Import", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
 
 if __name__ == '__main__':
