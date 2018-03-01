@@ -1079,6 +1079,13 @@ class ApiTestCase(unittest.TestCase):
         childrenText = res["tree"][1]["children"][0]["text"]
         self.assertEqual("#a#", childrenText)
 
+    # AP-498
+    def test_get_content_source_empty(self):
+        name = "default_page"
+        asserts = ["tree"]
+        res = self.check_post_api("/content/source/" + name, "", asserts)
+        self.assertEqual(0, len(res["tree"]))
+
     def test_get_table_vde(self):
         asserts = ["name"]
         data = {"vde": "true"}
