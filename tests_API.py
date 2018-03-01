@@ -39,6 +39,7 @@ class ApiTestCase(unittest.TestCase):
         result = funcs.call_post_api(end, data, token)
         for key in keys:
             self.assertIn(key, result)
+        return result
             
     def get_error_api(self, endPoint, data):
         end = url + endPoint
@@ -1060,6 +1061,23 @@ class ApiTestCase(unittest.TestCase):
         data = {"Name": "max_block_user_tx", "Value" : "2"}
         res = self.call("UpdateSysParam", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+
+    # AP-498
+    def test_get_content_source(self):
+        # Create new page for test
+        name = "Page_" + utils.generate_random_name()
+        data = {}
+        data["Name"] = name
+        data["Value"] = "SetVar(a,\"Hello\") \n Div(Body: #a#)"
+        data["Conditions"] = "true"
+        data["Menu"] = "default_menu"
+        res = self.call("NewPage", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # Test
+        asserts = ["tree"]
+        res = self.check_post_api("/content/source/"+name, "", asserts)
+        childrenText = res["tree"][1]["children"][0]["text"]
+        self.assertEqual("#a#", childrenText)
 
     def test_get_table_vde(self):
         asserts = ["name"]
