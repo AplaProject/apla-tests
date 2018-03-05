@@ -250,5 +250,9 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["callContract"]
         self.check_contract(contract["code"], contract["asert"])
 
+    def test_getBlock(self):
+        contract = self.contracts["getBlock"]
+        self.check_contract(contract["code"], contract["asert"])
+
 if __name__ == '__main__':
     unittest.main()
