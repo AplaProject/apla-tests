@@ -169,5 +169,50 @@
 	"random": {
 		"code": "{\n data {}\n conditions {}\n action {$result = Str(Random(5,6))}\n }",
 		"asert": "5"
+	},
+
+	"type_bool": {
+		"code": "{\n data {}\n conditions {}\n action {var i, j, k bool \n i = true \n j = false \n k = !j \n $result = (i && j) || k }\n }",
+		"asert": "true"
+	},
+
+	"type_bytes": {
+		"code": "{\n data {}\n conditions {}\n action {var b bytes \n b = 255 \n $result = b}\n }",
+		"asert": "255"
+	},
+
+	"type_int": {
+		"code": "{\n data {}\n conditions {}\n action {var i, j int \n i = 43 \n j = -100 \n $result = i + j}\n }",
+		"asert": "-57"
+	},
+
+	"type_address": {
+		"code": "{\n data {}\n conditions {}\n action {var a address \n a = 1 + 1000000 \n $result = a}\n }",
+		"asert": "1000001"
+	},
+
+	"type_array": {
+		"code": "{\n data {}\n conditions {}\n action {var a,b,c array \n a[0] = 2500 \n a[1] = \"hello\" \n a[2] = 2.12 \n b = a \n $result = Str(b) + a[1]}\n }",
+		"asert": "[2500 hello 2.12]hello"
+	},
+
+	"type_map": {
+		"code": "{\n data {}\n conditions {}\n action {var m, m1 map \n m[\"id\"] = 1 \n m[\"name\"] = \"hello\" \n m[\"price\"] = 14.95 \n m1 = m \n $result = Str(m1[\"id\"]) + m1[\"name\"] + Str(m[\"price\"])}\n }",
+		"asert": "1hello14.95"
+	},
+
+	"type_money": {
+		"code": "{\n data {}\n conditions {}\n action {var m money \n m = 12000000 \n $result = m}\n }",
+		"asert": "12000000"
+	},
+
+	"type_float": {
+		"code": "{\n data {}\n conditions {}\n action {var f float \n f = 99.9 - 100 \n $result = f}\n }",
+		"asert": "-0.09999999999999432"
+	},
+
+	"type_string": {
+		"code": "{\n data {}\n conditions {}\n action {var s, s1 string \n s = \"hello\" \n s1 = \"world\" \n $result = s+s1}\n }",
+		"asert": "helloworld"
 	}
 }
