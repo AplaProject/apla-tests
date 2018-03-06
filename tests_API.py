@@ -1064,6 +1064,30 @@ class ApiTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
 
+    # AP-498
+    def test_get_content_source(self):
+        # Create new page for test
+        name = "Page_" + utils.generate_random_name()
+        data = {}
+        data["Name"] = name
+        data["Value"] = "SetVar(a,\"Hello\") \n Div(Body: #a#)"
+        data["Conditions"] = "true"
+        data["Menu"] = "default_menu"
+        res = self.call("NewPage", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # Test
+        asserts = ["tree"]
+        res = self.check_post_api("/content/source/"+name, "", asserts)
+        childrenText = res["tree"][1]["children"][0]["text"]
+        self.assertEqual("#a#", childrenText)
+
+    # AP-498
+    def test_get_content_source_empty(self):
+        name = "default_page"
+        asserts = ["tree"]
+        res = self.check_post_api("/content/source/" + name, "", asserts)
+        self.assertEqual(0, len(res["tree"]))
+
     def test_get_back_api_version(self):
         asserts = ["."]
         data = ""
