@@ -33,6 +33,7 @@ class ApiTestCase(unittest.TestCase):
         result = funcs.call_get_api(end, data, token)
         for key in keys:
             self.assertIn(key, result)
+        return result
 
     def check_post_api(self, endPoint, data, keys):
         end = url + endPoint
@@ -1062,6 +1063,7 @@ class ApiTestCase(unittest.TestCase):
         res = self.call("UpdateSysParam", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
+
     # AP-498
     def test_get_content_source(self):
         # Create new page for test
@@ -1085,6 +1087,56 @@ class ApiTestCase(unittest.TestCase):
         asserts = ["tree"]
         res = self.check_post_api("/content/source/" + name, "", asserts)
         self.assertEqual(0, len(res["tree"]))
+
+    def test_get_back_api_version(self):
+        asserts = ["."]
+        data = ""
+        self.check_get_api("/version", data, asserts)
+        
+    def test_get_systemparams_all_params(self):
+        asserts = ["list"]
+        res = self.check_get_api("/systemparams", "", asserts)
+        self.assertEqual(60, len(res["list"]))
+
+    def test_get_systemparams_some_param(self):
+        asserts = ["list"]
+        param = "gap_between_blocks"
+        res = self.check_get_api("/systemparams/?names=" + param, "", asserts)
+        self.assertEqual(1, len(res["list"]))
+        self.assertEqual(param, res["list"][0]["name"])
+
+    def test_get_systemparams_incorrect_param(self):
+        asserts = ["list"]
+        param = "not_exist_parameter"
+        res = self.check_get_api("/systemparams/?names="+param, "", asserts)
+        self.assertEqual(0, len(res["list"]))
+
+    def test_get_contracts(self):
+        limit = 25 # Default value without parameters
+        asserts = ["list"]
+        res = self.check_get_api("/contracts", "", asserts)
+        self.assertEqual(limit, len(res["list"]))
+
+    def test_get_contracts_limit(self):
+        limit = 3
+        asserts = ["list"]
+        res = self.check_get_api("/contracts/?limit="+str(limit), "", asserts)
+        self.assertEqual(limit, len(res["list"]))
+
+    def test_get_contracts_offset(self):
+        asserts = ["list"]
+        res = self.check_get_api("/contracts", "", asserts)
+        count = res["count"]
+        offset = count
+        res = self.check_get_api("/contracts/?offset=" + str(offset), "", asserts)
+        self.assertEqual(None, res["list"])
+
+    def test_get_contracts_empty(self):
+        limit = 1000
+        offset = 1000
+        asserts = ["list"]
+        res = self.check_get_api("/contracts/?limit="+str(limit)+"&offset="+str(offset), "", asserts)
+        self.assertEqual(None, res["list"])
 
     def test_get_table_vde(self):
         asserts = ["name"]
