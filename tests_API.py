@@ -1096,7 +1096,7 @@ class ApiTestCase(unittest.TestCase):
     def test_get_systemparams_all_params(self):
         asserts = ["list"]
         res = self.check_get_api("/systemparams", "", asserts)
-        self.assertEqual(60, len(res["list"]))
+        self.assertGreater(len(res["list"]), 0, "Count of systemparams not Greater 0: " + str(len(res["list"])))
 
     def test_get_systemparams_some_param(self):
         asserts = ["list"]
