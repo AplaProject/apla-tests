@@ -1063,6 +1063,12 @@ class ApiTestCase(unittest.TestCase):
         res = self.call("UpdateSysParam", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
+
+    def test_get_back_api_version(self):
+        asserts = ["."]
+        data = ""
+        self.check_get_api("/version", data, asserts)
+        
     def test_get_systemparams_all_params(self):
         asserts = ["list"]
         res = self.check_get_api("/systemparams", "", asserts)
