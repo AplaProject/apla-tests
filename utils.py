@@ -113,29 +113,22 @@ def compare_keys_cout(dbHost, dbName, login, password):
 			return True
 
 
-def compare_node_positions(dbHost, dbName, login, password, maxBlockId, nodes):
-	count_rec = nodes * 3 + nodes
-	minBlock = maxBlockId - count_rec + 1
+def compare_node_positions(dbHost, dbName, login, password, maxBlockId):
+	minBlock = maxBlockId - 11
 	request = "SELECT node_position FROM block_chain WHERE id>" + str(minBlock) + " AND id<" + str(maxBlockId)
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute(request)
 	positions = cursor.fetchall()
-	res = True
-	j = 0
-	while j < nodes:
-		node = 0
-		i = 0
-		while i < len(positions):
-			if positions[i][0] == j:
-				node = node + 1
-			i = i + 1
-		if node < 3:
-			res = False
+	i = 0
+	while i < 9:
+		if positions[i][0] == positions[i+1][0]:
+			return False
+			print(positions)
 			break
 		else:
-			j = j + 1
-	return res
+			i = i + 2
+	return True
 
 
 def get_count_records_block_chain(dbHost, dbName, login, password):

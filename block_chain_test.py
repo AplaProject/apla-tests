@@ -16,7 +16,6 @@ class BlockChainTestCase(unittest.TestCase):
     
     def test_block_chain(self):
         fullConfig = config.getNodeConfig()
-        nodes = len(fullConfig)
         for node in nodes:
             config1 = fullConfig[node]
         config2 = fullConfig["2"]
@@ -45,8 +44,8 @@ class BlockChainTestCase(unittest.TestCase):
         self.data2 = utils.login(config2["url"], config1['private_key'])
         maxBlockId2 = funcs.get_max_block_id(config2["url"],self.data2["jwtToken"])
         maxBlock = max(maxBlockId2, maxBlockId1)
-        hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock, nodes)
-        hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock, nodes)
+        hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
+        hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
         node_position = utils.compare_node_positions(host1, db1, login1, pas1, maxBlock)
         dict1 = dict(count_contract = count_contracts1,
                      amounts = amounts1, summ = sumAmounts,
