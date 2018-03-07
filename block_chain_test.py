@@ -16,8 +16,7 @@ class BlockChainTestCase(unittest.TestCase):
     
     def test_block_chain(self):
         fullConfig = config.getNodeConfig()
-        for node in nodes:
-            config1 = fullConfig[node]
+        config1 = fullConfig["1"]
         config2 = fullConfig["2"]
         db1 = config1["dbName"]
         db2 = config2["dbName"]
