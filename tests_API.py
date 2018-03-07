@@ -33,6 +33,7 @@ class ApiTestCase(unittest.TestCase):
         result = funcs.call_get_api(end, data, token)
         for key in keys:
             self.assertIn(key, result)
+        return result
 
     def check_post_api(self, endPoint, data, keys):
         end = url + endPoint
