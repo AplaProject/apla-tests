@@ -1062,6 +1062,22 @@ class ApiTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_delayed_contracts(self):
+
+        # func generate contract which return block_id and increment count blocks
+        def waitBlockId(old_block_id, limit):
+            while True:
+                # add contract, which get block_id
+                body = "{\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
+                print(body)
+                code, name = utils.generate_name_and_code(body)
+                data = {"Value": code, "Conditions": "true"}
+                res = self.call("NewContract", data)
+                self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+                currrent_block_id = int(res)
+                if currrent_block_id == old_block_id + limit:
+                    break
+
+
         # add table for test
         column = """[{"name":"id_block","type":"number", "index": "1",  "conditions":"true"}]"""
         permission = """{"insert": "true", "update" : "true","new_column": "true"}"""
@@ -1074,67 +1090,35 @@ class ApiTestCase(unittest.TestCase):
 
         # add contract, which insert records in table
         body = "{\n data{} \n conditions{} \n action { \n  DBInsert(\""+table_name+"\", \"id_block\", $block) \n } \n }"
-        print(body)
         code, contract_name = utils.generate_name_and_code(body)
         data = {"Value": code, "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
-
+        # NewDelayedContract
         limit = 2
         data = {"Contract": contract_name, "EveryBlock": "1", "Conditions": "true", "Limit":limit}
         res = self.call("NewDelayedContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         old_block_id = int(res)
 
-        while True:
-            # add contract, which get block_id
-            body = "{\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
-            print(body)
-            code, name = utils.generate_name_and_code(body)
-            data = {"Value": code, "Conditions": "true"}
-            res = self.call("NewContract", data)
-            self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-            currrent_block_id = int(res)
-            print("currrent_block_id = " + str(currrent_block_id) + "  old_block_id + limit = " + str(old_block_id + limit))
-            if currrent_block_id == old_block_id + limit:
-                break
+        # wait block_id until run CallDelayedContract
+        waitBlockId(old_block_id, limit)
 
+        # EditDelayedContract
         limit = 1
         data = {"Id":"1", "Contract": contract_name, "EveryBlock": "1", "Conditions": "true", "Limit":limit}
         res = self.call("EditDelayedContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         old_block_id = int(res)
 
-        while True:
-            # add contract, which get block_id
-            body = "{\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
-            print(body)
-            code, name = utils.generate_name_and_code(body)
-            data = {"Value": code, "Conditions": "true"}
-            res = self.call("NewContract", data)
-            self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-            currrent_block_id = int(res)
-            print("currrent_block_id = " + str(currrent_block_id) + "  old_block_id + limit = " + str(old_block_id + limit))
-            if currrent_block_id == old_block_id + limit:
-                break
+        # wait block_id until run CallDelayedContract
+        waitBlockId(old_block_id, limit)
 
-
-        # add new delayed contract
-
-
-        '''
         # проверить содержимое таблицы
-        asserts = ["list"]
-        res = self.check_get_api("/list/delayed_contracts", "", asserts)
+        asserts = ["count"]
+        res = self.check_get_api("/list/"+table_name, "", asserts)
         print(str(res))
-
-        # создать контракт
-
-        '''
-
-
-
 
 
     def test_get_table_vde(self):
