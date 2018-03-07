@@ -1105,13 +1105,11 @@ class ApiTestCase(unittest.TestCase):
         asserts = ["count"]
         res = self.check_get_api("/list/delayed_contracts", "", asserts)
         count = len(res["list"])
-        startID = res["list"][0]["id"]
+        id = res["list"][0]["id"]
         i = 1
         while i < count:
-            if res["list"][i]["id"] > startID:
+            if res["list"][i]["id"] > id:
                 id = res["list"][i]["id"]
-            else:
-                id = res["list"][0]["id"]
             i = i + 1
 
         # wait block_id until run CallDelayedContract
