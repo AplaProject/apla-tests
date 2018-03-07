@@ -170,9 +170,8 @@
 		"code": "{\n data {}\n conditions {}\n action {$result = Str(Random(5,6))}\n }",
 		"asert": "5"
 	},
-
 	"getBlock": {
-		"code": "{\n data {}\n conditions {}\n action { var m map \n var myID int \n m = GetBlock(1) \n myID = m[\"id\"] \n $result = Str(myID) + \"_\" + Str(Len(myID))}\n }",
-		"asert": "1_1"
+		"code": "{\n data {}\n conditions {}\n action { var m map \n m = GetBlock(1) \n $result = m[\"id\"]}\n }",
+		"asert": "1"
 	}
 }
