@@ -1138,6 +1138,48 @@ class ApiTestCase(unittest.TestCase):
         res = self.check_get_api("/contracts/?limit="+str(limit)+"&offset="+str(offset), "", asserts)
         self.assertEqual(None, res["list"])
 
+    #AP-508
+    def test_get_interface_page(self):
+        asserts = ["id"]
+        page = "default_page"
+        res = self.check_get_api("/interface/page/"+page, "", asserts)
+        self.assertEqual("default_page", res["name"])
+
+    def test_get_interface_page_incorrect(self):
+        asserts = ["error"]
+        page = "not_exist_page_xxxxxxxxxxx"
+        res = self.check_get_api("/interface/page/"+page, "", asserts)
+        self.assertEqual("Page not found", res["msg"])
+
+    def test_get_interface_menu(self):
+        asserts = ["id"]
+        menu = "default_menu"
+        res = self.check_get_api("/interface/menu/"+menu, "", asserts)
+        self.assertEqual("default_menu", res["name"])
+
+    def test_get_interface_menu_incorrect(self):
+        asserts = ["error"]
+        menu = "not_exist_menu_xxxxxxxxxxx"
+        res = self.check_get_api("/interface/menu/"+menu, "", asserts)
+        self.assertEqual("Page not found", res["msg"])
+
+    def test_get_interface_block(self):
+        # Add new block
+        block = "Block_" + utils.generate_random_name()
+        data = {"Name": block, "Value": "Hello page!", "Conditions": "true"}
+        res = self.call("NewBlock", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # Test
+        asserts = ["id"]
+        res = self.check_get_api("/interface/block/"+block, "", asserts)
+        self.assertEqual(block, res["name"])
+
+    def test_get_interface_block_incorrect(self):
+        asserts = ["error"]
+        block = "not_exist_block_xxxxxxxxxxx"
+        res = self.check_get_api("/interface/block/"+block, "", asserts)
+        self.assertEqual("Page not found", res["msg"])
+
     def test_get_table_vde(self):
         asserts = ["name"]
         data = {"vde": "true"}
