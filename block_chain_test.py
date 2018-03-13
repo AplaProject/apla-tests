@@ -33,7 +33,7 @@ class BlockChainTestCase(unittest.TestCase):
             contName = self.create_contract(config1["url"], config1['private_key'])
             i = i + 1
             time.sleep(1)
-        time.sleep(15)
+        time.sleep(120)
         count_contracts1 = utils.getCountDBObjects(host1, db1, login1, pas1)["contracts"]
         count_contracts2 = utils.getCountDBObjects(host2, db2, login2, pas2)["contracts"]
         amounts1 = utils.getUserTokenAmounts(host1, db1, login1, pas1)
