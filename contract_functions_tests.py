@@ -286,5 +286,9 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["type_string"]
         self.check_contract(contract["code"], contract["asert"])
 
+    def test_uuid(self):
+        contract = self.contracts["uuid"]
+        self.check_contract(contract["code"], contract["asert"])
+
 if __name__ == '__main__':
     unittest.main()
