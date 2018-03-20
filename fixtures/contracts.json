@@ -214,5 +214,10 @@
 	"type_string": {
 		"code": "{\n data {}\n conditions {}\n action {var s, s1 string \n s = \"hello\" \n s1 = \"world\" \n $result = s+s1}\n }",
 		"asert": "helloworld"
+	},
+
+	"uuid": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result = UUID() }\n }",
+		"asert": "-"
 	}
 }
