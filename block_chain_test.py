@@ -46,15 +46,15 @@ class BlockChainTestCase(unittest.TestCase):
         hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
         hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
         node_position = utils.compare_node_positions(host1, db1, login1, pas1, maxBlock)
-        dict1 = dict(count_contract = count_contracts1,
-                     amounts = amounts1, summ = sumAmounts,
-                     hash = hash1,
-                     node_pos = node_position)
-        dict2 = dict(count_contract = count_contracts2,
-                     amounts = amounts2,
+        dict1 = dict(count_contract = str(count_contracts1),
+                     amounts = str(amounts1), summ = str(sumAmounts),
+                     hash = str(hash1),
+                     node_pos = str(node_position))
+        dict2 = dict(count_contract = str(count_contracts2),
+                     amounts = str(amounts2),
                      summ = 100000000000000000100000000,
-                     hash = hash2,
-                     node_pos = True)
+                     hash = str(hash2),
+                     node_pos = "True")
         msg = "Test two_nodes is faild. contracts: \n"
         msg += str(count_contracts1) + str(amounts1) + str(hash1) + str(node_position) + "\n"
         msg += str(count_contracts2) + str(amounts1) + str(hash1) + str(node_position) + "\n"
