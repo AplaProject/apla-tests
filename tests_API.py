@@ -1089,8 +1089,7 @@ class ApiTestCase(unittest.TestCase):
     def test_get_back_api_version(self):
         asserts = ["."]
         data = ""
-        res = self.check_get_api("/version", data, asserts)
-        print(res)
+        self.check_get_api("/version", data, asserts)
         
     def test_get_systemparams_all_params(self):
         asserts = ["list"]
