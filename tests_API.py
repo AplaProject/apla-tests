@@ -21,7 +21,6 @@ class ApiTestCase(unittest.TestCase):
         self.assertIn("hash", result)
         hash = result['hash']
         status = utils.txstatus(url, pause, hash, jwtToken)
-        print(status)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return status["blockid"]
@@ -51,7 +50,6 @@ class ApiTestCase(unittest.TestCase):
 
     def call(self, name, data):
         resp = utils.call_contract(url, prKey, name, data, token)
-        print(resp)
         resp = self.assertTxInBlock(resp, token)
         return resp
 
