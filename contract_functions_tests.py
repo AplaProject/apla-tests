@@ -289,6 +289,10 @@ class ContractFunctionsTestCase(unittest.TestCase):
     def test_uuid(self):
         contract = self.contracts["uuid"]
         self.check_contract(contract["code"], contract["asert"])
+        
+    def test_getBlock(self):
+        contract = self.contracts["getBlock"]
+        self.check_contract(contract["code"], contract["asert"])
 
 if __name__ == '__main__':
     unittest.main()

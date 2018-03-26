@@ -20,6 +20,8 @@ def readFixtures(type):
 	path = ""
 	if type == "contracts":
 		path = os.path.join(os.getcwd(), "fixtures", "contracts.json")
+	if type == "pages":
+		path = os.path.join(os.getcwd(), "fixtures", "pages.json")
 	with open(path, 'r') as f:
 		data = f.read()
 	return json.loads(data)

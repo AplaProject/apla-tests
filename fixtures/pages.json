@@ -1,0 +1,137 @@
+{    
+	"button":{
+		"code": "Button(Body: Create user, Class: btn btn-primary, Contract: NewUser)",
+		"Menu": "default_menu",
+		"content": "[{'tag': 'button', 'attr': {'class': 'btn btn-primary', 'contract': 'NewUser'}, 'children': [{'tag': 'text', 'text': 'Create user'}]}]"
+	},
+    "selectorFromDB":{
+		"code": "DBFind(\"menu\", data) %n Select(MySelect, data, \"name\")",
+		"menu": "default_menu",
+		"content": ""
+	},
+	"selectorFromData":{
+		"code": "Data(myData, \"gender\"){\"Men\", \"Women\", \"Between\"} %n Select(mySelect, myData, \"gender\")",
+		"menu": "default_menu",
+		"content": ""
+	},
+    "now":{
+		"code": "P(Today is Now(DD.MM.YYYY)) %n P(Now: Now(datetime))",
+		"menu": "default_menu",
+		"content": ""
+	},
+	"divs":{
+		"code": "Div(content-wrapper){ %n Div(panel panel-primary){ %n Div(panel-heading, Header) %n }}",
+		"menu": "default_menu",
+		"content": "[{'tag': 'div', 'attr': {'class': 'content-wrapper'}, 'children': [{'tag': 'text', 'text': '%n '}, {'tag': 'div', 'attr': {'class': 'panel panel-primary'}, 'children': [{'tag': 'text', 'text': '%n '}, {'tag': 'div', 'attr': {'class': 'panel-heading'}, 'children': [{'tag': 'text', 'text': 'Header'}]}, {'tag': 'text', 'text': ' %n'}]}]}]"
+	},
+    "setVar":{
+		"code": "SetVar(head, Header) Div(panel-heading, #head#)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'div', 'attr': {'class': 'panel-heading'}, 'children': [{'tag': 'text', 'text': 'Header'}]}]"
+	},
+	"input":{
+		"code": "Input(Class: form-control, Placeholder: text, Type: text, Name: name)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'input', 'attr': {'class': 'form-control', 'name': 'name', 'placeholder': 'text', 'type': 'text'}}]"
+	},
+    "menuGroup":{
+		"code": "MenuGroup(My Menu){ MenuItem(Dahsboard, dashboard_default) MenuItem(Main, default_page)}",
+		"menu": "default_menu",
+		"content": "[{'tag': 'menugroup', 'attr': {'name': 'My Menu', 'title': 'My Menu'}, 'children': [{'tag': 'menuitem', 'attr': {'page': 'dashboard_default', 'title': 'Dahsboard'}}, {'tag': 'menuitem', 'attr': {'page': 'default_page', 'title': 'Main'}}]}]"
+	},
+    "linkPage":{
+		"code": "LinkPage(Show my wallet, default_page, mybtn_class)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'linkpage', 'attr': {'class': 'mybtn_class', 'page': 'default_page'}, 'children': [{'tag': 'text', 'text': 'Show my wallet'}]}]"
+	},
+    "ecosysParam":{
+		"code": "Span(Address(EcosysParam(founder_account)))",
+		"menu": "default_menu",
+		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'unknown address'}]}]"
+	},
+    "paragraf":{
+		"code": "p(This is paragraph)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'text', 'text': 'p(This is paragraph)'}]"
+	},
+    "getVar":{
+		"code": "SetVar(name, FullName) Span(GetVar(name))",
+		"menu": "default_menu",
+		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'FullName'}]}]"
+	},
+    "iff":{
+		"code":"If(1<5){5 bigger than 1}.Else{Error}",
+		"menu": "default_menu",
+		"content": "[{'tag': 'text', 'text': '5 bigger than 1'}]"
+	},
+    "orr":{
+		"code": "If(Or(1>5,10>5), 1 or 10 bigger than 5)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'text', 'text': '1 or 10 bigger than 5'}]"
+	},
+    "andd":{
+		"code": "If(And(1>0,5>0), 1 and 5 bigger than 0)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'text', 'text': '1 and 5 bigger than 0'}]"
+	},
+    "form":{
+		"code": "Form(){Span(Test)}",
+		"menu": "default_menu",
+		"content": "[{'tag': 'form', 'children': [{'tag': 'span', 'children': [{'tag': 'text', 'text': 'Test'}]}]}]"
+	},
+    "label":{
+		"code": "Label(For: name)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'label', 'attr': {'for': 'name'}}]"
+	},
+    "span":{
+		"code": "Span(Test)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'Test'}]}]"
+	},
+    "langRes":{
+		"code": "LangRes(lang) LangRes(word, ru)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'Test'}]}]"
+	},
+    "inputErr":{
+		"code": "InputErr(Name: Login, minLength: Value is too short, maxLength: The length of the value must be less than 10 characters)Input(Name: Login, Type: text).Validate(minLength: 6, maxLength: 10)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'inputerr', 'attr': {'maxlength': 'The length of the value must be less than 10 characters', 'minlength': 'Value is too short', 'name': 'Login'}}, {'tag': 'input', 'attr': {'name': 'Login', 'type': 'text', 'validate': {'maxlength': '10', 'minlength': '6'}}}]"
+	},
+    "include":{
+		"code": "Include(Block1)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'text', 'text': 'Hello page!'}]"
+	},
+    "image":{
+		"code": "Image(avatar)",
+		"menu": "default_menu",
+		"content": ""
+	},
+    "inputImage":{
+		"code": "ImageInput(avatar, 100, 2/1)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'imageinput', 'attr': {'name': 'avatar', 'ratio': '2/1', 'width': '100'}}]"
+	},
+    "allert":{
+		"code": "Button(Body: Create user, Class: btn btn-primary, Contract: NewUser).Alert(Text: Name, ConfirmButton: Ok, CancelButton: Cancel, Icon: question)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'button', 'attr': {'alert': {'cancelbutton': 'Cancel', 'confirmbutton': 'Ok', 'icon': 'question', 'text': 'Name'}, 'class': 'btn btn-primary', 'contract': 'NewUser'}, 'children': [{'tag': 'text', 'text': 'Create user'}]}]"
+	},
+    "table":{
+		"code": "DBFind(\"menu\",mysrc) Table(mysrc,\"Name=name,Value=value,Conditions=conditions\")",
+		"menu": "default_menu",
+		"content": "[{'tag': 'dbfind', 'attr': {'columns': ['id', 'name', 'value', 'conditions'], 'data': [['1', 'Block1', 'Hello page!', 'true']], 'name': 'blocks', 'source': 'mysrc', 'types': ['text', 'text', 'text', 'text']}}, {'tag': 'table', 'attr': {'columns': [{'Name': 'name', 'Title': 'Name'}, {'Name': 'value', 'Title': 'Value'}, {'Name': 'conditions', 'Title': 'Conditions'}], 'source': 'mysrc'}}]"
+	},
+    "kurs":{
+		"code": "This is an Em(cursive)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'text', 'text': 'This is an '}, {'tag': 'em', 'children': [{'tag': 'text', 'text': 'cursive'}]}]"
+	},
+    "strong":{
+		"code": "This is an Strong(strong)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'text', 'text': 'This is an '}, {'tag': 'strong', 'children': [{'tag': 'text', 'text': 'strong'}]}]"
+	}
+}

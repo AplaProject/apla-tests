@@ -33,6 +33,7 @@ class PrototipoTestCase(unittest.TestCase):
         resp = utils.call_contract(url, prKey, "NewPage", data, token)
         self.assertTxInBlock(resp, token)
         cont = funcs.get_content(url, "page", name, "", token)
+        return cont
         
     def test_page_button(self):
         contract = self.pages["button"]
@@ -191,14 +192,12 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_allert(self):
         contract = self.pages["allert"]
         content = self.check_page(contract["code"])
-        print(str(content["tree"]))
         self.assertEqual(str(content["tree"]), contract["content"],
                          "Error in content" + str(content["tree"]))
         
     def test_page_table(self):
         contract = self.pages["table"]
         content = self.check_page(contract["code"])
-        print(str(content["tree"]))
         mustBe = dict(tag = "dbfind", source = "mysrc",
                       tag2 = "table", columns = [{'Name': 'name', 'Title': 'Name'}, {'Name': 'value', 'Title': 'Value'}, {'Name': 'conditions', 'Title': 'Conditions'}])
         page = dict(tag = content["tree"][0]["tag"], source = content["tree"][1]["attr"]["source"],
@@ -210,14 +209,12 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_kurs(self):
         contract = self.pages["kurs"]
         content = self.check_page(contract["code"])
-        print(str(content["tree"]))
         self.assertEqual(str(content["tree"]), contract["content"],
                          "Error in content" + str(content["tree"]))
         
     def test_page_strong(self):
         contract = self.pages["strong"]
         content = self.check_page(contract["code"])
-        print(str(content["tree"]))
         self.assertEqual(str(content["tree"]), contract["content"],
                          "Error in content" + str(content["tree"]))
         
