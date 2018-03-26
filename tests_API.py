@@ -21,7 +21,6 @@ class ApiTestCase(unittest.TestCase):
         self.assertIn("hash", result)
         hash = result['hash']
         status = utils.txstatus(url, pause, hash, jwtToken)
-        print(status)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return status["blockid"]
@@ -40,6 +39,7 @@ class ApiTestCase(unittest.TestCase):
         result = funcs.call_post_api(end, data, token)
         for key in keys:
             self.assertIn(key, result)
+        return result
             
     def get_error_api(self, endPoint, data):
         end = url + endPoint
@@ -50,7 +50,6 @@ class ApiTestCase(unittest.TestCase):
 
     def call(self, name, data):
         resp = utils.call_contract(url, prKey, name, data, token)
-        print(resp)
         resp = self.assertTxInBlock(resp, token)
         return resp
 
@@ -1129,7 +1128,119 @@ class ApiTestCase(unittest.TestCase):
         asserts = ["count"]
         res = self.check_get_api("/list/"+table_name, "", asserts)
         self.assertEqual(int(res["count"]), newLimit+editLimit)
+        
+    def test_get_content_source(self):
+        # Create new page for test
+        name = "Page_" + utils.generate_random_name()
+        data = {}
+        data["Name"] = name
+        data["Value"] = "SetVar(a,\"Hello\") \n Div(Body: #a#)"
+        data["Conditions"] = "true"
+        data["Menu"] = "default_menu"
+        res = self.call("NewPage", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # Test
+        asserts = ["tree"]
+        res = self.check_post_api("/content/source/"+name, "", asserts)
+        childrenText = res["tree"][1]["children"][0]["text"]
+        self.assertEqual("#a#", childrenText)
 
+    def test_get_content_source_empty(self):
+        name = "default_page"
+        asserts = ["tree"]
+        res = self.check_post_api("/content/source/" + name, "", asserts)
+        self.assertEqual(0, len(res["tree"]))
+
+    def test_get_back_api_version(self):
+        asserts = ["."]
+        data = ""
+        self.check_get_api("/version", data, asserts)
+        
+    def test_get_systemparams_all_params(self):
+        asserts = ["list"]
+        res = self.check_get_api("/systemparams", "", asserts)
+        self.assertGreater(len(res["list"]), 0, "Count of systemparams not Greater 0: " + str(len(res["list"])))
+
+    def test_get_systemparams_some_param(self):
+        asserts = ["list"]
+        param = "gap_between_blocks"
+        res = self.check_get_api("/systemparams/?names=" + param, "", asserts)
+        self.assertEqual(1, len(res["list"]))
+        self.assertEqual(param, res["list"][0]["name"])
+
+    def test_get_systemparams_incorrect_param(self):
+        asserts = ["list"]
+        param = "not_exist_parameter"
+        res = self.check_get_api("/systemparams/?names="+param, "", asserts)
+        self.assertEqual(0, len(res["list"]))
+
+    def test_get_contracts(self):
+        limit = 25 # Default value without parameters
+        asserts = ["list"]
+        res = self.check_get_api("/contracts", "", asserts)
+        self.assertEqual(limit, len(res["list"]))
+
+    def test_get_contracts_limit(self):
+        limit = 3
+        asserts = ["list"]
+        res = self.check_get_api("/contracts/?limit="+str(limit), "", asserts)
+        self.assertEqual(limit, len(res["list"]))
+
+    def test_get_contracts_offset(self):
+        asserts = ["list"]
+        res = self.check_get_api("/contracts", "", asserts)
+        count = res["count"]
+        offset = count
+        res = self.check_get_api("/contracts/?offset=" + str(offset), "", asserts)
+        self.assertEqual(None, res["list"])
+
+    def test_get_contracts_empty(self):
+        limit = 1000
+        offset = 1000
+        asserts = ["list"]
+        res = self.check_get_api("/contracts/?limit="+str(limit)+"&offset="+str(offset), "", asserts)
+        self.assertEqual(None, res["list"])
+
+    def test_get_interface_page(self):
+        asserts = ["id"]
+        page = "default_page"
+        res = self.check_get_api("/interface/page/"+page, "", asserts)
+        self.assertEqual("default_page", res["name"])
+
+    def test_get_interface_page_incorrect(self):
+        asserts = ["error"]
+        page = "not_exist_page_xxxxxxxxxxx"
+        res = self.check_get_api("/interface/page/"+page, "", asserts)
+        self.assertEqual("Page not found", res["msg"])
+
+    def test_get_interface_menu(self):
+        asserts = ["id"]
+        menu = "default_menu"
+        res = self.check_get_api("/interface/menu/"+menu, "", asserts)
+        self.assertEqual("default_menu", res["name"])
+
+    def test_get_interface_menu_incorrect(self):
+        asserts = ["error"]
+        menu = "not_exist_menu_xxxxxxxxxxx"
+        res = self.check_get_api("/interface/menu/"+menu, "", asserts)
+        self.assertEqual("Page not found", res["msg"])
+
+    def test_get_interface_block(self):
+        # Add new block
+        block = "Block_" + utils.generate_random_name()
+        data = {"Name": block, "Value": "Hello page!", "Conditions": "true"}
+        res = self.call("NewBlock", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # Test
+        asserts = ["id"]
+        res = self.check_get_api("/interface/block/"+block, "", asserts)
+        self.assertEqual(block, res["name"])
+
+    def test_get_interface_block_incorrect(self):
+        asserts = ["error"]
+        block = "not_exist_block_xxxxxxxxxxx"
+        res = self.check_get_api("/interface/block/"+block, "", asserts)
+        self.assertEqual("Page not found", res["msg"])
 
     def test_get_table_vde(self):
         asserts = ["name"]

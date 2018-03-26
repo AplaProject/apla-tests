@@ -249,6 +249,42 @@ class ContractFunctionsTestCase(unittest.TestCase):
         time.sleep(10)
         contract = self.contracts["callContract"]
         self.check_contract(contract["code"], contract["asert"])
+    
+    def test_type_bool(self):
+        contract = self.contracts["type_bool"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_type_bytes(self):
+        contract = self.contracts["type_bytes"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_type_int(self):
+        contract = self.contracts["type_int"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_type_address(self):
+        contract = self.contracts["type_address"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_type_array(self):
+        contract = self.contracts["type_array"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_type_map(self):
+        contract = self.contracts["type_map"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_type_money(self):
+        contract = self.contracts["type_money"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_type_float(self):
+        contract = self.contracts["type_float"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_type_string(self):
+        contract = self.contracts["type_string"]
+        self.check_contract(contract["code"], contract["asert"])
 
     def test_getBlock(self):
         contract = self.contracts["getBlock"]

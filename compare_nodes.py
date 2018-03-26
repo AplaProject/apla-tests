@@ -1,20 +1,11 @@
-import unittest
-import utils
-import config
 import requests
 import time
 import funcs
 from builtins import sum
 
-class BlockChainTestCase(unittest.TestCase):
-
-    def create_contract(self, url, prKey):
-        code,name = utils.generate_name_and_code("")
-        data = {'Wallet': '', 'Value': code, 'Conditions': "ContractConditions(`MainCondition`)"}
-        resp = utils.call_contract(url, prKey, "NewContract", data, self.data1["jwtToken"])
-        return name
+class ConpareNodes(unittest.TestCase):
     
-    def test_block_chain(self):
+    def test_compare_nodes(self):
         fullConfig = config.getNodeConfig()
         config1 = fullConfig["1"]
         config2 = fullConfig["2"]
@@ -28,14 +19,9 @@ class BlockChainTestCase(unittest.TestCase):
         host2 = config2["dbHost"]
         ts_count = 30
         self.data1 = utils.login(config1["url"], config1['private_key'])
-        i = 1
-        while i < ts_count:
-            contName = self.create_contract(config1["url"], config1['private_key'])
-            i = i + 1
-            time.sleep(1)
         time.sleep(120)
-        count_contracts1 = utils.getCountDBObjects(host1, db1, login1, pas1)["contracts"]
-        count_contracts2 = utils.getCountDBObjects(host2, db2, login2, pas2)["contracts"]
+        objects1 = utils.getCountDBObjects(host1, db1, login1, pas1)
+        objects2 = utils.getCountDBObjects(host2, db2, login2, pas2)
         amounts1 = utils.getUserTokenAmounts(host1, db1, login1, pas1)
         amounts2 = utils.getUserTokenAmounts(host2, db2, login2, pas2)
         sumAmounts = sum(amount[0] for amount in amounts1)
@@ -46,22 +32,33 @@ class BlockChainTestCase(unittest.TestCase):
         hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
         hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
         node_position = utils.compare_node_positions(host1, db1, login1, pas1, maxBlock)
-        dict1 = dict(count_contract = str(count_contracts1),
-                     amounts = str(amounts1), summ = str(sumAmounts),
-                     hash = str(hash1),
-                     node_pos = str(node_position))
-        dict2 = dict(count_contract = str(count_contracts2),
-                     amounts = str(amounts2),
+        dict1 = dict(count_contract = objects1["contracts"],
+                     count_pages = objects1["pages"],
+                     count_blocks = objects1["pages"],
+                     count_tables = objects1["tables"],
+                     count_menu = objects1["menus"],
+                     count_params = objects1["params"],
+                     count_locals = objects1["locals"],
+                     amounts = amounts1, summ = sumAmounts,
+                     hash = hash1,
+                     node_pos = node_position)
+        dict2 = dict(count_contract = objects2["contracts"],
+                     count_pages = objects2["pages"],
+                     count_blocks = objects2["pages"],
+                     count_tables = objects2["tables"],
+                     count_menu = objects2["menus"],
+                     count_params = objects2["params"],
+                     count_locals = objects2["locals"],
+                     amounts = amounts2,
                      summ = 100000000000000000100000000,
-                     hash = str(hash2),
-                     node_pos = "True")
+                     hash = hash2,
+                     node_pos = True)
         msg = "Test two_nodes is faild. contracts: \n"
-        msg += str(count_contracts1) + str(amounts1) + str(hash1) + str(node_position) + "\n"
-        msg += str(count_contracts2) + str(amounts1) + str(hash1) + str(node_position) + "\n"
+        msg += str(objects1) + str(amounts1) + str(hash1) + str(node_position) + "\n"
+        msg += str(objects2) + str(amounts1) + str(hash1) + str(node_position) + "\n"
         msg += "Amounts summ: " + str(sumAmounts)
         self.assertDictEqual(dict1, dict2, msg)
 
         
 if __name__ == "__main__":
     unittest.main()
-    
