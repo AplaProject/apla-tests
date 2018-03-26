@@ -1151,6 +1151,23 @@ class ApiTestCase(unittest.TestCase):
         res = self.check_post_api("/content/source/" + name, "", asserts)
         self.assertEqual(0, len(res["tree"]))
 
+    def test_get_content_with_param_from_address_string(self):
+        # Create new page for test
+        name = "Page_" + utils.generate_random_name()
+        data = {}
+        data["Name"] = name
+        data["Value"] = "#test#"
+        data["Conditions"] = "true"
+        data["Menu"] = "default_menu"
+        res = self.call("NewPage", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # Test
+        param = "?test="
+        value = "hello123"
+        asserts = ["tree"]
+        res = self.check_post_api("/content/page/" + name + param + value, "", asserts)
+        self.assertEqual(value, res["tree"][0]["text"])
+
     def test_get_back_api_version(self):
         asserts = ["."]
         data = ""
