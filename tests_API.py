@@ -1061,8 +1061,74 @@ class ApiTestCase(unittest.TestCase):
         res = self.call("UpdateSysParam", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
+    def test_delayed_contracts(self):
+        # func generate contract which return block_id and increment count blocks
+        def waitBlockId(old_block_id, limit):
+            while True:
+                # add contract, which get block_id
+                body = "{\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
+                code, name = utils.generate_name_and_code(body)
+                data = {"Value": code, "Conditions": "true"}
+                res = self.call("NewContract", data)
+                self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+                currrent_block_id = int(res)
+                expected_block_id = old_block_id + limit + 1 # +1 spare block
+                if currrent_block_id == expected_block_id:
+                    break
 
-    # AP-498
+        # add table for test
+        column = """[{"name":"id_block","type":"number", "index": "1",  "conditions":"true"}]"""
+        permission = """{"insert": "true", "update" : "true","new_column": "true"}"""
+        table_name = "tab_delayed_" + utils.generate_random_name()
+        data = {"Name": table_name,
+                "Columns": column,
+                "Permissions": permission}
+        res = self.call("NewTable", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+
+        # add contract which insert records in table in progress CallDelayedContract
+        body = "{\n data{} \n conditions{} \n action { \n  DBInsert(\""+table_name+"\", \"id_block\", $block) \n } \n }"
+        code, contract_name = utils.generate_name_and_code(body)
+        data = {"Value": code, "Conditions": "true"}
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+
+        # NewDelayedContract
+        newLimit = 5
+        data = {"Contract": contract_name, "EveryBlock": "1", "Conditions": "true", "Limit":newLimit}
+        res = self.call("NewDelayedContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        old_block_id = int(res)
+
+        # get record id of 'delayed_contracts' table for run EditDelayedContract
+        asserts = ["count"]
+        res = self.check_get_api("/list/delayed_contracts", "", asserts)
+        count = len(res["list"])
+        id = res["list"][0]["id"]
+        i = 1
+        while i < count:
+            if res["list"][i]["id"] > id:
+                id = res["list"][i]["id"]
+            i = i + 1
+
+        # wait block_id until run CallDelayedContract
+        waitBlockId(old_block_id, newLimit)
+
+        # EditDelayedContract
+        editLimit = 4
+        data = {"Id":id, "Contract": contract_name, "EveryBlock": "1", "Conditions": "true", "Limit":editLimit}
+        res = self.call("EditDelayedContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        old_block_id = int(res)
+
+        # wait block_id until run CallDelayedContract
+        waitBlockId(old_block_id, editLimit)
+
+        # verify records count in table
+        asserts = ["count"]
+        res = self.check_get_api("/list/"+table_name, "", asserts)
+        self.assertEqual(int(res["count"]), newLimit+editLimit)
+        
     def test_get_content_source(self):
         # Create new page for test
         name = "Page_" + utils.generate_random_name()
@@ -1079,7 +1145,6 @@ class ApiTestCase(unittest.TestCase):
         childrenText = res["tree"][1]["children"][0]["text"]
         self.assertEqual("#a#", childrenText)
 
-    # AP-498
     def test_get_content_source_empty(self):
         name = "default_page"
         asserts = ["tree"]
@@ -1136,7 +1201,6 @@ class ApiTestCase(unittest.TestCase):
         res = self.check_get_api("/contracts/?limit="+str(limit)+"&offset="+str(offset), "", asserts)
         self.assertEqual(None, res["list"])
 
-    #AP-508
     def test_get_interface_page(self):
         asserts = ["id"]
         page = "default_page"
