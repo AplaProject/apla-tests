@@ -1,7 +1,6 @@
 import requests
 import time
 import sys
-import utils
 from random import choice
 from string import ascii_uppercase
 
