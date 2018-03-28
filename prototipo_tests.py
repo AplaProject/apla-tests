@@ -40,6 +40,16 @@ class PrototipoTestCase(unittest.TestCase):
         content = self.check_page(contract["code"])
         self.assertEqual(content["tree"][0]["tag"], "button",
                          "There is no button in content" + str(content["tree"]))
+
+    def test_page_button_composite_contract(self):
+        contract = self.pages["buttonCompositeContract"]
+        content = self.check_page(contract["code"])
+        self.assertEqual(content["tree"][0]["tag"], "button",
+                         "There is no composite contract button in content" + str(content["tree"]))
+        self.assertEqual(content["tree"][0]["attr"]['composite'][0]['name'], "NewPage",
+                         "There is no composite contract button.name in content" + str(content["tree"]))
+        self.assertEqual(content["tree"][0]["attr"]['composite'][0]['data'], [{'param1': 'val1'}],
+                         "There is no composite contract button.data in content" + str(content["tree"]))
         
     def test_page_selectorFromDB(self):
         contract = self.pages["selectorFromDB"]
