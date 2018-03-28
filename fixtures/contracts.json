@@ -81,7 +81,6 @@
 		"code": "{\n data {}\n conditions {}\n action {\n var ret map\n ret = DBFind(\"pages\").Columns(\"id,name\").WhereId(1).Row()\n $result = ret[\"name\"]\n } \n }",
 		"asert": "default_page"
 	},
-	
     "contains": {
 		"code": "{\n data {}\n conditions {}\n action {\n if Contains(\"Hello world\", `Hello`) {\n $result = \"Hello world\"\n }\n }\n }",
 		"asert": "Hello world"
@@ -210,7 +209,6 @@
 		"code": "{\n data {}\n conditions {}\n action {var s, s1 string \n s = \"hello\" \n s1 = \"world\" \n $result = s+s1}\n }",
 		"asert": "helloworld"
 	},
-
 	"uuid": {
 		"code": "{\n data {}\n conditions {}\n action {\n $result = UUID() }\n }",
 		"asert": "-"

@@ -22,6 +22,6 @@ def readFixtures(type):
 		path = os.path.join(os.getcwd(), "fixtures", "contracts.json")
 	if type == "pages":
 		path = os.path.join(os.getcwd(), "fixtures", "pages.json")
-	with open(path, 'r') as f:
+	with open(path, 'r', encoding='UTF-8') as f:
 		data = f.read()
 	return json.loads(data)

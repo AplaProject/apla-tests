@@ -448,7 +448,6 @@ class ApiTestCase(unittest.TestCase):
         condition = "tryam"
         dataEdit = {"Id": count, "Value": "AppendedItem", "Conditions": condition}
         ans = self.call("AppendMenu", dataEdit)
-        print(ans)
 
     def test_new_page(self):
         name = "Page_" + utils.generate_random_name()
@@ -884,7 +883,6 @@ class ApiTestCase(unittest.TestCase):
         per3E = " \"new_column\": \"true\"}"
         dataEdit["Permissions"] = per1E + per2E + per3E
         ans = self.call("EditTable", dataEdit)
-        print(ans)
         
     def test_edit_incorrect_table(self):
         name = "incorrect_name"
@@ -955,7 +953,6 @@ class ApiTestCase(unittest.TestCase):
         data["Name"] = "Lang_" + utils.generate_random_name()
         data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
         res = self.call("NewLang", data)
-        print(res)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_edit_lang(self):
