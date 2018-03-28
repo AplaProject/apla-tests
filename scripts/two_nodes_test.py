@@ -28,6 +28,7 @@ parser.add_argument('-httpPort2', default='7018')
 parser.add_argument('-dbName2', default='gen2')
 
 parser.add_argument('-gapBetweenBlocks', default='2')
+parser.add_argument('-centrifugo', required=True)
 
 args = parser.parse_args()
 
@@ -41,6 +42,27 @@ if os.path.exists(workDir):
 	shutil.rmtree(workDir)
 os.makedirs(workDir1)
 os.makedirs(workDir2)
+
+# Create config for centrifugo
+cenConfig = os.path.join(args.centrifugo, "config.json")
+linesC = []
+linesC.insert(0, "{\n")
+linesC.insert(1, "\"secret\": \"4597e75c-4376-42a6-8c1f-7e3fc7eb2114\",\n")
+linesC.insert(2, "\"admin_secret\": \"admin\"\n")
+linesC.insert(3, "}")
+with open(cenConfig, 'w') as fconf:
+	fconf.write(''.join(linesC))
+	
+# Run centrifugo
+cenPath = os.path.join(args.centrifugo, "centrifugo")
+centrifugo = subprocess.Popen([
+	cenPath,
+	'--config=config.json',
+	'--admin',
+	'--insecure_admin',
+	'--web'
+])
+time.sleep(5)
 
 # Generate config for first node
 config1 = subprocess.Popen([
@@ -58,6 +80,10 @@ with open(configPath) as fconf:
 	lines = fconf.readlines()
 del lines[24]
 lines.insert(24, "  Password = \""+args.dbPassword+"\"\n")
+del lines[32]
+lines.insert(32, "  Secret = \"4597e75c-4376-42a6-8c1f-7e3fc7eb2114\"\n")
+del lines[33]
+lines.insert(33, "URL = \"http://127.0.0.1:8000\"\n")
 with open(configPath, 'w') as fconf:
 	fconf.write(''.join(lines))
 
@@ -112,6 +138,10 @@ with open(configPath) as fconf:
 	lines = fconf.readlines()
 del lines[24]
 lines.insert(24, "  Password = \""+args.dbPassword+"\"\n")
+del lines[32]
+lines.insert(32, "  Secret = \"4597e75c-4376-42a6-8c1f-7e3fc7eb2114\"\n")
+del lines[33]
+lines.insert(33, "URL = \"http://127.0.0.1:8000\"\n")
 with open(configPath, 'w') as fconf:
 	fconf.write(''.join(lines))
 

@@ -46,11 +46,11 @@ class BlockChainTestCase(unittest.TestCase):
         hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
         hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
         node_position = utils.compare_node_positions(host1, db1, login1, pas1, maxBlock)
-        dict1 = dict(count_contract = str(count_contracts1),
-                     amounts = str(amounts1), summ = str(sumAmounts),
+        dict1 = dict(count_contract = count_contracts1,
+                     amounts = str(amounts1), summ = sumAmounts,
                      hash = str(hash1),
                      node_pos = str(node_position))
-        dict2 = dict(count_contract = str(count_contracts2),
+        dict2 = dict(count_contract = count_contracts2,
                      amounts = str(amounts2),
                      summ = 100000000000000000100000000,
                      hash = str(hash2),
