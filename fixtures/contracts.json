@@ -212,5 +212,10 @@
 	"uuid": {
 		"code": "{\n data {}\n conditions {}\n action {\n $result = UUID() }\n }",
 		"asert": "-"
+	},
+
+	"decodeBase64": {
+		"code": "{\n data {}\n conditions {}\n action {\n $data = \"SGVsbG8h\" \n $result = DecodeBase64($data) }\n }",
+		"asert": "Hello!"
 	}
 }
