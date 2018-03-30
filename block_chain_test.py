@@ -16,6 +16,7 @@ class BlockChainTestCase(unittest.TestCase):
     
     def test_block_chain(self):
         fullConfig = config.getNodeConfig()
+        nodes = len(fullConfig)
         config1 = fullConfig["1"]
         config2 = fullConfig["2"]
         db1 = config1["dbName"]
@@ -33,6 +34,7 @@ class BlockChainTestCase(unittest.TestCase):
             contName = self.create_contract(config1["url"], config1['private_key'])
             i = i + 1
             time.sleep(1)
+        print("start")
         time.sleep(120)
         count_contracts1 = utils.getCountDBObjects(host1, db1, login1, pas1)["contracts"]
         count_contracts2 = utils.getCountDBObjects(host2, db2, login2, pas2)["contracts"]
@@ -45,7 +47,7 @@ class BlockChainTestCase(unittest.TestCase):
         maxBlock = max(maxBlockId2, maxBlockId1)
         hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
         hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
-        node_position = utils.compare_node_positions(host1, db1, login1, pas1, maxBlock)
+        node_position = utils.compare_node_positions(host1, db1, login1, pas1, maxBlock, nodes)
         dict1 = dict(count_contract = count_contracts1,
                      amounts = str(amounts1), summ = sumAmounts,
                      hash = str(hash1),
