@@ -1268,6 +1268,23 @@ class ApiTestCase(unittest.TestCase):
         res = self.check_get_api("/interface/block/"+block, "", asserts)
         self.assertEqual("Page not found", res["msg"])
 
+    def test_edit_ecosystem_name(self):
+        id = 1
+        newName = "ecosys_"+utils.generate_random_name()
+        data = {"EcosystemID": id, "NewName": newName}
+        res = self.call("EditEcosystemName", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        asserts = ["list"]
+        res = self.check_get_api("/list/ecosystems", "", asserts)
+        self.assertEqual(newName, res['list'][0]['name'])
+
+    def test_edit_ecosystem_name_incorrect_id(self):
+        id = 500
+        newName = "ecosys_"+utils.generate_random_name()
+        data = {"EcosystemID": id, "NewName": newName}
+        res = self.call("EditEcosystemName", data)
+        self.assertEqual("Ecosystem "+str(id)+" does not exist", res)
+
     def test_get_table_vde(self):
         asserts = ["name"]
         data = {"vde": "true"}
