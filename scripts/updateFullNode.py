@@ -5,6 +5,7 @@ import sys
 if __name__ == "__main__":
 	if len (sys.argv) < 9:
 		print ("Error: Too few parameters")
+		exit(1)
 	else:
 		prKey1 = sys.argv[1]
 		keyID1 =  sys.argv[2]
@@ -46,5 +47,7 @@ if __name__ == "__main__":
 		statusCallJ = statusCall.json()
 		if len(statusCallJ["blockid"]) > 0:
 			print("OK")
+			exit(0)
 		else:
 			print("Error: fullNodes is not updated")
+			exit(1)

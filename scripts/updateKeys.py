@@ -8,6 +8,7 @@ from string import ascii_uppercase
 if __name__ == "__main__":
 	if len (sys.argv) < 6:
 		print ("Error: Too few parameters")
+		exit(1)
 	else:
 		prKey1 = sys.argv[1]
 		host1 = sys.argv[2]
@@ -78,5 +79,7 @@ if __name__ == "__main__":
 		print(statusCallJ)
 		if len(statusCallJ["blockid"]) > 0:
 			print("OK")
+			exit(0)
 		else:
 			print("Error: fullNodes is not updated")
+			exit(1)
