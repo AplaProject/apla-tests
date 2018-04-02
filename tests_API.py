@@ -1160,7 +1160,6 @@ class ApiTestCase(unittest.TestCase):
         data["template"] = "SetVar(mytest, 100) Div(Body: #mytest#)"
         asserts = ["tree"]
         res = self.check_post_api("/content", data, asserts)
-        print(res)
         answerTree = {'tree': [{'tag': 'div', 'children': [{'tag': 'text', 'text': '100'}]}]}
         self.assertEqual(answerTree, res)
 
@@ -1177,7 +1176,6 @@ class ApiTestCase(unittest.TestCase):
         data["source"] = "true"
         asserts = ["tree"]
         res = self.check_post_api("/content", data, asserts)
-        print(res)
         answerTree = {'tree': [{'tag': 'setvar', 'attr': {'name': 'mytest', 'value': '100'}}, {'tag': 'div', 'children': [{'tag': 'text', 'text': '#mytest#'}]}]}
         self.assertEqual(answerTree, res)
 
