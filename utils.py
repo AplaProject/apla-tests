@@ -64,7 +64,6 @@ def txstatus(url, sleepTime, hsh, jvtToken):
 		time.sleep(1)
 		resp = requests.get(urlEnd, headers={'Authorization': jvtToken})
 		jresp = resp.json()
-		print(jresp)
 		if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
 			return resp.json()
 		else:
@@ -198,3 +197,15 @@ def get_blockchain_hash(dbHost, dbName, login, password, maxBlockId):
 	cursor.execute(request)
 	hash = cursor.fetchall()
 	return hash
+
+def get_commission_size(dbHost, dbName, login, password):
+	commision=0
+	return commission;
+
+def get_commission_wallet(dbHost, dbName, login, password, ecosId):
+	wallet = "3131312313131312"
+	return wallet
+
+def get_node_wallet(dbHost, dbName, login, password, keyID):
+	wallet = "3131312313131312"
+	return wallet
