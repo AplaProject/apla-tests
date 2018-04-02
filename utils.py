@@ -64,6 +64,7 @@ def txstatus(url, sleepTime, hsh, jvtToken):
 		time.sleep(1)
 		resp = requests.get(urlEnd, headers={'Authorization': jvtToken})
 		jresp = resp.json()
+		print(jresp)
 		if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
 			return resp.json()
 		else:

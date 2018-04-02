@@ -752,6 +752,7 @@ class ApiTestCase(unittest.TestCase):
         per3E = " \"new_column\": \"true\"}"
         dataEdit["Permissions"] = per1E + per2E + per3E
         res = self.call("EditTable", dataEdit)
+        print(res)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
     def test_edit_table_incorrect_condition1(self):
@@ -1248,6 +1249,7 @@ class ApiTestCase(unittest.TestCase):
         asserts = ["result"]
         data = {}
         #self.check_post_api("/vde/create", data, asserts)
+
         
         
 
