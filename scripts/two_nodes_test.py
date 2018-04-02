@@ -29,6 +29,7 @@ parser.add_argument('-dbName2', default='gen2')
 
 parser.add_argument('-gapBetweenBlocks', default='2')
 parser.add_argument('-centrifugo', required=True)
+parser.add_argument('-verbosity', default='ERROR')
 
 args = parser.parse_args()
 
@@ -70,7 +71,8 @@ config1 = subprocess.Popen([
 	'config',
 	'--dataDir='+workDir1,
 	'--firstBlock='+firstBlockPath,
-	'--dbName='+args.dbName1
+	'--dbName='+args.dbName1,
+    '--verbosity=' + args.verbosity
 ])
 time.sleep(10)
 
@@ -128,7 +130,8 @@ generateConfig2 = subprocess.Popen([
 	'--dbName='+args.dbName2,
 	'--tcpPort='+args.tcpPort2,
 	'--httpPort='+args.httpPort2,
-	'--nodesAddr='+"127.0.0.1:"+args.tcpPort1
+	'--nodesAddr='+"127.0.0.1:"+args.tcpPort1,
+    '--verbosity=' + args.verbosity
 ])
 time.sleep(10)
 
