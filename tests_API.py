@@ -518,6 +518,34 @@ class ApiTestCase(unittest.TestCase):
         content["tree"] = [{'tag': 'text', 'text': 'Good by page!'}]
         pContent = funcs.get_content(url, "page", name, "", token)
         self.assertEqual(pContent, content)
+
+    def test_edit_page_with_validate_count(self):
+        name = "Page_" + utils.generate_random_name()
+        data = {}
+        data["Name"] = name
+        data["Value"] = "Hello page!"
+        data["Conditions"] = "true"
+        data["ValidateCount"] = 6
+        data["Menu"] = "default_menu"
+        res = self.call("NewPage", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        dataEdit = {}
+        dataEdit["Id"] = funcs.get_count(url, "pages", token)
+        dataEdit["Value"] = "Good by page!"
+        dataEdit["Conditions"] = "true"
+        dataEdit["ValidateCount"] = 1
+        dataEdit["Menu"] = "default_menu"
+        res = self.call("EditPage", dataEdit)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        content = {}
+        content["menu"] = 'default_menu'
+        menutree = {}
+        menutree["tag"] = 'menuitem'
+        menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
+        content["menutree"] = []
+        content["tree"] = [{'tag': 'text', 'text': 'Good by page!'}]
+        pContent = funcs.get_content(url, "page", name, "", token)
+        self.assertEqual(pContent, content)
         
     def test_edit_incorrect_page(self):
         id = "9999"
