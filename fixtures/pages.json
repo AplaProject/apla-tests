@@ -133,5 +133,10 @@
 		"code": "This is an Strong(strong)",
 		"menu": "default_menu",
 		"content": "[{'tag': 'text', 'text': 'This is an '}, {'tag': 'strong', 'children': [{'tag': 'text', 'text': 'strong'}]}]"
+	},
+    "getColumnType":{
+		"code": "GetColumnType(contracts, id)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'text', 'text': 'number'}]"
 	}
 }
