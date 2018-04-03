@@ -212,5 +212,9 @@
 	"uuid": {
 		"code": "{\n data {}\n conditions {}\n action {\n $result = UUID() }\n }",
 		"asert": "-"
+	},
+	"getColumnType": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result = GetColumnType(\"contracts\", \"id\") }\n }",
+		"asert": "number"
 	}
 }
