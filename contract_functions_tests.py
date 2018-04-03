@@ -293,5 +293,9 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["getBlock"]
         self.check_contract(contract["code"], contract["asert"])
 
+    def test_getColumnType(self):
+        contract = self.contracts["getColumnType"]
+        self.check_contract(contract["code"], contract["asert"])
+
 if __name__ == '__main__':
     unittest.main()
