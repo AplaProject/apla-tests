@@ -217,6 +217,12 @@ class PrototipoTestCase(unittest.TestCase):
         content = self.check_page(contract["code"])
         self.assertEqual(str(content["tree"]), contract["content"],
                          "Error in content" + str(content["tree"]))
+
+    def test_page_getColumnType(self):
+        contract = self.pages["getColumnType"]
+        content = self.check_page(contract["code"])
+        self.assertEqual(str(content["tree"]), contract["content"],
+                         "Error in content" + str(content["tree"]))
         
 if __name__ == '__main__':
     unittest.main()
