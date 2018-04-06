@@ -188,10 +188,16 @@ print('Update full_nodes')
 # generate full_nodes string
 host = '127.0.0.1'
 
-flString1 = "[\""+host+":"+args.tcpPort1+"\",\"http://"+host+":"+args.httpPort1+"\",\""+keyID1+"\",\""+nodePubKey1+"\"]"
-flString2 = "[\""+host+":"+args.tcpPort2+"\",\"http://"+host+":"+args.httpPort2+"\",\""+keyID2+"\",\""+nodePubKey2+"\"]"
+newVal = json.dumps([{"tcp_address":host+":"+args.tcpPort1,
+					  "api_address":"http://"+host+":"+args.httpPort1,
+					  "key_id":keyID1,
+					  "public_key":nodePubKey1},
+					 {"tcp_address": host + ":" + args.tcpPort2,
+					  "api_address": "http://" + host + ":" + args.httpPort2,
+					  "key_id": keyID2,
+					  "public_key": nodePubKey2}
+					 ])
 
-newVal = "[" + flString1 + "," + flString2 + "]"
 print(newVal)
 print('Update full_nodes')
 code = subprocess.call([
