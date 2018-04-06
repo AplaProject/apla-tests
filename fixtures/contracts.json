@@ -215,7 +215,7 @@
 	},
 
 	"decodeBase64": {
-		"code": "{\n data {}\n conditions {}\n action {\n $data = \"SGVsbG8h\" \n $result = DecodeBase64($data) }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n var s string \n s = \"SGVsbG8h\" \n $result = DecodeBase64(s) }\n }",
 		"asert": "Hello!"
 	}
 }
