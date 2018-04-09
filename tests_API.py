@@ -147,7 +147,7 @@ class ApiTestCase(unittest.TestCase):
 
     def test_create_ecosystem(self):
         name = "Ecosys" + utils.generate_random_name()
-        data = {"name": name}
+        data = {"Name": name}
         res = self.call("NewEcosystem", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
