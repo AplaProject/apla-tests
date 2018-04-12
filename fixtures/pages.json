@@ -148,5 +148,10 @@
 		"code": "Mobile = Em(#ecosystem_id#)",
 		"menu": "default_menu",
 		"content": "1"
+	},
+    "sys_var_ecosystem_name":{
+		"code": "Mobile = Em(#ecosystem_name#)",
+		"menu": "default_menu",
+		"content": "platform ecosystem"
 	}
 }
