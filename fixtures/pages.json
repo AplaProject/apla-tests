@@ -143,5 +143,10 @@
 		"code": "Mobile = Em(#role_id#)",
 		"menu": "default_menu",
 		"content": "0"
+	},
+    "sys_var_ecosystemID":{
+		"code": "Mobile = Em(#ecosystem_id#)",
+		"menu": "default_menu",
+		"content": "1"
 	}
 }
