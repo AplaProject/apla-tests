@@ -133,5 +133,11 @@
 		"code": "This is an Strong(strong)",
 		"menu": "default_menu",
 		"content": "[{'tag': 'text', 'text': 'This is an '}, {'tag': 'strong', 'children': [{'tag': 'text', 'text': 'strong'}]}]"
+	},
+    "sys_var_isMobile":{
+		"code": "Mobile = Em(#isMobile#)",
+		"menu": "default_menu",
+		"content": "0"
+	},
 	}
 }
