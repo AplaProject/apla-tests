@@ -139,5 +139,9 @@
 		"menu": "default_menu",
 		"content": "0"
 	},
+    "sys_var_roleID":{
+		"code": "Mobile = Em(#role_id#)",
+		"menu": "default_menu",
+		"content": "0"
 	}
 }
