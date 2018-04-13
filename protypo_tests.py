@@ -174,12 +174,14 @@ class PrototipoTestCase(unittest.TestCase):
                          "Error in content" + str(content["tree"]))
         
     def test_page_include(self):
-        data = {"Name": "Block1",
+        name = "Block_"+utils.generate_random_name()
+        data = {"Name": name,
                 "Value": "Hello page!", "Conditions": "true"}
         res = utils.call_contract(url, prKey, "NewBlock", data, token)
         self.assertTxInBlock(res, token)
         contract = self.pages["include"]
-        content = self.check_page(contract["code"])
+        content = self.check_page("Include("+name+")")
+        print(content)
         self.assertEqual(str(content["tree"]), contract["content"],
                          "Error in content" + str(content["tree"]))
         

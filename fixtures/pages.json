@@ -100,7 +100,7 @@
 		"content": "[{'tag': 'inputerr', 'attr': {'maxlength': 'The length of the value must be less than 10 characters', 'minlength': 'Value is too short', 'name': 'Login'}}, {'tag': 'input', 'attr': {'name': 'Login', 'type': 'text', 'validate': {'maxlength': '10', 'minlength': '6'}}}]"
 	},
     "include":{
-		"code": "Include(Block1)",
+		"code": "",
 		"menu": "default_menu",
 		"content": "[{'tag': 'text', 'text': 'Hello page!'}]"
 	},
