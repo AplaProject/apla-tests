@@ -217,6 +217,30 @@ class PrototipoTestCase(unittest.TestCase):
         content = self.check_page(contract["code"])
         self.assertEqual(str(content["tree"]), contract["content"],
                          "Error in content" + str(content["tree"]))
+
+    def test_page_sys_var_isMobile(self):
+        contract = self.pages["sys_var_isMobile"]
+        content = self.check_page(contract["code"])
+        self.assertEqual(content["tree"][1]["children"][0]["text"], contract["content"],
+                         "isMobile is not equal " + contract["content"] + ". Content = " + str(content["tree"]))
+
+    def test_page_sys_var_roleID(self):
+        contract = self.pages["sys_var_roleID"]
+        content = self.check_page(contract["code"])
+        self.assertEqual(content["tree"][1]["children"][0]["text"], contract["content"],
+                         "role_id is not equal " + contract["content"] + ". Content = " + str(content["tree"]))
+
+    def test_page_sys_var_ecosystemID(self):
+        contract = self.pages["sys_var_ecosystemID"]
+        content = self.check_page(contract["code"])
+        self.assertEqual(content["tree"][1]["children"][0]["text"], contract["content"],
+                         "ecosystem_id is not equal " + contract["content"] + ". Content = " + str(content["tree"]))
+
+    def test_page_sys_var_ecosystem_name(self):
+        contract = self.pages["sys_var_ecosystem_name"]
+        content = self.check_page(contract["code"])
+        self.assertEqual(content["tree"][1]["children"][0]["text"], contract["content"],
+                         "ecosystem_name is not equal " + contract["content"] + ". Content = " + str(content["tree"]))
         
 if __name__ == '__main__':
     unittest.main()
