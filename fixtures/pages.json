@@ -45,9 +45,9 @@
 		"content": "[{'tag': 'linkpage', 'attr': {'class': 'mybtn_class', 'page': 'default_page'}, 'children': [{'tag': 'text', 'text': 'Show my wallet'}]}]"
 	},
     "ecosysParam":{
-		"code": "Span(Address(EcosysParam(founder_account)))",
+		"code": "Span(EcosysParam(max_block_user_tx))",
 		"menu": "default_menu",
-		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'unknown address'}]}]"
+		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': '100'}]}]"
 	},
     "paragraf":{
 		"code": "p(This is paragraph)",
