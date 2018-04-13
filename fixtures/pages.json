@@ -134,6 +134,11 @@
 		"menu": "default_menu",
 		"content": "[{'tag': 'text', 'text': 'This is an '}, {'tag': 'strong', 'children': [{'tag': 'text', 'text': 'strong'}]}]"
 	},
+    "getColumnType":{
+		"code": "GetColumnType(contracts, id)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'text', 'text': 'number'}]"
+    },
     "sys_var_isMobile":{
 		"code": "Mobile = Em(#isMobile#)",
 		"menu": "default_menu",

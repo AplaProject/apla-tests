@@ -213,12 +213,14 @@
 		"code": "{\n data {}\n conditions {}\n action {\n $result = UUID() }\n }",
 		"asert": "-"
 	},
-
+	"getColumnType": {
+		"code": "{\n data {}\n conditions {}\n action {\n $result = GetColumnType(\"contracts\", \"id\") }\n }",
+		"asert": "number"
+  },
 	"decodeBase64": {
 		"code": "{\n data {}\n conditions {}\n action {\n var s string \n s = \"SGVsbG8h\" \n $result = DecodeBase64(s) }\n }",
 		"asert": "Hello!"
 	},
-
 	"encodeBase64": {
 		"code": "{\n data {}\n conditions {}\n action {\n $my_str = \"Hello!\" \n $result = EncodeBase64($my_str) }\n }",
 		"asert": "SGVsbG8h"

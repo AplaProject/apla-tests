@@ -293,6 +293,11 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["getBlock"]
         self.check_contract(contract["code"], contract["asert"])
 
+
+    def test_getColumnType(self):
+        contract = self.contracts["getColumnType"]
+        self.check_contract(contract["code"], contract["asert"])
+      
     def test_decodeBase64(self):
         contract = self.contracts["decodeBase64"]
         self.check_contract(contract["code"], contract["asert"])
