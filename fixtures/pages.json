@@ -90,7 +90,7 @@
 		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'Test'}]}]"
 	},
     "langRes":{
-		"code": "LangRes(lang) LangRes(word, ru)",
+		"code": "",
 		"menu": "default_menu",
 		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'Test'}]}]"
 	},

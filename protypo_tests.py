@@ -156,16 +156,18 @@ class PrototipoTestCase(unittest.TestCase):
                          "Error in content" + str(content["tree"]))
         
     def test_page_langRes(self):
-        data = {"Name": "lang",
+        lang = "lang_"+utils.generate_random_name()
+        data = {"Name": lang,
                 "Trans": "{\"en\": \"Lang_en\", \"ru\" : \"Язык\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = utils.call_contract(url, prKey, "NewLang", data, token)
         self.assertTxInBlock(res, token)
-        data = {"Name": "word",
+        word = "word_" + utils.generate_random_name()
+        data = {"Name": word,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = utils.call_contract(url, prKey, "NewLang", data, token)
         self.assertTxInBlock(res, token)
         contract = self.pages["langRes"]
-        content = self.check_page(contract["code"])
+        content = self.check_page("LangRes("+lang+") LangRes("+word+", ru)")
         
     def test_page_inputErr(self):
         contract = self.pages["inputErr"]
