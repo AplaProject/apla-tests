@@ -145,18 +145,23 @@
 		"content": "0"
 	},
     "sys_var_roleID":{
-		"code": "Mobile = Em(#role_id#)",
+		"code": "RoleID = Em(#role_id#)",
 		"menu": "default_menu",
 		"content": "0"
 	},
     "sys_var_ecosystemID":{
-		"code": "Mobile = Em(#ecosystem_id#)",
+		"code": "EcosystemID = Em(#ecosystem_id#)",
 		"menu": "default_menu",
 		"content": "1"
 	},
     "sys_var_ecosystem_name":{
-		"code": "Mobile = Em(#ecosystem_name#)",
+		"code": "Ecosystem name = Em(#ecosystem_name#)",
 		"menu": "default_menu",
 		"content": "platform ecosystem"
+	},
+    "sys_var_keyID":{
+		"code": "KeyID = Em(#key_id#)",
+		"menu": "default_menu",
+		"content": ""
 	}
 }
