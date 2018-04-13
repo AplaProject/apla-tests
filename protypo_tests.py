@@ -183,7 +183,6 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertTxInBlock(res, token)
         contract = self.pages["include"]
         content = self.check_page("Include("+name+")")
-        print(content)
         self.assertEqual(str(content["tree"]), contract["content"],
                          "Error in content" + str(content["tree"]))
         
