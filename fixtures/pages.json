@@ -138,5 +138,25 @@
 		"code": "GetColumnType(contracts, id)",
 		"menu": "default_menu",
 		"content": "[{'tag': 'text', 'text': 'number'}]"
+    },
+    "sys_var_isMobile":{
+		"code": "Mobile = Em(#isMobile#)",
+		"menu": "default_menu",
+		"content": "0"
+	},
+    "sys_var_roleID":{
+		"code": "Mobile = Em(#role_id#)",
+		"menu": "default_menu",
+		"content": "0"
+	},
+    "sys_var_ecosystemID":{
+		"code": "Mobile = Em(#ecosystem_id#)",
+		"menu": "default_menu",
+		"content": "1"
+	},
+    "sys_var_ecosystem_name":{
+		"code": "Mobile = Em(#ecosystem_name#)",
+		"menu": "default_menu",
+		"content": "platform ecosystem"
 	}
 }

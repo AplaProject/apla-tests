@@ -115,29 +115,24 @@ def compare_keys_cout(dbHost, dbName, login, password):
 
 def compare_node_positions(dbHost, dbName, login, password, maxBlockId, nodes):
 	count_rec = nodes * 3 + nodes
-	print("count_rec", count_rec)
 	minBlock = maxBlockId - count_rec + 1
-	print("maxBlock", maxBlockId, "minBlock", minBlock)
-	request = "SELECT node_position FROM block_chain WHERE id>" + str(minBlock) + " AND id<" + str(maxBlockId)
+	request = "SELECT node_position, count(node_position) FROM block_chain WHERE id>" + str(minBlock) + " AND id<" + str(maxBlockId) + "GROUP BY node_position"
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute(request)
 	positions = cursor.fetchall()
-	res = True
-	j = 0
-	while j < nodes:
-		node = 0
-		i = 0
-		while i < len(positions):
-			if positions[i][0] == j:
-				node = node + 1
-			i = i + 1
-		if node < 3:
-			res = False
-			continue
-		else:
-			j = j + 1
-	return res
+	countBlocks = round(count_rec/nodes/10*7)
+	print(nodes)
+	if len(positions) < nodes:
+		print("One of nodes doesn't generate blocks" + str(positions))
+		return False 
+	i = 0
+	while i < len(positions):
+		if positions[i][1] < countBlocks:
+			print("Node " + i + "generated " + positions[i][1] + "blocks:" + str(positions))
+			return False
+		i = i + 1
+	return True
 
 
 def get_count_records_block_chain(dbHost, dbName, login, password):
@@ -198,6 +193,12 @@ def get_blockchain_hash(dbHost, dbName, login, password, maxBlockId):
 	hash = cursor.fetchall()
 	return hash
 
+def get_system_parameter(dbHost, dbName, login, password, parameter):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("select value from \"system_parameters\" WHERE name='" + parameter + "'")
+	return cursor.fetchall()
+
 def get_commission_size(dbHost, dbName, login, password):
 	commision=0
 	return commission;
@@ -207,5 +208,9 @@ def get_commission_wallet(dbHost, dbName, login, password, ecosId):
 	return wallet
 
 def get_node_wallet(dbHost, dbName, login, password, keyID):
+	wallet = "3131312313131312"
+	return wallet
+
+def get_balance_from_db(dbHost, dbName, login, password, keyId):
 	wallet = "3131312313131312"
 	return wallet
