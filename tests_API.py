@@ -1154,6 +1154,38 @@ class ApiTestCase(unittest.TestCase):
         res = self.check_get_api("/list/"+table_name, "", asserts)
         self.assertEqual(int(res["count"]), newLimit+editLimit)
         
+    def test_get_content_from_template(self):
+        data = {}
+        data["template"] = "SetVar(mytest, 100) Div(Body: #mytest#)"
+        asserts = ["tree"]
+        res = self.check_post_api("/content", data, asserts)
+        answerTree = {'tree': [{'tag': 'div', 'children': [{'tag': 'text', 'text': '100'}]}]}
+        self.assertEqual(answerTree, res)
+
+    def test_get_content_from_template_empty(self):
+        data = {}
+        data["template"] = ""
+        asserts = []
+        res = self.check_post_api("/content", data, asserts)
+        self.assertEqual(None, res)
+
+    def test_get_content_from_template_source(self):
+        data = {}
+        data["template"] = "SetVar(mytest, 100) Div(Body: #mytest#)"
+        data["source"] = "true"
+        asserts = ["tree"]
+        res = self.check_post_api("/content", data, asserts)
+        answerTree = {'tree': [{'tag': 'setvar', 'attr': {'name': 'mytest', 'value': '100'}}, {'tag': 'div', 'children': [{'tag': 'text', 'text': '#mytest#'}]}]}
+        self.assertEqual(answerTree, res)
+
+    def test_get_content_from_template_source_empty(self):
+        data = {}
+        data["template"] = ""
+        data["source"] = "true"
+        asserts = []
+        res = self.check_post_api("/content", data, asserts)
+        self.assertEqual(None, res)
+
     def test_get_content_source(self):
         # Create new page for test
         name = "Page_" + utils.generate_random_name()
