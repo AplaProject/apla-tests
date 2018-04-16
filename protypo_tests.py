@@ -86,8 +86,19 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_input(self):
         contract = self.pages["input"]
         content = self.check_page(contract["code"])
-        self.assertEqual(str(content["tree"]), contract["content"],
-                         "Error in content" + str(content["tree"]))
+        partContent = content['tree'][0]['tag']
+        self.assertEqual(partContent, contract["content"]['tag'],
+                         "Error in content " + str(content['tree']))
+        partContent = content['tree'][0]['attr']
+        contractContent = contract["content"]['attr']
+        self.assertEqual(partContent['class'], contractContent['class'],
+                         "Error in content 'attr'" + str(partContent))
+        self.assertEqual(partContent['name'], contractContent['name'],
+                         "Error in content 'attr'" + str(partContent))
+        self.assertEqual(partContent['placeholder'], contractContent['placeholder'],
+                         "Error in content 'attr'" + str(partContent))
+        self.assertEqual(partContent['type'], contractContent['type'],
+                         "Error in content 'attr'" + str(partContent))
         
     def test_page_menuGroup(self):
         contract = self.pages["menuGroup"]
