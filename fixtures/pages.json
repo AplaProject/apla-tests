@@ -32,7 +32,15 @@
 	"input":{
 		"code": "Input(Class: form-control, Placeholder: text, Type: text, Name: name)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'input', 'attr': {'class': 'form-control', 'name': 'name', 'placeholder': 'text', 'type': 'text'}}]"
+		"content":  {
+			"tag": "input",
+			"attr": {
+				"class": "form-control",
+				"name": "name",
+				"placeholder": "text",
+				"type": "text"
+			}
+		}
 	},
     "menuGroup":{
 		"code": "MenuGroup(My Menu){ MenuItem(Dahsboard, dashboard_default) MenuItem(Main, default_page)}",
