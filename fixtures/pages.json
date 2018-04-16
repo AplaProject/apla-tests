@@ -22,7 +22,29 @@
 	"divs":{
 		"code": "Div(content-wrapper){ %n Div(panel panel-primary){ %n Div(panel-heading, Header) %n }}",
 		"menu": "default_menu",
-		"content": "[{'tag': 'div', 'attr': {'class': 'content-wrapper'}, 'children': [{'tag': 'text', 'text': '%n '}, {'tag': 'div', 'attr': {'class': 'panel panel-primary'}, 'children': [{'tag': 'text', 'text': '%n '}, {'tag': 'div', 'attr': {'class': 'panel-heading'}, 'children': [{'tag': 'text', 'text': 'Header'}]}, {'tag': 'text', 'text': ' %n'}]}]}]"
+		"content": {
+			"tag":"div",
+			"attr": {
+				"class": "content-wrapper"
+			},
+			"children":{
+				"tag":"div",
+				"attr": {
+					"class": "panel panel-primary"
+				},
+				"children":{
+					"tag":"div",
+					"attr": {
+						"class": "panel-heading"
+					},
+					"children": [
+						{
+							"text": "Header"
+						}
+					]
+				}
+			}
+		}
 	},
     "setVar":{
 		"code": "SetVar(head, Header) Div(panel-heading, #head#)",
