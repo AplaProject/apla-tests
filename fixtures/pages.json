@@ -114,10 +114,17 @@
 		"menu": "default_menu",
 		"content": "[{'tag': 'imageinput', 'attr': {'name': 'avatar', 'ratio': '2/1', 'width': '100'}}]"
 	},
-    "allert":{
+    "alert":{
 		"code": "Button(Body: Create user, Class: btn btn-primary, Contract: NewUser).Alert(Text: Name, ConfirmButton: Ok, CancelButton: Cancel, Icon: question)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'button', 'attr': {'alert': {'cancelbutton': 'Cancel', 'confirmbutton': 'Ok', 'icon': 'question', 'text': 'Name'}, 'class': 'btn btn-primary', 'contract': 'NewUser'}, 'children': [{'tag': 'text', 'text': 'Create user'}]}]"
+		"content": {
+			"alert": {
+				"cancelbutton": "Cancel",
+				"confirmbutton": "Ok",
+				"icon": "question",
+				"text": "Name"
+			}
+		}
 	},
     "table":{
 		"code": "DBFind(\"menu\",mysrc) Table(mysrc,\"Name=name,Value=value,Conditions=conditions\")",
