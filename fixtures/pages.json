@@ -2,7 +2,7 @@
 	"button":{
 		"code": "Button(Body: Create user, Class: btn btn-primary, Contract: NewUser)",
 		"Menu": "default_menu",
-		"content": "[{'tag': 'button', 'attr': {'class': 'btn btn-primary', 'contract': 'NewUser'}, 'children': [{'tag': 'text', 'text': 'Create user'}]}]"
+		"content": ""
 	},
     "selectorFromDB":{
 		"code": "DBFind(\"menu\", data) %n Select(MySelect, data, \"name\")",
