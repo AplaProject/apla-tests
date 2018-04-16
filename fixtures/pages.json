@@ -47,9 +47,16 @@
 		}
 	},
     "setVar":{
-		"code": "SetVar(head, Header) Div(panel-heading, #head#)",
+		"code": "SetVar(head, Header) Div(, #head#)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'div', 'attr': {'class': 'panel-heading'}, 'children': [{'tag': 'text', 'text': 'Header'}]}]"
+		"content": {
+			"tag": "div",
+			"children": [
+				{
+					"text": "Header"
+				}
+			]
+		}
 	},
 	"input":{
 		"code": "Input(Class: form-control, Placeholder: text, Type: text, Name: name)",
