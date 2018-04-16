@@ -34,6 +34,13 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertTxInBlock(resp, token)
         cont = funcs.get_content(url, "page", name, "", token)
         return cont
+
+    def findPositionElementInTree(self, contentTree, tagName):
+        i = 0
+        while i < len(contentTree):
+            if contentTree[i]['tag'] == tagName:
+                return i
+            i += 1
         
     def test_page_button(self):
         contract = self.pages["button"]
