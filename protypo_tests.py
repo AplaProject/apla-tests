@@ -111,7 +111,10 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_setVar(self):
         contract = self.pages["setVar"]
         content = self.check_page(contract["code"])
-        self.assertEqual(str(content["tree"]), contract["content"],
+        requiredTagNum = self.findPositionElementInTree(content['tree'], "div")
+        self.assertEqual(content['tree'][requiredTagNum]['tag'], contract['content']['tag'],
+                         "Error in content" + str(content["tree"]))
+        self.assertEqual(content['tree'][requiredTagNum]['children'][0]['text'], contract['content']['children'][0]['text'],
                          "Error in content" + str(content["tree"]))
         
     def test_page_input(self):
