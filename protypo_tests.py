@@ -195,19 +195,19 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_alert(self):
         contract = self.pages["alert"]
         content = self.check_page(contract["code"])
-        alert = content['tree'][0]['attr']['alert']
-        partContent = content['tree'][0]['attr']['alert']['cancelbutton']
-        self.assertEqual(partContent, contract["content"]['alert']['cancelbutton'],
-                         "Error in content 'alert'" + str(alert))
-        partContent = content['tree'][0]['attr']['alert']['confirmbutton']
-        self.assertEqual(partContent, contract["content"]['alert']['confirmbutton'],
-                         "Error in content 'alert'" + str(alert))
-        partContent = content['tree'][0]['attr']['alert']['icon']
-        self.assertEqual(partContent, contract["content"]['alert']['icon'],
-                         "Error in content 'alert'" + str(alert))
-        partContent = content['tree'][0]['attr']['alert']['text']
-        self.assertEqual(partContent, contract["content"]['alert']['text'],
-                         "Error in content 'alert'" + str(alert))
+        partContent = content['tree'][0]['tag']
+        self.assertEqual(partContent, contract["content"]['tag'],
+                         "Error in content " + str(content['tree']))
+        partContent = content['tree'][0]['attr']['alert']
+        contractContent = contract["content"]['attr']['alert']
+        self.assertEqual(partContent['cancelbutton'],  contractContent['cancelbutton'],
+                         "Error in content 'alert'" + str(partContent))
+        self.assertEqual(partContent['confirmbutton'], contractContent['confirmbutton'],
+                         "Error in content 'alert'" + str(partContent))
+        self.assertEqual(partContent['icon'], contractContent['icon'],
+                         "Error in content 'alert'" + str(partContent))
+        self.assertEqual(partContent['text'], contractContent['text'],
+                         "Error in content 'alert'" + str(partContent))
         
     def test_page_table(self):
         contract = self.pages["table"]

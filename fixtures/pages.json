@@ -118,11 +118,14 @@
 		"code": "Button(Body: Create user, Class: btn btn-primary, Contract: NewUser).Alert(Text: Name, ConfirmButton: Ok, CancelButton: Cancel, Icon: question)",
 		"menu": "default_menu",
 		"content": {
-			"alert": {
-				"cancelbutton": "Cancel",
-				"confirmbutton": "Ok",
-				"icon": "question",
-				"text": "Name"
+			"tag": "button",
+			"attr": {
+				"alert": {
+					"cancelbutton": "Cancel",
+					"confirmbutton": "Ok",
+					"icon": "question",
+					"text": "Name"
+				}
 			}
 		}
 	},
