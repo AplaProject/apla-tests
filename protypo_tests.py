@@ -100,7 +100,6 @@ class PrototipoTestCase(unittest.TestCase):
         requiredInner2TagNum = self.findPositionElementInTree(content['tree'][0]['children'][requiredInnerTagNum]['children'], "div")
         partContent = content['tree'][0]['children'][requiredInnerTagNum]['children'][requiredInner2TagNum]
         contractContent = contract["content"]['children']['children']
-        print(partContent)
         self.assertEqual(partContent['tag'], contractContent['tag'],
                          "Error in content second level inner div" + str(partContent))
         self.assertEqual(partContent['attr']['class'], contractContent['attr']['class'],
