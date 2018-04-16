@@ -51,8 +51,9 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_selectorFromDB(self):
         contract = self.pages["selectorFromDB"]
         content = self.check_page(contract["code"])
+        requiredTagNum = self.findPositionElementInTree(content["tree"],"dbfind")
         mustBe = dict(tag = "dbfind", data = True)
-        page = dict(tag = content["tree"][0]["tag"], data = len(content["tree"][0]["attr"]["columns"]) > 2)
+        page = dict(tag = content["tree"][requiredTagNum]["tag"], data = len(content["tree"][requiredTagNum]["attr"]["columns"]) > 2)
         self.assertDictEqual(mustBe, page,
                          "DBfind has problem: " + str(content["tree"]))
         
