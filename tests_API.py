@@ -1324,7 +1324,14 @@ class ApiTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         asserts = ["list"]
         res = self.check_get_api("/list/ecosystems", "", asserts)
-        self.assertEqual(newName, res['list'][0]['name'])
+        # iterating response elements
+        i=0
+        requiredEcosysName=""
+        while i < int(res['count']):
+            if int(res['list'][i]['id']) == id:
+                requiredEcosysName = res['list'][i]['name']
+            i+=1
+        self.assertEqual(newName, requiredEcosysName)
 
     def test_edit_ecosystem_name_incorrect_id(self):
         id = 500
