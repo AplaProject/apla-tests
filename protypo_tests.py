@@ -190,9 +190,20 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_inputErr(self):
         contract = self.pages["inputErr"]
         content = self.check_page(contract["code"])
-        self.assertEqual(str(content["tree"]), contract["content"],
-                         "Error in content" + str(content["tree"]))
-        
+        # iterating response elements
+        requiredTagNum = self.findPositionElementInTree(content['tree'],"inputerr")
+        partContent = content['tree'][requiredTagNum]['tag']
+        self.assertEqual(partContent, contract["content"]['tag'],
+                         "Error in content " + str(content['tree']))
+        partContent = content['tree'][requiredTagNum]['attr']
+        contractContent = contract["content"]['attr']
+        self.assertEqual(partContent['maxlength'], contractContent['maxlength'],
+                         "Error in content 'attr'" + str(partContent))
+        self.assertEqual(partContent['name'], contractContent['name'],
+                         "Error in content 'attr'" + str(partContent))
+        self.assertEqual(partContent['minlength'], contractContent['minlength'],
+                         "Error in content 'attr'" + str(partContent))
+
     def test_page_include(self):
         name = "Block_"+utils.generate_random_name()
         data = {"Name": name,
