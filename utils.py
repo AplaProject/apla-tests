@@ -35,6 +35,7 @@ def login(url, prKey):
 	result["jwtToken"] = 'Bearer ' + res["token"]
 	result["pubkey"] = pubkey
 	result["address"] = res["address"]
+	result["key_id"] = res["key_id"]
 	return result
 
 
@@ -94,7 +95,6 @@ def compare_keys_cout(dbHost, dbName, login, password):
 	cursor = connect.cursor()
 	cursor.execute("SELECT key_id FROM block_chain Order by id DESC LIMIT 10")
 	keys = cursor.fetchall()
-	print(keys)
 	firstKey = keys[1]
 	secondKey = ""
 	for key in keys:
@@ -122,7 +122,6 @@ def compare_node_positions(dbHost, dbName, login, password, maxBlockId, nodes):
 	cursor.execute(request)
 	positions = cursor.fetchall()
 	countBlocks = round(count_rec/nodes/10*7)
-	print(nodes)
 	if len(positions) < nodes:
 		print("One of nodes doesn't generate blocks" + str(positions))
 		return False 
@@ -147,7 +146,7 @@ def get_ten_items(dbHost, dbName, login, password):
 	cursor = connect.cursor()
 	cursor.execute("SELECT * FROM block_chain Order by id DESC LIMIT 10")
 	keys = cursor.fetchall()
-	print(keys)
+	return keys
 
 
 def getCountDBObjects(dbHost, dbName, login, password):
@@ -197,14 +196,16 @@ def get_system_parameter(dbHost, dbName, login, password, parameter):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute("select value from \"system_parameters\" WHERE name='" + parameter + "'")
-	return cursor.fetchall()
-
-def get_commission_size(dbHost, dbName, login, password):
-	commision=0
-	return commission;
+	value = cursor.fetchall()
+	return value[0][0]
 
 def get_commission_wallet(dbHost, dbName, login, password, ecosId):
-	wallet = "3131312313131312"
+	request = "select value from \"system_parameters\" where name='commission_wallet'"
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute(request)
+	wallets = cursor.fetchall()
+	wallet = json.loads(wallets[0][0])[0][1]
 	return wallet
 
 def get_node_wallet(dbHost, dbName, login, password, keyID):
@@ -212,5 +213,34 @@ def get_node_wallet(dbHost, dbName, login, password, keyID):
 	return wallet
 
 def get_balance_from_db(dbHost, dbName, login, password, keyId):
-	wallet = "3131312313131312"
-	return wallet
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("select amount from \"1_keys\" WHERE id=" + keyId)
+	amount = cursor.fetchall()
+	balance = amount[0][0]
+	return balance
+
+def get_balance_from_db_by_pub(dbHost, dbName, login, password, pub):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("select amount from \"1_keys\" WHERE pub='\\x" + pub + "'")
+	amount = cursor.fetchall()
+	return amount[0][0]
+
+def is_wallet_created(dbHost, dbName, login, password, pub):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("select amount from \"1_keys\" WHERE pub='\\x" + pub + "'")
+	amount = cursor.fetchall()
+	if len(amount) > 0:
+		return True
+	else:
+		return False
+	
+def get_block_gen_node(dbHost, dbName, login, password, block):
+    connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+    cursor = connect.cursor()
+    cursor.execute("select node_position from \"block_chain\" WHERE id=" + block)
+    nodes = cursor.fetchall()
+    return nodes[0][0]
+   

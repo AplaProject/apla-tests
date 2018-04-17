@@ -1278,8 +1278,22 @@ class ApiTestCase(unittest.TestCase):
         data = {}
         #self.check_post_api("/vde/create", data, asserts)
 
-        
-        
+    def test_login(self):
+        keys = config.getKeys()    
+        self.data1 = utils.login(url, keys["key2"])
+        token1 = self.data1["jwtToken"]
+        conf = config.getNodeConfig()
+        res = utils.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],
+                                      conf["1"]["login"], conf["1"] ["pass"],
+                                      self.data["pubkey"])
+        code, name = utils.generate_name_and_code("")
+        data = {"Wallet": "", "Value": code,
+                "Conditions": "true"}
+        resp = utils.call_contract(url, keys["key2"], "NewContract", data, token1)
+        print(resp)
+        res = self.assertTxInBlock(resp, token1)
+        print(res)
+        self.assertTrue(res, "Wallet for new user didn't created")
 
 if __name__ == '__main__':
     unittest.main()

@@ -15,6 +15,11 @@ def getNodeConfig():
 		data = f.read()
 	return json.loads(data)
 
+def getKeys():
+	path = os.path.join(os.getcwd(), "fixtures", "prKeys.json")
+	with open(path, 'r') as f:
+		data = f.read()
+	return json.loads(data)
 
 def readFixtures(type):
 	path = ""
