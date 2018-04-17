@@ -142,7 +142,7 @@
 		"asert": "osyst"
 	},
     "updateLang": {
-		"code": "{\n data {}\n conditions {}\n action {\n UpdateLang(\"test\", \"{'ru': 'Тест'}\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n UpdateLang(1, \"test\", \"{'ru': 'Тест'}\")\n }\n }",
 			"asert": ""
 	},
     "sysParamString": {
