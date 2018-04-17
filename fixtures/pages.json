@@ -2,7 +2,7 @@
 	"button":{
 		"code": "Button(Body: Create user, Class: btn btn-primary, Contract: NewUser)",
 		"Menu": "default_menu",
-		"content": "[{'tag': 'button', 'attr': {'class': 'btn btn-primary', 'contract': 'NewUser'}, 'children': [{'tag': 'text', 'text': 'Create user'}]}]"
+		"content": ""
 	},
     "selectorFromDB":{
 		"code": "DBFind(\"menu\", data) %n Select(MySelect, data, \"name\")",
@@ -22,17 +22,54 @@
 	"divs":{
 		"code": "Div(content-wrapper){ %n Div(panel panel-primary){ %n Div(panel-heading, Header) %n }}",
 		"menu": "default_menu",
-		"content": "[{'tag': 'div', 'attr': {'class': 'content-wrapper'}, 'children': [{'tag': 'text', 'text': '%n '}, {'tag': 'div', 'attr': {'class': 'panel panel-primary'}, 'children': [{'tag': 'text', 'text': '%n '}, {'tag': 'div', 'attr': {'class': 'panel-heading'}, 'children': [{'tag': 'text', 'text': 'Header'}]}, {'tag': 'text', 'text': ' %n'}]}]}]"
+		"content": {
+			"tag":"div",
+			"attr": {
+				"class": "content-wrapper"
+			},
+			"children":{
+				"tag":"div",
+				"attr": {
+					"class": "panel panel-primary"
+				},
+				"children":{
+					"tag":"div",
+					"attr": {
+						"class": "panel-heading"
+					},
+					"children": [
+						{
+							"text": "Header"
+						}
+					]
+				}
+			}
+		}
 	},
     "setVar":{
-		"code": "SetVar(head, Header) Div(panel-heading, #head#)",
+		"code": "SetVar(head, Header) Div(, #head#)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'div', 'attr': {'class': 'panel-heading'}, 'children': [{'tag': 'text', 'text': 'Header'}]}]"
+		"content": {
+			"tag": "div",
+			"children": [
+				{
+					"text": "Header"
+				}
+			]
+		}
 	},
 	"input":{
 		"code": "Input(Class: form-control, Placeholder: text, Type: text, Name: name)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'input', 'attr': {'class': 'form-control', 'name': 'name', 'placeholder': 'text', 'type': 'text'}}]"
+		"content":  {
+			"tag": "input",
+			"attr": {
+				"class": "form-control",
+				"name": "name",
+				"placeholder": "text",
+				"type": "text"
+			}
+		}
 	},
     "menuGroup":{
 		"code": "MenuGroup(My Menu){ MenuItem(Dahsboard, dashboard_default) MenuItem(Main, default_page)}",
@@ -45,9 +82,9 @@
 		"content": "[{'tag': 'linkpage', 'attr': {'class': 'mybtn_class', 'page': 'default_page'}, 'children': [{'tag': 'text', 'text': 'Show my wallet'}]}]"
 	},
     "ecosysParam":{
-		"code": "Span(Address(EcosysParam(founder_account)))",
+		"code": "Span(EcosysParam(max_block_user_tx))",
 		"menu": "default_menu",
-		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'unknown address'}]}]"
+		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': '100'}]}]"
 	},
     "paragraf":{
 		"code": "p(This is paragraph)",
@@ -90,17 +127,24 @@
 		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'Test'}]}]"
 	},
     "langRes":{
-		"code": "LangRes(lang) LangRes(word, ru)",
+		"code": "",
 		"menu": "default_menu",
 		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'Test'}]}]"
 	},
     "inputErr":{
 		"code": "InputErr(Name: Login, minLength: Value is too short, maxLength: The length of the value must be less than 10 characters)Input(Name: Login, Type: text).Validate(minLength: 6, maxLength: 10)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'inputerr', 'attr': {'maxlength': 'The length of the value must be less than 10 characters', 'minlength': 'Value is too short', 'name': 'Login'}}, {'tag': 'input', 'attr': {'name': 'Login', 'type': 'text', 'validate': {'maxlength': '10', 'minlength': '6'}}}]"
+		"content":  {
+			"tag": "inputerr",
+			"attr": {
+				"maxlength": "The length of the value must be less than 10 characters",
+				"minlength": "Value is too short",
+				"name": "Login"
+			}
+		}
 	},
     "include":{
-		"code": "Include(Block1)",
+		"code": "",
 		"menu": "default_menu",
 		"content": "[{'tag': 'text', 'text': 'Hello page!'}]"
 	},
@@ -114,10 +158,20 @@
 		"menu": "default_menu",
 		"content": "[{'tag': 'imageinput', 'attr': {'name': 'avatar', 'ratio': '2/1', 'width': '100'}}]"
 	},
-    "allert":{
+    "alert":{
 		"code": "Button(Body: Create user, Class: btn btn-primary, Contract: NewUser).Alert(Text: Name, ConfirmButton: Ok, CancelButton: Cancel, Icon: question)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'button', 'attr': {'alert': {'cancelbutton': 'Cancel', 'confirmbutton': 'Ok', 'icon': 'question', 'text': 'Name'}, 'class': 'btn btn-primary', 'contract': 'NewUser'}, 'children': [{'tag': 'text', 'text': 'Create user'}]}]"
+		"content": {
+			"tag": "button",
+			"attr": {
+				"alert": {
+					"cancelbutton": "Cancel",
+					"confirmbutton": "Ok",
+					"icon": "question",
+					"text": "Name"
+				}
+			}
+		}
 	},
     "table":{
 		"code": "DBFind(\"menu\",mysrc) Table(mysrc,\"Name=name,Value=value,Conditions=conditions\")",
@@ -133,5 +187,35 @@
 		"code": "This is an Strong(strong)",
 		"menu": "default_menu",
 		"content": "[{'tag': 'text', 'text': 'This is an '}, {'tag': 'strong', 'children': [{'tag': 'text', 'text': 'strong'}]}]"
+	},
+    "getColumnType":{
+		"code": "GetColumnType(contracts, id)",
+		"menu": "default_menu",
+		"content": "[{'tag': 'text', 'text': 'number'}]"
+    },
+    "sys_var_isMobile":{
+		"code": "Mobile = Em(#isMobile#)",
+		"menu": "default_menu",
+		"content": "0"
+	},
+    "sys_var_roleID":{
+		"code": "RoleID = Em(#role_id#)",
+		"menu": "default_menu",
+		"content": "0"
+	},
+    "sys_var_ecosystemID":{
+		"code": "EcosystemID = Em(#ecosystem_id#)",
+		"menu": "default_menu",
+		"content": "1"
+	},
+    "sys_var_ecosystem_name":{
+		"code": "Ecosystem name = Em(#ecosystem_name#)",
+		"menu": "default_menu",
+		"content": "platform ecosystem"
+	},
+    "sys_var_keyID":{
+		"code": "KeyID = Em(#key_id#)",
+		"menu": "default_menu",
+		"content": ""
 	}
 }

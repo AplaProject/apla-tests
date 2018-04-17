@@ -147,7 +147,7 @@ class ApiTestCase(unittest.TestCase):
 
     def test_create_ecosystem(self):
         name = "Ecosys" + utils.generate_random_name()
-        data = {"name": name}
+        data = {"Name": name}
         res = self.call("NewEcosystem", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
@@ -780,7 +780,6 @@ class ApiTestCase(unittest.TestCase):
         per3E = " \"new_column\": \"true\"}"
         dataEdit["Permissions"] = per1E + per2E + per3E
         res = self.call("EditTable", dataEdit)
-        print(res)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
     def test_edit_table_incorrect_condition1(self):
@@ -1155,6 +1154,38 @@ class ApiTestCase(unittest.TestCase):
         res = self.check_get_api("/list/"+table_name, "", asserts)
         self.assertEqual(int(res["count"]), newLimit+editLimit)
         
+    def test_get_content_from_template(self):
+        data = {}
+        data["template"] = "SetVar(mytest, 100) Div(Body: #mytest#)"
+        asserts = ["tree"]
+        res = self.check_post_api("/content", data, asserts)
+        answerTree = {'tree': [{'tag': 'div', 'children': [{'tag': 'text', 'text': '100'}]}]}
+        self.assertEqual(answerTree, res)
+
+    def test_get_content_from_template_empty(self):
+        data = {}
+        data["template"] = ""
+        asserts = []
+        res = self.check_post_api("/content", data, asserts)
+        self.assertEqual(None, res)
+
+    def test_get_content_from_template_source(self):
+        data = {}
+        data["template"] = "SetVar(mytest, 100) Div(Body: #mytest#)"
+        data["source"] = "true"
+        asserts = ["tree"]
+        res = self.check_post_api("/content", data, asserts)
+        answerTree = {'tree': [{'tag': 'setvar', 'attr': {'name': 'mytest', 'value': '100'}}, {'tag': 'div', 'children': [{'tag': 'text', 'text': '#mytest#'}]}]}
+        self.assertEqual(answerTree, res)
+
+    def test_get_content_from_template_source_empty(self):
+        data = {}
+        data["template"] = ""
+        data["source"] = "true"
+        asserts = []
+        res = self.check_post_api("/content", data, asserts)
+        self.assertEqual(None, res)
+
     def test_get_content_source(self):
         # Create new page for test
         name = "Page_" + utils.generate_random_name()
@@ -1176,6 +1207,23 @@ class ApiTestCase(unittest.TestCase):
         asserts = ["tree"]
         res = self.check_post_api("/content/source/" + name, "", asserts)
         self.assertEqual(0, len(res["tree"]))
+
+    def test_get_content_with_param_from_address_string(self):
+        # Create new page for test
+        name = "Page_" + utils.generate_random_name()
+        data = {}
+        data["Name"] = name
+        data["Value"] = "#test#"
+        data["Conditions"] = "true"
+        data["Menu"] = "default_menu"
+        res = self.call("NewPage", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # Test
+        param = "?test="
+        value = "hello123"
+        asserts = ["tree"]
+        res = self.check_post_api("/content/page/" + name + param + value, "", asserts)
+        self.assertEqual(value, res["tree"][0]["text"])
 
     def test_get_back_api_version(self):
         asserts = ["."]
@@ -1267,6 +1315,30 @@ class ApiTestCase(unittest.TestCase):
         block = "not_exist_block_xxxxxxxxxxx"
         res = self.check_get_api("/interface/block/"+block, "", asserts)
         self.assertEqual("Page not found", res["msg"])
+
+    def test_edit_ecosystem_name(self):
+        id = 1
+        newName = "ecosys_"+utils.generate_random_name()
+        data = {"EcosystemID": id, "NewName": newName}
+        res = self.call("EditEcosystemName", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        asserts = ["list"]
+        res = self.check_get_api("/list/ecosystems", "", asserts)
+        # iterating response elements
+        i=0
+        requiredEcosysName=""
+        while i < int(res['count']):
+            if int(res['list'][i]['id']) == id:
+                requiredEcosysName = res['list'][i]['name']
+            i+=1
+        self.assertEqual(newName, requiredEcosysName)
+
+    def test_edit_ecosystem_name_incorrect_id(self):
+        id = 500
+        newName = "ecosys_"+utils.generate_random_name()
+        data = {"EcosystemID": id, "NewName": newName}
+        res = self.call("EditEcosystemName", data)
+        self.assertEqual("Ecosystem "+str(id)+" does not exist", res)
 
     def test_get_table_vde(self):
         asserts = ["name"]

@@ -28,7 +28,7 @@ class Rollback1TestCase(unittest.TestCase):
         return name, code
         
     def create_ecosystem(self):
-        data = {"name": "Ecosys" + utils.generate_random_name()}
+        data = {"Name": "Ecosys" + utils.generate_random_name()}
         res = self.call("NewEcosystem", data)
         
     def money_transfer(self):
