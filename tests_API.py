@@ -1045,6 +1045,7 @@ class ApiTestCase(unittest.TestCase):
     def test_content_lang(self):
         nameLang = "Lang_" + utils.generate_random_name()
         data = {}
+        data["AppID"] = "1"
         data["Name"] = nameLang
         data["Trans"] = "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"
         res = self.call("NewLang", data)
