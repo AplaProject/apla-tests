@@ -41,6 +41,17 @@ class PrototipoTestCase(unittest.TestCase):
             if contentTree[i]['tag'] == tagName:
                 return i
             i += 1
+
+    def findPositionElementInTreeByAttributeNameAndValue(self, contentTree, tagName, attrName, attrValue):
+        i = 0
+        print("len(contentTree) = "+str(len(contentTree)))
+        while i < len(contentTree):
+            if contentTree[i]['tag'] == tagName:
+                print("contentTree["+str(i)+"]['tag'] = "+contentTree[i]['tag'])
+                if contentTree[i]['attr'][attrName] == attrValue:
+                    print("contentTree["+str(i)+"]['attr']['attrName+'] = "+contentTree[i]['attr'][attrName])
+                    return i
+            i += 1
         
     def test_page_button(self):
         contract = self.pages["button"]
