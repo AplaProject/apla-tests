@@ -124,14 +124,16 @@ class PrototipoTestCase(unittest.TestCase):
                          "Error in content " + str(content['tree']))
         partContent = content['tree'][0]['attr']
         contractContent = contract["content"]['attr']
-        self.assertEqual(partContent['class'], contractContent['class'],
-                         "Error in content 'attr'" + str(partContent))
-        self.assertEqual(partContent['name'], contractContent['name'],
-                         "Error in content 'attr'" + str(partContent))
-        self.assertEqual(partContent['placeholder'], contractContent['placeholder'],
-                         "Error in content 'attr'" + str(partContent))
-        self.assertEqual(partContent['type'], contractContent['type'],
-                         "Error in content 'attr'" + str(partContent))
+        mustBe = dict(inputClass=partContent['class'],
+                      name=partContent['name'],
+                      placeholder=partContent['placeholder'],
+                      type=partContent['type'])
+        page = dict(inputClass=contractContent['class'],
+                      name=contractContent['name'],
+                      placeholder=contractContent['placeholder'],
+                      type=contractContent['type'])
+        self.assertDictEqual(mustBe, page,
+                             "input has problem: " + str(content["tree"]))
         
     def test_page_menuGroup(self):
         contract = self.pages["menuGroup"]
