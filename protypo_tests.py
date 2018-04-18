@@ -10,18 +10,18 @@ import datetime
 
 class PrototipoTestCase(unittest.TestCase):
     def setUp(self):
-        self.config = config.readMainConfig()
+        self.config = config.getNodeConfig()
         global url, prKey,token
         self.pages = config.readFixtures("pages")
-        url = self.config["url"]
-        prKey = self.config['private_key']
+        url = self.config["2"]["url"]
+        prKey = self.config["1"]['private_key']
         self.data = utils.login(url,prKey)
         token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
         status = utils.txstatus(url,
-                                self.config["time_wait_tx_in_block"],
+                                self.config["1"]["time_wait_tx_in_block"],
                                 result['hash'], jwtToken)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)

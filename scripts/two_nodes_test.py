@@ -72,18 +72,18 @@ config1 = subprocess.Popen([
 	'--firstBlock='+firstBlockPath,
 	'--dbName='+args.dbName1
 ])
-time.sleep(10)
+time.sleep(3)
 
 #Update config for first node
 configPath = os.path.join(workDir1, 'config.toml')
 with open(configPath) as fconf:
 	lines = fconf.readlines()
-del lines[24]
-lines.insert(24, "  Password = \""+args.dbPassword+"\"\n")
-del lines[32]
-lines.insert(32, "  Secret = \"4597e75c-4376-42a6-8c1f-7e3fc7eb2114\"\n")
+del lines[25]
+lines.insert(25, "  Password = \""+args.dbPassword+"\"\n")
 del lines[33]
-lines.insert(33, "URL = \"http://127.0.0.1:8000\"\n")
+lines.insert(33, "  Secret = \"4597e75c-4376-42a6-8c1f-7e3fc7eb2114\"\n")
+del lines[34]
+lines.insert(34, "URL = \"http://127.0.0.1:8000\"\n")
 with open(configPath, 'w') as fconf:
 	fconf.write(''.join(lines))
 
@@ -93,7 +93,7 @@ keys1 = subprocess.Popen([
 	'generateKeys',
 	'--config='+workDir1+'/config.toml'
 ])
-time.sleep(10)
+time.sleep(3)
 
 #Generate first block
 firstBlock = subprocess.Popen([
@@ -101,7 +101,7 @@ firstBlock = subprocess.Popen([
 	'generateFirstBlock',
 	'--config='+workDir1+'/config.toml'
 ])
-time.sleep(10)
+time.sleep(3)
 
 #Init data base
 firstBlock = subprocess.Popen([
@@ -109,7 +109,7 @@ firstBlock = subprocess.Popen([
 	'initDatabase',
 	'--config='+workDir1+'/config.toml'
 ])
-time.sleep(10)
+time.sleep(5)
 
 #Start first node
 startFirstNode = subprocess.Popen([
@@ -117,7 +117,7 @@ startFirstNode = subprocess.Popen([
 	'start',
 	'--config='+workDir1+'/config.toml'
 ])
-time.sleep(10)
+time.sleep(3)
 
 #Generate config for second node
 generateConfig2 = subprocess.Popen([
@@ -130,18 +130,18 @@ generateConfig2 = subprocess.Popen([
 	'--httpPort='+args.httpPort2,
 	'--nodesAddr='+"127.0.0.1:"+args.tcpPort1
 ])
-time.sleep(10)
+time.sleep(3)
 
 #Update config for second node
 configPath = os.path.join(workDir2, 'config.toml')
 with open(configPath) as fconf:
 	lines = fconf.readlines()
-del lines[24]
-lines.insert(24, "  Password = \""+args.dbPassword+"\"\n")
-del lines[32]
-lines.insert(32, "  Secret = \"4597e75c-4376-42a6-8c1f-7e3fc7eb2114\"\n")
+del lines[25]
+lines.insert(25, "  Password = \""+args.dbPassword+"\"\n")
 del lines[33]
-lines.insert(33, "URL = \"http://127.0.0.1:8000\"\n")
+lines.insert(33, "  Secret = \"4597e75c-4376-42a6-8c1f-7e3fc7eb2114\"\n")
+del lines[34]
+lines.insert(34, "URL = \"http://127.0.0.1:8000\"\n")
 with open(configPath, 'w') as fconf:
 	fconf.write(''.join(lines))
 
@@ -151,7 +151,7 @@ generateKeys = subprocess.Popen([
 	'generateKeys',
 	'--config='+workDir2+'/config.toml'
 ])
-time.sleep(10)
+time.sleep(3)
 
 with open(os.path.join(workDir1, 'PrivateKey'), 'r') as f:
 	privKey1 = f.read()
@@ -228,7 +228,7 @@ if code != 0:
 	node1.kill()
 	exit(1)
 
-time.sleep(20)
+time.sleep(3)
 
 #Init database
 startFirstNode = subprocess.Popen([
@@ -236,7 +236,7 @@ startFirstNode = subprocess.Popen([
 	'initDatabase',
 	'--config='+workDir2+'/config.toml'
 ])
-time.sleep(10) 
+time.sleep(5) 
 
 #Start second node
 startFirstNode = subprocess.Popen([
@@ -244,7 +244,7 @@ startFirstNode = subprocess.Popen([
 	'start',
 	'--config='+workDir2+'/config.toml'
 ])
-time.sleep(10)
+time.sleep(3)
 
 # Update config for tests
 config = os.path.join(curDir+ '/../', 'hostConfig.json')
@@ -254,20 +254,28 @@ with open(config) as fconf:
 # Update URLs in config
 del lines[3]
 lines.insert(3, "\t\t\"url\": \"""http://localhost:"+args.httpPort1+"/api/v2" + "\",\n")
-del lines[13]
-lines.insert(13, "\t\t\"url\": \"""http://localhost:"+args.httpPort2+"/api/v2" + "\",\n")
+del lines[14]
+lines.insert(14, "\t\t\"url\": \"""http://localhost:"+args.httpPort2+"/api/v2" + "\",\n")
 
 # Update DB names in config
-del lines[6]
-lines.insert(6, "\t\t\"dbName\": \""+args.dbName1+"\",\n")
-del lines[16]
-lines.insert(16, "\t\t\"dbName\": \""+args.dbName2+"\",\n")
+del lines[7]
+lines.insert(7, "\t\t\"dbName\": \""+args.dbName1+"\",\n")
+del lines[18]
+lines.insert(18, "\t\t\"dbName\": \""+args.dbName2+"\",\n")
 
 # Update private keys in config
 del lines[4]
 lines.insert(4, "\t\t\"private_key\": \""+privKey1+"\",\n")
-del lines[14]
-lines.insert(14, "\t\t\"private_key\": \""+privKey2+"\",\n")
+del lines[15]
+lines.insert(15, "\t\t\"private_key\": \""+privKey2+"\",\n")
+with open(config, 'w') as fconf:
+ fconf.write(''.join(lines))
+ 
+ # Update keyID in config
+del lines[5]
+lines.insert(5, "\t\t\"keyID\": \""+keyID1+"\",\n")
+del lines[16]
+lines.insert(16, "\t\t\"keyID\": \""+keyID2+"\",\n")
 with open(config, 'w') as fconf:
  fconf.write(''.join(lines))
 

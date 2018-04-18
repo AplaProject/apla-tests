@@ -203,7 +203,6 @@ class Rollback1TestCase(unittest.TestCase):
             json.dump(dbInformation, fconf)
         lData = utils.login(url, prKey)
         token = lData["jwtToken"]
-        self.create_ecosystem()
         self.money_transfer()
         contract,code = self.create_contract("")
         self.edit_contract(contract,code)

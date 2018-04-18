@@ -3,7 +3,7 @@ import time
 import funcs
 from builtins import sum
 
-class ConpareNodes(unittest.TestCase):
+class CompareNodes(unittest.TestCase):
     
     def test_compare_nodes(self):
         fullConfig = config.getNodeConfig()
