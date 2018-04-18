@@ -225,12 +225,14 @@ class PrototipoTestCase(unittest.TestCase):
                          "Error in content " + str(content['tree']))
         partContent = content['tree'][requiredTagNum]['attr']
         contractContent = contract["content"]['attr']
-        self.assertEqual(partContent['maxlength'], contractContent['maxlength'],
-                         "Error in content 'attr'" + str(partContent))
-        self.assertEqual(partContent['name'], contractContent['name'],
-                         "Error in content 'attr'" + str(partContent))
-        self.assertEqual(partContent['minlength'], contractContent['minlength'],
-                         "Error in content 'attr'" + str(partContent))
+        mustBe = dict(maxlength=partContent['maxlength'],
+                      name=partContent['name'],
+                      minlength=partContent['minlength'])
+        page = dict(maxlength=contractContent['maxlength'],
+                      name=contractContent['name'],
+                      minlength=contractContent['minlength'])
+        self.assertDictEqual(mustBe, page,
+                             "inputErr has problem: " + str(content["tree"]))
 
     def test_page_include(self):
         name = "Block_"+utils.generate_random_name()
