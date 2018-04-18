@@ -195,12 +195,12 @@ def get_blockchain_hash(dbHost, dbName, login, password, maxBlockId):
 def get_system_parameter(dbHost, dbName, login, password, parameter):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
-	cursor.execute("select value from \"system_parameters\" WHERE name='" + parameter + "'")
+	cursor.execute("select value from \"1_system_parameters\" WHERE name='" + parameter + "'")
 	value = cursor.fetchall()
 	return value[0][0]
 
 def get_commission_wallet(dbHost, dbName, login, password, ecosId):
-	request = "select value from \"system_parameters\" where name='commission_wallet'"
+	request = "select value from \"1_system_parameters\" where name='commission_wallet'"
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute(request)
@@ -243,4 +243,15 @@ def get_block_gen_node(dbHost, dbName, login, password, block):
     cursor.execute("select node_position from \"block_chain\" WHERE id=" + block)
     nodes = cursor.fetchall()
     return nodes[0][0]
+   
+def isCommissionInHistory(dbHost, dbName, login, password, idFrom, idTo, summ):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("select * from \"1_history\" WHERE sender_id=" + idFrom +\
+				 " AND recipient_id=" + str(idTo) + " AND amount=" + str(summ))
+	rec = cursor.fetchall()
+	if len(rec) > 0:
+		return True
+	else:
+		return False
    

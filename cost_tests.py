@@ -109,6 +109,25 @@ class CostTestCase(unittest.TestCase):
         status = utils.txstatus(conf["1"]["url"], conf["1"]["time_wait_tx_in_block"],
                                 result['hash'], tokenPlatform)
         
+    def isCommissionsInHistory(self, nodeCommision, idFrom, platformaCommission, node):
+        isNodeCommission = utils.isCommissionInHistory(conf["1"]["dbHost"],
+                                                       conf["1"]["dbName"],
+                                                       conf["1"]["login"],
+                                                       conf["1"] ["pass"],
+                                                       idFrom,
+                                                       conf[str(node+1)]["keyID"],
+                                                       nodeCommision)
+        isPlatformCommission = utils.isCommissionInHistory(conf["1"]["dbHost"],
+                                                           conf["1"]["dbName"],
+                                                           conf["1"]["login"],
+                                                           conf["1"] ["pass"],
+                                                           idFrom,
+                                                           conf["1"]["keyID"],
+                                                           platformaCommission)
+        if isNodeCommission and isPlatformCommission:
+            return True
+        else:
+            return False                
         
     def test_activated_contract(self):
         if funcs.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == False:
@@ -144,7 +163,8 @@ class CostTestCase(unittest.TestCase):
                                                      conf["1"] ["pass"])
         summAfter = sum(summ[0] for summ in sumsAfter)
         aNodeBalance = self.getNodeBalances()
-        nodeComission = 144530000000000000
+        nodeCommission = 144530000000000000
+        platformaCommission = 4470000000000000
         balanceRunnerA = utils.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                          conf["1"]["dbName"],
                                                          conf["1"]["login"],
@@ -155,22 +175,28 @@ class CostTestCase(unittest.TestCase):
                                                          conf["1"]["login"],
                                                          conf["1"] ["pass"],
                                                          walletId)
+        inHistory = self.isCommissionsInHistory(nodeCommission, conf["1"]["keyID"],
+                                                platformaCommission, node)
         if node == 0:
             dictValid = dict(balanceRunner = balanceRunnerA,
                              platformBalance = aNodeBalance[0],
-                             summ = summBefore)
+                             summ = summBefore,
+                             history = inHistory)
             dictExpect = dict(balanceRunner = balanceRunnerB,
                              platformBalance = aNodeBalance[0],
-                             summ = summAfter)
+                             summ = summBefore,
+                             history = True)
         else:
             dictValid = dict(balanceRunner = balanceRunnerA,
                              platformBalance = aNodeBalance[0],
                              nodeBalance = aNodeBalance[node],
-                             summ = summBefore)
+                             summ = summBefore,
+                             history = inHistory)
             dictExpect = dict(balanceRunner = balanceRunnerB,
-                             platformBalance = bNodeBalance[0] - nodeComission,
-                             nodeBalance = bNodeBalance[node] + nodeComission,
-                             summ = summAfter)
+                             platformBalance = bNodeBalance[0] - nodeCommission,
+                             nodeBalance = bNodeBalance[node] + nodeCommission,
+                             summ = summAfter,
+                             history = True)
         self.assertDictEqual(dictValid, dictExpect,
                              "Error in comissions run activated contract")
         
@@ -221,22 +247,28 @@ class CostTestCase(unittest.TestCase):
                                                          conf["1"]["login"],
                                                          conf["1"] ["pass"],
                                                          walletId)
+        inHistory = self.isCommissionsInHistory(nodeCommission, dataRunner["key_id"],
+                                                platformaCommission, node)
         if node == 0:
             dictValid = dict(balanceRunner = balanceRunnerA,
                              platformBalance = aNodeBalance[0],
-                             summ = summBefore)
+                             summ = summBefore,
+                             history = inHistory)
             dictExpect = dict(balanceRunner = balanceRunnerB - commission,
                              platformBalance = bNodeBalance[0] + commission,
-                             summ = summAfter)
+                             summ = summAfter,
+                             history = True)
         else:
             dictValid = dict(balanceRunner = balanceRunnerA,
                              platformBalance = aNodeBalance[0],
                              nodeBalance = aNodeBalance[node],
-                             summ = summBefore)
+                             summ = summBefore,
+                             history = inHistory)
             dictExpect = dict(balanceRunner = balanceRunnerB - commission,
                              platformBalance = bNodeBalance[0] + platformaCommission,
                              nodeBalance = bNodeBalance[node] + nodeCommission,
-                             summ = summAfter)
+                             summ = summAfter,
+                             history = True)
         self.assertDictEqual(dictValid, dictExpect,
                              "Error in comissions run deactivated contract")
         
@@ -263,11 +295,6 @@ class CostTestCase(unittest.TestCase):
                                                      conf["1"]["login"],
                                                      conf["1"] ["pass"],
                                                      commisionWallet)
-        commission = utils.get_system_parameter(conf["1"]["dbHost"],
-                                                     conf["1"]["dbName"],
-                                                     conf["1"]["login"],
-                                                     conf["1"] ["pass"],
-                                                     "commission_size")
         tokenRunner, uid = utils.get_uid(conf["2"]["url"])
         signature, pubRunner = utils.sign(uid, conf["2"]["url"], keys["key2"])
         balanceRunnerB = utils.get_balance_from_db_by_pub(conf["1"]["dbHost"],
