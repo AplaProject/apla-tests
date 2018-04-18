@@ -126,19 +126,18 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_input(self):
         contract = self.pages["input"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]['tag']
-        self.assertEqual(partContent, contract["content"]['tag'],
-                         "Error in content " + str(content['tree']))
-        partContent = content['tree'][0]['attr']
-        contractContent = contract["content"]['attr']
-        mustBe = dict(inputClass=partContent['class'],
-                      name=partContent['name'],
-                      placeholder=partContent['placeholder'],
-                      type=partContent['type'])
-        page = dict(inputClass=contractContent['class'],
-                      name=contractContent['name'],
-                      placeholder=contractContent['placeholder'],
-                      type=contractContent['type'])
+        partContent = content['tree'][0]
+        contractContent = contract["content"]
+        mustBe = dict(tag=partContent['tag'],
+                      inputClass=partContent['attr']['class'],
+                      name=partContent['attr']['name'],
+                      placeholder=partContent['attr']['placeholder'],
+                      type=partContent['attr']['type'])
+        page = dict(tag=contractContent['tag'],
+                    inputClass=contractContent['attr']['class'],
+                    name=contractContent['attr']['name'],
+                    placeholder=contractContent['attr']['placeholder'],
+                    type=contractContent['attr']['type'])
         self.assertDictEqual(mustBe, page,
                              "input has problem: " + str(content["tree"]))
         
