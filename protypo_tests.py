@@ -82,31 +82,34 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_divs(self):
         contract = self.pages["divs"]
         content = self.check_page(contract["code"])
-        # verify outer DIV
+        # outer DIV
         partContent = content['tree'][0]
-        self.assertEqual(partContent['tag'], contract["content"]['tag'],
-                         "Error in content " + str(content['tree']))
-        self.assertEqual(partContent['attr']['class'], contract["content"]['attr']['class'],
-                         "Error in content " + str(content['tree']))
-        # verify first level inner DIV
+        # first level inner DIV
         requiredInnerTagNum = self.findPositionElementInTree(content['tree'][0]['children'], "div")
-        partContent = content['tree'][0]['children'][requiredInnerTagNum]
-        contractContent = contract["content"]['children']
-        self.assertEqual(partContent['tag'], contractContent['tag'],
-                         "Error in content first level inner div" + str(partContent))
-        self.assertEqual(partContent['attr']['class'], contractContent['attr']['class'],
-                         "Error in content first level inner div" + str(partContent))
-        # verify second level inner DIV
-        requiredInner2TagNum = self.findPositionElementInTree(content['tree'][0]['children'][requiredInnerTagNum]['children'], "div")
-        partContent = content['tree'][0]['children'][requiredInnerTagNum]['children'][requiredInner2TagNum]
-        contractContent = contract["content"]['children']['children']
-        self.assertEqual(partContent['tag'], contractContent['tag'],
-                         "Error in content second level inner div" + str(partContent))
-        self.assertEqual(partContent['attr']['class'], contractContent['attr']['class'],
-                         "Error in content second level inner div" + str(partContent))
-        self.assertEqual(partContent['children'][0]['text'], contractContent['children'][0]['text'],
-                         "Error in content second level inner div" + str(partContent))
-        
+        partContent1 = content['tree'][0]['children'][requiredInnerTagNum]
+        contractContent1 = contract["content"]['children']
+        # second level inner DIV
+        requiredInner2TagNum = self.findPositionElementInTree(
+            content['tree'][0]['children'][requiredInnerTagNum]['children'], "div")
+        partContent2 = content['tree'][0]['children'][requiredInnerTagNum]['children'][requiredInner2TagNum]
+        contractContent2 = contract["content"]['children']['children']
+        mustBe = dict(firstDivTag=partContent['tag'],
+                      firstDivClass=partContent['attr']['class'],
+                      innerDivTag1=partContent1['tag'],
+                      innerDivClass1=partContent1['attr']['class'],
+                      innerDivTag2=partContent2['tag'],
+                      innerDivClass2=partContent2['attr']['class'],
+                      childrenText=partContent2['children'][0]['text'])
+        page = dict(firstDivTag=contract["content"]['tag'],
+                    firstDivClass=contract["content"]['attr']['class'],
+                    innerDivTag1=contractContent1['tag'],
+                    innerDivClass1=contractContent1['attr']['class'],
+                    innerDivTag2=contractContent2['tag'],
+                    innerDivClass2=contractContent2['attr']['class'],
+                    childrenText=contractContent2['children'][0]['text'])
+        self.assertDictEqual(mustBe, page,
+                             "divs has problem: " + str(content["tree"]))
+
     def test_page_setVar(self):
         contract = self.pages["setVar"]
         content = self.check_page(contract["code"])
