@@ -155,9 +155,37 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_menuGroup(self):
         contract = self.pages["menuGroup"]
         content = self.check_page(contract["code"])
-        self.assertEqual(str(content["tree"]), contract["content"],
-                         "Error in content" + str(content["tree"]))
-        
+        partContent = content['tree'][0]
+        contractContent = contract["content"]
+        menuItem1 = contractContent['children'][0]
+        menuItem2 = contractContent['children'][1]
+        requiredNumMenuItem1 = self.findPositionElementInTreeByAttributeNameAndValue(partContent['children'],
+                                                                "menuitem", "title", menuItem1['attr']['title'])
+        requiredNumMenuItem2 = self.findPositionElementInTreeByAttributeNameAndValue(partContent['children'],
+                                                                "menuitem", "title", menuItem2['attr']['title'])
+        partContent1 = partContent['children'][requiredNumMenuItem1]
+        partContent2 = partContent['children'][requiredNumMenuItem2]
+        mustBe = dict(menuTag=partContent['tag'],
+                      name=partContent['attr']['name'],
+                      title=partContent['attr']['title'],
+                      menuItemTag1=partContent1['tag'],
+                      menuItemPage1=partContent1['attr']['page'],
+                      menuItemTitle1=partContent1['attr']['title'],
+                      menuItemTag2=partContent2['tag'],
+                      menuItemPage2=partContent2['attr']['page'],
+                      menuItemTitle2=partContent2['attr']['title'])
+        page = dict(menuTag=contractContent['tag'],
+                    name=contractContent['attr']['name'],
+                    title=contractContent['attr']['title'],
+                    menuItemTag1 = partContent1['tag'],
+                    menuItemPage1 = menuItem1['attr']['page'],
+                    menuItemTitle1 = menuItem1['attr']['title'],
+                    menuItemTag2=partContent2['tag'],
+                    menuItemPage2=menuItem2['attr']['page'],
+                    menuItemTitle2=menuItem2['attr']['title'])
+        self.assertDictEqual(mustBe, page,
+                             "menuGroup has problem: " + str(content["tree"]))
+
     def test_page_linkPage(self):
         contract = self.pages["linkPage"]
         content = self.check_page(contract["code"])
