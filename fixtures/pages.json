@@ -200,7 +200,14 @@
     "span":{
 		"code": "Span(Test)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'Test'}]}]"
+		"content": {
+            "tag": "span",
+            "children": [
+              {
+                "text": "Test"
+              }
+            ]
+        }
 	},
     "langRes":{
 		"code": "",
