@@ -74,7 +74,29 @@
     "menuGroup":{
 		"code": "MenuGroup(My Menu){ MenuItem(Dahsboard, dashboard_default) MenuItem(Main, default_page)}",
 		"menu": "default_menu",
-		"content": "[{'tag': 'menugroup', 'attr': {'name': 'My Menu', 'title': 'My Menu'}, 'children': [{'tag': 'menuitem', 'attr': {'page': 'dashboard_default', 'title': 'Dahsboard'}}, {'tag': 'menuitem', 'attr': {'page': 'default_page', 'title': 'Main'}}]}]"
+		"content": {
+			  "tag": "menugroup",
+			  "attr": {
+				"name": "My Menu",
+				"title": "My Menu"
+			  },
+			  "children": [
+				{
+				  "tag": "menuitem",
+				  "attr": {
+					"page": "dashboard_default",
+					"title": "Dahsboard"
+				  }
+				},
+				{
+				  "tag": "menuitem",
+				  "attr": {
+					"page": "default_page",
+					"title": "Main"
+				  }
+				}
+			  ]
+		}
 	},
     "linkPage":{
 		"code": "LinkPage(Show my wallet, default_page, mybtn_class)",

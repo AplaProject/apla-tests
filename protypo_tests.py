@@ -10,18 +10,18 @@ import datetime
 
 class PrototipoTestCase(unittest.TestCase):
     def setUp(self):
-        self.config = config.readMainConfig()
+        self.config = config.getNodeConfig()
         global url, prKey,token
         self.pages = config.readFixtures("pages")
-        url = self.config["url"]
-        prKey = self.config['private_key']
+        url = self.config["2"]["url"]
+        prKey = self.config["1"]['private_key']
         self.data = utils.login(url,prKey)
         token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
         status = utils.txstatus(url,
-                                self.config["time_wait_tx_in_block"],
+                                self.config["1"]["time_wait_tx_in_block"],
                                 result['hash'], jwtToken)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
@@ -40,6 +40,14 @@ class PrototipoTestCase(unittest.TestCase):
         while i < len(contentTree):
             if contentTree[i]['tag'] == tagName:
                 return i
+            i += 1
+
+    def findPositionElementInTreeByAttributeNameAndValue(self, contentTree, tagName, attrName, attrValue):
+        i = 0
+        while i < len(contentTree):
+            if contentTree[i]['tag'] == tagName:
+                if contentTree[i]['attr'][attrName] == attrValue:
+                    return i
             i += 1
         
     def test_page_button(self):
@@ -82,63 +90,99 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_divs(self):
         contract = self.pages["divs"]
         content = self.check_page(contract["code"])
-        # verify outer DIV
+        # outer DIV
         partContent = content['tree'][0]
-        self.assertEqual(partContent['tag'], contract["content"]['tag'],
-                         "Error in content " + str(content['tree']))
-        self.assertEqual(partContent['attr']['class'], contract["content"]['attr']['class'],
-                         "Error in content " + str(content['tree']))
-        # verify first level inner DIV
+        # first level inner DIV
         requiredInnerTagNum = self.findPositionElementInTree(content['tree'][0]['children'], "div")
-        partContent = content['tree'][0]['children'][requiredInnerTagNum]
-        contractContent = contract["content"]['children']
-        self.assertEqual(partContent['tag'], contractContent['tag'],
-                         "Error in content first level inner div" + str(partContent))
-        self.assertEqual(partContent['attr']['class'], contractContent['attr']['class'],
-                         "Error in content first level inner div" + str(partContent))
-        # verify second level inner DIV
-        requiredInner2TagNum = self.findPositionElementInTree(content['tree'][0]['children'][requiredInnerTagNum]['children'], "div")
-        partContent = content['tree'][0]['children'][requiredInnerTagNum]['children'][requiredInner2TagNum]
-        contractContent = contract["content"]['children']['children']
-        self.assertEqual(partContent['tag'], contractContent['tag'],
-                         "Error in content second level inner div" + str(partContent))
-        self.assertEqual(partContent['attr']['class'], contractContent['attr']['class'],
-                         "Error in content second level inner div" + str(partContent))
-        self.assertEqual(partContent['children'][0]['text'], contractContent['children'][0]['text'],
-                         "Error in content second level inner div" + str(partContent))
-        
+        partContent1 = content['tree'][0]['children'][requiredInnerTagNum]
+        contractContent1 = contract["content"]['children']
+        # second level inner DIV
+        requiredInner2TagNum = self.findPositionElementInTree(
+            content['tree'][0]['children'][requiredInnerTagNum]['children'], "div")
+        partContent2 = content['tree'][0]['children'][requiredInnerTagNum]['children'][requiredInner2TagNum]
+        contractContent2 = contract["content"]['children']['children']
+        mustBe = dict(firstDivTag=partContent['tag'],
+                      firstDivClass=partContent['attr']['class'],
+                      innerDivTag1=partContent1['tag'],
+                      innerDivClass1=partContent1['attr']['class'],
+                      innerDivTag2=partContent2['tag'],
+                      innerDivClass2=partContent2['attr']['class'],
+                      childrenText=partContent2['children'][0]['text'])
+        page = dict(firstDivTag=contract["content"]['tag'],
+                    firstDivClass=contract["content"]['attr']['class'],
+                    innerDivTag1=contractContent1['tag'],
+                    innerDivClass1=contractContent1['attr']['class'],
+                    innerDivTag2=contractContent2['tag'],
+                    innerDivClass2=contractContent2['attr']['class'],
+                    childrenText=contractContent2['children'][0]['text'])
+        self.assertDictEqual(mustBe, page,
+                             "divs has problem: " + str(content["tree"]))
+
     def test_page_setVar(self):
         contract = self.pages["setVar"]
         content = self.check_page(contract["code"])
         requiredTagNum = self.findPositionElementInTree(content['tree'], "div")
-        self.assertEqual(content['tree'][requiredTagNum]['tag'], contract['content']['tag'],
-                         "Error in content" + str(content["tree"]))
-        self.assertEqual(content['tree'][requiredTagNum]['children'][0]['text'], contract['content']['children'][0]['text'],
-                         "Error in content" + str(content["tree"]))
-        
+        partContent = content['tree'][requiredTagNum]
+        contractContent = contract['content']
+        mustBe = dict(tag=partContent['tag'],
+                    childrenText=partContent['children'][0]['text'])
+        page = dict(tag=contractContent['tag'],
+                    childrenText=contractContent['children'][0]['text'])
+        self.assertDictEqual(mustBe, page,
+                             "setVar has problem: " + str(content["tree"]))
+
     def test_page_input(self):
         contract = self.pages["input"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]['tag']
-        self.assertEqual(partContent, contract["content"]['tag'],
-                         "Error in content " + str(content['tree']))
-        partContent = content['tree'][0]['attr']
-        contractContent = contract["content"]['attr']
-        self.assertEqual(partContent['class'], contractContent['class'],
-                         "Error in content 'attr'" + str(partContent))
-        self.assertEqual(partContent['name'], contractContent['name'],
-                         "Error in content 'attr'" + str(partContent))
-        self.assertEqual(partContent['placeholder'], contractContent['placeholder'],
-                         "Error in content 'attr'" + str(partContent))
-        self.assertEqual(partContent['type'], contractContent['type'],
-                         "Error in content 'attr'" + str(partContent))
+        partContent = content['tree'][0]
+        contractContent = contract["content"]
+        mustBe = dict(tag=partContent['tag'],
+                      inputClass=partContent['attr']['class'],
+                      name=partContent['attr']['name'],
+                      placeholder=partContent['attr']['placeholder'],
+                      type=partContent['attr']['type'])
+        page = dict(tag=contractContent['tag'],
+                    inputClass=contractContent['attr']['class'],
+                    name=contractContent['attr']['name'],
+                    placeholder=contractContent['attr']['placeholder'],
+                    type=contractContent['attr']['type'])
+        self.assertDictEqual(mustBe, page,
+                             "input has problem: " + str(content["tree"]))
         
     def test_page_menuGroup(self):
         contract = self.pages["menuGroup"]
         content = self.check_page(contract["code"])
-        self.assertEqual(str(content["tree"]), contract["content"],
-                         "Error in content" + str(content["tree"]))
-        
+        partContent = content['tree'][0]
+        contractContent = contract["content"]
+        menuItem1 = contractContent['children'][0]
+        menuItem2 = contractContent['children'][1]
+        requiredNumMenuItem1 = self.findPositionElementInTreeByAttributeNameAndValue(partContent['children'],
+                                                                "menuitem", "title", menuItem1['attr']['title'])
+        requiredNumMenuItem2 = self.findPositionElementInTreeByAttributeNameAndValue(partContent['children'],
+                                                                "menuitem", "title", menuItem2['attr']['title'])
+        partContent1 = partContent['children'][requiredNumMenuItem1]
+        partContent2 = partContent['children'][requiredNumMenuItem2]
+        mustBe = dict(menuTag=partContent['tag'],
+                      name=partContent['attr']['name'],
+                      title=partContent['attr']['title'],
+                      menuItemTag1=partContent1['tag'],
+                      menuItemPage1=partContent1['attr']['page'],
+                      menuItemTitle1=partContent1['attr']['title'],
+                      menuItemTag2=partContent2['tag'],
+                      menuItemPage2=partContent2['attr']['page'],
+                      menuItemTitle2=partContent2['attr']['title'])
+        page = dict(menuTag=contractContent['tag'],
+                    name=contractContent['attr']['name'],
+                    title=contractContent['attr']['title'],
+                    menuItemTag1 = partContent1['tag'],
+                    menuItemPage1 = menuItem1['attr']['page'],
+                    menuItemTitle1 = menuItem1['attr']['title'],
+                    menuItemTag2=partContent2['tag'],
+                    menuItemPage2=menuItem2['attr']['page'],
+                    menuItemTitle2=menuItem2['attr']['title'])
+        self.assertDictEqual(mustBe, page,
+                             "menuGroup has problem: " + str(content["tree"]))
+
     def test_page_linkPage(self):
         contract = self.pages["linkPage"]
         content = self.check_page(contract["code"])
@@ -223,12 +267,14 @@ class PrototipoTestCase(unittest.TestCase):
                          "Error in content " + str(content['tree']))
         partContent = content['tree'][requiredTagNum]['attr']
         contractContent = contract["content"]['attr']
-        self.assertEqual(partContent['maxlength'], contractContent['maxlength'],
-                         "Error in content 'attr'" + str(partContent))
-        self.assertEqual(partContent['name'], contractContent['name'],
-                         "Error in content 'attr'" + str(partContent))
-        self.assertEqual(partContent['minlength'], contractContent['minlength'],
-                         "Error in content 'attr'" + str(partContent))
+        mustBe = dict(maxlength=partContent['maxlength'],
+                      name=partContent['name'],
+                      minlength=partContent['minlength'])
+        page = dict(maxlength=contractContent['maxlength'],
+                      name=contractContent['name'],
+                      minlength=contractContent['minlength'])
+        self.assertDictEqual(mustBe, page,
+                             "inputErr has problem: " + str(content["tree"]))
 
     def test_page_include(self):
         name = "Block_"+utils.generate_random_name()
@@ -255,14 +301,16 @@ class PrototipoTestCase(unittest.TestCase):
                          "Error in content " + str(content['tree']))
         partContent = content['tree'][0]['attr']['alert']
         contractContent = contract["content"]['attr']['alert']
-        self.assertEqual(partContent['cancelbutton'],  contractContent['cancelbutton'],
-                         "Error in content 'alert'" + str(partContent))
-        self.assertEqual(partContent['confirmbutton'], contractContent['confirmbutton'],
-                         "Error in content 'alert'" + str(partContent))
-        self.assertEqual(partContent['icon'], contractContent['icon'],
-                         "Error in content 'alert'" + str(partContent))
-        self.assertEqual(partContent['text'], contractContent['text'],
-                         "Error in content 'alert'" + str(partContent))
+        mustBe = dict(cancelbutton = partContent['cancelbutton'],
+                      confirmbutton = partContent['confirmbutton'],
+                      icon = partContent['icon'],
+                      text = partContent['text'])
+        page = dict(cancelbutton=contractContent['cancelbutton'],
+                      confirmbutton=contractContent['confirmbutton'],
+                      icon=contractContent['icon'],
+                      text=contractContent['text'])
+        self.assertDictEqual(mustBe, page,
+                             "alert has problem: " + str(content["tree"]))
         
     def test_page_table(self):
         contract = self.pages["table"]

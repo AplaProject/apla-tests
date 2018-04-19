@@ -10,10 +10,10 @@ import os
 class ApiTestCase(unittest.TestCase):
     def setUp(self):
         global url, token, prKey, pause
-        self.config = config.readMainConfig()
-        url = self.config["url"]
-        pause = self.config["time_wait_tx_in_block"]
-        prKey = self.config['private_key']
+        self.config = config.getNodeConfig()
+        url = self.config["1"]["url"]
+        pause = self.config["1"]["time_wait_tx_in_block"]
+        prKey = self.config["1"]['private_key']
         self.data = utils.login(url, prKey)
         token = self.data["jwtToken"]
 
