@@ -137,7 +137,14 @@
     "getVar":{
 		"code": "SetVar(name, FullName) Span(GetVar(name))",
 		"menu": "default_menu",
-		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'FullName'}]}]"
+		"content": {
+            "tag": "span",
+            "children": [
+              {
+                "text": "FullName"
+              }
+            ]
+        }
 	},
     "iff":{
 		"code":"If(1<5){5 bigger than 1}.Else{Error}",
