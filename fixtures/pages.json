@@ -126,10 +126,13 @@
             ]
         }
 	},
-    "paragraf":{
+    "paragraph":{
 		"code": "p(This is paragraph)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'text', 'text': 'p(This is paragraph)'}]"
+		"content": {
+            "tag": "text",
+            "text": "p(This is paragraph)"
+        }
 	},
     "getVar":{
 		"code": "SetVar(name, FullName) Span(GetVar(name))",
