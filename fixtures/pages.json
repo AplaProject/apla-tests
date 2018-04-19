@@ -149,7 +149,10 @@
     "iff":{
 		"code":"If(1<5){5 bigger than 1}.Else{Error}",
 		"menu": "default_menu",
-		"content": "[{'tag': 'text', 'text': '5 bigger than 1'}]"
+		"content": {
+            "tag": "text",
+            "text": "5 bigger than 1"
+        }
 	},
     "orr":{
 		"code": "If(Or(1>5,10>5), 1 or 10 bigger than 5)",
