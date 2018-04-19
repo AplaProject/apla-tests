@@ -117,7 +117,14 @@
     "ecosysParam":{
 		"code": "Span(EcosysParam(max_block_user_tx))",
 		"menu": "default_menu",
-		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': '100'}]}]"
+		"content": {
+            "tag": "span",
+            "children": [
+              {
+                "text": "100"
+              }
+            ]
+        }
 	},
     "paragraf":{
 		"code": "p(This is paragraph)",
