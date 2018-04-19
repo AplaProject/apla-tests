@@ -302,8 +302,14 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_span(self):
         contract = self.pages["span"]
         content = self.check_page(contract["code"])
-        self.assertEqual(str(content["tree"]), contract["content"],
-                         "Error in content" + str(content["tree"]))
+        partContent = content['tree'][0]
+        contractContent = contract["content"]
+        mustBe = dict(tag=partContent['tag'],
+                      text=partContent['children'][0]['text'])
+        page = dict(tag=contractContent['tag'],
+                    text=contractContent['children'][0]['text'])
+        self.assertDictEqual(mustBe, page,
+                             "span has problem: " + str(content["tree"]))
         
     def test_page_langRes(self):
         lang = "lang_"+utils.generate_random_name()
