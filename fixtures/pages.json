@@ -212,7 +212,7 @@
     "langRes":{
 		"code": "",
 		"menu": "default_menu",
-		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'Test'}]}]"
+		"content": [{"text": "Lang_enМир_ru"}]
 	},
     "inputErr":{
 		"code": "InputErr(Name: Login, minLength: Value is too short, maxLength: The length of the value must be less than 10 characters)Input(Name: Login, Type: text).Validate(minLength: 6, maxLength: 10)",
