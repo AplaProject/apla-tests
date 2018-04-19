@@ -165,7 +165,10 @@
     "andd":{
 		"code": "If(And(1>0,5>0), 1 and 5 bigger than 0)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'text', 'text': '1 and 5 bigger than 0'}]"
+        "content": {
+            "tag": "text",
+            "text": "1 and 5 bigger than 0"
+        }
 	},
     "form":{
 		"code": "Form(){Span(Test)}",
