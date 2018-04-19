@@ -274,8 +274,18 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_form(self):
         contract = self.pages["form"]
         content = self.check_page(contract["code"])
-        self.assertEqual(str(content["tree"]), contract["content"],
-                         "Error in content" + str(content["tree"]))
+        partContent = content['tree'][0]
+        partContent1 = content['tree'][0]['children'][0]['children'][0]
+        contractContent = contract["content"]
+        contractContent1 = contract["content"]['children'][0]['children'][0]
+        mustBe = dict(formTag=partContent['tag'],
+                      spanTag=partContent['children'][0]['tag'],
+                      spanText = partContent1['text'])
+        page = dict(formTag=contractContent['tag'],
+                    spanTag=contractContent['children'][0]['tag'],
+                    spanText = contractContent1['text'])
+        self.assertDictEqual(mustBe, page,
+                             "form has problem: " + str(content["tree"]))
         
     def test_page_label(self):
         contract = self.pages["label"]
