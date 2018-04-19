@@ -170,6 +170,9 @@ class ApiTestCase(unittest.TestCase):
         ans = self.call("MoneyTransfer", data)
         self.assertEqual(ans, msg, "Incorrect message" + msg)
 
+    def test_money_transfer_amount_as_string(self):
+        wallet = "0005-2070-2000-0006-0200"
+        msg = "can't convert ttt to decimal"
         data = {"Recipient": wallet, "Amount": "ttt"}
         ans = self.call("MoneyTransfer", data)
         self.assertEqual(ans, msg, "Incorrect message" + msg)
