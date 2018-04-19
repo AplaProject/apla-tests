@@ -190,7 +190,12 @@
     "label":{
 		"code": "Label(For: name)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'label', 'attr': {'for': 'name'}}]"
+		"content": {
+            "tag": "label",
+            "attr": {
+              "for": "name"
+            }
+        }
 	},
     "span":{
 		"code": "Span(Test)",
