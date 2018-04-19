@@ -157,7 +157,10 @@
     "orr":{
 		"code": "If(Or(1>5,10>5), 1 or 10 bigger than 5)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'text', 'text': '1 or 10 bigger than 5'}]"
+        "content": {
+            "tag": "text",
+            "text": "1 or 10 bigger than 5"
+        }
 	},
     "andd":{
 		"code": "If(And(1>0,5>0), 1 and 5 bigger than 0)",
