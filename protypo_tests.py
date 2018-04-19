@@ -196,9 +196,8 @@ class PrototipoTestCase(unittest.TestCase):
                       linkPageClass=contractContent['attr']['class'],
                       page=contractContent['attr']['page'],
                       text=contractContent['children'][0]['text'])
-
         self.assertDictEqual(mustBe, page,
-                             "menuGroup has problem: " + str(content["tree"]))
+                             "linkPage has problem: " + str(content["tree"]))
 
     def test_page_ecosysParam(self):
         contract = self.pages["ecosysParam"]
