@@ -204,7 +204,6 @@ class PrototipoTestCase(unittest.TestCase):
         content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"]
-        print(partContent)
         mustBe = dict(tag=partContent['tag'],
                       text=partContent['children'][0]['text'])
         page = dict(tag=contractContent['tag'],
