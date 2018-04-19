@@ -101,7 +101,18 @@
     "linkPage":{
 		"code": "LinkPage(Show my wallet, default_page, mybtn_class)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'linkpage', 'attr': {'class': 'mybtn_class', 'page': 'default_page'}, 'children': [{'tag': 'text', 'text': 'Show my wallet'}]}]"
+		"content": {
+            "tag": "linkpage",
+            "attr": {
+              "class": "mybtn_class",
+              "page": "default_page"
+            },
+            "children": [
+              {
+                "text": "Show my wallet"
+              }
+            ]
+        }
 	},
     "ecosysParam":{
 		"code": "Span(EcosysParam(max_block_user_tx))",
