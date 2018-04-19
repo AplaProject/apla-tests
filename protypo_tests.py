@@ -211,12 +211,18 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertDictEqual(mustBe, page,
                              "ecosysParam has problem: " + str(content["tree"]))
         
-    def test_page_paragraf(self):
-        contract = self.pages["paragraf"]
+    def test_page_paragraph(self):
+        contract = self.pages["paragraph"]
         content = self.check_page(contract["code"])
-        self.assertEqual(str(content["tree"]), contract["content"],
-                         "Error in content" + str(content["tree"]))
-    
+        partContent = content['tree'][0]
+        contractContent = contract["content"]
+        mustBe = dict(tag=partContent['tag'],
+                      text=partContent['text'])
+        page = dict(tag=contractContent['tag'],
+                    text=contractContent['text'])
+        self.assertDictEqual(mustBe, page,
+                             "paragraph has problem: " + str(content["tree"]))
+
     def test_page_getVar(self):
         contract = self.pages["getVar"]
         content = self.check_page(contract["code"])
