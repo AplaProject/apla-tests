@@ -324,6 +324,8 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertTxInBlock(res, token)
         contract = self.pages["langRes"]
         content = self.check_page("LangRes("+lang+") LangRes("+word+", ru)")
+        self.assertEqual(content["tree"][0]["text"], contract["content"][0]["text"],
+                         "langRes has problem: " + str(content["tree"]))
         
     def test_page_inputErr(self):
         contract = self.pages["inputErr"]
