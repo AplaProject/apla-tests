@@ -166,6 +166,10 @@ class ApiTestCase(unittest.TestCase):
     def test_money_transfer_zero_amount(self):
         wallet = "0005-2070-2000-0006-0200"
         msg = "Amount is zero"
+        data = {"Recipient": wallet, "Amount": "0"}
+        ans = self.call("MoneyTransfer", data)
+        self.assertEqual(ans, msg, "Incorrect message" + msg)
+
         data = {"Recipient": wallet, "Amount": "ttt"}
         ans = self.call("MoneyTransfer", data)
         self.assertEqual(ans, msg, "Incorrect message" + msg)
