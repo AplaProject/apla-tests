@@ -238,8 +238,14 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_iff(self):
         contract = self.pages["iff"]
         content = self.check_page(contract["code"])
-        self.assertEqual(str(content["tree"]), contract["content"],
-                         "Error in content" + str(content["tree"]))
+        partContent = content['tree'][0]
+        contractContent = contract["content"]
+        mustBe = dict(tag=partContent['tag'],
+                      text=partContent['text'])
+        page = dict(tag=contractContent['tag'],
+                    text=contractContent['text'])
+        self.assertDictEqual(mustBe, page,
+                             "iff has problem: " + str(content["tree"]))
         
     def test_page_orr(self):
         contract = self.pages["orr"]
