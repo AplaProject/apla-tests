@@ -173,7 +173,19 @@
     "form":{
 		"code": "Form(){Span(Test)}",
 		"menu": "default_menu",
-		"content": "[{'tag': 'form', 'children': [{'tag': 'span', 'children': [{'tag': 'text', 'text': 'Test'}]}]}]"
+		"content": {
+            "tag": "form",
+            "children": [
+              {
+                "tag": "span",
+                "children": [
+                  {
+                    "text": "Test"
+                  }
+                ]
+              }
+            ]
+        }
 	},
     "label":{
 		"code": "Label(For: name)",
