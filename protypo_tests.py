@@ -290,8 +290,14 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_label(self):
         contract = self.pages["label"]
         content = self.check_page(contract["code"])
-        self.assertEqual(str(content["tree"]), contract["content"],
-                         "Error in content" + str(content["tree"]))
+        partContent = content['tree'][0]
+        contractContent = contract["content"]
+        mustBe = dict(tag=partContent['tag'],
+                      labelFor=partContent['attr']['for'])
+        page = dict(tag=contractContent['tag'],
+                      labelFor=contractContent['attr']['for'])
+        self.assertDictEqual(mustBe, page,
+                             "label has problem: " + str(content["tree"]))
         
     def test_page_span(self):
         contract = self.pages["span"]
