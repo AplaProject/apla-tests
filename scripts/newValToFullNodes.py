@@ -38,8 +38,7 @@ if __name__ == "__main__":
 		print(resultSignTestPCall)
 
 		sign_resCall = {"time": jsPrepareCall['time'], "signature": resultSignTestPCall['signature']}
-		dataCont.update(sign_resCall)
-		respCall = requests.post(baseUrl + '/contract/UpdateSysParam', data=dataCont, headers={"Authorization": jvtToken})
+		respCall = requests.post(baseUrl + '/contract/' + jsPrepareCall['request_id'], data=sign_resCall, headers={"Authorization": jvtToken})
 		resultCallContract = respCall.json()
 		print(resultCallContract)
 		time.sleep(20)

@@ -1349,6 +1349,16 @@ class ApiTestCase(unittest.TestCase):
         asserts = ["result"]
         data = {}
         #self.check_post_api("/vde/create", data, asserts)
+        
+    def test_upload_binary(self):
+        name = "image_"+utils.generate_random_name()
+        path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
+        files = {'Data': open(path, 'rb')}
+        data = {"Name": name, "AppID": 1}
+        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
+                                              files, token)
+        res = self.assertTxInBlock(resp, token)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
 if __name__ == '__main__':
     unittest.main()
