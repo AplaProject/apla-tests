@@ -229,7 +229,7 @@
     "include":{
 		"code": "",
 		"menu": "default_menu",
-		"content": "[{'tag': 'text', 'text': 'Hello page!'}]"
+		"content": [{"text": "Hello page!"}]
 	},
     "image":{
 		"code": "Image(avatar)",
