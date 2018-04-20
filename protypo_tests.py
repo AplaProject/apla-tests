@@ -411,8 +411,8 @@ class PrototipoTestCase(unittest.TestCase):
         contractContent = contract["content"][0]
         mustBe = dict(tag=partContent['tag'],
                       text=partContent['children'][0]["text"])
-        page = dict(tag=partContent['tag'],
-                    text=partContent['children'][0]["text"])
+        page = dict(tag=contractContent['tag'],
+                    text=contractContent['children'][0]["text"])
         self.assertDictEqual(mustBe, page,
                              "kurs has problem: " + str(content["tree"]))
 
