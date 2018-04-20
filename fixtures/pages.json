@@ -309,22 +309,22 @@
 		"content": [{"tag": "em", "children": [{"tag": "text", "text": "0"}]}]
 	},
     "sys_var_roleID":{
-		"code": "RoleID = Em(#role_id#)",
+		"code": "Em(#role_id#)",
 		"menu": "default_menu",
-		"content": "0"
+		"content": [{"tag": "em", "children": [{"tag": "text", "text": "0"}]}]
 	},
     "sys_var_ecosystemID":{
-		"code": "EcosystemID = Em(#ecosystem_id#)",
+		"code": "Em(#ecosystem_id#)",
 		"menu": "default_menu",
-		"content": "1"
+		"content": [{"tag": "em", "children": [{"tag": "text", "text": "1"}]}]
 	},
     "sys_var_ecosystem_name":{
-		"code": "Ecosystem name = Em(#ecosystem_name#)",
+		"code": "Em(#ecosystem_name#)",
 		"menu": "default_menu",
-		"content": "platform ecosystem"
+		"content": [{"tag": "em", "children": [{"tag": "text", "text": "platform ecosystem"}]}]
 	},
     "sys_var_keyID":{
-		"code": "KeyID = Em(#key_id#)",
+		"code": "Em(#key_id#)",
 		"menu": "default_menu",
 		"content": ""
 	}
