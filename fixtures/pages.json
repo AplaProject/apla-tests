@@ -239,7 +239,16 @@
     "inputImage":{
 		"code": "ImageInput(avatar, 100, 2/1)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'imageinput', 'attr': {'name': 'avatar', 'ratio': '2/1', 'width': '100'}}]"
+		"content": [
+			  {
+				"tag": "imageinput",
+				"attr": {
+				  "name": "avatar",
+				  "ratio": "2/1",
+				  "width": "100"
+				}
+			  }
+		]
 	},
     "alert":{
 		"code": "Button(Body: Create user, Class: btn btn-primary, Contract: NewUser).Alert(Text: Name, ConfirmButton: Ok, CancelButton: Cancel, Icon: question)",
