@@ -406,9 +406,15 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_kurs(self):
         contract = self.pages["kurs"]
         content = self.check_page(contract["code"])
-        self.assertEqual(str(content["tree"]), contract["content"],
-                         "Error in content" + str(content["tree"]))
-        
+        partContent = content['tree'][0]
+        contractContent = contract["content"][0]
+        mustBe = dict(tag=partContent['tag'],
+                      text=partContent['children'][0]["text"])
+        page = dict(tag=partContent['tag'],
+                    text=partContent['children'][0]["text"])
+        self.assertDictEqual(mustBe, page,
+                             "kurs has problem: " + str(content["tree"]))
+
     def test_page_strong(self):
         contract = self.pages["strong"]
         content = self.check_page(contract["code"])
