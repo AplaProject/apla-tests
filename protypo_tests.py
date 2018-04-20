@@ -354,8 +354,8 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertTxInBlock(res, token)
         contract = self.pages["include"]
         content = self.check_page("Include("+name+")")
-        self.assertEqual(str(content["tree"]), contract["content"],
-                         "Error in content" + str(content["tree"]))
+        self.assertEqual(content["tree"][0]["text"], contract["content"][0]["text"],
+                         "include has problem: " + str(content["tree"]))
         
     def test_page_inputImage(self):
         contract = self.pages["inputImage"]
