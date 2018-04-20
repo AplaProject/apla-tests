@@ -1318,7 +1318,7 @@ class ApiTestCase(unittest.TestCase):
 
     def test_edit_ecosystem_name(self):
         id = 1
-        newName = "ecosys_"+utils.generate_random_name()
+        newName = "new_ecosystem_name_Andromeda"
         data = {"EcosystemID": id, "NewName": newName}
         res = self.call("EditEcosystemName", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
