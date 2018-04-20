@@ -18,7 +18,7 @@ if __name__ == "__main__":
 	respUid = requests.get(baseUrl + '/getuid')
 	resultGetuid = respUid.json()
 
-	respSignTest = requests.post(baseUrl + '/signtest/', params={'forsign': resultGetuid['uid'], 'private': args.privKey})
+	respSignTest = requests.post(baseUrl + '/signtest/', params={'forsign': "LOGIN" + resultGetuid['uid'], 'private': args.privKey})
 	resultSignTest = respSignTest.json()
 
 	fullToken = 'Bearer ' + resultGetuid['token']

@@ -23,7 +23,7 @@ def sign(forsign, url, prKey):
 
 def login(url, prKey):
 	token, uid = get_uid(url)
-	signature, pubkey = sign(uid, url, prKey)
+	signature, pubkey = sign("LOGIN" + uid, url, prKey)
 	fullToken = 'Bearer ' + token
 	data = {'pubkey': pubkey, 'signature': signature}
 	head = {'Authorization': fullToken}
