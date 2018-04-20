@@ -232,5 +232,9 @@
 	"get_keyId": {
 		"code": "{\n data {\n Pub string\n }\n conditions {}\n action {\n $result = PubToID($Pub) }\n }",
 		"asert": "_"
+	},
+	"sys_var_roleID":{
+		"code": "{\n data { }\n conditions {}\n action {\n $result = $role_id }\n }",
+		"asert": "0"
 	}
 }
