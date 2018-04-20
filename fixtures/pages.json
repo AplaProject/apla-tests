@@ -304,9 +304,9 @@
 		"content": {"text": "number"}
     },
     "sys_var_isMobile":{
-		"code": "Mobile = Em(#isMobile#)",
+		"code": "Em(#isMobile#)",
 		"menu": "default_menu",
-		"content": "0"
+		"content": [{"tag": "em", "children": [{"tag": "text", "text": "0"}]}]
 	},
     "sys_var_roleID":{
 		"code": "RoleID = Em(#role_id#)",
