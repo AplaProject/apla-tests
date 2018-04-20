@@ -271,9 +271,18 @@
 		"content": "[{'tag': 'dbfind', 'attr': {'columns': ['id', 'name', 'value', 'conditions'], 'data': [['1', 'Block1', 'Hello page!', 'true']], 'name': 'blocks', 'source': 'mysrc', 'types': ['text', 'text', 'text', 'text']}}, {'tag': 'table', 'attr': {'columns': [{'Name': 'name', 'Title': 'Name'}, {'Name': 'value', 'Title': 'Value'}, {'Name': 'conditions', 'Title': 'Conditions'}], 'source': 'mysrc'}}]"
 	},
     "kurs":{
-		"code": "This is an Em(cursive)",
+		"code": "Em(cursive)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'text', 'text': 'This is an '}, {'tag': 'em', 'children': [{'tag': 'text', 'text': 'cursive'}]}]"
+		"content": [
+			  {
+				"tag": "em",
+				"children": [
+				  {
+					"text": "cursive"
+				  }
+				]
+			  }
+		]
 	},
     "strong":{
 		"code": "This is an Strong(strong)",
