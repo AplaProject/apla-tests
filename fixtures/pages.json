@@ -101,57 +101,118 @@
     "linkPage":{
 		"code": "LinkPage(Show my wallet, default_page, mybtn_class)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'linkpage', 'attr': {'class': 'mybtn_class', 'page': 'default_page'}, 'children': [{'tag': 'text', 'text': 'Show my wallet'}]}]"
+		"content": {
+            "tag": "linkpage",
+            "attr": {
+              "class": "mybtn_class",
+              "page": "default_page"
+            },
+            "children": [
+              {
+                "text": "Show my wallet"
+              }
+            ]
+        }
 	},
     "ecosysParam":{
 		"code": "Span(EcosysParam(max_block_user_tx))",
 		"menu": "default_menu",
-		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': '100'}]}]"
+		"content": {
+            "tag": "span",
+            "children": [
+              {
+                "text": "100"
+              }
+            ]
+        }
 	},
-    "paragraf":{
+    "paragraph":{
 		"code": "p(This is paragraph)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'text', 'text': 'p(This is paragraph)'}]"
+		"content": {
+            "tag": "text",
+            "text": "p(This is paragraph)"
+        }
 	},
     "getVar":{
 		"code": "SetVar(name, FullName) Span(GetVar(name))",
 		"menu": "default_menu",
-		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'FullName'}]}]"
+		"content": {
+            "tag": "span",
+            "children": [
+              {
+                "text": "FullName"
+              }
+            ]
+        }
 	},
     "iff":{
 		"code":"If(1<5){5 bigger than 1}.Else{Error}",
 		"menu": "default_menu",
-		"content": "[{'tag': 'text', 'text': '5 bigger than 1'}]"
+		"content": {
+            "tag": "text",
+            "text": "5 bigger than 1"
+        }
 	},
     "orr":{
 		"code": "If(Or(1>5,10>5), 1 or 10 bigger than 5)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'text', 'text': '1 or 10 bigger than 5'}]"
+        "content": {
+            "tag": "text",
+            "text": "1 or 10 bigger than 5"
+        }
 	},
     "andd":{
 		"code": "If(And(1>0,5>0), 1 and 5 bigger than 0)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'text', 'text': '1 and 5 bigger than 0'}]"
+        "content": {
+            "tag": "text",
+            "text": "1 and 5 bigger than 0"
+        }
 	},
     "form":{
 		"code": "Form(){Span(Test)}",
 		"menu": "default_menu",
-		"content": "[{'tag': 'form', 'children': [{'tag': 'span', 'children': [{'tag': 'text', 'text': 'Test'}]}]}]"
+		"content": {
+            "tag": "form",
+            "children": [
+              {
+                "tag": "span",
+                "children": [
+                  {
+                    "text": "Test"
+                  }
+                ]
+              }
+            ]
+        }
 	},
     "label":{
 		"code": "Label(For: name)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'label', 'attr': {'for': 'name'}}]"
+		"content": {
+            "tag": "label",
+            "attr": {
+              "for": "name"
+            }
+        }
 	},
     "span":{
 		"code": "Span(Test)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'Test'}]}]"
+		"content": {
+            "tag": "span",
+            "children": [
+              {
+                "text": "Test"
+              }
+            ]
+        }
 	},
     "langRes":{
 		"code": "",
 		"menu": "default_menu",
-		"content": "[{'tag': 'span', 'children': [{'tag': 'text', 'text': 'Test'}]}]"
+		"content": [{"text": "Lang_enМир_ru"}]
 	},
     "inputErr":{
 		"code": "InputErr(Name: Login, minLength: Value is too short, maxLength: The length of the value must be less than 10 characters)Input(Name: Login, Type: text).Validate(minLength: 6, maxLength: 10)",
@@ -168,7 +229,7 @@
     "include":{
 		"code": "",
 		"menu": "default_menu",
-		"content": "[{'tag': 'text', 'text': 'Hello page!'}]"
+		"content": [{"text": "Hello page!"}]
 	},
     "image":{
 		"code": "Image(avatar)",
@@ -178,7 +239,16 @@
     "inputImage":{
 		"code": "ImageInput(avatar, 100, 2/1)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'imageinput', 'attr': {'name': 'avatar', 'ratio': '2/1', 'width': '100'}}]"
+		"content": [
+			  {
+				"tag": "imageinput",
+				"attr": {
+				  "name": "avatar",
+				  "ratio": "2/1",
+				  "width": "100"
+				}
+			  }
+		]
 	},
     "alert":{
 		"code": "Button(Body: Create user, Class: btn btn-primary, Contract: NewUser).Alert(Text: Name, ConfirmButton: Ok, CancelButton: Cancel, Icon: question)",
@@ -201,42 +271,60 @@
 		"content": "[{'tag': 'dbfind', 'attr': {'columns': ['id', 'name', 'value', 'conditions'], 'data': [['1', 'Block1', 'Hello page!', 'true']], 'name': 'blocks', 'source': 'mysrc', 'types': ['text', 'text', 'text', 'text']}}, {'tag': 'table', 'attr': {'columns': [{'Name': 'name', 'Title': 'Name'}, {'Name': 'value', 'Title': 'Value'}, {'Name': 'conditions', 'Title': 'Conditions'}], 'source': 'mysrc'}}]"
 	},
     "kurs":{
-		"code": "This is an Em(cursive)",
+		"code": "Em(cursive)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'text', 'text': 'This is an '}, {'tag': 'em', 'children': [{'tag': 'text', 'text': 'cursive'}]}]"
+		"content": [
+			  {
+				"tag": "em",
+				"children": [
+				  {
+					"text": "cursive"
+				  }
+				]
+			  }
+		]
 	},
     "strong":{
-		"code": "This is an Strong(strong)",
+		"code": "Strong(strong)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'text', 'text': 'This is an '}, {'tag': 'strong', 'children': [{'tag': 'text', 'text': 'strong'}]}]"
+		"content":  [
+			  {
+				"tag": "strong",
+				"children": [
+				  {
+					"text": "strong"
+				  }
+				]
+			  }
+		]
 	},
     "getColumnType":{
 		"code": "GetColumnType(contracts, id)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'text', 'text': 'number'}]"
+		"content": {"text": "number"}
     },
     "sys_var_isMobile":{
-		"code": "Mobile = Em(#isMobile#)",
+		"code": "Em(#isMobile#)",
 		"menu": "default_menu",
-		"content": "0"
+		"content": [{"tag": "em", "children": [{"tag": "text", "text": "0"}]}]
 	},
     "sys_var_roleID":{
-		"code": "RoleID = Em(#role_id#)",
+		"code": "Em(#role_id#)",
 		"menu": "default_menu",
-		"content": "0"
+		"content": [{"tag": "em", "children": [{"tag": "text", "text": "0"}]}]
 	},
     "sys_var_ecosystemID":{
-		"code": "EcosystemID = Em(#ecosystem_id#)",
+		"code": "Em(#ecosystem_id#)",
 		"menu": "default_menu",
-		"content": "1"
+		"content": [{"tag": "em", "children": [{"tag": "text", "text": "1"}]}]
 	},
     "sys_var_ecosystem_name":{
-		"code": "Ecosystem name = Em(#ecosystem_name#)",
+		"code": "Em(#ecosystem_name#)",
 		"menu": "default_menu",
-		"content": "platform ecosystem"
+		"content": [{"tag": "em", "children": [{"tag": "text", "text": "platform ecosystem"}]}]
 	},
     "sys_var_keyID":{
-		"code": "KeyID = Em(#key_id#)",
+		"code": "Em(#key_id#)",
 		"menu": "default_menu",
 		"content": ""
 	}

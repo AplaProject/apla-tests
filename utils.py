@@ -23,7 +23,7 @@ def sign(forsign, url, prKey):
 
 def login(url, prKey):
 	token, uid = get_uid(url)
-	signature, pubkey = sign(uid, url, prKey)
+	signature, pubkey = sign("LOGIN" + uid, url, prKey)
 	fullToken = 'Bearer ' + token
 	data = {'pubkey': pubkey, 'signature': signature}
 	head = {'Authorization': fullToken}
@@ -138,13 +138,14 @@ def compare_node_positions(dbHost, dbName, login, password, maxBlockId, nodes):
 	cursor = connect.cursor()
 	cursor.execute(request)
 	positions = cursor.fetchall()
+	print(positions)
 	countBlocks = round(count_rec/nodes/10*7)
 	if len(positions) < nodes:
 		print("One of nodes doesn't generate blocks" + str(positions))
 		return False 
 	i = 0
 	while i < len(positions):
-		if positions[i][1] < countBlocks:
+		if positions[i][1] < countBlocks-1:
 			print("Node " + str(i) + "generated " + str(positions[i][1]) + "blocks:" + str(positions))
 			return False
 		i = i + 1
