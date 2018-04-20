@@ -437,8 +437,14 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_sys_var_isMobile(self):
         contract = self.pages["sys_var_isMobile"]
         content = self.check_page(contract["code"])
-        self.assertEqual(content["tree"][1]["children"][0]["text"], contract["content"],
-                         "isMobile is not equal " + contract["content"] + ". Content = " + str(content["tree"]))
+        partContent = content['tree'][0]
+        contractContent = contract["content"][0]
+        mustBe = dict(tag=partContent['tag'],
+                      text=partContent['children'][0]["text"])
+        page = dict(tag=contractContent['tag'],
+                    text=contractContent['children'][0]["text"])
+        self.assertDictEqual(mustBe, page,
+                             "isMobile has problem: " + str(content["tree"]))
 
     def test_page_sys_var_roleID(self):
         contract = self.pages["sys_var_roleID"]
