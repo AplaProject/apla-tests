@@ -431,8 +431,8 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_getColumnType(self):
         contract = self.pages["getColumnType"]
         content = self.check_page(contract["code"])
-        self.assertEqual(str(content["tree"]), contract["content"],
-                         "Error in content" + str(content["tree"]))
+        self.assertEqual(str(content["tree"][0]["text"]), contract["content"]["text"],
+                         "getColumnType has problem: " + str(content["tree"]))
         
     def test_page_sys_var_isMobile(self):
         contract = self.pages["sys_var_isMobile"]
