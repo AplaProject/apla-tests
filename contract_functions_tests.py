@@ -21,6 +21,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         status = utils.txstatus(url,
                                 self.config["1"]["time_wait_tx_in_block"],
                                 result['hash'], jwtToken)
+        print(status)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
@@ -35,6 +36,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 "Conditions": "ContractConditions(`MainCondition`)"}
         result = utils.call_contract(url, prKey, "NewContract",
                                      data, token)
+        print(result)
         self.assertTxInBlock(result, token)
 
     def check_contract(self, sourse, checkPoint):
@@ -47,6 +49,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         res = utils.call_contract(url, prKey, name, {}, token)
         hash = res["hash"]
         result = utils.txstatus(url, sleep, hash, token)
+        print("result",result["result"])
         self.assertIn(checkPoint, result["result"], "error")
 
     def test_contract_dbfind(self):
@@ -304,6 +307,14 @@ class ContractFunctionsTestCase(unittest.TestCase):
 
     def test_encodeBase64(self):
         contract = self.contracts["encodeBase64"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_jsonEncode(self):
+        contract = self.contracts["jsonEncode"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_jsonDecode(self):
+        contract = self.contracts["jsonDecode"]
         self.check_contract(contract["code"], contract["asert"])
 
 if __name__ == '__main__':
