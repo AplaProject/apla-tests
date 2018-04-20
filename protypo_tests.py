@@ -449,28 +449,47 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_sys_var_roleID(self):
         contract = self.pages["sys_var_roleID"]
         content = self.check_page(contract["code"])
-        self.assertEqual(content["tree"][1]["children"][0]["text"], contract["content"],
-                         "role_id is not equal " + contract["content"] + ". Content = " + str(content["tree"]))
+        partContent = content['tree'][0]
+        contractContent = contract["content"][0]
+        mustBe = dict(tag=partContent['tag'],
+                      text=partContent['children'][0]["text"])
+        page = dict(tag=contractContent['tag'],
+                    text=contractContent['children'][0]["text"])
+        self.assertDictEqual(mustBe, page,
+                             "roleID has problem: " + str(content["tree"]))
 
     def test_page_sys_var_ecosystemID(self):
         contract = self.pages["sys_var_ecosystemID"]
         content = self.check_page(contract["code"])
-        self.assertEqual(content["tree"][1]["children"][0]["text"], contract["content"],
-                         "ecosystem_id is not equal " + contract["content"] + ". Content = " + str(content["tree"]))
+        partContent = content['tree'][0]
+        contractContent = contract["content"][0]
+        mustBe = dict(tag=partContent['tag'],
+                      text=partContent['children'][0]["text"])
+        page = dict(tag=contractContent['tag'],
+                    text=contractContent['children'][0]["text"])
+        self.assertDictEqual(mustBe, page,
+                             "ecosystemID has problem: " + str(content["tree"]))
 
     def test_page_sys_var_ecosystem_name(self):
         contract = self.pages["sys_var_ecosystem_name"]
         content = self.check_page(contract["code"])
-        self.assertEqual(content["tree"][1]["children"][0]["text"], contract["content"],
-                         "ecosystem_name is not equal " + contract["content"] + ". Content = " + str(content["tree"]))
+        partContent = content['tree'][0]
+        contractContent = contract["content"][0]
+        mustBe = dict(tag=partContent['tag'],
+                      text=partContent['children'][0]["text"])
+        page = dict(tag=contractContent['tag'],
+                    text=contractContent['children'][0]["text"])
+        self.assertDictEqual(mustBe, page,
+                             "ecosystem_name has problem: " + str(content["tree"]))
 
     def test_page_sys_var_key_id(self):
-        content = self.check_page("Span(EcosysParam(founder_account))")
+        content = self.check_page("Em(EcosysParam(founder_account))")
         founderAcc = content["tree"][0]["children"][0]["text"]
         contract = self.pages["sys_var_keyID"]
         content = self.check_page(contract["code"])
-        self.assertEqual(content["tree"][1]["children"][0]["text"], founderAcc,
-                        "key_id is not equal " + contract["content"] + ". Content = " + str(content["tree"]))
+        keyID=content["tree"][0]["children"][0]["text"]
+        self.assertEqual(keyID, founderAcc,
+                        "key_id has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
         
 if __name__ == '__main__':
     unittest.main()
