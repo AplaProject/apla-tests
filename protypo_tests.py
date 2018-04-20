@@ -360,8 +360,18 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_inputImage(self):
         contract = self.pages["inputImage"]
         content = self.check_page(contract["code"])
-        self.assertEqual(str(content["tree"]), contract["content"],
-                         "Error in content" + str(content["tree"]))
+        partContent = content["tree"][0]
+        contractContent = contract["content"][0]
+        mustBe = dict(tag=partContent["tag"],
+                      name=partContent["attr"]["name"],
+                      ratio=partContent["attr"]["ratio"],
+                      width=partContent["attr"]["width"])
+        page = dict(tag=contractContent["tag"],
+                    name=contractContent["attr"]["name"],
+                    ratio=contractContent["attr"]["ratio"],
+                    width=contractContent["attr"]["width"])
+        self.assertDictEqual(mustBe, page,
+                             "inputErr has problem: " + str(content["tree"]))
         
     def test_page_alert(self):
         contract = self.pages["alert"]
