@@ -306,5 +306,9 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["encodeBase64"]
         self.check_contract(contract["code"], contract["asert"])
 
+    def test_sys_var_role_id(self):
+        contract = self.contracts["sys_var_roleID"]
+        self.check_contract(contract["code"], contract["asert"])
+
 if __name__ == '__main__':
     unittest.main()
