@@ -376,19 +376,20 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_alert(self):
         contract = self.pages["alert"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]['tag']
-        self.assertEqual(partContent, contract["content"]['tag'],
-                         "Error in content " + str(content['tree']))
-        partContent = content['tree'][0]['attr']['alert']
-        contractContent = contract["content"]['attr']['alert']
-        mustBe = dict(cancelbutton = partContent['cancelbutton'],
-                      confirmbutton = partContent['confirmbutton'],
-                      icon = partContent['icon'],
-                      text = partContent['text'])
-        page = dict(cancelbutton=contractContent['cancelbutton'],
-                      confirmbutton=contractContent['confirmbutton'],
-                      icon=contractContent['icon'],
-                      text=contractContent['text'])
+        partContent = content['tree'][0]
+        contractContent = contract["content"]
+        partContent1 = content['tree'][0]['attr']['alert']
+        contractContent1 = contract["content"]['attr']['alert']
+        mustBe = dict(tag=partContent["tag"],
+                      cancelbutton = partContent1['cancelbutton'],
+                      confirmbutton = partContent1['confirmbutton'],
+                      icon = partContent1['icon'],
+                      text = partContent1['text'])
+        page = dict(tag=contractContent["tag"],
+                    cancelbutton=contractContent1['cancelbutton'],
+                    confirmbutton=contractContent1['confirmbutton'],
+                    icon=contractContent1['icon'],
+                    text=contractContent1['text'])
         self.assertDictEqual(mustBe, page,
                              "alert has problem: " + str(content["tree"]))
         
