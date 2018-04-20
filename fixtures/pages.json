@@ -301,7 +301,7 @@
     "getColumnType":{
 		"code": "GetColumnType(contracts, id)",
 		"menu": "default_menu",
-		"content": "[{'tag': 'text', 'text': 'number'}]"
+		"content": {"text": "number"}
     },
     "sys_var_isMobile":{
 		"code": "Mobile = Em(#isMobile#)",
