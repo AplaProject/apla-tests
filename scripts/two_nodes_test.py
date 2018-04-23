@@ -235,23 +235,23 @@ with open(config) as fconf:
 # Update URLs in config
 del lines[3]
 lines.insert(3, "\t\t\"url\": \"""http://localhost:"+args.httpPort1+"/api/v2" + "\",\n")
-del lines[13]
-lines.insert(13, "\t\t\"url\": \"""http://localhost:"+args.httpPort2+"/api/v2" + "\",\n")
+del lines[14]
+lines.insert(14, "\t\t\"url\": \"""http://localhost:"+args.httpPort2+"/api/v2" + "\",\n")
 
 # Update DB names in config
-del lines[6]
-lines.insert(6, "\t\t\"dbName\": \""+args.dbName1+"\",\n")
-del lines[16]
-lines.insert(16, "\t\t\"dbName\": \""+args.dbName2+"\",\n")
+del lines[7]
+lines.insert(7, "\t\t\"dbName\": \""+args.dbName1+"\",\n")
+del lines[18]
+lines.insert(18, "\t\t\"dbName\": \""+args.dbName2+"\",\n")
 
 # Update private keys in config
 del lines[4]
 lines.insert(4, "\t\t\"private_key\": \""+privKey1+"\",\n")
-del lines[14]
-lines.insert(14, "\t\t\"private_key\": \""+privKey2+"\",\n")
+del lines[15]
+lines.insert(15, "\t\t\"private_key\": \""+privKey2+"\",\n")
 with open(config, 'w') as fconf:
  fconf.write(''.join(lines))
-
+ 
  # Update keyID in config
 del lines[5]
 lines.insert(5, "\t\t\"keyID\": \""+keyID1+"\",\n")
