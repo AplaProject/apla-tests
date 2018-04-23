@@ -252,4 +252,11 @@ lines.insert(14, "\t\t\"private_key\": \""+privKey2+"\",\n")
 with open(config, 'w') as fconf:
  fconf.write(''.join(lines))
 
+ # Update keyID in config
+del lines[5]
+lines.insert(5, "\t\t\"keyID\": \""+keyID1+"\",\n")
+del lines[16]
+lines.insert(16, "\t\t\"keyID\": \""+keyID2+"\",\n")
+with open(config, 'w') as fconf:
+ fconf.write(''.join(lines))
 
