@@ -21,7 +21,7 @@
 		"asert": "default_page"
 	},	
     "langRes":{
-		"code": "{\n data {}\n conditions {}\n action {\n $result=LangRes(\"test\", \"de\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n $result=LangRes(1,\"test\", \"de\")\n }\n }",
 		"asert":"test_de",
 		"information":"needs to create language resourse with name - test and localisacions:en- test_en, de- test_de"
 	},		
@@ -142,7 +142,7 @@
 		"asert": "osyst"
 	},
     "updateLang": {
-		"code": "{\n data {}\n conditions {}\n action {\n UpdateLang(\"test\", \"{'ru': 'Тест'}\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n UpdateLang(1, \"test\", \"{'ru': 'Тест'}\")\n }\n }",
 			"asert": ""
 	},
     "sysParamString": {

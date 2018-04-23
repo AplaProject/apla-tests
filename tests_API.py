@@ -978,6 +978,7 @@ class ApiTestCase(unittest.TestCase):
 
     def test_new_lang(self):
         data = {}
+        data["AppID"] = "1"
         data["Name"] = "Lang_" + utils.generate_random_name()
         data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
         res = self.call("NewLang", data)
@@ -986,13 +987,21 @@ class ApiTestCase(unittest.TestCase):
     def test_edit_lang(self):
         name = "Lang_" + utils.generate_random_name()
         data = {}
+        data["AppID"] = "1"
         data["Name"] = name
         data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # Get last record in languages table
+        asserts = ["count"]
+        res = self.check_get_api("/list/languages", "", asserts)
+        self.assertGreater(int(res["count"]), 0, "Count of languages not Greater 0: " + str(len(res["list"])))
+        # Edit langRes
         dataEdit = {}
+        dataEdit["Id"] = res["count"]
+        dataEdit["AppID"] = "1"
         dataEdit["Name"] = name
-        dataEdit["Trans"] = "{\"en\": \"true\", \"ru\" : \"true\"}"
+        dataEdit["Trans"] = "{\"en\": \"true_en\", \"ru\" : \"true_ru\"}"
         res = self.call("EditLang", dataEdit)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
@@ -1036,6 +1045,7 @@ class ApiTestCase(unittest.TestCase):
     def test_content_lang(self):
         nameLang = "Lang_" + utils.generate_random_name()
         data = {}
+        data["AppID"] = "1"
         data["Name"] = nameLang
         data["Trans"] = "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"
         res = self.call("NewLang", data)
