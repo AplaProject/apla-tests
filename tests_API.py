@@ -1369,6 +1369,21 @@ class ApiTestCase(unittest.TestCase):
                                               files, token)
         res = self.assertTxInBlock(resp, token)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_new_app_param(self):
+        name = "param_"+utils.generate_random_name()
+        data = {"App": 1, "Name": name, "Value": "myParam", "Conditions": "true" }
+        res = self.call("NewAppParam", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_edit_app_param(self):
+        name = "param_"+utils.generate_random_name()
+        data = {"App": 1, "Name": name, "Value": "myParam", "Conditions": "true" }
+        res = self.call("NewAppParam", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        data2 = {"Id": 1, "Name": name, "Value": "myParamEdited", "Conditions": "true" }
+        res = self.call("EditAppParam", data2)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
 if __name__ == '__main__':
     unittest.main()
