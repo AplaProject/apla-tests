@@ -49,6 +49,14 @@ class PrototipoTestCase(unittest.TestCase):
                 if contentTree[i]['attr'][attrName] == attrValue:
                     return i
             i += 1
+
+    def check_post_api(self, endPoint, data, keys):
+        end = url + endPoint
+        result = funcs.call_post_api(end, data, token)
+        for key in keys:
+            self.assertIn(key, result)
+        return result
+
         
     def test_page_button(self):
         contract = self.pages["button"]
