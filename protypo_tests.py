@@ -57,6 +57,12 @@ class PrototipoTestCase(unittest.TestCase):
             self.assertIn(key, result)
         return result
 
+    def check_get_api(self, endPoint, data, keys):
+        end = url + endPoint
+        result = funcs.call_get_api(end, data, token)
+        for key in keys:
+            self.assertIn(key, result)
+        return result
         
     def test_page_button(self):
         contract = self.pages["button"]
