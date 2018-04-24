@@ -11,7 +11,7 @@ class ApiTestCase(unittest.TestCase):
     def setUp(self):
         global url, token, prKey, pause
         self.config = config.getNodeConfig()
-        url = self.config["1"]["url"]
+        url = self.config["2"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
         prKey = self.config["1"]['private_key']
         self.data = utils.login(url, prKey)
@@ -1384,6 +1384,26 @@ class ApiTestCase(unittest.TestCase):
         data2 = {"Id": 1, "Name": name, "Value": "myParamEdited", "Conditions": "true" }
         res = self.call("EditAppParam", data2)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def is_node_owner_true(self):
+        data = {}
+        resp = utils.call_contract(url, prKey, "NodeOwnerCondition", data, token)
+        status = utils.txstatus(url, pause, resp["hash"], token)
+        self.assertGreater(int(status["blockid"]), 0,
+                           "BlockId is not generated: " + str(status))
+        
+    def is_node_owner_false(self):
+        keys = config.getKeys()
+        prKey2 = keys["key1"]
+        data2 = utils.login(url, prKey2)
+        token2 = data2["jwtToken"]
+        data = {}
+        resp = utils.call_contract(url, prKey2, "NodeOwnerCondition", data, token2)
+        status = utils.txstatus(url, pause, resp["hash"], token2)
+        self.assertEqual(status["errmsg"]["error"],
+                         "Sorry, you do not have access to this action.",
+                         "Incorrect message: " + str(status))
+        
 
 if __name__ == '__main__':
     unittest.main()
