@@ -165,7 +165,21 @@ class ApiTestCase(unittest.TestCase):
         
     def test_money_transfer_zero_amount(self):
         wallet = "0005-2070-2000-0006-0200"
-        msg = "Amount is zero"
+        msg = "Amount must be greater then zero"
+        data = {"Recipient": wallet, "Amount": "0"}
+        ans = self.call("MoneyTransfer", data)
+        self.assertEqual(ans, msg, "Incorrect message" + msg)
+
+    def test_money_transfer_negative_amount(self):
+        wallet = "0005-2070-2000-0006-0200"
+        msg = "Amount must be greater then zero"
+        data = {"Recipient": wallet, "Amount": "-1000"}
+        ans = self.call("MoneyTransfer", data)
+        self.assertEqual(ans, msg, "Incorrect message" + msg)
+
+    def test_money_transfer_amount_as_string(self):
+        wallet = "0005-2070-2000-0006-0200"
+        msg = "can't convert ttt to decimal"
         data = {"Recipient": wallet, "Amount": "ttt"}
         ans = self.call("MoneyTransfer", data)
         self.assertEqual(ans, msg, "Incorrect message" + msg)
@@ -978,6 +992,7 @@ class ApiTestCase(unittest.TestCase):
 
     def test_new_lang(self):
         data = {}
+        data["AppID"] = "1"
         data["Name"] = "Lang_" + utils.generate_random_name()
         data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
         res = self.call("NewLang", data)
@@ -986,13 +1001,21 @@ class ApiTestCase(unittest.TestCase):
     def test_edit_lang(self):
         name = "Lang_" + utils.generate_random_name()
         data = {}
+        data["AppID"] = "1"
         data["Name"] = name
         data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # Get last record in languages table
+        asserts = ["count"]
+        res = self.check_get_api("/list/languages", "", asserts)
+        self.assertGreater(int(res["count"]), 0, "Count of languages not Greater 0: " + str(len(res["list"])))
+        # Edit langRes
         dataEdit = {}
+        dataEdit["Id"] = res["count"]
+        dataEdit["AppID"] = "1"
         dataEdit["Name"] = name
-        dataEdit["Trans"] = "{\"en\": \"true\", \"ru\" : \"true\"}"
+        dataEdit["Trans"] = "{\"en\": \"true_en\", \"ru\" : \"true_ru\"}"
         res = self.call("EditLang", dataEdit)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
@@ -1036,6 +1059,7 @@ class ApiTestCase(unittest.TestCase):
     def test_content_lang(self):
         nameLang = "Lang_" + utils.generate_random_name()
         data = {}
+        data["AppID"] = "1"
         data["Name"] = nameLang
         data["Trans"] = "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"
         res = self.call("NewLang", data)
@@ -1318,7 +1342,7 @@ class ApiTestCase(unittest.TestCase):
 
     def test_edit_ecosystem_name(self):
         id = 1
-        newName = "ecosys_"+utils.generate_random_name()
+        newName = "new_ecosystem_name_Andromeda"
         data = {"EcosystemID": id, "NewName": newName}
         res = self.call("EditEcosystemName", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
@@ -1349,6 +1373,31 @@ class ApiTestCase(unittest.TestCase):
         asserts = ["result"]
         data = {}
         #self.check_post_api("/vde/create", data, asserts)
+        
+    def test_upload_binary(self):
+        name = "image_"+utils.generate_random_name()
+        path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
+        files = {'Data': open(path, 'rb')}
+        data = {"Name": name, "AppID": 1}
+        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
+                                              files, token)
+        res = self.assertTxInBlock(resp, token)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_new_app_param(self):
+        name = "param_"+utils.generate_random_name()
+        data = {"App": 1, "Name": name, "Value": "myParam", "Conditions": "true" }
+        res = self.call("NewAppParam", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_edit_app_param(self):
+        name = "param_"+utils.generate_random_name()
+        data = {"App": 1, "Name": name, "Value": "myParam", "Conditions": "true" }
+        res = self.call("NewAppParam", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        data2 = {"Id": 1, "Name": name, "Value": "myParamEdited", "Conditions": "true" }
+        res = self.call("EditAppParam", data2)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
 if __name__ == '__main__':
     unittest.main()

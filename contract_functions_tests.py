@@ -21,6 +21,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         status = utils.txstatus(url,
                                 self.config["1"]["time_wait_tx_in_block"],
                                 result['hash'], jwtToken)
+        print(status)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
@@ -35,6 +36,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 "Conditions": "ContractConditions(`MainCondition`)"}
         result = utils.call_contract(url, prKey, "NewContract",
                                      data, token)
+        print(result)
         self.assertTxInBlock(result, token)
 
     def check_contract(self, sourse, checkPoint):
@@ -47,6 +49,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         res = utils.call_contract(url, prKey, name, {}, token)
         hash = res["hash"]
         result = utils.txstatus(url, sleep, hash, token)
+        print("result",result["result"])
         self.assertIn(checkPoint, result["result"], "error")
 
     def test_contract_dbfind(self):
@@ -166,10 +169,12 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_langRes(self):
-        data = {"Name": "test",
+        name = "lang_"+utils.generate_random_name()
+        data = {"AppID":"1",
+                "Name": name,
                 "Trans": "{\"en\": \"test_en\", \"de\" : \"test_de\"}"}
-        utils.call_contract(url, prKey, "NewLang", data, token)
-        time.sleep(8)
+        result = utils.call_contract(url, prKey, "NewLang", data, token)
+        tx = utils.txstatus(url, self.config["time_wait_tx_in_block"], result['hash'], token)
         contract = self.contracts["langRes"]
         self.check_contract(contract["code"], contract["asert"])
         
@@ -304,6 +309,14 @@ class ContractFunctionsTestCase(unittest.TestCase):
 
     def test_encodeBase64(self):
         contract = self.contracts["encodeBase64"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_jsonEncode(self):
+        contract = self.contracts["jsonEncode"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_jsonDecode(self):
+        contract = self.contracts["jsonDecode"]
         self.check_contract(contract["code"], contract["asert"])
 
     def test_sys_var_role_id(self):

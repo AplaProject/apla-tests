@@ -46,14 +46,31 @@ def prepare_tx(url, prKey, entity, jvtToken, data):
 	result = resp.json()
 	forsign = result['forsign']
 	signature, _ = sign(forsign, url, prKey)
-	return {"time": result['time'], "signature": signature}
+	return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
+def prepare_tx_with_files(url, prKey, entity, jvtToken, data, files):
+	urlToCont = url + '/prepare/' + entity
+	heads = {'Authorization': jvtToken}
+	resp = requests.post(urlToCont, data=data, headers=heads, files=files)
+	result = resp.json()
+	forsign = result['forsign']
+	signature, _ = sign(forsign, url, prKey)
+	return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
 def call_contract(url, prKey, name, data, jvtToken):
-	sign_res = prepare_tx(url, prKey, name, jvtToken, data)
-	data.update(sign_res)
-	urlEnd = url + '/contract/' + name
-	resp = requests.post(urlEnd, data=data, headers={"Authorization": jvtToken})
+	sign = prepare_tx(url, prKey, name, jvtToken, data)
+	dataContract = {"time": sign['time'], "signature": sign["signature"]}
+	urlEnd = url + '/contract/' + sign["reqID"]
+	resp = requests.post(urlEnd, data=dataContract, headers={"Authorization": jvtToken})
+	result = resp.json()
+	return result
+
+def call_contract_with_files(url, prKey, name, data, files, jvtToken):
+	sign = prepare_tx_with_files(url, prKey, name, jvtToken, data, files)
+	dataContract = {"time": sign['time'], "signature": sign["signature"]}
+	urlEnd = url + '/contract/' + sign["reqID"]
+	resp = requests.post(urlEnd, data=dataContract,
+						headers={"Authorization": jvtToken})
 	result = resp.json()
 	return result
 

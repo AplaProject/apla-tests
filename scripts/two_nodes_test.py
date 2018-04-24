@@ -70,22 +70,12 @@ config1 = subprocess.Popen([
 	'config',
 	'--dataDir='+workDir1,
 	'--firstBlock='+firstBlockPath,
+	'--dbPassword='+args.dbPassword,
+	'--centUrl="http://127.0.0.1:8000"',
+	'--centSecret="4597e75c-4376-42a6-8c1f-7e3fc7eb2114"',
 	'--dbName='+args.dbName1
 ])
-time.sleep(3)
-
-#Update config for first node
-configPath = os.path.join(workDir1, 'config.toml')
-with open(configPath) as fconf:
-	lines = fconf.readlines()
-del lines[25]
-lines.insert(25, "  Password = \""+args.dbPassword+"\"\n")
-del lines[33]
-lines.insert(33, "  Secret = \"4597e75c-4376-42a6-8c1f-7e3fc7eb2114\"\n")
-del lines[34]
-lines.insert(34, "URL = \"http://127.0.0.1:8000\"\n")
-with open(configPath, 'w') as fconf:
-	fconf.write(''.join(lines))
+time.sleep(10)
 
 #Generate keys for first block
 keys1 = subprocess.Popen([
@@ -93,7 +83,7 @@ keys1 = subprocess.Popen([
 	'generateKeys',
 	'--config='+workDir1+'/config.toml'
 ])
-time.sleep(3)
+time.sleep(10)
 
 #Generate first block
 firstBlock = subprocess.Popen([
@@ -101,7 +91,7 @@ firstBlock = subprocess.Popen([
 	'generateFirstBlock',
 	'--config='+workDir1+'/config.toml'
 ])
-time.sleep(3)
+time.sleep(10)
 
 #Init data base
 firstBlock = subprocess.Popen([
@@ -109,7 +99,7 @@ firstBlock = subprocess.Popen([
 	'initDatabase',
 	'--config='+workDir1+'/config.toml'
 ])
-time.sleep(5)
+time.sleep(10)
 
 #Start first node
 startFirstNode = subprocess.Popen([
@@ -117,7 +107,7 @@ startFirstNode = subprocess.Popen([
 	'start',
 	'--config='+workDir1+'/config.toml'
 ])
-time.sleep(3)
+time.sleep(10)
 
 #Generate config for second node
 generateConfig2 = subprocess.Popen([
@@ -128,22 +118,13 @@ generateConfig2 = subprocess.Popen([
 	'--dbName='+args.dbName2,
 	'--tcpPort='+args.tcpPort2,
 	'--httpPort='+args.httpPort2,
+	'--firstBlock='+firstBlockPath,
+	'--dbPassword='+args.dbPassword,
+	'--centUrl="http://127.0.0.1:8000"',
+	'--centSecret="4597e75c-4376-42a6-8c1f-7e3fc7eb2114"',
 	'--nodesAddr='+"127.0.0.1:"+args.tcpPort1
 ])
-time.sleep(3)
-
-#Update config for second node
-configPath = os.path.join(workDir2, 'config.toml')
-with open(configPath) as fconf:
-	lines = fconf.readlines()
-del lines[25]
-lines.insert(25, "  Password = \""+args.dbPassword+"\"\n")
-del lines[33]
-lines.insert(33, "  Secret = \"4597e75c-4376-42a6-8c1f-7e3fc7eb2114\"\n")
-del lines[34]
-lines.insert(34, "URL = \"http://127.0.0.1:8000\"\n")
-with open(configPath, 'w') as fconf:
-	fconf.write(''.join(lines))
+time.sleep(10)
 
 #Generate keys for second node
 generateKeys = subprocess.Popen([
@@ -151,7 +132,7 @@ generateKeys = subprocess.Popen([
 	'generateKeys',
 	'--config='+workDir2+'/config.toml'
 ])
-time.sleep(3)
+time.sleep(10)
 
 with open(os.path.join(workDir1, 'PrivateKey'), 'r') as f:
 	privKey1 = f.read()
@@ -228,7 +209,7 @@ if code != 0:
 	node1.kill()
 	exit(1)
 
-time.sleep(3)
+time.sleep(20)
 
 #Init database
 startFirstNode = subprocess.Popen([
@@ -236,7 +217,7 @@ startFirstNode = subprocess.Popen([
 	'initDatabase',
 	'--config='+workDir2+'/config.toml'
 ])
-time.sleep(5) 
+time.sleep(10) 
 
 #Start second node
 startFirstNode = subprocess.Popen([
@@ -244,7 +225,7 @@ startFirstNode = subprocess.Popen([
 	'start',
 	'--config='+workDir2+'/config.toml'
 ])
-time.sleep(3)
+time.sleep(10)
 
 # Update config for tests
 config = os.path.join(curDir+ '/../', 'hostConfig.json')
@@ -278,5 +259,4 @@ del lines[16]
 lines.insert(16, "\t\t\"keyID\": \""+keyID2+"\",\n")
 with open(config, 'w') as fconf:
  fconf.write(''.join(lines))
-
 
