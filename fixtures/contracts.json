@@ -232,5 +232,13 @@
 	"get_keyId": {
 		"code": "{\n data {\n Pub string\n }\n conditions {}\n action {\n $result = PubToID($Pub) }\n }",
 		"asert": "_"
+	},
+	"jsonEncode": {
+		"code": "{\n data {}\n conditions {}\n  action {\n var a array, m map\n m[\"k1\"] = 1\n m[\"k2\"] = 2\n a[0] = m \n a[1] = m \n $result = JSONEncode(a)\n}\n }",
+		"asert": "[{\"k1\":1,\"k2\":2},{\"k1\":1,\"k2\":2}]"
+	},
+	"jsonDecode": {
+		"code": "{\n data {}\n conditions {}\n  action {\n var a string \n a = \"[{'k1':1,'k2':2},{'k1':1,'k2':2}]\"\n $result = JSONDecode(a)\n}\n }",
+		"asert": ""
 	}
 }
