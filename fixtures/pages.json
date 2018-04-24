@@ -327,5 +327,10 @@
 		"code": "Em(#key_id#)",
 		"menu": "default_menu",
 		"content": ""
+	},
+    "dbfindCount":{
+		"code": "DBFind(Name: contracts, Source: con).Count(cnt) Em(#cnt#)",
+		"menu": "default_menu",
+		"content": ""
 	}
 }
