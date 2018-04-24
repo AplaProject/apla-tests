@@ -332,5 +332,15 @@
 		"code": "DBFind(Name: contracts, Source: con).Count(cnt) Em(#cnt#)",
 		"menu": "default_menu",
 		"content": ""
+	},
+    "dbfindWhereCount":{
+		"code": "DBFind(Name: contracts, Source: con).Where(\"id>=1 and id<=3\").Count(cnt) Em(#cnt#)",
+		"menu": "default_menu",
+		"content": "3"
+	},
+    "dbfindWhereIdCount":{
+		"code": "DBFind(Name: contracts, Source: con).WhereId(1).Count(cnt) Em(#cnt#)",
+		"menu": "default_menu",
+		"content": "1"
 	}
 }
