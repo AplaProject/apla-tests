@@ -519,9 +519,6 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertEqual(contractsCount, page,
                         "dbfind_count has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
 
-        page = content['tree'][0]["attr"]["count"]
-        self.assertEqual(contractsCount, page,
-                         "dbfind_count has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
     def test_dbfind_where_count(self):
         contract = self.pages["dbfindWhereCount"]
         content = self.check_page(contract["code"])
