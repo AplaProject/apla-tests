@@ -249,5 +249,10 @@
 		"code": "{\n data {}\n conditions {} \n action { \n var s string \n s = BytesToString(StringToBytes(\"Success test StringToBytes and BytesToString functions!\")) \n $result = s \n}\n }",
 		"asert": "Success test StringToBytes and BytesToString functions!",
 		"information":"Bytes cannot be returned as a result, so we use the StringToBytes function inside"
+	},
+	"stringToBytes": {
+		"code": "{\n data {}\n conditions {} \n action { \n var b bytes \n b = StringToBytes(\"Hello!\") \n $result = b \n}\n }",
+		"asert": "[72 101 108 108 111 33]",
+		"information":"Bytes returned as array of char"
 	}
 }
