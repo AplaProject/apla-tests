@@ -522,6 +522,21 @@ class PrototipoTestCase(unittest.TestCase):
         page = content['tree'][0]["attr"]["count"]
         self.assertEqual(contractsCount, page,
                          "dbfind_count has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
+    def test_dbfind_where_count(self):
+        contract = self.pages["dbfindWhereCount"]
+        content = self.check_page(contract["code"])
+        RequiredNum = self.findPositionElementInTree(content["tree"],"em")
+        page = content['tree'][RequiredNum]["children"][0]["text"]
+        self.assertEqual(contract["content"], page,
+                        "dbfind_where_count has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
+
+    def test_dbfind_whereId_count(self):
+        contract = self.pages["dbfindWhereIdCount"]
+        content = self.check_page(contract["code"])
+        RequiredNum = self.findPositionElementInTree(content["tree"],"em")
+        page = content['tree'][RequiredNum]["children"][0]["text"]
+        self.assertEqual(contract["content"], page,
+                        "dbfind_whereId_count has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
 
         
 if __name__ == '__main__':
