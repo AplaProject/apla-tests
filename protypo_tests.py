@@ -514,6 +514,11 @@ class PrototipoTestCase(unittest.TestCase):
         contractsCount = res["count"]
         contract = self.pages["dbfindCount"]
         content = self.check_page(contract["code"])
+        RequiredNum = self.findPositionElementInTree(content["tree"],"em")
+        page = content['tree'][RequiredNum]["children"][0]["text"]
+        self.assertEqual(contractsCount, page,
+                        "dbfind_count has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
+
         page = content['tree'][0]["attr"]["count"]
         self.assertEqual(contractsCount, page,
                          "dbfind_count has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
