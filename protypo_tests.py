@@ -506,6 +506,18 @@ class PrototipoTestCase(unittest.TestCase):
         keyID=content["tree"][0]["children"][0]["text"]
         self.assertEqual(keyID, founderAcc,
                         "key_id has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
+
+    def test_dbfind_count(self):
+        asserts = ["count"]
+        data = {}
+        res = self.check_get_api("/contracts", data, asserts)
+        contractsCount = res["count"]
+        contract = self.pages["dbfindCount"]
+        content = self.check_page(contract["code"])
+        page = content['tree'][0]["attr"]["count"]
+        self.assertEqual(contractsCount, page,
+                         "dbfind_count has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
+
         
 if __name__ == '__main__':
     unittest.main()
