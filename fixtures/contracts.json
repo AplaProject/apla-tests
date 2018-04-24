@@ -245,7 +245,7 @@
 		"code": "{\n data {}\n conditions {}\n  action {\n var a string \n a = \"[{'k1':1,'k2':2},{'k1':1,'k2':2}]\"\n $result = JSONDecode(a)\n}\n }",
 		"asert": ""
 	},
-	"bytesToString_StringToBytes": {
+	"bytesToString": {
 		"code": "{\n data {}\n conditions {} \n action { \n var s string \n s = BytesToString(StringToBytes(\"Success test StringToBytes and BytesToString functions!\")) \n $result = s \n}\n }",
 		"asert": "Success test StringToBytes and BytesToString functions!",
 		"information":"Bytes cannot be returned as a result, so we use the StringToBytes function inside"
