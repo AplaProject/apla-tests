@@ -1417,7 +1417,11 @@ class ApiTestCase(unittest.TestCase):
         self.assertEqual(status["errmsg"]["error"],
                          "Sorry, you do not have access to this action.",
                          "Incorrect message: " + str(status))
-        
+
+    def test_get_centrifugo_address_without_login(self):
+        resp = requests.get(url + '/config/centrifugo')
+        res = resp.json()
+        self.assertIn("http://", res, "Centrifugo is not connection to node!")
 
 if __name__ == '__main__':
     unittest.main()
