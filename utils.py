@@ -138,7 +138,6 @@ def compare_node_positions(dbHost, dbName, login, password, maxBlockId, nodes):
 	cursor = connect.cursor()
 	cursor.execute(request)
 	positions = cursor.fetchall()
-	print(positions)
 	countBlocks = round(count_rec/nodes/10*7)
 	if len(positions) < nodes:
 		print("One of nodes doesn't generate blocks" + str(positions))
