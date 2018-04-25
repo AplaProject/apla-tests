@@ -1470,7 +1470,7 @@ class ApiTestCase(unittest.TestCase):
         avaURL = url + "/avatar/" + ecosystemID + "/" + founderID
         res = funcs.call_get_api_with_full_response(avaURL, data, asserts)
         msg = "Content-Length is different!"
-        self.assertIn("71926", str(res.headers["Content-Length"]),msg)
+        self.assertEqual("71926", str(res.headers["Content-Length"]),msg)
 
     def test_get_avatar_without_login(self):
         # add file in binaries
@@ -1520,7 +1520,7 @@ class ApiTestCase(unittest.TestCase):
         avaURL = url + "/avatar/" + ecosystemID + "/" + founderID
         resp = requests.get(avaURL)
         msg = "Content-Length is different!"
-        self.assertIn("71926", str(resp.headers["Content-Length"]), msg)
+        self.assertEqual("71926", str(resp.headers["Content-Length"]), msg)
 
 if __name__ == '__main__':
     unittest.main()
