@@ -49,6 +49,20 @@ class PrototipoTestCase(unittest.TestCase):
                 if contentTree[i]['attr'][attrName] == attrValue:
                     return i
             i += 1
+
+    def check_post_api(self, endPoint, data, keys):
+        end = url + endPoint
+        result = funcs.call_post_api(end, data, token)
+        for key in keys:
+            self.assertIn(key, result)
+        return result
+
+    def check_get_api(self, endPoint, data, keys):
+        end = url + endPoint
+        result = funcs.call_get_api(end, data, token)
+        for key in keys:
+            self.assertIn(key, result)
+        return result
         
     def test_page_button(self):
         contract = self.pages["button"]
@@ -492,6 +506,35 @@ class PrototipoTestCase(unittest.TestCase):
         keyID=content["tree"][0]["children"][0]["text"]
         self.assertEqual(keyID, founderAcc,
                         "key_id has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
+
+    def test_dbfind_count(self):
+        asserts = ["count"]
+        data = {}
+        res = self.check_get_api("/contracts", data, asserts)
+        contractsCount = res["count"]
+        contract = self.pages["dbfindCount"]
+        content = self.check_page(contract["code"])
+        RequiredNum = self.findPositionElementInTree(content["tree"],"em")
+        page = content['tree'][RequiredNum]["children"][0]["text"]
+        self.assertEqual(contractsCount, page,
+                        "dbfind_count has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
+
+    def test_dbfind_where_count(self):
+        contract = self.pages["dbfindWhereCount"]
+        content = self.check_page(contract["code"])
+        RequiredNum = self.findPositionElementInTree(content["tree"],"em")
+        page = content['tree'][RequiredNum]["children"][0]["text"]
+        self.assertEqual(contract["content"], page,
+                        "dbfind_where_count has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
+
+    def test_dbfind_whereId_count(self):
+        contract = self.pages["dbfindWhereIdCount"]
+        content = self.check_page(contract["code"])
+        RequiredNum = self.findPositionElementInTree(content["tree"],"em")
+        page = content['tree'][RequiredNum]["children"][0]["text"]
+        self.assertEqual(contract["content"], page,
+                        "dbfind_whereId_count has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
+
         
 if __name__ == '__main__':
     unittest.main()
