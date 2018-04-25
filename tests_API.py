@@ -1420,5 +1420,56 @@ class ApiTestCase(unittest.TestCase):
                          "Sorry, you do not have access to this action.",
                          "Incorrect message: " + str(status))
 
+    def test_get_avatar_with_login(self):
+        # add file in binaries
+        name = "file_"+utils.generate_random_name()
+        path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
+        with open(path, 'rb') as f:
+            file = f.read()
+        files = {'Data': file}
+        data = {"Name": name, "AppID": 1, "DataMimeType":"image/jpeg"}
+        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
+                                              files, token)
+        res = self.assertTxInBlock(resp, token)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # find last added file
+        asserts = ["count"]
+        res = self.check_get_api("/list/binaries", "", asserts)
+        lastRec = res["count"]
+        # find founder ID
+        asserts = ["list"]
+        res = self.check_get_api("/list/members", "", asserts)
+        # iterating response elements
+        i = 0
+        founderID = ""
+        while i < len(res['list']):
+            if res['list'][i]['member_name'] == "founder":
+                founderID = res['list'][i]['id']
+            i += 1
+        # change column permissions
+        data = {"TableName": "members", "Name":"image_id","Permissions": "true"}
+        res = self.call("EditColumn", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # update members table
+        code, name = utils.generate_name_and_code("{data{} conditions{} action{ DBUpdate(\"members\", "+founderID+",\"image_id\", "+lastRec+") } }")
+        data = {"Value": code, "Conditions": "true"}
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        data = {}
+        resp = utils.call_contract(url, prKey, name, data, token)
+        res = self.assertTxInBlock(resp, token)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # rollback changes column permissions
+        data = {"TableName": "members", "Name":"image_id","Permissions": "ContractAccess(\"Profile_Edit\")"}
+        res = self.call("EditColumn", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # test
+        ecosystemID = "1"
+        asserts = ""
+        data = ""
+        avaURL = url + "/avatar/" + ecosystemID + "/" + founderID
+        res = funcs.call_get_api_with_full_response(avaURL, data, asserts)
+        msg = "Content-Length is different!"
+        self.assertIn("71926", str(res.headers["Content-Length"]),msg)
 if __name__ == '__main__':
     unittest.main()
