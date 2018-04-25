@@ -6,6 +6,10 @@ def call_get_api(url, data, token):
     resp = requests.get(url, data=data,  headers={"Authorization": token})
     return resp.json()
 
+def call_get_api_with_full_response(url, data, token):
+    resp = requests.get(url, data=data,  headers={"Authorization": token})
+    return resp
+
 def call_post_api(url, data, token):
     resp = requests.post(url, data=data,  headers={"Authorization": token})
     if resp.status_code == 200:
