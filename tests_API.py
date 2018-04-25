@@ -1423,5 +1423,10 @@ class ApiTestCase(unittest.TestCase):
         res = resp.json()
         self.assertIn("http://", res, "Centrifugo is not connection to node!")
 
+    def test_get_centrifugo_address_with_login(self):
+        asserts = ["http://"]
+        data = ""
+        res = self.check_get_api("/config/centrifugo", data, asserts)
+
 if __name__ == '__main__':
     unittest.main()
