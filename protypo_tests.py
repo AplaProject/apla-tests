@@ -551,6 +551,26 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertEqual(contract["content"], page,
                         "dbfind_whereId_count has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
 
+    def test_binary(self):
+        # this test has not fixture
+        name = "image_" + utils.generate_random_name()
+        appID = "1"
+        MemberID = "999"
+        path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
+        with open(path, 'rb') as f:
+            file = f.read()
+        files = {'Data': file}
+        data = {"Name": name, "AppID": appID, "MemberID": MemberID}
+        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
+                                              files, token)
+        self.assertTxInBlock(resp, token)
+        self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
+        lastRec = funcs.get_count(url, "binaries", token)
+        contract = self.pages["binary"]
+        content = self.check_page("Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+")")
+        msg = "test_binary has problem. Content = " + str(content["tree"])
+        self.assertEqual("/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec", content["tree"][0]["text"])
+
         
 if __name__ == '__main__':
     unittest.main()
