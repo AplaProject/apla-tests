@@ -6,6 +6,7 @@ import json
 import time
 import funcs
 import datetime
+import os
 
 
 class PrototipoTestCase(unittest.TestCase):
