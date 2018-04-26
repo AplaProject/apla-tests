@@ -332,5 +332,14 @@ class ContractFunctionsTestCase(unittest.TestCase):
         msg = "system variable "+sysVarName+" was been changed!"
         self.assertEqual(tx["errmsg"]["error"], expResult, msg)
 
+    def test_bytesToString(self):
+        contract = self.contracts["bytesToString"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_stringToBytes(self):
+        contract = self.contracts["stringToBytes"]
+        self.check_contract(contract["code"], contract["asert"])
+
+
 if __name__ == '__main__':
     unittest.main()

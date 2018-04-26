@@ -69,6 +69,21 @@ class PrototipoTestCase(unittest.TestCase):
         content = self.check_page(contract["code"])
         self.assertEqual(content["tree"][0]["tag"], "button",
                          "There is no button in content" + str(content["tree"]))
+
+    def test_page_button_composite_contract(self):
+        contract = self.pages["buttonCompositeContract"]
+        content = self.check_page(contract["code"])
+        partContent = content["tree"]
+        contractContent = contract["content"]
+        mustBe = dict(tag=partContent[0]["tag"],
+                      compositeName=partContent[0]["attr"]["composite"][0]["name"],
+                      compositeData=partContent[0]["attr"]["composite"][0]["data"][0],
+                      text=partContent[0]["children"][0]["text"])
+        page = dict(tag=contractContent[0]["tag"],
+                    compositeName=contractContent[0]["attr"]["composite"][0]["name"],
+                    compositeData=contractContent[0]["attr"]["composite"][0]["data"][0],
+                    text=contractContent[0]["children"][0]["text"])
+        self.assertDictEqual(mustBe, page, "now has problem: " + str(content["tree"]))
         
     def test_page_selectorFromDB(self):
         contract = self.pages["selectorFromDB"]
