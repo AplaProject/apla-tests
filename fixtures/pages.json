@@ -4,6 +4,33 @@
 		"Menu": "default_menu",
 		"content": ""
 	},
+	"buttonCompositeContract":{
+		"code": "Button(Body: addpage).CompositeContract(NewPage, [{\"param1\": \"val1\"}])",
+		"Menu": "default_menu",
+		"content": [
+			  {
+				"tag": "button",
+				"attr": {
+				  "composite": [
+					{
+					  "name": "NewPage",
+					  "data": [
+						{
+						  "param1": "val1"
+						}
+					  ]
+					}
+				  ]
+				},
+				"children": [
+				  {
+					"tag": "text",
+					"text": "addpage"
+				  }
+				]
+			  }
+			]
+	},
     "selectorFromDB":{
 		"code": "DBFind(\"menu\", data) %n Select(MySelect, data, \"name\")",
 		"menu": "default_menu",
