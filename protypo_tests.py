@@ -565,8 +565,8 @@ class PrototipoTestCase(unittest.TestCase):
                                               files, token)
         self.assertTxInBlock(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
+        # test
         lastRec = funcs.get_count(url, "binaries", token)
-        contract = self.pages["binary"]
         content = self.check_page("Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
         self.assertEqual("/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec", content["tree"][0]["text"])
@@ -585,8 +585,8 @@ class PrototipoTestCase(unittest.TestCase):
                                               files, token)
         res = self.assertTxInBlock(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
+        # test
         lastRec = funcs.get_count(url, "binaries", token)
-        contract = self.pages["binary"]
         content = self.check_page("Binary().ById("+lastRec+")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
         self.assertEqual("/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec", content["tree"][0]["text"])
