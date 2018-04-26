@@ -993,7 +993,7 @@ class ApiTestCase(unittest.TestCase):
 
     def test_new_lang(self):
         data = {}
-        data["AppID"] = "1"
+        data["AppID"] = 1
         data["Name"] = "Lang_" + utils.generate_random_name()
         data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
         res = self.call("NewLang", data)
@@ -1002,7 +1002,7 @@ class ApiTestCase(unittest.TestCase):
     def test_edit_lang(self):
         name = "Lang_" + utils.generate_random_name()
         data = {}
-        data["AppID"] = "1"
+        data["AppID"] = 1
         data["Name"] = name
         data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
         res = self.call("NewLang", data)

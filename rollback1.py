@@ -160,7 +160,7 @@ class Rollback1TestCase(unittest.TestCase):
         return name
 
     def edit_lang(self, name):
-        dataEdit = {"Name": name,
+        dataEdit = {"Name": name, "AppID": 1,
                     "Trans": "{\"en\": \"true\", \"ru\" : \"true\"}"}
         res = self.call("EditLang", dataEdit)
 
