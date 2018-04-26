@@ -1,0 +1,347 @@
+import subprocess
+import signal
+import time
+import os
+import ctypes
+import json
+import argparse
+import shutil
+
+curDir = os.path.dirname(os.path.abspath(__file__))
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-binary', required=True)
+parser.add_argument('-workDir', default=os.path.join(curDir, 'data'))
+
+parser.add_argument('-dbHost', default='localhost')
+parser.add_argument('-dbPort', default='5432')
+parser.add_argument('-dbUser', default='postgres')
+parser.add_argument('-dbPassword', default='postgres')
+
+parser.add_argument('-tcpPort1', default='7078')
+parser.add_argument('-httpPort1', default='7079')
+parser.add_argument('-dbName1', default='gen1')
+
+parser.add_argument('-tcpPort2', default='7081')
+parser.add_argument('-httpPort2', default='7018')
+parser.add_argument('-dbName2', default='gen2')
+
+parser.add_argument('-tcpPort3', default='7080')
+parser.add_argument('-httpPort3', default='7082')
+parser.add_argument('-dbName3', default='gen3')
+
+parser.add_argument('-gapBetweenBlocks', default='2')
+parser.add_argument('-centrifugo', required=True)
+
+args = parser.parse_args()
+
+binary = os.path.abspath(args.binary)
+workDir = os.path.abspath(args.workDir)
+workDir1 = os.path.join(workDir, 'node1')
+workDir2 = os.path.join(workDir, 'node2')
+workDir3 = os.path.join(workDir, 'node3')
+firstBlockPath = os.path.join(workDir, '1block')
+
+
+if os.path.exists(workDir):
+	shutil.rmtree(workDir)
+os.makedirs(workDir1)
+os.makedirs(workDir2)
+os.makedirs(workDir3)
+
+# Create config for centrifugo
+cenConfig = os.path.join(args.centrifugo, "config.json")
+linesC = []
+linesC.insert(0, "{\n")
+linesC.insert(1, "\"secret\": \"4597e75c-4376-42a6-8c1f-7e3fc7eb2114\",\n")
+linesC.insert(2, "\"admin_secret\": \"admin\"\n")
+linesC.insert(3, "}")
+with open(cenConfig, 'w') as fconf:
+	fconf.write(''.join(linesC))
+	
+# Run centrifugo
+cenPath = os.path.join(args.centrifugo, "centrifugo")
+centrifugo = subprocess.Popen([
+	cenPath,
+	'--config=config.json',
+	'--admin',
+	'--insecure_admin',
+	'--web'
+])
+time.sleep(3)
+
+# Generate config for first node
+config1 = subprocess.Popen([
+	binary,
+	'config',
+	'--dataDir='+workDir1,
+	'--firstBlock='+firstBlockPath,
+	'--dbPassword='+args.dbPassword,
+	'--centUrl="http://127.0.0.1:8000"',
+	'--centSecret="4597e75c-4376-42a6-8c1f-7e3fc7eb2114"',
+	'--dbName='+args.dbName1
+])
+time.sleep(3)
+
+#Generate keys for first block
+keys1 = subprocess.Popen([
+	binary,
+	'generateKeys',
+	'--config='+workDir1+'/config.toml'
+])
+time.sleep(3)
+
+#Generate first block
+firstBlock = subprocess.Popen([
+	binary,
+	'generateFirstBlock',
+	'--config='+workDir1+'/config.toml'
+])
+time.sleep(3)
+
+#Init data base
+firstBlock = subprocess.Popen([
+	binary,
+	'initDatabase',
+	'--config='+workDir1+'/config.toml'
+])
+time.sleep(3)
+
+#Start first node
+startFirstNode = subprocess.Popen([
+	binary,
+	'start',
+	'--config='+workDir1+'/config.toml'
+])
+time.sleep(3)
+
+#Generate config for second node
+generateConfig2 = subprocess.Popen([
+	binary,
+	'config',
+	'--dataDir='+workDir2,
+	'--firstBlock='+firstBlockPath,
+	'--dbName='+args.dbName2,
+	'--tcpPort='+args.tcpPort2,
+	'--httpPort='+args.httpPort2,
+	'--firstBlock='+firstBlockPath,
+	'--dbPassword='+args.dbPassword,
+	'--centUrl="http://127.0.0.1:8000"',
+	'--centSecret="4597e75c-4376-42a6-8c1f-7e3fc7eb2114"',
+	'--nodesAddr='+"127.0.0.1:"+args.tcpPort1
+])
+time.sleep(3)
+
+#Generate keys for second node
+generateKeys = subprocess.Popen([
+	binary,
+	'generateKeys',
+	'--config='+workDir2+'/config.toml'
+])
+time.sleep(3)
+
+#Generate config for third node
+generateConfig3 = subprocess.Popen([
+	binary,
+	'config',
+	'--dataDir='+workDir3,
+	'--firstBlock='+firstBlockPath,
+	'--dbName=' + args.dbName3,
+	'--tcpPort='+args.tcpPort3,
+	'--httpPort='+args.httpPort3,
+	'--firstBlock='+firstBlockPath,
+	'--dbPassword='+args.dbPassword,
+	'--centUrl="http://127.0.0.1:8000"',
+	'--centSecret="4597e75c-4376-42a6-8c1f-7e3fc7eb2114"',
+	'--nodesAddr='+"127.0.0.1:"+args.tcpPort1
+])
+time.sleep(3)
+
+#Generate keys for third node
+generateKeys = subprocess.Popen([
+	binary,
+	'generateKeys',
+	'--config='+workDir3+'/config.toml'
+])
+time.sleep(3)
+
+with open(os.path.join(workDir1, 'PrivateKey'), 'r') as f:
+	privKey1 = f.read()
+with open(os.path.join(workDir2, 'PrivateKey'), 'r') as f:
+	privKey2 = f.read()
+with open(os.path.join(workDir3, 'PrivateKey'), 'r') as f:
+	privKey3 = f.read()
+with open(os.path.join(workDir1, 'KeyID'), 'r') as f:
+	keyID1 = f.read()
+with open(os.path.join(workDir1, 'NodePublicKey'), 'r') as f:
+	nodePubKey1 = f.read()
+with open(os.path.join(workDir2, 'KeyID'), 'r') as f:
+	keyID2 = f.read()
+with open(os.path.join(workDir2, 'NodePublicKey'), 'r') as f:
+	nodePubKey2 = f.read()
+with open(os.path.join(workDir2, 'PublicKey'), 'r') as f:
+	pubKey2 = f.read()
+with open(os.path.join(workDir3, 'KeyID'), 'r') as f:
+	keyID3 = f.read()
+with open(os.path.join(workDir3, 'NodePublicKey'), 'r') as f:
+	nodePubKey3 = f.read()
+with open(os.path.join(workDir3, 'PublicKey'), 'r') as f:
+	pubKey3 = f.read()
+
+print('Update keys for second node')
+code = subprocess.call([
+	'python',
+	os.path.join(curDir, 'updateKeys.py'),
+	privKey1,
+	'127.0.0.1',
+	args.httpPort1,
+	keyID2,
+	pubKey2,
+	'100000000',
+])
+if code != 0:
+	print("Error update keys")
+	node1.kill()
+	exit(1)
+	
+print('Update keys for third node')
+code = subprocess.call([
+	'python',
+	os.path.join(curDir, 'updateKeys.py'),
+	privKey1,
+	'127.0.0.1',
+	args.httpPort1,
+	keyID3,
+	pubKey3,
+	'100000000',
+])
+if code != 0:
+	print("Error update keys")
+	node1.kill()
+	exit(1)
+
+
+print('Update full_nodes')
+# generate full_nodes string
+host = '127.0.0.1'
+
+newVal = json.dumps([{"tcp_address":host+":"+args.tcpPort1,
+					  "api_address":"http://"+host+":"+args.httpPort1,
+					  "key_id":keyID1,
+					  "public_key":nodePubKey1},
+					 {"tcp_address": host + ":" + args.tcpPort2,
+					  "api_address": "http://" + host + ":" + args.httpPort2,
+					  "key_id": keyID2,
+					  "public_key": nodePubKey2},
+					  {"tcp_address": host + ":" + args.tcpPort3,
+					  "api_address": "http://" + host + ":" + args.httpPort3,
+					  "key_id": keyID3,
+					  "public_key": nodePubKey3}
+					 ])
+print(newVal)
+code = subprocess.call([
+	'python',
+	os.path.join(curDir, 'newValToFullNodes.py'),
+	privKey1,
+	'127.0.0.1',
+	args.httpPort1,
+	newVal
+])
+if code != 0:
+	print("Error update full_nodes")
+	node1.kill()
+	exit(1)
+else:
+	print('Full_nodes successfully updated')
+
+print('Update gap_between_blocks')
+code = subprocess.call([
+	'python',
+	os.path.join(curDir, 'updateSysParam.py'),
+	'-httpHost=127.0.0.1',
+	'-httpPort='+args.httpPort1,
+	'-privKey='+privKey1,
+	'-name=gap_between_blocks',
+	'-value='+args.gapBetweenBlocks
+])
+if code != 0:
+	print("Error update gap_between_blocks")
+	node1.kill()
+	exit(1)
+
+time.sleep(5)
+
+#Init database
+startFirstNode = subprocess.Popen([
+	binary,
+	'initDatabase',
+	'--config='+workDir2+'/config.toml'
+])
+time.sleep(3) 
+
+#Start third node
+startFirstNode = subprocess.Popen([
+	binary,
+	'start',
+	'--config='+workDir2+'/config.toml'
+])
+time.sleep(3)
+
+#Init database
+startThirdNode = subprocess.Popen([
+	binary,
+	'initDatabase',
+	'--config='+workDir3+'/config.toml'
+])
+time.sleep(3) 
+
+#Start third node
+startThirdNode = subprocess.Popen([
+	binary,
+	'start',
+	'--config='+workDir3+'/config.toml'
+])
+time.sleep(3)
+
+# Update config for tests
+config = os.path.join(curDir+ '/../', 'hostConfig.json')
+with open(config) as fconf:
+ lines = fconf.readlines()
+
+# Update URLs in config
+del lines[3]
+lines.insert(3, "\t\t\"url\": \"""http://localhost:"+args.httpPort1+"/api/v2" + "\",\n")
+del lines[14]
+lines.insert(14, "\t\t\"url\": \"""http://localhost:"+args.httpPort2+"/api/v2" + "\",\n")
+del lines[25]
+lines.insert(25, "\t\t\"url\": \"""http://localhost:"+args.httpPort3+"/api/v2" + "\",\n")
+
+# Update DB names in config
+del lines[7]
+lines.insert(7, "\t\t\"dbName\": \""+args.dbName1+"\",\n")
+del lines[18]
+lines.insert(18, "\t\t\"dbName\": \""+args.dbName2+"\",\n")
+del lines[29]
+lines.insert(29, "\t\t\"dbName\": \""+args.dbName3+"\",\n")
+
+# Update private keys in config
+del lines[4]
+lines.insert(4, "\t\t\"private_key\": \""+privKey1+"\",\n")
+del lines[15]
+lines.insert(15, "\t\t\"private_key\": \""+privKey2+"\",\n")
+del lines[26]
+lines.insert(26, "\t\t\"private_key\": \""+privKey3+"\",\n")
+
+ 
+ # Update keyID in config
+del lines[5]
+lines.insert(5, "\t\t\"keyID\": \""+keyID1+"\",\n")
+del lines[16]
+lines.insert(16, "\t\t\"keyID\": \""+keyID2+"\",\n")
+del lines[27]
+lines.insert(27, "\t\t\"keyID\": \""+keyID3+"\",\n")
+with open(config, 'w') as fconf:
+ fconf.write(''.join(lines))
+
+

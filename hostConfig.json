@@ -2,8 +2,8 @@
 	"1":
 	{
 		"url": "http://localhost:7079/api/v2",
-		"private_key": "d2c2080b1c21377fa3e2aace80820a44696ea5b9dd5dedd0db9ce66697a66128",
-		"keyID": "-1277303951795513728",
+		"private_key": "1326c365693e0af6755569043a67a54d8e564f39fc79de5e248d70ed50e321a8",
+		"keyID": "434675782746087839",
 		"dbHost": "localhost",
 		"dbName": "gen1",
 		"login": "postgres",
@@ -13,10 +13,21 @@
 	"2":
 	{
 		"url": "http://localhost:7018/api/v2",
-		"private_key": "2a083198a2ab14f72b20a3eb1190bb5fda4508afafe8c14d819dcdb864c7dec7",
-		"keyID": "577569223940412594",
+		"private_key": "ace8726712bedac1ec59f37e65033980873ae5588a746dd97be2bf0bc0fbec0b",
+		"keyID": "-7271513804118188199",
 		"dbHost": "localhost",
 		"dbName": "gen2",
+		"login": "postgres",
+		"pass": "postgres",
+		"time_wait_tx_in_block": 30
+	},
+	"3":
+	{
+		"url": "http://localhost:7082/api/v2",
+		"private_key": "e2d265c269cc727dbcef9b8dec5c443a4f89652d1e26482878aa5df809ef4624",
+		"keyID": "-6815965313284891035",
+		"dbHost": "localhost",
+		"dbName": "gen3",
 		"login": "postgres",
 		"pass": "postgres",
 		"time_wait_tx_in_block": 30
