@@ -1014,7 +1014,7 @@ class ApiTestCase(unittest.TestCase):
         # Edit langRes
         dataEdit = {}
         dataEdit["Id"] = res["count"]
-        dataEdit["AppID"] = "1"
+        dataEdit["AppID"] = 1
         dataEdit["Name"] = name
         dataEdit["Trans"] = "{\"en\": \"true_en\", \"ru\" : \"true_ru\"}"
         res = self.call("EditLang", dataEdit)
