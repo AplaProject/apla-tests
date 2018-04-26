@@ -1012,11 +1012,8 @@ class ApiTestCase(unittest.TestCase):
         res = self.check_get_api("/list/languages", "", asserts)
         self.assertGreater(int(res["count"]), 0, "Count of languages not Greater 0: " + str(len(res["list"])))
         # Edit langRes
-        dataEdit = {}
-        dataEdit["Id"] = res["count"]
-        dataEdit["AppID"] = 1
-        dataEdit["Name"] = name
-        dataEdit["Trans"] = "{\"en\": \"true_en\", \"ru\" : \"true_ru\"}"
+        dataEdit = {"Id": res["count"], "Name": name, "AppID": 1,
+                    "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("EditLang", dataEdit)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
