@@ -43,9 +43,9 @@ def get_parameter_value(url, name, token):
     res = call_get_api(endPoint, "", token)
     return res["value"]
 
-def get_content(url, type, name, lang, token):
+def get_content(url, type, name, lang, appId, token):
     if(lang != ""):
-        data = {"lang": lang}
+        data = {"lang": lang, "app_id": appId}
     else:
         data = ""
     endPoint = url + "/content/" + type + "/" + name

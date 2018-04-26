@@ -154,7 +154,7 @@ class Rollback1TestCase(unittest.TestCase):
 
     def new_lang(self):
         name = "Lang_" + utils.generate_random_name()
-        data = {"Name": name,
+        data = {"Name": name, "AppID": 1,
                 "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("NewLang", data)
         return name

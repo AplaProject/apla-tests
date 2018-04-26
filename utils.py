@@ -247,9 +247,9 @@ def get_balance_from_db_by_pub(dbHost, dbName, login, password, pub):
 def is_wallet_created(dbHost, dbName, login, password, pub):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
-	cursor.execute("select amount from \"1_keys\" WHERE pub='\\x" + pub + "'")
-	amount = cursor.fetchall()
-	if len(amount) > 0:
+	cursor.execute("select amount from \"1_keys\" WHERE id='" + pub + "'")
+	wallet = cursor.fetchall()
+	if len(wallet) == 1 and wallet[0][0] == 1000:
 		return True
 	else:
 		return False

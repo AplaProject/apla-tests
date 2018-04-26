@@ -5,6 +5,7 @@ import requests
 import json
 import funcs
 import os
+import time
 
 
 class ApiTestCase(unittest.TestCase):
@@ -381,7 +382,7 @@ class ApiTestCase(unittest.TestCase):
         res = self.call("NewMenu", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {'tree': [{'tag': 'text', 'text': 'Item1'}]}
-        mContent = funcs.get_content(url, "menu", name, "", token)
+        mContent = funcs.get_content(url, "menu", name, "", 1, token)
         self.assertEqual(mContent, content)
         
     def test_new_menu_exist_name(self):
@@ -411,7 +412,7 @@ class ApiTestCase(unittest.TestCase):
         res = self.call("EditMenu", dataEdit)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {'tree': [{'tag': 'text', 'text': 'ItemEdited'}]}
-        mContent = funcs.get_content(url, "menu", name, "", token)
+        mContent = funcs.get_content(url, "menu", name, "", 1, token)
         self.assertEqual(mContent, content)
         
     def test_edit_incorrect_menu(self):
@@ -443,7 +444,7 @@ class ApiTestCase(unittest.TestCase):
         res = self.call("AppendMenu", dataEdit)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {'tree': [{'tag': 'text', 'text': 'Item1\r\nAppendedItem'}]}
-        mContent = funcs.get_content(url, "menu", name, "", token)
+        mContent = funcs.get_content(url, "menu", name, "", 1, token)
         self.assertEqual(mContent, content)
         
     def test_append_incorrect_menu(self):
@@ -479,7 +480,7 @@ class ApiTestCase(unittest.TestCase):
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
         content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Hello page!'}]
-        cont = funcs.get_content(url, "page", name, "", token)
+        cont = funcs.get_content(url, "page", name, "", 1, token)
         self.assertEqual(cont, content)
         
     def test_new_page_exist_name(self):
@@ -530,7 +531,7 @@ class ApiTestCase(unittest.TestCase):
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
         content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Good by page!'}]
-        pContent = funcs.get_content(url, "page", name, "", token)
+        pContent = funcs.get_content(url, "page", name, "", 1, token)
         self.assertEqual(pContent, content)
 
     def test_edit_page_with_validate_count(self):
@@ -558,7 +559,7 @@ class ApiTestCase(unittest.TestCase):
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
         content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Good by page!'}]
-        pContent = funcs.get_content(url, "page", name, "", token)
+        pContent = funcs.get_content(url, "page", name, "", 1, token)
         self.assertEqual(pContent, content)
         
     def test_edit_incorrect_page(self):
@@ -615,7 +616,7 @@ class ApiTestCase(unittest.TestCase):
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
         content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Hello!\r\nGood by!'}]
-        pContent = funcs.get_content(url, "page", name, "", token)
+        pContent = funcs.get_content(url, "page", name, "", 1, token)
         self.assertEqual(pContent, content)
         
     def test_append_page_incorrect_id(self):
@@ -1059,7 +1060,7 @@ class ApiTestCase(unittest.TestCase):
     def test_content_lang(self):
         nameLang = "Lang_" + utils.generate_random_name()
         data = {}
-        data["AppID"] = "1"
+        data["AppID"] = 1
         data["Name"] = nameLang
         data["Trans"] = "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"
         res = self.call("NewLang", data)
@@ -1092,14 +1093,13 @@ class ApiTestCase(unittest.TestCase):
         contentDeDe["menu"] = 'default_menu'
         contentDeDe["menutree"] = []
         contentDeDe["tree"] = [{'tag': 'text', 'text': 'Hello, Welt_de'}]
-        pContent = funcs.get_content(url, "page", namePage, "", token)          # should be: en
-        ruPContent = funcs.get_content(url, "page", namePage, "ru", token)      # should be: ru
-        frfrPcontent = funcs.get_content(url, "page", namePage, "fr-FR", token) # should be: fr-FR
-        dePcontent = funcs.get_content(url, "page", namePage, "de-DE", token)   # should be: de
-        pePcontent = funcs.get_content(url, "page", namePage, "pe", token)      # should be: en
+        pContent = funcs.get_content(url, "page", namePage, "en", 1, token)          # should be: en
+        ruPContent = funcs.get_content(url, "page", namePage, "ru", 1, token)      # should be: ru
+        frfrPcontent = funcs.get_content(url, "page", namePage, "fr-FR", 1, token) # should be: fr-FR
+        dePcontent = funcs.get_content(url, "page", namePage, "de-DE", 1, token)   # should be: de
+        pePcontent = funcs.get_content(url, "page", namePage, "pe", 1, token)      # should be: en
         self.assertEqual(pContent, content)
-        ruPContent = funcs.get_content(url, "page", namePage, "ru", token)
-        pContent = funcs.get_content(url, "page", namePage, "", token)
+        ruPContent = funcs.get_content(url, "page", namePage, "ru", 1, token)
         self.assertEqual(ruPContent, contentRu)
         self.assertEqual(frfrPcontent, contentFrFr)
         self.assertEqual(dePcontent, contentDeDe)
@@ -1418,6 +1418,15 @@ class ApiTestCase(unittest.TestCase):
                          "Sorry, you do not have access to this action.",
                          "Incorrect message: " + str(status))
         
-
+    def test_login(self):
+        keys = config.getKeys()    
+        data1 = utils.login(url, keys["key1"])
+        time.sleep(5)
+        conf = config.getNodeConfig()
+        res = utils.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],
+                                      conf["1"]["login"], conf["1"]["pass"],
+                                      data1["key_id"])
+        self.assertTrue(res, "Wallet for new user didn't created")
+        
 if __name__ == '__main__':
     unittest.main()

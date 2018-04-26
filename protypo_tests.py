@@ -32,7 +32,7 @@ class PrototipoTestCase(unittest.TestCase):
                 "Conditions": "true", "Menu": "default_menu"}
         resp = utils.call_contract(url, prKey, "NewPage", data, token)
         self.assertTxInBlock(resp, token)
-        cont = funcs.get_content(url, "page", name, "", token)
+        cont = funcs.get_content(url, "page", name, "", 1, token)
         return cont
 
     def findPositionElementInTree(self, contentTree, tagName):
@@ -327,13 +327,13 @@ class PrototipoTestCase(unittest.TestCase):
         
     def test_page_langRes(self):
         lang = "lang_"+utils.generate_random_name()
-        data = {"AppID":"1",
+        data = {"AppID":1,
                 "Name": lang,
                 "Trans": "{\"en\": \"Lang_en\", \"ru\" : \"Язык\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = utils.call_contract(url, prKey, "NewLang", data, token)
         self.assertTxInBlock(res, token)
         world = "world_" + utils.generate_random_name()
-        data = {"AppID":"1",
+        data = {"AppID":1,
                 "Name": world,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = utils.call_contract(url, prKey, "NewLang", data, token)
