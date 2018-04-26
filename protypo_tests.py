@@ -571,6 +571,26 @@ class PrototipoTestCase(unittest.TestCase):
         msg = "test_binary has problem. Content = " + str(content["tree"])
         self.assertEqual("/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec", content["tree"][0]["text"])
 
+    def test_binary_by_id(self):
+        # this test has not fixture
+        name = "image_" + utils.generate_random_name()
+        appID = "1"
+        MemberID = "998"
+        path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
+        with open(path, 'rb') as f:
+            file = f.read()
+        files = {'Data': file}
+        data = {"Name": name, "AppID": appID, "MemberID": MemberID}
+        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
+                                              files, token)
+        res = self.assertTxInBlock(resp, token)
+        self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
+        lastRec = funcs.get_count(url, "binaries", token)
+        contract = self.pages["binary"]
+        content = self.check_page("Binary().ById("+lastRec+")")
+        msg = "test_binary has problem. Content = " + str(content["tree"])
+        self.assertEqual("/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec", content["tree"][0]["text"])
+
         
 if __name__ == '__main__':
     unittest.main()
