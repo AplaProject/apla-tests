@@ -159,9 +159,9 @@ class Rollback1TestCase(unittest.TestCase):
         res = self.call("NewLang", data)
         return name
 
-    def edit_lang(self, name):
-        dataEdit = {"Name": name, "AppID": 1,
-                    "Trans": "{\"en\": \"true\", \"ru\" : \"true\"}"}
+    def edit_lang(self, id, name):
+        dataEdit = {"Id": id, "Name": name, "AppID": 1,
+                    "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("EditLang", dataEdit)
 
     def new_sign(self):
@@ -223,7 +223,8 @@ class Rollback1TestCase(unittest.TestCase):
         column = self.new_column(table)
         self.edit_column(table, column)
         lang = self.new_lang()
-        self.edit_lang(lang)
+        langs = funcs.call_get_api(url + "/list/languages", {}, token)
+        self.edit_lang(langs["count"], lang)
         sign = self.new_sign()
         self.edit_sign(sign)
         time.sleep(20)
