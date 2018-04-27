@@ -107,9 +107,34 @@ class ApiTestCase(unittest.TestCase):
         self.assertEqual(message, msg, "Incorrect error massege")
 
     def test_get_table_data(self):
-        asserts = ["list"]
+        dictCount = {}
+        dictCountTable = {}
         data = {}
-        self.check_get_api("/list/menu", data, asserts)
+        tables = utils.getEcosysTables(self.config["1"]["dbHost"],
+                                       self.config["1"]["dbName"],
+                                       self.config["1"]["login"],
+                                       self.config["1"]["pass"])
+        for table in tables:
+            tableData = funcs.call_get_api(url + "/list/" + table[2:], data, token)
+            count = utils.getCountTable(self.config["1"]["dbHost"],
+                                       self.config["1"]["dbName"],
+                                       self.config["1"]["login"],
+                                       self.config["1"]["pass"], table)
+            if count > 0:
+                if len(tableData["list"]) == count or (len(tableData["list"]) == 25 and
+                                                       count > 25):
+                    dictCount[table] = count
+                    dictCountTable[table] = int(tableData["count"])
+                else:
+                    self.fail("Count list of " + table +\
+                              " not equels of count table. Count of table: " +\
+                              str(count) + " Count of list length: " +\
+                              str(len(tableData["list"])))
+            else:
+                dictCount[table] = 0
+                dictCountTable[table] = int(tableData["count"])
+        self.assertDictEqual(dictCount, dictCountTable,
+                             "Any of count not equels real count")  
         
     def test_get_incorrect_table_data(self):
         table = "tab"
