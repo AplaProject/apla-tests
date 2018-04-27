@@ -254,5 +254,9 @@
 		"code": "{\n data {}\n conditions {} \n action { \n var b bytes \n b = StringToBytes(\"Hello!\") \n $result = b \n}\n }",
 		"asert": "[72 101 108 108 111 33]",
 		"information":"Bytes returned as array of char"
+	},
+	"dbSelectMetrics": {
+		"code": "{\n data {}\n conditions {} \n action { \n var a1, a2, a3 array \n var m1, m2, m3 map \n a1 = DBSelectMetrics(\"ecosystem_tx\", \"1 days\", \"min\") \n a2 = DBSelectMetrics(\"ecosystem_members\", \"1 days\", \"max\") \n a3 = DBSelectMetrics(\"ecosystem_pages\", \"1 month\", \"avg\") \n m1 = a1[0] \n m2 = a2[0] \n m3 = a3[0] \n $result = Str(m1[\"value\"]) + \" \" + Str(m2[\"value\"]) + \" \" + Str(m3[\"value\"]) \n}\n }",
+		"asert": ""
 	}
 }
