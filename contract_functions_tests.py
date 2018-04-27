@@ -357,7 +357,6 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 current_block_id = int(tx["blockid"])
                 self.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
                 old_block_id = current_block_id
-                print(str(current_block_id))
 
         # generate contract which return count blocks in blockchain
         contracName = utils.generate_random_name()
