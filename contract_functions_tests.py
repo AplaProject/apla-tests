@@ -342,7 +342,6 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.check_contract(contract["code"], contract["asert"])
 
     def test_z_dbSelectMetrics(self):
-        # This test has not fixture
         # func generate contract which return block_id and increment count blocks
         def waitBlockId(old_block_id, limit):
             while True:
