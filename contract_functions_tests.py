@@ -341,6 +341,59 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["stringToBytes"]
         self.check_contract(contract["code"], contract["asert"])
 
+    def test_z_dbSelectMetrics(self):
+        # This test has not fixture
+        # func generate contract which return block_id and increment count blocks
+        def waitBlockId(old_block_id, limit):
+            while True:
+                if old_block_id > limit:
+                    break
+                contracName = utils.generate_random_name()
+                value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
+                data = {"Value": value, "Conditions": "true"}
+                result = utils.call_contract(url, prKey, "NewContract", data, token)
+                tx = utils.txstatus(url,
+                                    self.config["1"]["time_wait_tx_in_block"],
+                                    result['hash'], token)
+                current_block_id = int(tx["blockid"])
+                self.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
+                old_block_id = current_block_id
+                print(str(current_block_id))
+
+        # generate contract which return count blocks in blockchain
+        contracName = utils.generate_random_name()
+        value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
+        data = {"Value": value, "Conditions": "true"}
+        result = utils.call_contract(url, prKey, "NewContract", data, token)
+        tx = utils.txstatus(url,
+                            self.config["1"]["time_wait_tx_in_block"],
+                            result['hash'], token)
+        current_block_id = int(tx["blockid"])
+        self.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
+        # wait until generated 100 blocks
+        waitBlockId(current_block_id, 100)
+        # get metrics count
+        res = funcs.get_list(url, "metrics", token)
+        ecosystem_tx = 0
+        ecosystem_members = 0
+        ecosystem_pages = 0
+        i = 0
+        while i < len(res['list']):
+            if res['list'][i]['metric'] == "ecosystem_tx":
+                ecosystem_tx = int(res['list'][i]['value'])
+            if res['list'][i]['metric'] == "ecosystem_members":
+                ecosystem_members = int(res['list'][i]['value'])
+            if res['list'][i]['metric'] == "ecosystem_pages":
+                ecosystem_pages = int(res['list'][i]['value'])
+            i += 1
+        # calculate min, max and avg
+        ecosystem_tx_min = ecosystem_tx
+        ecosystem_members_max = ecosystem_members
+        ecosystem_pages_avg = float(ecosystem_pages / 1)
+        expectedResultString = str(ecosystem_tx_min) + ' ' + str(ecosystem_members_max) + ' ' + str(ecosystem_pages_avg)
+        # test
+        contract = self.contracts["dbSelectMetrics"]
+        self.check_contract(contract["code"], expectedResultString)
 
 if __name__ == '__main__':
     unittest.main()
