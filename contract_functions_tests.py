@@ -383,7 +383,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.check_contract(contract["code"], str(ecosystem_tx))
 
     def test_z2_dbSelectMetricsMax(self):
-        # Run test after test_z_dbSelectMetricsMin
+        # Run test after test_z1_dbSelectMetricsMin
         # get metrics count
         res = funcs.get_list(url, "metrics", token)
         ecosystem_members = 0
@@ -397,7 +397,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.check_contract(contract["code"], str(ecosystem_members))
 
     def test_z3_dbSelectMetricsAvg(self):
-        # Run test after test_z_dbSelectMetricsMin
+        # Run test after test_z1_dbSelectMetricsMin
         # get metrics count
         res = funcs.get_list(url, "metrics", token)
         ecosystem_pages = 0
