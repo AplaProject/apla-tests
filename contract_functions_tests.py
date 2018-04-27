@@ -4,6 +4,7 @@ import config
 import requests
 import json
 import time
+import funcs
 
 
 class ContractFunctionsTestCase(unittest.TestCase):
