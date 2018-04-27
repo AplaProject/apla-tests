@@ -341,7 +341,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["stringToBytes"]
         self.check_contract(contract["code"], contract["asert"])
 
-    def test_z_dbSelectMetrics(self):
+    def test_z_dbSelectMetricsMin(self):
         # func generate contract which return block_id and increment count blocks
         def waitBlockId(old_block_id, limit):
             while True:
@@ -374,25 +374,42 @@ class ContractFunctionsTestCase(unittest.TestCase):
         # get metrics count
         res = funcs.get_list(url, "metrics", token)
         ecosystem_tx = 0
-        ecosystem_members = 0
-        ecosystem_pages = 0
         i = 0
         while i < len(res['list']):
             if res['list'][i]['metric'] == "ecosystem_tx":
                 ecosystem_tx = int(res['list'][i]['value'])
+            i += 1
+        # test
+        contract = self.contracts["dbSelectMetricsMin"]
+        self.check_contract(contract["code"], str(ecosystem_tx))
+
+    def test_z1_dbSelectMetricsMax(self):
+        # Run test after test_z_dbSelectMetricsMin
+        # get metrics count
+        res = funcs.get_list(url, "metrics", token)
+        ecosystem_members = 0
+        i = 0
+        while i < len(res['list']):
             if res['list'][i]['metric'] == "ecosystem_members":
                 ecosystem_members = int(res['list'][i]['value'])
+            i += 1
+        # test
+        contract = self.contracts["dbSelectMetricsMax"]
+        self.check_contract(contract["code"], str(ecosystem_members))
+
+    def test_z2_dbSelectMetricsAvg(self):
+        # Run test after test_z_dbSelectMetricsMin
+        # get metrics count
+        res = funcs.get_list(url, "metrics", token)
+        ecosystem_pages = 0
+        i = 0
+        while i < len(res['list']):
             if res['list'][i]['metric'] == "ecosystem_pages":
                 ecosystem_pages = int(res['list'][i]['value'])
             i += 1
-        # calculate min, max and avg
-        ecosystem_tx_min = ecosystem_tx
-        ecosystem_members_max = ecosystem_members
-        ecosystem_pages_avg = float(ecosystem_pages / 1)
-        expectedResultString = str(ecosystem_tx_min) + ' ' + str(ecosystem_members_max) + ' ' + str(ecosystem_pages_avg)
         # test
-        contract = self.contracts["dbSelectMetrics"]
-        self.check_contract(contract["code"], expectedResultString)
+        contract = self.contracts["dbSelectMetricsAvg"]
+        self.check_contract(contract["code"], str(ecosystem_pages))
 
 if __name__ == '__main__':
     unittest.main()
