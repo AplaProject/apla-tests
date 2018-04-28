@@ -722,7 +722,7 @@ class ApiTestCase(unittest.TestCase):
         
     def test_edit_block_incorrect_condition(self):
         name = "Block_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Hello block!", "ApplicationId": 1
+        data = {"Name": name, "Value": "Hello block!", "ApplicationId": 1,
                 "Conditions": "true"}
         res  = self.call("NewBlock", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)

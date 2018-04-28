@@ -198,7 +198,7 @@ code = subprocess.call([
 	args.httpPort1,
 	keyID2,
 	pubKey2,
-	'100000000',
+	'100000000000000',
 ])
 if code != 0:
 	print("Error update keys")
@@ -214,7 +214,7 @@ code = subprocess.call([
 	args.httpPort1,
 	keyID3,
 	pubKey3,
-	'100000000',
+	'10000000000000000',
 ])
 if code != 0:
 	print("Error update keys")
