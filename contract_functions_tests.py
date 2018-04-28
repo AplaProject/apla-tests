@@ -4,6 +4,7 @@ import config
 import requests
 import json
 import time
+import funcs
 
 
 class ContractFunctionsTestCase(unittest.TestCase):
@@ -340,6 +341,74 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["stringToBytes"]
         self.check_contract(contract["code"], contract["asert"])
 
+    def test_z1_dbSelectMetricsMin(self):
+        # func generate contract which return block_id and increment count blocks
+        def waitBlockId(old_block_id, limit):
+            while True:
+                if old_block_id > limit:
+                    break
+                contracName = utils.generate_random_name()
+                value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
+                data = {"Value": value, "Conditions": "true"}
+                result = utils.call_contract(url, prKey, "NewContract", data, token)
+                tx = utils.txstatus(url,
+                                    self.config["1"]["time_wait_tx_in_block"],
+                                    result['hash'], token)
+                current_block_id = int(tx["blockid"])
+                self.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
+                old_block_id = current_block_id
+
+        # generate contract which return count blocks in blockchain
+        contracName = utils.generate_random_name()
+        value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
+        data = {"Value": value, "Conditions": "true"}
+        result = utils.call_contract(url, prKey, "NewContract", data, token)
+        tx = utils.txstatus(url,
+                            self.config["1"]["time_wait_tx_in_block"],
+                            result['hash'], token)
+        current_block_id = int(tx["blockid"])
+        self.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
+        # wait until generated 100 blocks
+        waitBlockId(current_block_id, 100)
+        # get metrics count
+        res = funcs.get_list(url, "metrics", token)
+        ecosystem_tx = 0
+        i = 0
+        while i < len(res['list']):
+            if res['list'][i]['metric'] == "ecosystem_tx":
+                ecosystem_tx = int(res['list'][i]['value'])
+            i += 1
+        # test
+        contract = self.contracts["dbSelectMetricsMin"]
+        self.check_contract(contract["code"], str(ecosystem_tx))
+
+    def test_z2_dbSelectMetricsMax(self):
+        # Run test after test_z1_dbSelectMetricsMin
+        # get metrics count
+        res = funcs.get_list(url, "metrics", token)
+        ecosystem_members = 0
+        i = 0
+        while i < len(res['list']):
+            if res['list'][i]['metric'] == "ecosystem_members":
+                ecosystem_members = int(res['list'][i]['value'])
+            i += 1
+        # test
+        contract = self.contracts["dbSelectMetricsMax"]
+        self.check_contract(contract["code"], str(ecosystem_members))
+
+    def test_z3_dbSelectMetricsAvg(self):
+        # Run test after test_z1_dbSelectMetricsMin
+        # get metrics count
+        res = funcs.get_list(url, "metrics", token)
+        ecosystem_pages = 0
+        i = 0
+        while i < len(res['list']):
+            if res['list'][i]['metric'] == "ecosystem_pages":
+                ecosystem_pages = int(res['list'][i]['value'])
+            i += 1
+        # test
+        contract = self.contracts["dbSelectMetricsAvg"]
+        self.check_contract(contract["code"], str(ecosystem_pages))
 
 if __name__ == '__main__':
     unittest.main()

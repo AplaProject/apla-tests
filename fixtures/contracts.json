@@ -254,5 +254,17 @@
 		"code": "{\n data {}\n conditions {} \n action { \n var b bytes \n b = StringToBytes(\"Hello!\") \n $result = b \n}\n }",
 		"asert": "[72 101 108 108 111 33]",
 		"information":"Bytes returned as array of char"
+	},
+	"dbSelectMetricsMin": {
+		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n a = DBSelectMetrics(\"ecosystem_tx\", \"1 month\", \"min\") \n m = a[0] \n $result = m[\"value\"] \n}\n }",
+		"asert": ""
+	},
+	"dbSelectMetricsMax": {
+		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n a = DBSelectMetrics(\"ecosystem_members\", \"1 days\", \"max\") \n m = a[0] \n $result = m[\"value\"] \n}\n }",
+		"asert": ""
+	},
+	"dbSelectMetricsAvg": {
+		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n a = DBSelectMetrics(\"ecosystem_pages\", \"1 day\", \"avg\") \n m = a[0] \n $result = m[\"value\"] \n}\n }",
+		"asert": ""
 	}
 }
