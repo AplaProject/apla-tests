@@ -137,10 +137,6 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["substr"]
         self.check_contract(contract["code"], contract["asert"])
 
-    def test_contract_updateLang(self):
-        contract = self.contracts["updateLang"]
-        self.check_contract(contract["code"], contract["asert"])
-
     def test_contract_sysParamString(self):
         contract = self.contracts["sysParamString"]
         self.check_contract(contract["code"], contract["asert"])

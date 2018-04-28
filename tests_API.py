@@ -93,9 +93,24 @@ class ApiTestCase(unittest.TestCase):
         self.check_get_api("/tables", data, asserts)
 
     def test_get_table_information(self):
-        asserts = ["name"]
+        dictNames = {}
+        dictNamesAPI = {}
         data = {}
-        self.check_get_api("/table/contracts", data, asserts)
+        tables = utils.getEcosysTables(self.config["1"]["dbHost"],
+                                       self.config["1"]["dbName"],
+                                       self.config["1"]["login"],
+                                       self.config["1"]["pass"])
+        for table in tables:
+            print(table)
+            tableInfo = funcs.call_get_api(url + "/table/" + table[2:], data, token)
+            print(tableInfo)
+            if "name" in str(tableInfo):
+                dictNames[table[2:]] = table[2:]
+                dictNamesAPI[table[2:]] = tableInfo["name"]
+            else:
+                self.fail("Answer from API /table/" + table + " is: " + str(tableInfo))
+        self.assertDictEqual(dictNames, dictNames,
+                             "Any of API tableInfo gives incorrect data")
         
     def test_get_incorrect_table_information(self):
         table = "tab"
@@ -1081,51 +1096,73 @@ class ApiTestCase(unittest.TestCase):
 
     def test_content_lang(self):
         nameLang = "Lang_" + utils.generate_random_name()
-        data = {}
-        data["AppID"] = 1
-        data["Name"] = nameLang
-        data["Trans"] = "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"
+        data = {"AppID": 1, "Name": nameLang,
+                "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
+                "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         namePage = "Page_" + utils.generate_random_name()
         valuePage = "Hello, LangRes(" + nameLang + ")"
-        dataPage = {}
-        dataPage["Name"] = namePage
-        dataPage["Value"] = valuePage
-        dataPage["Conditions"] = "true"
-        dataPage["Menu"] = "default_menu"
+        dataPage = {"Name": namePage, "Value": valuePage, "Conditions": "true",
+                    "Menu": "default_menu"}
         res = self.call("NewPage", dataPage)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        content = {}
-        content["menu"] = 'default_menu'
-        menutree = {}
-        menutree["tag"] = 'menuitem'
-        menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
-        content["menutree"] = []
-        content["tree"] = [{'tag': 'text', 'text': 'Hello, World_en'}]
-        contentRu = {}
-        contentRu["menu"] = 'default_menu'
-        contentRu["menutree"] = []
-        contentRu["tree"] = [{'tag': 'text', 'text': 'Hello, Мир_ru'}]
-        contentFrFr = {}
-        contentFrFr["menu"] = 'default_menu'
-        contentFrFr["menutree"] = []
-        contentFrFr["tree"] = [{'tag': 'text', 'text': 'Hello, Monde_fr-FR'}]
-        contentDeDe = {}
-        contentDeDe["menu"] = 'default_menu'
-        contentDeDe["menutree"] = []
-        contentDeDe["tree"] = [{'tag': 'text', 'text': 'Hello, Welt_de'}]
+        content = {"menu": 'default_menu', "menutree": [],
+                   "tree": [{'tag': 'text', 'text': 'Hello, World_en'}]}
+        contentRu = {"menu": 'default_menu', "menutree": [],
+                     "tree": [{'tag': 'text', 'text': 'Hello, Мир_ru'}]}
+        contentFr = {"menu": 'default_menu', "menutree": [],
+                       "tree": [{'tag': 'text', 'text': 'Hello, Monde_fr-FR'}]}
+        contentDe = {"menu": 'default_menu', "menutree": [],
+                       "tree": [{'tag': 'text', 'text': 'Hello, Welt_de'}]}
+        dictExp ={"default" : content, "ru": contentRu,
+                  "fr": contentFr, "de": contentDe, "pe": content}
         pContent = funcs.get_content(url, "page", namePage, "en", 1, token)          # should be: en
         ruPContent = funcs.get_content(url, "page", namePage, "ru", 1, token)      # should be: ru
-        frfrPcontent = funcs.get_content(url, "page", namePage, "fr-FR", 1, token) # should be: fr-FR
+        frPcontent = funcs.get_content(url, "page", namePage, "fr-FR", 1, token) # should be: fr-FR
         dePcontent = funcs.get_content(url, "page", namePage, "de-DE", 1, token)   # should be: de
         pePcontent = funcs.get_content(url, "page", namePage, "pe", 1, token)      # should be: en
-        self.assertEqual(pContent, content)
-        ruPContent = funcs.get_content(url, "page", namePage, "ru", 1, token)
-        self.assertEqual(ruPContent, contentRu)
-        self.assertEqual(frfrPcontent, contentFrFr)
-        self.assertEqual(dePcontent, contentDeDe)
-        self.assertEqual(pePcontent, content)
+        dictCur = {"default" : pContent, "ru": ruPContent,
+                  "fr": frPcontent, "de": dePcontent, "pe": pePcontent}
+        self.assertDictEqual(dictCur, dictExp, "One of langRes is faild")
+        
+    def test_content_lang_after_edit(self):
+        nameLang = "Lang_" + utils.generate_random_name()
+        data = {"AppID": 1, "Name": nameLang,
+                "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
+                "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
+        res = self.call("NewLang", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        namePage = "Page_" + utils.generate_random_name()
+        valuePage = "Hello, LangRes(" + nameLang + ")"
+        dataPage = {"Name": namePage, "Value": valuePage, "Conditions": "true",
+                    "Menu": "default_menu"}
+        res = self.call("NewPage", dataPage)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        count = self.check_get_api("/list/languages", "", [])["count"]
+        dataEdit = {"Id": count, "AppID": 1, "Name": nameLang,
+                "Trans": "{\"en\": \"World_en_ed\", \"ru\" : \"Мир_ru_ed\"," +\
+                "\"fr-FR\": \"Monde_fr-FR_ed\", \"de\": \"Welt_de_ed\"}"}
+        res = self.call("EditLang", dataEdit)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        content = {"menu": 'default_menu', "menutree": [],
+                   "tree": [{'tag': 'text', 'text': 'Hello, World_en_ed'}]}
+        contentRu = {"menu": 'default_menu', "menutree": [],
+                     "tree": [{'tag': 'text', 'text': 'Hello, Мир_ru_ed'}]}
+        contentFr = {"menu": 'default_menu', "menutree": [],
+                       "tree": [{'tag': 'text', 'text': 'Hello, Monde_fr-FR_ed'}]}
+        contentDe = {"menu": 'default_menu', "menutree": [],
+                       "tree": [{'tag': 'text', 'text': 'Hello, Welt_de_ed'}]}
+        dictExp ={"default" : content, "ru": contentRu,
+                  "fr": contentFr, "de": contentDe, "pe": content}
+        pContent = funcs.get_content(url, "page", namePage, "en", 1, token)          # should be: en
+        ruPContent = funcs.get_content(url, "page", namePage, "ru", 1, token)      # should be: ru
+        frPcontent = funcs.get_content(url, "page", namePage, "fr-FR", 1, token) # should be: fr-FR
+        dePcontent = funcs.get_content(url, "page", namePage, "de-DE", 1, token)   # should be: de
+        pePcontent = funcs.get_content(url, "page", namePage, "pe", 1, token)      # should be: en
+        dictCur = {"default" : pContent, "ru": ruPContent,
+                  "fr": frPcontent, "de": dePcontent, "pe": pePcontent}
+        self.assertDictEqual(dictCur, dictExp, "One of langRes is faild")
         
     def test_update_system_parameters(self):
         data = {"Name": "max_block_user_tx", "Value" : "2"}
