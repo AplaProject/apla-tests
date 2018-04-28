@@ -341,7 +341,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         # func generate contract which return block_id and increment count blocks
         def waitBlockId(old_block_id, limit):
             while True:
-                if old_block_id > limit:
+                if old_block_id == limit:
                     break
                 contracName = utils.generate_random_name()
                 value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
@@ -365,7 +365,12 @@ class ContractFunctionsTestCase(unittest.TestCase):
         current_block_id = int(tx["blockid"])
         self.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
         # wait until generated 100 blocks
-        waitBlockId(current_block_id, 100)
+        if current_block_id < 100:
+            waitBlockId(current_block_id, 100)
+        # wait until generated multiples of 100 blocks
+        if (current_block_id % 100 >= 90):
+            count = current_block_id + (100 - (current_block_id % 100))
+            waitBlockId(current_block_id, count)
         # get metrics count
         res = funcs.get_list(url, "metrics", token)
         ecosystem_tx = 0
