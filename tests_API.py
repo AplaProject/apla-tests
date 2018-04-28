@@ -722,7 +722,8 @@ class ApiTestCase(unittest.TestCase):
         
     def test_edit_block_incorrect_condition(self):
         name = "Block_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Hello block!", "Conditions": "true"}
+        data = {"Name": name, "Value": "Hello block!", "ApplicationId": 1
+                "Conditions": "true"}
         res  = self.call("NewBlock", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         count = funcs.get_count(url, "blocks", token)
@@ -1037,6 +1038,7 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
+        data["ApplicationId"] = 1
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         name = "Col_" + utils.generate_random_name()
@@ -1159,7 +1161,7 @@ class ApiTestCase(unittest.TestCase):
         namePage = "Page_" + utils.generate_random_name()
         valuePage = "Hello, LangRes(" + nameLang + ")"
         dataPage = {"Name": namePage, "Value": valuePage, "Conditions": "true",
-                    "Menu": "default_menu"}
+                    "Menu": "default_menu", "ApplicationId": 1,}
         res = self.call("NewPage", dataPage)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         count = self.check_get_api("/list/languages", "", [])["count"]
