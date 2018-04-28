@@ -193,7 +193,7 @@ class ApiTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_money_transfer(self):
-        data = {"Recipient": "0005-2070-2000-0006-0200", "Amount": "1000"}
+        data = {"Recipient": "0005-2070-2000-0006-0200", "Amount": "2999479990390000000000000"}
         res = self.call("MoneyTransfer", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
