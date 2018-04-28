@@ -31,7 +31,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         return code, name
 
     def create_contract(self, code):
-        data = {"Wallet": "",
+        data = {"Wallet": "", "ApplicationId": 1,
                 "Value": code,
                 "Conditions": "ContractConditions(`MainCondition`)"}
         result = utils.call_contract(url, prKey, "NewContract",
@@ -241,7 +241,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
     def test_contract_callContract(self):
         contract = self.contracts["myContract"]
         code = "contract MyContract" + contract["code"]
-        data = {"Value": code, "Conditions": "true"}
+        data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
         res = utils.call_contract(url, prKey, "NewContract", data, token)
         time.sleep(10)
         contract = self.contracts["callContract"]
@@ -320,7 +320,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         sysVarName = "$role_id"
         contracName = utils.generate_random_name()
         value = "contract con_" + contracName + " { data{ } conditions{ } action{ "+ sysVarName + " = 5 } }"
-        data = {"Value": value, "Conditions": "true"}
+        data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
         result = utils.call_contract(url, prKey, "NewContract", data, token)
         tx = utils.txstatus(url,
                             self.config["1"]["time_wait_tx_in_block"],
@@ -345,7 +345,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
                     break
                 contracName = utils.generate_random_name()
                 value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
-                data = {"Value": value, "Conditions": "true"}
+                data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
                 result = utils.call_contract(url, prKey, "NewContract", data, token)
                 tx = utils.txstatus(url,
                                     self.config["1"]["time_wait_tx_in_block"],
@@ -357,7 +357,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         # generate contract which return count blocks in blockchain
         contracName = utils.generate_random_name()
         value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
-        data = {"Value": value, "Conditions": "true"}
+        data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
         result = utils.call_contract(url, prKey, "NewContract", data, token)
         tx = utils.txstatus(url,
                             self.config["1"]["time_wait_tx_in_block"],

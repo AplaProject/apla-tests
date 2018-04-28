@@ -232,13 +232,15 @@ class ApiTestCase(unittest.TestCase):
 
     def test_new_contract(self):
         code, name = utils.generate_name_and_code("")
-        data = {"Value": code, "Conditions": "true"}
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
     def test_new_contract_exists_name(self):
         code, name = utils.generate_name_and_code("")
-        data = {"Value": code, "Conditions": "true"}
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         ans = self.call("NewContract", data)
@@ -247,21 +249,24 @@ class ApiTestCase(unittest.TestCase):
         
     def test_new_contract_without_name(self):
         code = "contract {data { }    conditions {    }    action {    }    }"
-        data = {"Value": code, "Conditions": "true"}
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
         ans = self.call("NewContract", data)
         msg = "must be the name"
         self.assertIn(msg, ans, "Incorrect message: " + ans)
         
     def test_new_contract_incorrect_condition(self):
         code, name = utils.generate_name_and_code("")
-        data = {"Value": code, "Conditions": "condition"}
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "condition"}
         ans = self.call("NewContract", data)
         msg = "unknown identifier condition"
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_activate_contract(self):
         code, name = utils.generate_name_and_code("")
-        data = {"Value": code, "Conditions": "true"}
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         id = funcs.get_contract_id(url, name, token)
@@ -278,7 +283,8 @@ class ApiTestCase(unittest.TestCase):
 
     def test_deactivate_contract(self):
         code, name = utils.generate_name_and_code("")
-        data = {"Value": code, "Conditions": "true"}
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         id = funcs.get_contract_id(url, name, token)
@@ -298,7 +304,8 @@ class ApiTestCase(unittest.TestCase):
     def test_edit_contract_incorrect_condition(self):
         newWallet = "0005-2070-2000-0006-0200"
         code, name = utils.generate_name_and_code("")
-        data = {"Value": code, "Conditions": "true"}
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         data2 = {}
@@ -313,7 +320,8 @@ class ApiTestCase(unittest.TestCase):
     def test_edit_contract_incorrect_condition1(self):
         newWallet = "0005"
         code, name = utils.generate_name_and_code("")
-        data = {"Value": code, "Conditions": "true"}
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         data2 = {}
@@ -328,7 +336,8 @@ class ApiTestCase(unittest.TestCase):
     def test_edit_contract(self):
         newWallet = "0005-2070-2000-0006-0200"
         code, name = utils.generate_name_and_code("")
-        data = {"Value": code, "Conditions": "true"}
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         data2 = {}
@@ -345,7 +354,8 @@ class ApiTestCase(unittest.TestCase):
     def test_edit_name_of_contract(self):
         newWallet = "0005-2070-2000-0006-0200"
         code, name = utils.generate_name_and_code("")
-        data = {"Value": code, "Conditions": "true"}
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         data2 = {}
@@ -1175,7 +1185,8 @@ class ApiTestCase(unittest.TestCase):
                 # add contract, which get block_id
                 body = "{\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
                 code, name = utils.generate_name_and_code(body)
-                data = {"Value": code, "Conditions": "true"}
+                data = {"Value": code, "ApplicationId": 1,
+                        "Conditions": "true"}
                 res = self.call("NewContract", data)
                 self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
                 currrent_block_id = int(res)
@@ -1196,7 +1207,8 @@ class ApiTestCase(unittest.TestCase):
         # add contract which insert records in table in progress CallDelayedContract
         body = "{\n data{} \n conditions{} \n action { \n  DBInsert(\""+table_name+"\", \"id_block\", $block) \n } \n }"
         code, contract_name = utils.generate_name_and_code(body)
-        data = {"Value": code, "Conditions": "true"}
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
@@ -1520,7 +1532,8 @@ class ApiTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # update members table
         code, name = utils.generate_name_and_code("{data{} conditions{} action{ DBUpdate(\"members\", "+founderID+",\"image_id\", "+lastRec+") } }")
-        data = {"Value": code, "Conditions": "true"}
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         data = {}
@@ -1572,7 +1585,8 @@ class ApiTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # update members table
         code, name = utils.generate_name_and_code("{data{} conditions{} action{ DBUpdate(\"members\", "+founderID+",\"image_id\", "+lastRec+") } }")
-        data = {"Value": code, "Conditions": "true"}
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         data = {}

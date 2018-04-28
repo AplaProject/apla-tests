@@ -10,7 +10,8 @@ class BlockChainTestCase(unittest.TestCase):
 
     def create_contract(self, url, prKey):
         code,name = utils.generate_name_and_code("")
-        data = {'Wallet': '', 'Value': code, 'Conditions': "ContractConditions(`MainCondition`)"}
+        data = {'Wallet': '', 'Value': code, "ApplicationId": 1,
+                'Conditions': "ContractConditions(`MainCondition`)"}
         resp = utils.call_contract(url, prKey, "NewContract", data, self.data1["jwtToken"])
         return name
     

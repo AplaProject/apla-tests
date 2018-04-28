@@ -19,7 +19,7 @@ class Rollback1TestCase(unittest.TestCase):
         code,name = utils.generate_name_and_code("")
         dataC = {}
         if data == "":
-            dataC = {"Wallet": '',
+            dataC = {"Wallet": '', "ApplicationId": 1,
                      "Value": code,
                      "Conditions": "ContractConditions(`MainCondition`)"}
         else:
