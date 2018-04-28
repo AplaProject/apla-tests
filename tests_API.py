@@ -101,14 +101,13 @@ class ApiTestCase(unittest.TestCase):
                                        self.config["1"]["login"],
                                        self.config["1"]["pass"])
         for table in tables:
-            print(table)
-            tableInfo = funcs.call_get_api(url + "/table/" + table[2:], data, token)
-            print(tableInfo)
-            if "name" in str(tableInfo):
-                dictNames[table[2:]] = table[2:]
-                dictNamesAPI[table[2:]] = tableInfo["name"]
-            else:
-                self.fail("Answer from API /table/" + table + " is: " + str(tableInfo))
+            if "table" not in table:
+                tableInfo = funcs.call_get_api(url + "/table/" + table[2:], data, token)
+                if "name" in str(tableInfo):
+                    dictNames[table[2:]] = table[2:]
+                    dictNamesAPI[table[2:]] = tableInfo["name"]
+                else:
+                    self.fail("Answer from API /table/" + table + " is: " + str(tableInfo))
         self.assertDictEqual(dictNames, dictNames,
                              "Any of API tableInfo gives incorrect data")
         
