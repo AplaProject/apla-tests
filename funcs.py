@@ -22,6 +22,11 @@ def get_count(url, type, token):
     res = call_get_api(endPoint, "", token)
     return res["count"]
 
+def get_list(url, type, token):
+    endPoint = url + "/list/" + type
+    res = call_get_api(endPoint, "", token)
+    return res
+
 def get_contract_id(url, name, token):
     endPoint = url + "/contract/" + name
     res = call_get_api(endPoint, "", token)
