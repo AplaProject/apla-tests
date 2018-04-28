@@ -158,7 +158,7 @@ code = subprocess.call([
 	args.httpPort1,
 	keyID2,
 	pubKey2,
-	'100000000',
+	'100000000000000000000000000', # 100 000 000 APL
 ])
 if code != 0:
 	print("Error update keys")
