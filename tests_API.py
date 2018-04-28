@@ -383,13 +383,15 @@ class ApiTestCase(unittest.TestCase):
 
     def test_new_parameter(self):
         name = "Par_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "test", "Conditions": "true"}
+        data = {"Name": name, "Value": "test", "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewParameter", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
     def test_new_parameter_exist_name(self):
         name = "Par_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "test", "Conditions": "true"}
+        data = {"Name": name, "Value": "test", "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewParameter", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         msg = "Parameter " + name + " already exists"
@@ -399,7 +401,8 @@ class ApiTestCase(unittest.TestCase):
     def test_new_parameter_incorrect_condition(self):
         condition = "tryam"
         name = "Par_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "test", "Conditions": condition}
+        data = {"Name": name, "Value": "test", "ApplicationId": 1,
+                "Conditions": condition}
         ans = self.call("NewParameter", data)
         msg = "unknown identifier " + condition
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
@@ -427,7 +430,8 @@ class ApiTestCase(unittest.TestCase):
 
     def test_new_menu(self):
         name = "Menu_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Item1", "Conditions": "true"}
+        data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewMenu", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {'tree': [{'tag': 'text', 'text': 'Item1'}]}
@@ -436,7 +440,8 @@ class ApiTestCase(unittest.TestCase):
         
     def test_new_menu_exist_name(self):
         name = "Menu_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Item1", "Conditions": "true"}
+        data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewMenu", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         ans  = self.call("NewMenu", data)
@@ -446,7 +451,8 @@ class ApiTestCase(unittest.TestCase):
     def test_new_menu_incorrect_condition(self):
         name = "Menu_" + utils.generate_random_name()
         condition = "tryam"
-        data = {"Name": name, "Value": "Item1", "Conditions": condition}
+        data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
+                "Conditions": condition}
         ans = self.call("NewMenu", data)
         msg = "unknown identifier " + condition
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
@@ -515,11 +521,8 @@ class ApiTestCase(unittest.TestCase):
 
     def test_new_page(self):
         name = "Page_" + utils.generate_random_name()
-        data = {}
-        data["Name"] = name
-        data["Value"] = "Hello page!"
-        data["Conditions"] = "true"
-        data["Menu"] = "default_menu"
+        data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
+                "Conditions": "true", "Menu": "default_menu"}
         res = self.call("NewPage", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {}
@@ -534,11 +537,8 @@ class ApiTestCase(unittest.TestCase):
         
     def test_new_page_exist_name(self):
         name = "Page_" + utils.generate_random_name()
-        data = {}
-        data["Name"] = name
-        data["Value"] = "Hello page!"
-        data["Conditions"] = "true"
-        data["Menu"] = "default_menu"
+        data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
+                "Conditions": "true", "Menu": "default_menu"} 
         res = self.call("NewPage", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         ans = self.call("NewPage", data)
@@ -548,22 +548,16 @@ class ApiTestCase(unittest.TestCase):
     def test_new_page_incorrect_condition(self):
         name = "Page_" + utils.generate_random_name()
         condition = "tryam"
-        data = {}
-        data["Name"] = name
-        data["Value"] = "Hello page!"
-        data["Conditions"] = condition
-        data["Menu"] = "default_menu"
+        data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
+                "Conditions": condition, "Menu": "default_menu"}
         ans = self.call("NewPage", data)
         msg = "unknown identifier " + condition
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_edit_page(self):
         name = "Page_" + utils.generate_random_name()
-        data = {}
-        data["Name"] = name
-        data["Value"] = "Hello page!"
-        data["Conditions"] = "true"
-        data["Menu"] = "default_menu"
+        data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
+                "Conditions": "true", "Menu": "default_menu"}
         res = self.call("NewPage", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         dataEdit = {}
@@ -591,6 +585,7 @@ class ApiTestCase(unittest.TestCase):
         data["Conditions"] = "true"
         data["ValidateCount"] = 6
         data["Menu"] = "default_menu"
+        data["ApplicationId"] = 1
         res = self.call("NewPage", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         dataEdit = {}
@@ -629,6 +624,7 @@ class ApiTestCase(unittest.TestCase):
         data["Value"] = "Hello page!"
         data["Conditions"] = "true"
         data["Menu"] = "default_menu"
+        data["ApplicationId"] = 1
         res = self.call("NewPage", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         condition = "tryam"
@@ -648,6 +644,7 @@ class ApiTestCase(unittest.TestCase):
         data["Value"] = "Hello!"
         data["Conditions"] = "true"
         data["Menu"] = "default_menu"
+        data["ApplicationId"] = 1
         res = self.call("NewPage", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         count = funcs.get_count(url, "pages", token)
@@ -681,13 +678,15 @@ class ApiTestCase(unittest.TestCase):
 
     def test_new_block(self):
         name = "Block_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Hello page!", "Conditions": "true"}
+        data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewBlock", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
     def test_new_block_exist_name(self):
         name = "Block_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Hello page!", "Conditions": "true"}
+        data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewBlock", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         ans = self.call("NewBlock", data)
@@ -697,7 +696,8 @@ class ApiTestCase(unittest.TestCase):
     def test_new_block_incorrect_condition(self):
         name = "Block_" + utils.generate_random_name()
         condition = "tryam"
-        data = {"Name": name, "Value": "Hello page!", "Conditions": condition}
+        data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
+                "Conditions": condition}
         ans = self.call("NewBlock", data)
         msg = "unknown identifier " + condition
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
@@ -711,7 +711,8 @@ class ApiTestCase(unittest.TestCase):
         
     def test_edit_block(self):
         name = "Block_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Hello block!", "Conditions": "true"}
+        data = {"Name": name, "Value": "Hello block!", "ApplicationId": 1,
+                "Conditions": "true"}
         res  = self.call("NewBlock", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         count = funcs.get_count(url, "blocks", token)
@@ -737,7 +738,7 @@ class ApiTestCase(unittest.TestCase):
         permission = """{"insert": "false",
         "update" : "true","new_column": "true"}"""
         data = {"Name": "Tab_" + utils.generate_random_name(),
-                "Columns": column,
+                "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
@@ -753,6 +754,7 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
+        data["ApplicationId"] = 1
         ans = self.call("NewTable", data)
         msg = "unknown identifier " + condition
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
@@ -768,6 +770,7 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"" + condition + "\","
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
+        data["ApplicationId"] = 1
         ans = self.call("NewTable", data)
         msg = "unknown identifier " + condition
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
@@ -783,6 +786,7 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"" + condition + "\"}"
         data["Permissions"] = per1 + per2 + per3
+        data["ApplicationId"] = 1
         ans = self.call("NewTable", data)
         msg = "unknown identifier " + condition
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
@@ -798,6 +802,7 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
+        data["ApplicationId"] = 1
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         ans = self.call("NewTable", data)
@@ -817,6 +822,7 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
+        data["ApplicationId"] = 1
         ans = self.call("NewTable", data)
         msg = "There are the same columns"
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
@@ -832,6 +838,7 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
+        data["ApplicationId"] = 1
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         dataEdit = {}
@@ -883,6 +890,7 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
+        data["ApplicationId"] = 1
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         dataEdit = {}
@@ -909,6 +917,7 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
+        data["ApplicationId"] = 1
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         dataEdit = {}
@@ -935,6 +944,7 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
+        data["ApplicationId"] = 1
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         dataEdit = {}
@@ -961,6 +971,7 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
+        data["ApplicationId"] = 1
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         dataEdit = {}
@@ -1002,6 +1013,7 @@ class ApiTestCase(unittest.TestCase):
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
+        data["ApplicationId"] = 1
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         name = "Col_" + utils.generate_random_name()
@@ -1045,6 +1057,7 @@ class ApiTestCase(unittest.TestCase):
         data["AppID"] = 1
         data["Name"] = "Lang_" + utils.generate_random_name()
         data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
+        data["ApplicationId"] = 1
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
@@ -1054,6 +1067,7 @@ class ApiTestCase(unittest.TestCase):
         data["AppID"] = 1
         data["Name"] = name
         data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
+        data["ApplicationId"] = 1
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # Get last record in languages table
@@ -1105,7 +1119,7 @@ class ApiTestCase(unittest.TestCase):
 
     def test_content_lang(self):
         nameLang = "Lang_" + utils.generate_random_name()
-        data = {"AppID": 1, "Name": nameLang,
+        data = {"ApplicationId": 1, "Name": nameLang,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
                 "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = self.call("NewLang", data)
@@ -1137,7 +1151,7 @@ class ApiTestCase(unittest.TestCase):
         
     def test_content_lang_after_edit(self):
         nameLang = "Lang_" + utils.generate_random_name()
-        data = {"AppID": 1, "Name": nameLang,
+        data = {"ApplicationId": 1, "Name": nameLang,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
                 "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = self.call("NewLang", data)
@@ -1199,7 +1213,7 @@ class ApiTestCase(unittest.TestCase):
         permission = """{"insert": "true", "update" : "true","new_column": "true"}"""
         table_name = "tab_delayed_" + utils.generate_random_name()
         data = {"Name": table_name,
-                "Columns": column,
+                "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
@@ -1288,6 +1302,7 @@ class ApiTestCase(unittest.TestCase):
         data["Value"] = "SetVar(a,\"Hello\") \n Div(Body: #a#)"
         data["Conditions"] = "true"
         data["Menu"] = "default_menu"
+        data["ApplicationId"] = 1
         res = self.call("NewPage", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # Test
@@ -1310,6 +1325,7 @@ class ApiTestCase(unittest.TestCase):
         data["Value"] = "#test#"
         data["Conditions"] = "true"
         data["Menu"] = "default_menu"
+        data["ApplicationId"] = 1
         res = self.call("NewPage", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # Test
@@ -1396,7 +1412,8 @@ class ApiTestCase(unittest.TestCase):
     def test_get_interface_block(self):
         # Add new block
         block = "Block_" + utils.generate_random_name()
-        data = {"Name": block, "Value": "Hello page!", "Conditions": "true"}
+        data = {"Name": block, "Value": "Hello page!", "ApplicationId": 1,
+                "Conditions": "true"}
         res = self.call("NewBlock", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # Test
@@ -1450,7 +1467,7 @@ class ApiTestCase(unittest.TestCase):
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
-        data = {"Name": name, "AppID": 1}
+        data = {"Name": name, "ApplicationId": 1}
         resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
                                               files, token)
         res = self.assertTxInBlock(resp, token)
@@ -1458,13 +1475,13 @@ class ApiTestCase(unittest.TestCase):
         
     def test_new_app_param(self):
         name = "param_"+utils.generate_random_name()
-        data = {"App": 1, "Name": name, "Value": "myParam", "Conditions": "true" }
+        data = {"ApplicationId": 1, "Name": name, "Value": "myParam", "Conditions": "true" }
         res = self.call("NewAppParam", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
     def test_edit_app_param(self):
         name = "param_"+utils.generate_random_name()
-        data = {"App": 1, "Name": name, "Value": "myParam", "Conditions": "true" }
+        data = {"ApplicationId": 1, "Name": name, "Value": "myParam", "Conditions": "true" }
         res = self.call("NewAppParam", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         data2 = {"Id": 1, "Name": name, "Value": "myParamEdited", "Conditions": "true" }
@@ -1502,12 +1519,12 @@ class ApiTestCase(unittest.TestCase):
 
     def test_get_avatar_with_login(self):
         # add file in binaries
-        name = "file_"+utils.generate_random_name()
+        name = "file_" + utils.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
-        data = {"Name": name, "AppID": 1, "DataMimeType":"image/jpeg"}
+        data = {"Name": name, "ApplicationId": 1, "DataMimeType":"image/jpeg"}
         resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
                                               files, token)
         res = self.assertTxInBlock(resp, token)
@@ -1555,12 +1572,12 @@ class ApiTestCase(unittest.TestCase):
 
     def test_get_avatar_without_login(self):
         # add file in binaries
-        name = "file_"+utils.generate_random_name()
+        name = "file_" + utils.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
-        data = {"Name": name, "AppID": 1, "DataMimeType":"image/jpeg"}
+        data = {"Name": name, "ApplicationId": 1, "DataMimeType":"image/jpeg"}
         resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
                                               files, token)
         res = self.assertTxInBlock(resp, token)

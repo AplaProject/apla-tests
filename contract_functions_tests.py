@@ -163,7 +163,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_langRes(self):
-        data = {"AppID":1,
+        data = {"ApplicationId":1,
                 "Name": "test",
                 "Trans": "{\"en\": \"test_en\", \"de\" : \"test_de\"}"}
         result = utils.call_contract(url, prKey, "NewLang", data, token)
@@ -178,7 +178,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         "index": "0",  "conditions":"true"}]"""
         permission = """{"insert": "true",
         "update" : "true","new_column": "true"}"""
-        data = {"Name": "test",
+        data = {"Name": "test", "ApplicationId":1,
                 "Columns": columns,
                 "Permissions": permission}
         result = utils.call_contract(url, prKey, "NewTable", data, token)
@@ -195,7 +195,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         "index": "0",  "conditions":"true"}]"""
         permission = """{"insert": "true",
         "update" : "true","new_column": "true"}"""
-        data = {"Name": "test",
+        data = {"Name": "test", "ApplicationId":1,
                 "Columns": columns,
                 "Permissions": permission}
         result = utils.call_contract(url, prKey, "NewTable", data, token)
@@ -226,7 +226,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         "index": "0",  "conditions":"true"}]"""
         permission = """{"insert": "true",
         "update" : "true","new_column": "true"}"""
-        data = {"Name": "test",
+        data = {"Name": "test", "ApplicationId":1,
                 "Columns": columns,
                 "Permissions": permission}
         result = utils.call_contract(url, prKey, "NewTable", data, token)

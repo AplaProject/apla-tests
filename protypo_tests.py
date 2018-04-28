@@ -28,7 +28,7 @@ class PrototipoTestCase(unittest.TestCase):
 
     def check_page(self, sourse):
         name = "Page_" + utils.generate_random_name()
-        data = {"Name": name, "Value": sourse,
+        data = {"Name": name, "Value": sourse, "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         resp = utils.call_contract(url, prKey, "NewPage", data, token)
         self.assertTxInBlock(resp, token)
@@ -342,13 +342,13 @@ class PrototipoTestCase(unittest.TestCase):
         
     def test_page_langRes(self):
         lang = "lang_"+utils.generate_random_name()
-        data = {"AppID":1,
+        data = {"ApplicationId": 1,
                 "Name": lang,
                 "Trans": "{\"en\": \"Lang_en\", \"ru\" : \"Язык\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = utils.call_contract(url, prKey, "NewLang", data, token)
         self.assertTxInBlock(res, token)
         world = "world_" + utils.generate_random_name()
-        data = {"AppID":1,
+        data = {"ApplicationId": 1,
                 "Name": world,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = utils.call_contract(url, prKey, "NewLang", data, token)
@@ -379,7 +379,7 @@ class PrototipoTestCase(unittest.TestCase):
 
     def test_page_include(self):
         name = "Block_"+utils.generate_random_name()
-        data = {"Name": name,
+        data = {"Name": name, "ApplicationId": 1,
                 "Value": "Hello page!", "Conditions": "true"}
         res = utils.call_contract(url, prKey, "NewBlock", data, token)
         self.assertTxInBlock(res, token)

@@ -30,6 +30,7 @@ def get_list(url, type, token):
 def get_contract_id(url, name, token):
     endPoint = url + "/contract/" + name
     res = call_get_api(endPoint, "", token)
+    print(res)
     return res["tableid"]
 
 def is_contract_activated(url, name, token):
