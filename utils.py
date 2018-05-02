@@ -242,7 +242,7 @@ def is_wallet_created(dbHost, dbName, login, password, pub):
 	cursor = connect.cursor()
 	cursor.execute("select amount from \"1_keys\" WHERE id='" + pub + "'")
 	wallet = cursor.fetchall()
-	if len(wallet) == 1 and wallet[0][0] == 1000:
+	if len(wallet) == 1 and wallet[0][0] == 1000000000000000000000:
 		return True
 	else:
 		return False
