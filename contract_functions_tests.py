@@ -337,6 +337,15 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["stringToBytes"]
         self.check_contract(contract["code"], contract["asert"])
 
+    def getMetrics(self, ecosystemNum, metricName):
+        # get metrics count
+        res = funcs.get_list(url, "metrics", token)
+        i = 0
+        while i < len(res['list']):
+            if (int(res['list'][i]['key']) == int(ecosystemNum)) and (str(res['list'][i]['metric']) == str(metricName)):
+                return res['list'][i]['value']
+            i += 1
+
     def test_z1_dbSelectMetricsMin(self):
         # func generate contract which return block_id and increment count blocks
         def waitBlockId(old_block_id, limit):
