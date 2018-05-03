@@ -168,6 +168,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 "Trans": "{\"en\": \"test_en\", \"de\" : \"test_de\"}"}
         result = utils.call_contract(url, prKey, "NewLang", data, token)
         tx = utils.txstatus(url, self.config["1"]["time_wait_tx_in_block"], result['hash'], token)
+        print(tx)
         contract = self.contracts["langRes"]
         self.check_contract(contract["code"], contract["asert"])
         

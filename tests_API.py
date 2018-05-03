@@ -838,7 +838,6 @@ class ApiTestCase(unittest.TestCase):
         per1 = "{\"insert\": \"false\","
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
-        data["Permissions"] = per1 + per2 + per3
         data["ApplicationId"] = 1
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
@@ -846,12 +845,10 @@ class ApiTestCase(unittest.TestCase):
         dataEdit["Name"] = name
         col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
         col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        dataEdit["Insert_con"] = "true"
         dataEdit["Columns"] = col1 + col2
-        per1E = "{\"insert\": \"true\","
-        per2E = " \"update\" : \"true\","
-        per3E = " \"new_column\": \"true\"}"
-        dataEdit["Permissions"] = per1E + per2E + per3E
         res = self.call("EditTable", dataEdit)
+        print(res)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
     def test_edit_table_incorrect_condition1(self):
@@ -877,6 +874,7 @@ class ApiTestCase(unittest.TestCase):
         per3 = " \"new_column\": \"true\"}"
         data["Permissions"] = per1 + per2 + per3
         ans = self.call("NewTable", data)
+        print(ans)
         msg = "unknown identifier " + condition
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
         
@@ -1128,8 +1126,8 @@ class ApiTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         namePage = "Page_" + utils.generate_random_name()
         valuePage = "Hello, LangRes(" + nameLang + ")"
-        dataPage = {"Name": namePage, "Value": valuePage, "Conditions": "true",
-                    "Menu": "default_menu"}
+        dataPage = {"Name": namePage, "Value": valuePage, "ApplicationId": 1,
+                    "Conditions": "true", "Menu": "default_menu"}
         res = self.call("NewPage", dataPage)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {"menu": 'default_menu', "menutree": [],
