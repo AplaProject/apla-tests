@@ -48,7 +48,6 @@ class ContractFunctionsTestCase(unittest.TestCase):
         res = utils.call_contract(url, prKey, name, {}, token)
         hash = res["hash"]
         result = utils.txstatus(url, sleep, hash, token)
-        print(result)
         self.assertIn(checkPoint, result["result"], "error")
 
     def test_contract_dbfind(self):
@@ -169,7 +168,6 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 "Trans": "{\"en\": \"test_en\", \"de\" : \"test_de\"}"}
         result = utils.call_contract(url, prKey, "NewLang", data, token)
         tx = utils.txstatus(url, self.config["1"]["time_wait_tx_in_block"], result['hash'], token)
-        print(tx)
         contract = self.contracts["langRes"]
         self.check_contract(contract["code"], contract["asert"])
         

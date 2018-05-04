@@ -355,7 +355,6 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertTxInBlock(res, token)
         contract = self.pages["langRes"]
         content = self.check_page("LangRes("+lang+") LangRes("+world+", ru)")
-        print(content)
     
         
     def test_page_inputErr(self):

@@ -13,7 +13,6 @@ class Rollback1TestCase(unittest.TestCase):
         resp = utils.call_contract(url, prKey, name, data, token)
         res = utils.txstatus(url, waitTx,
                        resp['hash'], token)
-        print(res)
         return res
         
     def create_contract(self, data):

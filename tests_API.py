@@ -22,7 +22,6 @@ class ApiTestCase(unittest.TestCase):
         self.assertIn("hash", result)
         hash = result['hash']
         status = utils.txstatus(url, pause, hash, jwtToken)
-        print(status)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return status["blockid"]
@@ -851,7 +850,6 @@ class ApiTestCase(unittest.TestCase):
         dataEdit["Update_con"] = "true"
         dataEdit["New_column_con"] = "true"
         res = self.call("EditTable", dataEdit)
-        print(res)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
     def test_edit_table_incorrect_condition1(self):
@@ -876,7 +874,6 @@ class ApiTestCase(unittest.TestCase):
         dataEdit["Update_con"] = "true"
         dataEdit["New_column_con"] = "true"
         ans = self.call("NewTable", data)
-        print(ans)
         msg = "Insert condition is empty"
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
         
