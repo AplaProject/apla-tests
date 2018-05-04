@@ -339,6 +339,15 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["stringToBytes"]
         self.check_contract(contract["code"], contract["asert"])
 
+    def getMetrics(self, ecosystemNum, metricName):
+        # get metrics count
+        res = funcs.get_list(url, "metrics", token)
+        i = 0
+        while i < len(res['list']):
+            if (int(res['list'][i]['key']) == int(ecosystemNum)) and (str(res['list'][i]['metric']) == str(metricName)):
+                return res['list'][i]['value']
+            i += 1
+
     def test_z1_dbSelectMetricsMin(self):
         # func generate contract which return block_id and increment count blocks
         def waitBlockId(old_block_id, limit):
@@ -373,43 +382,20 @@ class ContractFunctionsTestCase(unittest.TestCase):
         if (current_block_id % 100 >= 90):
             count = current_block_id + (100 - (current_block_id % 100))
             waitBlockId(current_block_id, count)
-        # get metrics count
-        res = funcs.get_list(url, "metrics", token)
-        ecosystem_tx = 0
-        i = 0
-        while i < len(res['list']):
-            if res['list'][i]['metric'] == "ecosystem_tx":
-                ecosystem_tx = int(res['list'][i]['value'])
-            i += 1
         # test
+        ecosystem_tx = self.getMetrics(1, "ecosystem_tx")
         contract = self.contracts["dbSelectMetricsMin"]
         self.check_contract(contract["code"], str(ecosystem_tx))
 
     def test_z2_dbSelectMetricsMax(self):
         # Run test after test_z1_dbSelectMetricsMin
-        # get metrics count
-        res = funcs.get_list(url, "metrics", token)
-        ecosystem_members = 0
-        i = 0
-        while i < len(res['list']):
-            if res['list'][i]['metric'] == "ecosystem_members":
-                ecosystem_members = int(res['list'][i]['value'])
-            i += 1
-        # test
+        ecosystem_members = self.getMetrics(1, "ecosystem_members")
         contract = self.contracts["dbSelectMetricsMax"]
         self.check_contract(contract["code"], str(ecosystem_members))
 
     def test_z3_dbSelectMetricsAvg(self):
         # Run test after test_z1_dbSelectMetricsMin
-        # get metrics count
-        res = funcs.get_list(url, "metrics", token)
-        ecosystem_pages = 0
-        i = 0
-        while i < len(res['list']):
-            if res['list'][i]['metric'] == "ecosystem_pages":
-                ecosystem_pages = int(res['list'][i]['value'])
-            i += 1
-        # test
+        ecosystem_pages = self.getMetrics(1,"ecosystem_pages")
         contract = self.contracts["dbSelectMetricsAvg"]
         self.check_contract(contract["code"], str(ecosystem_pages))
 
