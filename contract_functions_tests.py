@@ -48,6 +48,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         res = utils.call_contract(url, prKey, name, {}, token)
         hash = res["hash"]
         result = utils.txstatus(url, sleep, hash, token)
+        print(result)
         self.assertIn(checkPoint, result["result"], "error")
 
     def test_contract_dbfind(self):

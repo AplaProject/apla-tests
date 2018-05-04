@@ -22,6 +22,7 @@ class ApiTestCase(unittest.TestCase):
         self.assertIn("hash", result)
         hash = result['hash']
         status = utils.txstatus(url, pause, hash, jwtToken)
+        print(status)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return status["blockid"]
@@ -757,7 +758,7 @@ class ApiTestCase(unittest.TestCase):
         data["Permissions"] = per1 + per2 + per3
         data["ApplicationId"] = 1
         ans = self.call("NewTable", data)
-        msg = "unknown identifier " + condition
+        msg = "unknown identifier "
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
         
     def test_new_table_incorrect_condition2(self):
@@ -838,6 +839,7 @@ class ApiTestCase(unittest.TestCase):
         per1 = "{\"insert\": \"false\","
         per2 = " \"update\" : \"true\","
         per3 = " \"new_column\": \"true\"}"
+        data["Permissions"] = per1 + per2 + per3
         data["ApplicationId"] = 1
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
@@ -846,7 +848,8 @@ class ApiTestCase(unittest.TestCase):
         col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
         col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
         dataEdit["Insert_con"] = "true"
-        dataEdit["Columns"] = col1 + col2
+        dataEdit["Update_con"] = "true"
+        dataEdit["New_column_con"] = "true"
         res = self.call("EditTable", dataEdit)
         print(res)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
@@ -869,13 +872,12 @@ class ApiTestCase(unittest.TestCase):
         col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
         col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
         condition = "tryam"
-        per1 = "{\"insert\": \"" + condition + "\","
-        per2 = " \"update\" : \"true\","
-        per3 = " \"new_column\": \"true\"}"
-        data["Permissions"] = per1 + per2 + per3
+        dataEdit["Insert_con"] = "tryam"
+        dataEdit["Update_con"] = "true"
+        dataEdit["New_column_con"] = "true"
         ans = self.call("NewTable", data)
         print(ans)
-        msg = "unknown identifier " + condition
+        msg = "Insert condition is empty"
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
         
     def test_edit_table_incorrect_condition1(self):
@@ -897,12 +899,11 @@ class ApiTestCase(unittest.TestCase):
         col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
         col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
         condition = "tryam"
-        per1 = "{\"insert\": \"" + condition + "\","
-        per2 = " \"update\" : \"true\","
-        per3 = " \"new_column\": \"true\"}"
-        data["Permissions"] = per1 + per2 + per3
+        dataEdit["Insert_con"] = "true"
+        dataEdit["Update_con"] = "tryam"
+        dataEdit["New_column_con"] = "true"
         ans = self.call("EditTable", data)
-        msg = "unknown identifier " + condition
+        msg = "Insert condition is empty"
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
         
     def test_edit_table_incorrect_condition2(self):
@@ -924,12 +925,11 @@ class ApiTestCase(unittest.TestCase):
         col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
         col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
         condition = "tryam"
-        per1 = "{\"insert\": \"true\","
-        per2 = " \"update\" : \"" + condition + "\","
-        per3 = " \"new_column\": \"true\"}"
-        data["Permissions"] = per1 + per2 + per3
+        dataEdit["Insert_con"] = "true"
+        dataEdit["Update_con"] = "tryam"
+        dataEdit["New_column_con"] = "true"
         ans = self.call("EditTable", data)
-        msg = "unknown identifier " + condition
+        msg = "Insert condition is empty"
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
         
     def test_edit_table_incorrect_condition3(self):
