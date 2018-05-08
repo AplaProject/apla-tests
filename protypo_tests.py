@@ -109,11 +109,16 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_now(self):
         contract = self.pages["now"]
         content = self.check_page(contract["code"])
-        today = "Today is " + str(datetime.date.today().strftime("%d.%m.%Y"))
-        now = "Now: " + str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        mustBe = dict(text1 = today, text2 = now)
-        page = dict(text1 = content["tree"][0]["children"][0]["text"],
-                    text2 = content["tree"][2]["children"][0]["text"])
+        contractContent = contract["content"]
+        partContent = content['tree'][0]
+        mustBe = dict(tagOwner=contractContent["tag"],
+                      tag=contractContent["children"][0]["tag"],
+                      format=contractContent["children"][0]["attr"]["format"],
+                      interval=contractContent["children"][0]["attr"]["interval"])
+        page = dict(tagOwner=partContent["tag"],
+                      tag=partContent["children"][0]["tag"],
+                      format=partContent["children"][0]["attr"]["format"],
+                      interval=partContent["children"][0]["attr"]["interval"])
         self.assertDictEqual(mustBe, page, "now has problem: " + str(content["tree"]))
         
     def test_page_divs(self):
