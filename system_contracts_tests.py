@@ -35,26 +35,10 @@ class ApiTestCase(unittest.TestCase):
             self.assertIn(key, result)
         return result
 
-    def check_post_api(self, endPoint, data, keys):
-        end = url + endPoint
-        result = funcs.call_post_api(end, data, token)
-        for key in keys:
-            self.assertIn(key, result)
-        return result
-            
-    def get_error_api(self, endPoint, data):
-        end = url + endPoint
-        result = funcs.call_get_api(end, data, token)
-        error = result["error"]
-        message = result["msg"]
-        return error, message
-
     def call(self, name, data):
         resp = utils.call_contract(url, prKey, name, data, token)
         resp = self.assertTxInBlock(resp, token)
         return resp
-
-    #################################################################
 
     #NewEcosystem
     def test_create_ecosystem(self):
