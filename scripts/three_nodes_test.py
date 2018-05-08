@@ -78,8 +78,8 @@ config1 = subprocess.Popen([
 	'--dataDir='+workDir1,
 	'--firstBlock='+firstBlockPath,
 	'--dbPassword='+args.dbPassword,
-	'--centUrl="http://127.0.0.1:8000"',
-	'--centSecret="4597e75c-4376-42a6-8c1f-7e3fc7eb2114"',
+	'--centUrl=http://127.0.0.1:8000',
+	'--centSecret=4597e75c-4376-42a6-8c1f-7e3fc7eb2114',
 	'--dbName='+args.dbName1
 ])
 time.sleep(3)

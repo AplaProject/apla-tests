@@ -532,6 +532,7 @@ class ApiTestCase(unittest.TestCase):
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
         content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Hello page!'}]
+        content["nodesCount"] = 1
         cont = funcs.get_content(url, "page", name, "", 1, token)
         self.assertEqual(cont, content)
         
@@ -574,6 +575,7 @@ class ApiTestCase(unittest.TestCase):
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
         content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Good by page!'}]
+        content["nodesCount"] = 1
         pContent = funcs.get_content(url, "page", name, "", 1, token)
         self.assertEqual(pContent, content)
 
@@ -603,6 +605,7 @@ class ApiTestCase(unittest.TestCase):
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
         content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Good by page!'}]
+        content["nodesCount"] = 1
         pContent = funcs.get_content(url, "page", name, "", 1, token)
         self.assertEqual(pContent, content)
         
@@ -662,6 +665,7 @@ class ApiTestCase(unittest.TestCase):
         menutree["attr"] = {'page': 'Default Ecosystem Menu', 'title': 'main'}
         content["menutree"] = []
         content["tree"] = [{'tag': 'text', 'text': 'Hello!\r\nGood by!'}]
+        content["nodesCount"] = 1
         pContent = funcs.get_content(url, "page", name, "", 1, token)
         self.assertEqual(pContent, content)
         
@@ -1128,13 +1132,17 @@ class ApiTestCase(unittest.TestCase):
         res = self.call("NewPage", dataPage)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {"menu": 'default_menu', "menutree": [],
-                   "tree": [{'tag': 'text', 'text': 'Hello, World_en'}]}
+                   "tree": [{'tag': 'text', 'text': 'Hello, World_en'}],
+                   "nodesCount": 1}
         contentRu = {"menu": 'default_menu', "menutree": [],
-                     "tree": [{'tag': 'text', 'text': 'Hello, Мир_ru'}]}
+                     "tree": [{'tag': 'text', 'text': 'Hello, Мир_ru'}],
+                   "nodesCount": 1}
         contentFr = {"menu": 'default_menu', "menutree": [],
-                       "tree": [{'tag': 'text', 'text': 'Hello, Monde_fr-FR'}]}
+                       "tree": [{'tag': 'text', 'text': 'Hello, Monde_fr-FR'}],
+                   "nodesCount": 1}
         contentDe = {"menu": 'default_menu', "menutree": [],
-                       "tree": [{'tag': 'text', 'text': 'Hello, Welt_de'}]}
+                       "tree": [{'tag': 'text', 'text': 'Hello, Welt_de'}],
+                   "nodesCount": 1}
         dictExp ={"default" : content, "ru": contentRu,
                   "fr": contentFr, "de": contentDe, "pe": content}
         pContent = funcs.get_content(url, "page", namePage, "en", 1, token)          # should be: en
@@ -1166,13 +1174,17 @@ class ApiTestCase(unittest.TestCase):
         res = self.call("EditLang", dataEdit)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {"menu": 'default_menu', "menutree": [],
-                   "tree": [{'tag': 'text', 'text': 'Hello, World_en_ed'}]}
+                   "tree": [{'tag': 'text', 'text': 'Hello, World_en_ed'}],
+                   "nodesCount": 1}
         contentRu = {"menu": 'default_menu', "menutree": [],
-                     "tree": [{'tag': 'text', 'text': 'Hello, Мир_ru_ed'}]}
+                     "tree": [{'tag': 'text', 'text': 'Hello, Мир_ru_ed'}],
+                   "nodesCount": 1}
         contentFr = {"menu": 'default_menu', "menutree": [],
-                       "tree": [{'tag': 'text', 'text': 'Hello, Monde_fr-FR_ed'}]}
+                       "tree": [{'tag': 'text', 'text': 'Hello, Monde_fr-FR_ed'}],
+                   "nodesCount": 1}
         contentDe = {"menu": 'default_menu', "menutree": [],
-                       "tree": [{'tag': 'text', 'text': 'Hello, Welt_de_ed'}]}
+                     "tree": [{'tag': 'text', 'text': 'Hello, Welt_de_ed'}],
+                     "nodesCount": 1}
         dictExp ={"default" : content, "ru": contentRu,
                   "fr": contentFr, "de": contentDe, "pe": content}
         pContent = funcs.get_content(url, "page", namePage, "en", 1, token)          # should be: en
@@ -1506,7 +1518,7 @@ class ApiTestCase(unittest.TestCase):
         
     def test_login(self):
         keys = config.getKeys()    
-        data1 = utils.login(url, keys["key1"])
+        data1 = utils.login(url, keys["key5"])
         time.sleep(5)
         conf = config.getNodeConfig()
         res = utils.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],
