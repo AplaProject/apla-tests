@@ -549,6 +549,20 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertEqual(contract["content"], page,
                         "dbfind_whereId_count has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
 
+    def test_address(self):
+        contract = self.pages["address"]
+        content = self.check_page(contract["code"])
+        partContent = content['tree'][0]
+        contractContent = contract["content"]
+        mustBe = dict(tagOwner=contractContent['tag'],
+                      tag=contractContent['children'][0]["tag"],
+                      text=contractContent['children'][0]["text"])
+        page = dict(tagOwner=partContent['tag'],
+                    tag=partContent['children'][0]["tag"],
+                    text=partContent['children'][0]["text"])
+        self.assertDictEqual(mustBe, page,
+                             "address has problem: " + str(content["tree"]))
+
         
 if __name__ == '__main__':
     unittest.main()
