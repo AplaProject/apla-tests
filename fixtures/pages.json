@@ -369,5 +369,18 @@
 		"code": "DBFind(Name: contracts, Source: con).WhereId(1).Count(cnt) Em(#cnt#)",
 		"menu": "default_menu",
 		"content": "1"
+	},
+    "address":{
+		"code": "Span(Address(4202110198495717481))",
+		"menu": "default_menu",
+		"content": {
+			  "tag": "span",
+			  "children": [
+				{
+				  "tag": "text",
+				  "text": "0420-2110-1984-9571-7481"
+				}
+			  ]
+			}
 	}
 }
