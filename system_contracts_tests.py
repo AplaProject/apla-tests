@@ -1121,6 +1121,12 @@ class ApiTestCase(unittest.TestCase):
         res = self.assertTxInBlock(resp, token)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
+    #UpdateSysParam - missing in the doc
+    def test_update_system_parameters(self):
+        data = {"Name": "max_block_user_tx", "Value" : "2"}
+        res = self.call("UpdateSysParam", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+
 
 if __name__ == '__main__':
     unittest.main()

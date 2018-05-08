@@ -262,11 +262,6 @@ class ApiTestCase(unittest.TestCase):
         dictCur = {"default" : pContent, "ru": ruPContent,
                   "fr": frPcontent, "de": dePcontent, "pe": pePcontent}
         self.assertDictEqual(dictCur, dictExp, "One of langRes is faild")
-        
-    def test_update_system_parameters(self):
-        data = {"Name": "max_block_user_tx", "Value" : "2"}
-        res = self.call("UpdateSysParam", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_get_content_from_template(self):
         data = {}
@@ -442,7 +437,7 @@ class ApiTestCase(unittest.TestCase):
         asserts = ["result"]
         data = {}
         #self.check_post_api("/vde/create", data, asserts)
-        
+
     def is_node_owner_true(self):
         data = {}
         resp = utils.call_contract(url, prKey, "NodeOwnerCondition", data, token)
