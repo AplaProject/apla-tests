@@ -124,6 +124,44 @@ class ApiTestCase(unittest.TestCase):
                       res7=res7)
         self.assertDictEqual(mustBe, actual, name+" has problem!")
 
+    #full_nodes
+
+    def test_number_of_nodes(self):
+        contractName = "UpdateSysParam"
+        name = "number_of_nodes"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": "0"}
+        data3 = {"Name": name, "Value": "1000"}
+        data4 = {"Name": name, "Value": "hello"}
+        data5 = {"Name": name, "Value": "1452.78"}
+        data6 = {"Name": name, "Value": "999"}
+        data7 = {"Name": name, "Value": "101"}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
     def test_1(self):
         name = "rb_blocks_1"
         data1 = {"Name": name, "Value": "-1"}
