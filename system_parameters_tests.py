@@ -211,7 +211,7 @@ class ApiTestCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "59523"}
         data7 = {"Name": name, "Value": str(maxInt)}
-        data8 = {"Name": name, "Value": "1000"}  # set default value
+        data8 = {"Name": name, "Value": "200"}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
