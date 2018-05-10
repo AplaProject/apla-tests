@@ -23,7 +23,8 @@ def get_count(url, type, token):
     return res["count"]
 
 def get_list(url, type, token):
-    endPoint = url + "/list/" + type
+    count = get_count(url, type, token)
+    endPoint = url + "/list/" + type + "?limit=" + count
     res = call_get_api(endPoint, "", token)
     return res
 
