@@ -10,7 +10,8 @@ import time
 
 class ApiTestCase(unittest.TestCase):
     def setUp(self):
-        global url, token, prKey, pause, dbHost, dbName, login, password, contractName, maxInt
+        global url, token, prKey, pause,\
+            dbHost, dbName, login, password, contractName, maxInt
         self.config = config.getNodeConfig()
         url = self.config["2"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
@@ -23,6 +24,13 @@ class ApiTestCase(unittest.TestCase):
         password = self.config["2"]["pass"]
         contractName = "UpdateSysParam"
         maxInt = 9223372036854775807
+        #self.defaultValues = self.readDefaultParameters()
+
+    def readDefaultParameters(self):
+        path = os.path.join(os.getcwd(), "defaultSystemParameters.json")
+        with open(path, 'r') as f:
+            data = f.read()
+        return json.loads(data)
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
