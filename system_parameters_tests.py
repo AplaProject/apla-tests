@@ -10,7 +10,7 @@ import time
 
 class ApiTestCase(unittest.TestCase):
     def setUp(self):
-        global url, token, prKey, pause, dbHost, dbName, login, password
+        global url, token, prKey, pause, dbHost, dbName, login, password, contractName
         self.config = config.getNodeConfig()
         url = self.config["2"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
@@ -21,6 +21,7 @@ class ApiTestCase(unittest.TestCase):
         dbName = self.config["2"]["dbName"]
         login = self.config["2"]["login"]
         password = self.config["2"]["pass"]
+        contractName = "UpdateSysParam"
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
@@ -53,7 +54,6 @@ class ApiTestCase(unittest.TestCase):
     #default_ecosystem_contract
 
     def test_gap_between_blocks(self):
-        contractName = "UpdateSysParam"
         name = "gap_between_blocks"
         data1 = {"Name": name, "Value": "-1"}
         data2 = {"Name": name, "Value": "0"}
@@ -89,7 +89,6 @@ class ApiTestCase(unittest.TestCase):
         self.assertDictEqual(mustBe, actual, name+" has problem!")
 
     def test_rb_blocks_1(self):
-        contractName = "UpdateSysParam"
         name = "rb_blocks_1"
         data1 = {"Name": name, "Value": "-1"}
         data2 = {"Name": name, "Value": "0"}
@@ -127,7 +126,6 @@ class ApiTestCase(unittest.TestCase):
     #full_nodes
 
     def test_number_of_nodes(self):
-        contractName = "UpdateSysParam"
         name = "number_of_nodes"
         data1 = {"Name": name, "Value": "-1"}
         data2 = {"Name": name, "Value": "0"}
@@ -165,7 +163,6 @@ class ApiTestCase(unittest.TestCase):
     def test_1(self):
         name = "rb_blocks_1"
         data1 = {"Name": name, "Value": "-1"}
-        contractName = "UpdateSysParam"
         res = self.call(contractName, data1)
         print(res)
         #print(mustBe)
