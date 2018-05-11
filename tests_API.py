@@ -591,6 +591,12 @@ class ApiTestCase(unittest.TestCase):
         # 1. test with login
         # 2. test without login
         # 3. negative test without login
+        def isHashNotEmpty(hash):
+            hash = str(hash)
+            if hash.find("{'hash':") != -1:
+                return True
+            else:
+                return False
         name = "Page_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Div(,Hello page!)", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
@@ -603,11 +609,11 @@ class ApiTestCase(unittest.TestCase):
         page = "not_exist_page_xxxxxxxxx"
         notAuthResNotExist = requests.post(url + "/content/hash/" + page)
         notAuthResNotExist = notAuthResNotExist.json()
-        mustBe = dict(authRes="a1c950f5a70ec17a2cd1d34a7c4d1ba80056a0b63b0dbea8437bf9d757e68d58",
-                      notAuthRes="a1c950f5a70ec17a2cd1d34a7c4d1ba80056a0b63b0dbea8437bf9d757e68d58",
+        mustBe = dict(authRes=True,
+                      notAuthRes=True,
                       msg="Page not found")
-        actual = dict(authRes=authRes["hash"],
-                      notAuthRes=notAuthRes["hash"],
+        actual = dict(authRes=isHashNotEmpty(authRes),
+                      notAuthRes=isHashNotEmpty(notAuthRes),
                       msg=notAuthResNotExist["msg"])
         self.assertDictEqual(mustBe, actual, "Not all assertions passed in test_content_hash")
 
