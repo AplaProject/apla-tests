@@ -6,6 +6,7 @@ import json
 import time
 import funcs
 import datetime
+import os
 
 
 class PrototipoTestCase(unittest.TestCase):
@@ -554,6 +555,96 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertEqual(contract["content"], page,
                         "dbfind_whereId_count has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
 
+    def test_binary(self):
+        # this test has not fixture
+        name = "image_" + utils.generate_random_name()
+        appID = "1"
+        MemberID = "999"
+        path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
+        with open(path, 'rb') as f:
+            file = f.read()
+        files = {'Data': file}
+        data = {"Name": name, "AppID": appID, "MemberID": MemberID}
+        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
+                                              files, token)
+        self.assertTxInBlock(resp, token)
+        self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
+        # test
+        lastRec = funcs.get_count(url, "binaries", token)
+        content = self.check_page("Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+")")
+        msg = "test_binary has problem. Content = " + str(content["tree"])
+        self.assertEqual("/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec", content["tree"][0]["text"])
+
+    def test_binary_by_id(self):
+        # this test has not fixture
+        name = "image_" + utils.generate_random_name()
+        appID = "1"
+        MemberID = "998"
+        path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
+        with open(path, 'rb') as f:
+            file = f.read()
+        files = {'Data': file}
+        data = {"Name": name, "AppID": appID, "MemberID": MemberID}
+        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
+                                              files, token)
+        res = self.assertTxInBlock(resp, token)
+        self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
+        # test
+        lastRec = funcs.get_count(url, "binaries", token)
+        content = self.check_page("Binary().ById("+lastRec+")")
+        msg = "test_binary has problem. Content = " + str(content["tree"])
+        self.assertEqual("/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec", content["tree"][0]["text"])
+
+    def test_image_binary(self):
+        # this test has not fixture
+        name = "image_" + utils.generate_random_name()
+        appID = "1"
+        MemberID = "997"
+        path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
+        with open(path, 'rb') as f:
+            file = f.read()
+        files = {'Data': file}
+        data = {"Name": name, "AppID": appID, "MemberID": MemberID}
+        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
+                                              files, token)
+        self.assertTxInBlock(resp, token)
+        self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
+        # test
+        lastRec = funcs.get_count(url, "binaries", token)
+        content = self.check_page("Image(Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+"))")
+        partContent = content["tree"][0]
+        mustBe = dict(tag=partContent['tag'],
+                      src=partContent['attr']["src"])
+        page = dict(tag="image",
+                    src="/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec")
+        self.assertDictEqual(mustBe, page,
+                             "test_image_binary has problem: " + str(content["tree"]))
+
+    def test_image_binary_by_id(self):
+        # this test has not fixture
+        name = "image_" + utils.generate_random_name()
+        appID = "1"
+        MemberID = "996"
+        path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
+        with open(path, 'rb') as f:
+            file = f.read()
+        files = {'Data': file}
+        data = {"Name": name, "AppID": appID, "MemberID": MemberID}
+        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
+                                              files, token)
+        self.assertTxInBlock(resp, token)
+        self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
+        # test
+        lastRec = funcs.get_count(url, "binaries", token)
+        content = self.check_page("Image(Binary().ById("+lastRec+"))")
+        partContent = content["tree"][0]
+        mustBe = dict(tag=partContent['tag'],
+                      src=partContent['attr']["src"])
+        page = dict(tag="image",
+                    src="/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec")
+        self.assertDictEqual(mustBe, page,
+                             "test_image_binary_by_id has problem: " + str(content["tree"]))
+        
     def test_address(self):
         contract = self.pages["address"]
         content = self.check_page(contract["code"])
