@@ -12,12 +12,16 @@ import os
 class PrototipoTestCase(unittest.TestCase):
     def setUp(self):
         self.config = config.getNodeConfig()
-        global url, prKey,token
+        global url, prKey, token, dbHost, dbName, login, password
         self.pages = config.readFixtures("pages")
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
         self.data = utils.login(url,prKey)
         token = self.data["jwtToken"]
+        dbHost = self.config["2"]["dbHost"]
+        dbName = self.config["2"]["dbName"]
+        login = self.config["2"]["login"]
+        password = self.config["2"]["pass"]
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
