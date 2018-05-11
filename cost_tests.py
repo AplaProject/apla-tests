@@ -39,14 +39,14 @@ class CostTestCase(unittest.TestCase):
         tokenCreater = dataCreater["jwtToken"]
         contract = config.readFixtures("contracts")
         code = "contract CostContract" + contract["for_cost"]["code"]
-        data = {"Wallet": "", "Value": code,
+        data = {"Wallet": "", "Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         result = utils.call_contract(conf["1"]["url"], conf["1"]["private_key"],
                                      "NewContract", data, tokenCreater)
         status = utils.txstatus(conf["1"]["url"], conf["1"]["time_wait_tx_in_block"],
                                 result['hash'], tokenCreater)
         code2 = "contract GetKeyId" + contract["get_keyId"]["code"]
-        data2 = {"Wallet": "", "Value": code2,
+        data2 = {"Wallet": "", "Value": code2, "ApplicationId": 1,
                 "Conditions": "true"}
         result = utils.call_contract(conf["1"]["url"], conf["1"]["private_key"],
                                      "NewContract", data2, tokenCreater)

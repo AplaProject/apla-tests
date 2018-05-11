@@ -19,7 +19,7 @@ class Rollback1TestCase(unittest.TestCase):
         code,name = utils.generate_name_and_code("")
         dataC = {}
         if data == "":
-            dataC = {"Wallet": '',
+            dataC = {"Wallet": '', "ApplicationId": 1,
                      "Value": code,
                      "Conditions": "ContractConditions(`MainCondition`)"}
         else:
@@ -54,7 +54,7 @@ class Rollback1TestCase(unittest.TestCase):
         
     def new_parameter(self):
         name = "Par_" + utils.generate_random_name()
-        data = {"Name": name,
+        data = {"Name": name, "ApplicationId": 1,
                 "Value": "test", "Conditions": "true"}
         res = self.call("NewParameter", data)
         return name
@@ -66,7 +66,7 @@ class Rollback1TestCase(unittest.TestCase):
         
     def new_menu(self):
         name = "Menu_" + utils.generate_random_name()
-        data = {"Name": name,
+        data = {"Name": name, "ApplicationId": 1,
                 "Value": "Item1", "Conditions": "true"}
         res = self.call("NewMenu", data)
         return name
@@ -84,7 +84,7 @@ class Rollback1TestCase(unittest.TestCase):
         
     def new_page(self):
         data = {"Name": "Page_" + utils.generate_random_name(),
-                "Value": "Hello page!",
+                "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true",
                 "Menu": "default_menu"}
         res = self.call("NewPage", data)
@@ -106,7 +106,7 @@ class Rollback1TestCase(unittest.TestCase):
         
     def new_block(self):
         name = "Block_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Hello page!",
+        data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewBlock", data)
         
@@ -122,7 +122,7 @@ class Rollback1TestCase(unittest.TestCase):
         permission = """{"insert": "false",
         "update" : "true","new_column": "true"}"""
         data = {"Name": "Tab_" + utils.generate_random_name(),
-                "Columns": column,
+                "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
         res = self.call("NewTable", data)
         return data["Name"]
@@ -170,7 +170,7 @@ class Rollback1TestCase(unittest.TestCase):
         value += "\" ,  \"field\" :  \"" + name
         value += "\" ,  \"title\": \"" + name
         value += "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
-        data = {"Name": name,
+        data = {"Name": name, "ApplicationId": 1,
                 "Value": value,
                 "Conditions": "true"}
         res = self.call("NewSign", data)

@@ -10,7 +10,8 @@ class BlockChainTestCase(unittest.TestCase):
 
     def create_contract(self, url, prKey):
         code,name = utils.generate_name_and_code("")
-        data = {'Wallet': '', 'Value': code, 'Conditions': "ContractConditions(`MainCondition`)"}
+        data = {'Wallet': '', 'Value': code, "ApplicationId": 1,
+                'Conditions': "ContractConditions(`MainCondition`)"}
         resp = utils.call_contract(url, prKey, "NewContract", data, self.data1["jwtToken"])
         return name
     
@@ -47,7 +48,7 @@ class BlockChainTestCase(unittest.TestCase):
         hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
         hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
         node_position = utils.compare_node_positions(host1, db1, login1, pas1, maxBlock, nodes)
-        sumWalets = 100000000000000000000000000 + (100000000 * (nodes - 1))
+        sumWalets = 100000000000000000000000000 + (5000000000000000000000 * (nodes - 1))
         dict1 = dict(count_contract = count_contracts1,
                      amounts = str(amounts1), summ = str(sumAmounts),
                      hash = str(hash1),

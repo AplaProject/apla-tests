@@ -78,8 +78,8 @@ config1 = subprocess.Popen([
 	'--dataDir='+workDir1,
 	'--firstBlock='+firstBlockPath,
 	'--dbPassword='+args.dbPassword,
-	'--centUrl="http://127.0.0.1:8000"',
-	'--centSecret="4597e75c-4376-42a6-8c1f-7e3fc7eb2114"',
+	'--centUrl=http://127.0.0.1:8000',
+	'--centSecret=4597e75c-4376-42a6-8c1f-7e3fc7eb2114',
 	'--dbName='+args.dbName1
 ])
 time.sleep(3)
@@ -198,7 +198,7 @@ code = subprocess.call([
 	args.httpPort1,
 	keyID2,
 	pubKey2,
-	'100000000',
+	'5000000000000000000000',
 ])
 if code != 0:
 	print("Error update keys")
@@ -214,7 +214,7 @@ code = subprocess.call([
 	args.httpPort1,
 	keyID3,
 	pubKey3,
-	'100000000',
+	'5000000000000000000000',
 ])
 if code != 0:
 	print("Error update keys")

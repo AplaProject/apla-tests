@@ -4,6 +4,7 @@ import config
 import requests
 import json
 import time
+import funcs
 
 
 class ContractFunctionsTestCase(unittest.TestCase):
@@ -30,7 +31,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         return code, name
 
     def create_contract(self, code):
-        data = {"Wallet": "",
+        data = {"Wallet": "", "ApplicationId": 1,
                 "Value": code,
                 "Conditions": "ContractConditions(`MainCondition`)"}
         result = utils.call_contract(url, prKey, "NewContract",
@@ -137,10 +138,6 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["substr"]
         self.check_contract(contract["code"], contract["asert"])
 
-    def test_contract_updateLang(self):
-        contract = self.contracts["updateLang"]
-        self.check_contract(contract["code"], contract["asert"])
-
     def test_contract_sysParamString(self):
         contract = self.contracts["sysParamString"]
         self.check_contract(contract["code"], contract["asert"])
@@ -166,7 +163,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_langRes(self):
-        data = {"AppID":1,
+        data = {"ApplicationId":1,
                 "Name": "test",
                 "Trans": "{\"en\": \"test_en\", \"de\" : \"test_de\"}"}
         result = utils.call_contract(url, prKey, "NewLang", data, token)
@@ -181,7 +178,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         "index": "0",  "conditions":"true"}]"""
         permission = """{"insert": "true",
         "update" : "true","new_column": "true"}"""
-        data = {"Name": "test",
+        data = {"Name": "test", "ApplicationId":1,
                 "Columns": columns,
                 "Permissions": permission}
         result = utils.call_contract(url, prKey, "NewTable", data, token)
@@ -198,7 +195,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         "index": "0",  "conditions":"true"}]"""
         permission = """{"insert": "true",
         "update" : "true","new_column": "true"}"""
-        data = {"Name": "test",
+        data = {"Name": "test", "ApplicationId":1,
                 "Columns": columns,
                 "Permissions": permission}
         result = utils.call_contract(url, prKey, "NewTable", data, token)
@@ -229,7 +226,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         "index": "0",  "conditions":"true"}]"""
         permission = """{"insert": "true",
         "update" : "true","new_column": "true"}"""
-        data = {"Name": "test",
+        data = {"Name": "test", "ApplicationId":1,
                 "Columns": columns,
                 "Permissions": permission}
         result = utils.call_contract(url, prKey, "NewTable", data, token)
@@ -244,7 +241,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
     def test_contract_callContract(self):
         contract = self.contracts["myContract"]
         code = "contract MyContract" + contract["code"]
-        data = {"Value": code, "Conditions": "true"}
+        data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
         res = utils.call_contract(url, prKey, "NewContract", data, token)
         time.sleep(10)
         contract = self.contracts["callContract"]
@@ -323,7 +320,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         sysVarName = "$role_id"
         contracName = utils.generate_random_name()
         value = "contract con_" + contracName + " { data{ } conditions{ } action{ "+ sysVarName + " = 5 } }"
-        data = {"Value": value, "Conditions": "true"}
+        data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
         result = utils.call_contract(url, prKey, "NewContract", data, token)
         tx = utils.txstatus(url,
                             self.config["1"]["time_wait_tx_in_block"],
@@ -340,6 +337,65 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["stringToBytes"]
         self.check_contract(contract["code"], contract["asert"])
 
+    def getMetrics(self, ecosystemNum, metricName):
+        # get metrics count
+        res = funcs.get_list(url, "metrics", token)
+        i = 0
+        while i < len(res['list']):
+            if (int(res['list'][i]['key']) == int(ecosystemNum)) and (str(res['list'][i]['metric']) == str(metricName)):
+                return res['list'][i]['value']
+            i += 1
+
+    def test_z1_dbSelectMetricsMin(self):
+        # func generate contract which return block_id and increment count blocks
+        def waitBlockId(old_block_id, limit):
+            while True:
+                if old_block_id == limit:
+                    break
+                contracName = utils.generate_random_name()
+                value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
+                data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
+                result = utils.call_contract(url, prKey, "NewContract", data, token)
+                tx = utils.txstatus(url,
+                                    self.config["1"]["time_wait_tx_in_block"],
+                                    result['hash'], token)
+                current_block_id = int(tx["blockid"])
+                self.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
+                old_block_id = current_block_id
+
+        # generate contract which return count blocks in blockchain
+        contracName = utils.generate_random_name()
+        value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
+        data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
+        result = utils.call_contract(url, prKey, "NewContract", data, token)
+        tx = utils.txstatus(url,
+                            self.config["1"]["time_wait_tx_in_block"],
+                            result['hash'], token)
+        current_block_id = int(tx["blockid"])
+        self.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
+        # wait until generated 100 blocks
+        if current_block_id < 100:
+            waitBlockId(current_block_id, 100)
+        # wait until generated multiples of 100 blocks
+        if (current_block_id % 100 >= 90):
+            count = current_block_id + (100 - (current_block_id % 100))
+            waitBlockId(current_block_id, count)
+        # test
+        ecosystem_tx = self.getMetrics(1, "ecosystem_tx")
+        contract = self.contracts["dbSelectMetricsMin"]
+        self.check_contract(contract["code"], str(ecosystem_tx))
+
+    def test_z2_dbSelectMetricsMax(self):
+        # Run test after test_z1_dbSelectMetricsMin
+        ecosystem_members = self.getMetrics(1, "ecosystem_members")
+        contract = self.contracts["dbSelectMetricsMax"]
+        self.check_contract(contract["code"], str(ecosystem_members))
+
+    def test_z3_dbSelectMetricsAvg(self):
+        # Run test after test_z1_dbSelectMetricsMin
+        ecosystem_pages = self.getMetrics(1,"ecosystem_pages")
+        contract = self.contracts["dbSelectMetricsAvg"]
+        self.check_contract(contract["code"], str(ecosystem_pages))
 
 if __name__ == '__main__':
     unittest.main()

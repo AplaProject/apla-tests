@@ -29,7 +29,7 @@ class PrototipoTestCase(unittest.TestCase):
 
     def check_page(self, sourse):
         name = "Page_" + utils.generate_random_name()
-        data = {"Name": name, "Value": sourse,
+        data = {"Name": name, "Value": sourse, "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         resp = utils.call_contract(url, prKey, "NewPage", data, token)
         self.assertTxInBlock(resp, token)
@@ -110,11 +110,16 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_now(self):
         contract = self.pages["now"]
         content = self.check_page(contract["code"])
-        today = "Today is " + str(datetime.date.today().strftime("%d.%m.%Y"))
-        now = "Now: " + str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        mustBe = dict(text1 = today, text2 = now)
-        page = dict(text1 = content["tree"][0]["children"][0]["text"],
-                    text2 = content["tree"][2]["children"][0]["text"])
+        contractContent = contract["content"]
+        partContent = content['tree'][0]
+        mustBe = dict(tagOwner=contractContent["tag"],
+                      tag=contractContent["children"][0]["tag"],
+                      format=contractContent["children"][0]["attr"]["format"],
+                      interval=contractContent["children"][0]["attr"]["interval"])
+        page = dict(tagOwner=partContent["tag"],
+                      tag=partContent["children"][0]["tag"],
+                      format=partContent["children"][0]["attr"]["format"],
+                      interval=partContent["children"][0]["attr"]["interval"])
         self.assertDictEqual(mustBe, page, "now has problem: " + str(content["tree"]))
         
     def test_page_divs(self):
@@ -343,20 +348,19 @@ class PrototipoTestCase(unittest.TestCase):
         
     def test_page_langRes(self):
         lang = "lang_"+utils.generate_random_name()
-        data = {"AppID":1,
+        data = {"ApplicationId": 1,
                 "Name": lang,
                 "Trans": "{\"en\": \"Lang_en\", \"ru\" : \"Язык\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = utils.call_contract(url, prKey, "NewLang", data, token)
         self.assertTxInBlock(res, token)
         world = "world_" + utils.generate_random_name()
-        data = {"AppID":1,
+        data = {"ApplicationId": 1,
                 "Name": world,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = utils.call_contract(url, prKey, "NewLang", data, token)
         self.assertTxInBlock(res, token)
         contract = self.pages["langRes"]
         content = self.check_page("LangRes("+lang+") LangRes("+world+", ru)")
-        print(content)
     
         
     def test_page_inputErr(self):
@@ -380,7 +384,7 @@ class PrototipoTestCase(unittest.TestCase):
 
     def test_page_include(self):
         name = "Block_"+utils.generate_random_name()
-        data = {"Name": name,
+        data = {"Name": name, "ApplicationId": 1,
                 "Value": "Hello page!", "Conditions": "true"}
         res = utils.call_contract(url, prKey, "NewBlock", data, token)
         self.assertTxInBlock(res, token)
@@ -640,6 +644,20 @@ class PrototipoTestCase(unittest.TestCase):
                     src="/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec")
         self.assertDictEqual(mustBe, page,
                              "test_image_binary_by_id has problem: " + str(content["tree"]))
+        
+    def test_address(self):
+        contract = self.pages["address"]
+        content = self.check_page(contract["code"])
+        partContent = content['tree'][0]
+        contractContent = contract["content"]
+        mustBe = dict(tagOwner=contractContent['tag'],
+                      tag=contractContent['children'][0]["tag"],
+                      text=contractContent['children'][0]["text"])
+        page = dict(tagOwner=partContent['tag'],
+                    tag=partContent['children'][0]["tag"],
+                    text=partContent['children'][0]["text"])
+        self.assertDictEqual(mustBe, page,
+                             "address has problem: " + str(content["tree"]))
 
         
 if __name__ == '__main__':

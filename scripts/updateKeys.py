@@ -34,7 +34,7 @@ if __name__ == "__main__":
 		contName = 'con_' + ''.join(choice(ascii_uppercase) for i in range(12))
 		code = '{data {}conditions {} action {$result=DBInsert(\"keys\", \"id,pub,amount\", \"' + id + '\", \"' + pub + '\", \"' + amount + '\") }}'
 		updateKeysCode = 'contract '+contName+code
-		dataContKeys = {'Wallet': '', 'Value': updateKeysCode, 'Conditions': """ContractConditions(`MainCondition`)"""}
+		dataContKeys = {'ApplicationId': 1,'Wallet': '', 'Value': updateKeysCode, 'Conditions': """ContractConditions(`MainCondition`)"""}
 		print("-------------------------------")
 		resPrepareCall = requests.post(baseUrl +'/prepare/NewContract', data=dataContKeys, headers={'Authorization': jvtToken})
 		jsPrepareCall = resPrepareCall.json()

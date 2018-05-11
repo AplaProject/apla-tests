@@ -21,7 +21,7 @@
 		"asert": "default_page"
 	},	
     "langRes":{
-		"code": "{\n data {}\n conditions {}\n action {\n $result=LangRes(1,\"test\", \"de\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n $result=LangRes(1, \"test\", \"de\")\n }\n }",
 		"asert":"test_de",
 		"information":"needs to create language resourse with name - test and localisacions:en- test_en, de- test_de"
 	},		
@@ -254,5 +254,17 @@
 		"code": "{\n data {}\n conditions {} \n action { \n var b bytes \n b = StringToBytes(\"Hello!\") \n $result = b \n}\n }",
 		"asert": "[72 101 108 108 111 33]",
 		"information":"Bytes returned as array of char"
+	},
+	"dbSelectMetricsMin": {
+		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_tx\", \"1 month\", \"min\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n } \n $result = m[\"value\"] \n}\n }",
+		"asert": ""
+	},
+	"dbSelectMetricsMax": {
+		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_members\", \"1 days\", \"max\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n } \n $result = m[\"value\"] \n}\n }",
+		"asert": ""
+	},
+	"dbSelectMetricsAvg": {
+		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_pages\", \"1 day\", \"avg\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n } \n $result = m[\"value\"] \n}\n }",
+		"asert": ""
 	}
 }

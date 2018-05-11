@@ -165,33 +165,30 @@ def get_ten_items(dbHost, dbName, login, password):
 	keys = cursor.fetchall()
 	return keys
 
-
-def getCountDBObjects(dbHost, dbName, login, password):
+def getEcosysTables(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
-	cursor.execute("select count(*) from INFORMATION_SCHEMA.TABLES WHERE table_schema='public'")
+	cursor.execute("select table_name from INFORMATION_SCHEMA.TABLES WHERE table_schema='public' AND table_name LIKE '1_%'")
 	tables = cursor.fetchall()
-	cursor.execute("SELECT count(*) FROM \"1_contracts\"")
-	contracts = cursor.fetchall()
-	cursor.execute("SELECT count(*) FROM \"1_pages\"")
-	pages = cursor.fetchall()
-	cursor.execute("SELECT count(*) FROM \"1_menu\"")
-	menus = cursor.fetchall()
-	cursor.execute("SELECT count(*) FROM \"1_blocks\"")
-	blocks = cursor.fetchall()
-	cursor.execute("SELECT count(*) FROM \"1_parameters\"")
-	params = cursor.fetchall()
-	cursor.execute("SELECT count(*) FROM \"1_languages\"")
-	locals = cursor.fetchall()
-	result = {}
-	result["tables"] = tables[0][0]
-	result["contracts"] = contracts[0][0]
-	result["pages"] = pages[0][0]
-	result["menus"] = menus[0][0]
-	result["blocks"] = blocks[0][0]
-	result["params"] = params[0][0]
-	result["locals"] = locals[0][0]
-	return result
+	list = []
+	i = 0
+	while i < len(tables):
+		list.append(tables[i][0])
+		i = i + 1  
+	return list
+
+def getCountTable(dbHost, dbName, login, password, table):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT count(*) FROM \"" + table + "\"")
+	return cursor.fetchall()[0][0]
+
+def getCountDBObjects(dbHost, dbName, login, password):
+	tablesCount = {}
+	tables = getEcosysTables(dbHost, dbName, login, password)
+	for table in tables:
+		tablesCount[table[2:]] = getCountTable(dbHost, dbName, login, password, table)
+	return tablesCount
 
 
 def getUserTokenAmounts(dbHost, dbName, login, password):
@@ -225,10 +222,6 @@ def get_commission_wallet(dbHost, dbName, login, password, ecosId):
 	wallet = json.loads(wallets[0][0])[0][1]
 	return wallet
 
-def get_node_wallet(dbHost, dbName, login, password, keyID):
-	wallet = "3131312313131312"
-	return wallet
-
 def get_balance_from_db(dbHost, dbName, login, password, keyId):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
@@ -249,7 +242,7 @@ def is_wallet_created(dbHost, dbName, login, password, pub):
 	cursor = connect.cursor()
 	cursor.execute("select amount from \"1_keys\" WHERE id='" + pub + "'")
 	wallet = cursor.fetchall()
-	if len(wallet) == 1 and wallet[0][0] == 1000:
+	if len(wallet) == 1 and wallet[0][0] == 1000000000000000000000:
 		return True
 	else:
 		return False
