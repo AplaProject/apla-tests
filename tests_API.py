@@ -587,5 +587,29 @@ class ApiTestCase(unittest.TestCase):
         data = ""
         res = self.check_get_api("/config/centrifugo", data, asserts)
 
+    def test_content_hash(self):
+        # 1. test with login
+        # 2. test without login
+        # 3. negative test without login
+        name = "Page_" + utils.generate_random_name()
+        data = {"Name": name, "Value": "Div(,Hello page!)", "ApplicationId": 1,
+                "Conditions": "true", "Menu": "default_menu"}
+        res = self.call("NewPage", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        asserts = ["hash"]
+        authRes = self.check_post_api("/content/hash/" + name, "", asserts)
+        notAuthRes = requests.post(url + "/content/hash/" + name)
+        notAuthRes = notAuthRes.json()
+        page = "not_exist_page_xxxxxxxxx"
+        notAuthResNotExist = requests.post(url + "/content/hash/" + page)
+        notAuthResNotExist = notAuthResNotExist.json()
+        mustBe = dict(authRes="a1c950f5a70ec17a2cd1d34a7c4d1ba80056a0b63b0dbea8437bf9d757e68d58",
+                      notAuthRes="a1c950f5a70ec17a2cd1d34a7c4d1ba80056a0b63b0dbea8437bf9d757e68d58",
+                      msg="Page not found")
+        actual = dict(authRes=authRes["hash"],
+                      notAuthRes=notAuthRes["hash"],
+                      msg=notAuthResNotExist["msg"])
+        self.assertDictEqual(mustBe, actual, "Not all assertions passed in test_content_hash")
+
 if __name__ == '__main__':
     unittest.main()
