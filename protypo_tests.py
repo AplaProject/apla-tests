@@ -612,17 +612,17 @@ class PrototipoTestCase(unittest.TestCase):
         # this test has not fixture
         name = "image_" + utils.generate_random_name()
         appID = "1"
-        MemberID = "997"
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
-        data = {"Name": name, "AppID": appID, "MemberID": MemberID}
+        data = {"Name": name, "ApplicationId": appID}
         resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
                                               files, token)
         self.assertTxInBlock(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
+        MemberID = utils.getFounderId(dbHost, dbName, login, password)
         lastRec = funcs.get_count(url, "binaries", token)
         content = self.check_page("Image(Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+"))")
         partContent = content["tree"][0]
