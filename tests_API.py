@@ -86,6 +86,12 @@ class ApiTestCase(unittest.TestCase):
         asserts = ["id", "name", "value", "conditions"]
         data = {}
         self.check_get_api("/ecosystemparam/founder_account/", data, asserts)
+        
+    def test_get_incorrect_ecosys_parametr(self):
+        asserts = ["id", "name", "value", "conditions"]
+        data = {}
+        error, message = self.get_error_api("/ecosystemparam/icorrectParam/", "")
+        self.assertEqual(error, "E_PARAMNOTFOUND", "Incorrect error: " + error + message)
 
     def test_get_tables_of_current_ecosystem(self):
         asserts = ["list", "count"]
