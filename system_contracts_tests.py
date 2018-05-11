@@ -8,7 +8,7 @@ import os
 import time
 
 
-class ApiTestCase(unittest.TestCase):
+class SystemContractsTestCase(unittest.TestCase):
     def setUp(self):
         global url, token, prKey, pause
         self.config = config.getNodeConfig()
@@ -1126,7 +1126,6 @@ class ApiTestCase(unittest.TestCase):
         data = {"Name": "max_block_user_tx", "Value" : "2"}
         res = self.call("UpdateSysParam", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-
 
 if __name__ == '__main__':
     unittest.main()
