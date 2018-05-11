@@ -507,14 +507,24 @@ class PrototipoTestCase(unittest.TestCase):
                              "ecosystemID has problem: " + str(content["tree"]))
 
     def test_page_sys_var_ecosystem_name(self):
+        # get ecosystem name from api
+        asserts = ["list"]
+        res = self.check_get_api("/list/ecosystems", "", asserts)
+        id = 1
+        i = 0
+        requiredEcosysName = ""
+        while i < int(res['count']):
+            if int(res['list'][i]['id']) == id:
+                requiredEcosysName = res['list'][i]['name']
+            i += 1
+        #test
         contract = self.pages["sys_var_ecosystem_name"]
         content = self.check_page(contract["code"])
         partContent = content['tree'][0]
-        contractContent = contract["content"][0]
-        mustBe = dict(tag=partContent['tag'],
-                      text=partContent['children'][0]["text"])
-        page = dict(tag=contractContent['tag'],
-                    text=contractContent['children'][0]["text"])
+        mustBe = dict(tag="em",
+                      text=requiredEcosysName)
+        page = dict(tag=partContent['tag'],
+                    text=partContent['children'][0]["text"])
         self.assertDictEqual(mustBe, page,
                              "ecosystem_name has problem: " + str(content["tree"]))
 
