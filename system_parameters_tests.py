@@ -775,15 +775,69 @@ class ApiTestCase(unittest.TestCase):
                       res6=res6,
                       res7=res7,
                       res8=res8)
-        # print(mustBe)
-        # print(actual)
         self.assertDictEqual(mustBe, actual, name + " has problem!")
 
-    #commission_wallet int64
+    # commission_wallet int64 - ?
+    def test_commission_wallet(self):
+        name = "commission_wallet"
+        data1 = {"Name": name, "Value": str(minInt + (-1))}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "-1452.78"}
+        data6 = {"Name": name, "Value": "0"}
+        data7 = {"Name": name, "Value": "5952300"}
+        data8 = {"Name": name, "Value": "-5958756388"}
+        data9 = {"Name": name, "Value": str(minInt)}
+        data10 = {"Name": name, "Value": str(maxInt)}
+        data11 = {"Name": name, "Value": "3"}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        res9 = int(self.call(contractName, data9))
+        count_res9 = int(self.getCountBlocks())
+        res10 = int(self.call(contractName, data10))
+        count_res10 = int(self.getCountBlocks())
+        res11 = int(self.call(contractName, data11))
+        count_res11 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8,
+                      res9=count_res9,
+                      res10=count_res10,
+                      res11=count_res11,)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8,
+                      res9=res9,
+                      res10=res10,
+                      res11=res11,)
+        print(mustBe)
+        print(actual)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
 
     def test_1(self):
-        name = "commission_size"
-        data1 = {"Name": name, "Value": "0"}
+        name = "commission_wallet"
+        data1 = {"Name": name, "Value": str(maxInt-1)}
         res = self.call(contractName, data1)
         print(res)
         #print(mustBe)
