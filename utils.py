@@ -48,6 +48,7 @@ def prepare_tx(url, prKey, entity, jvtToken, data):
 	signature, _ = sign(forsign, url, prKey)
 	return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
+
 def prepare_tx_with_files(url, prKey, entity, jvtToken, data, files):
 	urlToCont = url + '/prepare/' + entity
 	heads = {'Authorization': jvtToken}
@@ -62,6 +63,28 @@ def call_contract(url, prKey, name, data, jvtToken):
 	dataContract = {"time": sign['time'], "signature": sign["signature"]}
 	urlEnd = url + '/contract/' + sign["reqID"]
 	resp = requests.post(urlEnd, data=dataContract, headers={"Authorization": jvtToken})
+	result = resp.json()
+	return result
+
+def prepare_multi_tx(url, prKey, entity, jvtToken, data):
+	urlToCont = url + '/prepareMultiple/' + entity
+	heads = {'Authorization': jvtToken}
+	request = {"token_ecosystem": "",
+		   "max_sum":"",
+		   "payover": "",
+		   "signed_by": "",
+	           "params": data}
+	resp = requests.post(urlToCont, data={"data":json.dumps(request)}, headers=heads)
+	result = resp.json()
+	forsigns = result['forsign']
+	signatures = [sign(forsign, url, prKey)[0] for forsign in forsigns]
+	return {"time": result['time'], "signatures": signatures, "reqID": result['request_id']}
+
+def call_multi_contract(url, prKey, name, data, jvtToken):
+	sign = prepare_multi_tx(url, prKey, name, jvtToken, data)
+	dataContract = {"time": sign['time'], "signatures": sign["signatures"]}
+	urlEnd = url + '/contractMultiple/' + sign["reqID"]
+	resp = requests.post(urlEnd, data={"data":json.dumps(dataContract)}, headers={"Authorization": jvtToken})
 	result = resp.json()
 	return result
 
@@ -87,6 +110,13 @@ def txstatus(url, sleepTime, hsh, jvtToken):
 		else:
 			sec = sec + 1
 	return resp.json()	
+
+
+def txstatus_multi(url, sleepTime, hshs, jvtToken):
+	time.sleep(len(hshs) * sleepTime)
+	urlEnd = url + '/txstatusMultiple/'
+	resp = requests.get(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
+	return resp.json()["results"]
 
 
 def generate_random_name():
