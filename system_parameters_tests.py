@@ -24,6 +24,7 @@ class ApiTestCase(unittest.TestCase):
         password = self.config["2"]["pass"]
         contractName = "UpdateSysParam"
         maxInt = 9223372036854775807
+        minInt = -9223372036854775808
         #self.defaultValues = self.readDefaultParameters()
 
     def readDefaultParameters(self):
