@@ -472,6 +472,23 @@ class ApiTestCase(unittest.TestCase):
                                       conf["1"]["login"], conf["1"]["pass"],
                                       data1["key_id"])
         self.assertTrue(res, "Wallet for new user didn't created")
+        
+    def test_login2(self):
+        isOne = False
+        keys = config.getKeys() 
+        data1 = utils.login(url, keys["key3"])
+        time.sleep(5)
+        conf = config.getNodeConfig()
+        res = utils.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],
+                                      conf["1"]["login"], conf["1"]["pass"],
+                                      data1["key_id"])
+        if res == True:
+            data2 = utils.login(url, keys["key1"])
+            time.sleep(5)
+            isOne = utils.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],
+                                            conf["1"]["login"], conf["1"]["pass"],
+                                            data2["key_id"])
+            self.assertTrue(isOne, "Wallet for new user didn't created")
 
     def test_get_avatar_with_login(self):
         # add file in binaries
