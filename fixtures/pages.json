@@ -359,7 +359,7 @@
     "sys_var_ecosystem_name":{
 		"code": "Em(#ecosystem_name#)",
 		"menu": "default_menu",
-		"content": [{"tag": "em", "children": [{"tag": "text", "text": "new_ecosystem_name_Andromeda"}]}]
+		"content":""
 	},
     "sys_var_keyID":{
 		"code": "Em(#key_id#)",

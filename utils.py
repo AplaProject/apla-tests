@@ -183,6 +183,12 @@ def getCountTable(dbHost, dbName, login, password, table):
 	cursor.execute("SELECT count(*) FROM \"" + table + "\"")
 	return cursor.fetchall()[0][0]
 
+def getFounderId(dbHost, dbName, login, password):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT value FROM \"1_parameters\" WHERE name = 'founder_account'")
+	return cursor.fetchall()[0][0]
+
 def getCountDBObjects(dbHost, dbName, login, password):
 	tablesCount = {}
 	tables = getEcosysTables(dbHost, dbName, login, password)
