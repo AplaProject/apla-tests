@@ -42,9 +42,20 @@
 		"content": ""
 	},
     "now":{
-		"code": "P(Today is Now(DD.MM.YYYY)) %n P(Now: Now(datetime))",
+		"code": "Div(,Now(datetime,-3 hours))",
 		"menu": "default_menu",
-		"content": ""
+		"content":  {
+			  "tag": "div",
+			  "children": [
+				{
+				  "tag": "now",
+				  "attr": {
+					"format": "datetime",
+					"interval": "-3 hours"
+				  }
+				}
+			  ]
+			}
 	},
 	"divs":{
 		"code": "Div(content-wrapper){ %n Div(panel panel-primary){ %n Div(panel-heading, Header) %n }}",
@@ -348,7 +359,7 @@
     "sys_var_ecosystem_name":{
 		"code": "Em(#ecosystem_name#)",
 		"menu": "default_menu",
-		"content": [{"tag": "em", "children": [{"tag": "text", "text": "new_ecosystem_name_Andromeda"}]}]
+		"content":""
 	},
     "sys_var_keyID":{
 		"code": "Em(#key_id#)",

@@ -6,17 +6,22 @@ import json
 import time
 import funcs
 import datetime
+import os
 
 
 class PrototipoTestCase(unittest.TestCase):
     def setUp(self):
         self.config = config.getNodeConfig()
-        global url, prKey,token
+        global url, prKey, token, dbHost, dbName, login, password
         self.pages = config.readFixtures("pages")
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
         self.data = utils.login(url,prKey)
         token = self.data["jwtToken"]
+        dbHost = self.config["2"]["dbHost"]
+        dbName = self.config["2"]["dbName"]
+        login = self.config["2"]["login"]
+        password = self.config["2"]["pass"]
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
@@ -109,11 +114,16 @@ class PrototipoTestCase(unittest.TestCase):
     def test_page_now(self):
         contract = self.pages["now"]
         content = self.check_page(contract["code"])
-        today = "Today is " + str(datetime.date.today().strftime("%d.%m.%Y"))
-        now = "Now: " + str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        mustBe = dict(text1 = today, text2 = now)
-        page = dict(text1 = content["tree"][0]["children"][0]["text"],
-                    text2 = content["tree"][2]["children"][0]["text"])
+        contractContent = contract["content"]
+        partContent = content['tree'][0]
+        mustBe = dict(tagOwner=contractContent["tag"],
+                      tag=contractContent["children"][0]["tag"],
+                      format=contractContent["children"][0]["attr"]["format"],
+                      interval=contractContent["children"][0]["attr"]["interval"])
+        page = dict(tagOwner=partContent["tag"],
+                      tag=partContent["children"][0]["tag"],
+                      format=partContent["children"][0]["attr"]["format"],
+                      interval=partContent["children"][0]["attr"]["interval"])
         self.assertDictEqual(mustBe, page, "now has problem: " + str(content["tree"]))
         
     def test_page_divs(self):
@@ -501,14 +511,24 @@ class PrototipoTestCase(unittest.TestCase):
                              "ecosystemID has problem: " + str(content["tree"]))
 
     def test_page_sys_var_ecosystem_name(self):
+        # get ecosystem name from api
+        asserts = ["list"]
+        res = self.check_get_api("/list/ecosystems", "", asserts)
+        id = 1
+        i = 0
+        requiredEcosysName = ""
+        while i < int(res['count']):
+            if int(res['list'][i]['id']) == id:
+                requiredEcosysName = res['list'][i]['name']
+            i += 1
+        #test
         contract = self.pages["sys_var_ecosystem_name"]
         content = self.check_page(contract["code"])
         partContent = content['tree'][0]
-        contractContent = contract["content"][0]
-        mustBe = dict(tag=partContent['tag'],
-                      text=partContent['children'][0]["text"])
-        page = dict(tag=contractContent['tag'],
-                    text=contractContent['children'][0]["text"])
+        mustBe = dict(tag="em",
+                      text=requiredEcosysName)
+        page = dict(tag=partContent['tag'],
+                    text=partContent['children'][0]["text"])
         self.assertDictEqual(mustBe, page,
                              "ecosystem_name has problem: " + str(content["tree"]))
 
@@ -549,6 +569,94 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertEqual(contract["content"], page,
                         "dbfind_whereId_count has problem: " + contract["content"] + ". Content = " + str(content["tree"]))
 
+    def test_binary(self):
+        # this test has not fixture
+        name = "image_" + utils.generate_random_name()
+        appID = "1"
+        path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
+        with open(path, 'rb') as f:
+            file = f.read()
+        files = {'Data': file}
+        data = {"Name": name, "ApplicationId": appID}
+        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
+                                              files, token)
+        self.assertTxInBlock(resp, token)
+        self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
+        # test
+        MemberID = utils.getFounderId(dbHost, dbName, login, password)
+        lastRec = funcs.get_count(url, "binaries", token)
+        content = self.check_page("Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+")")
+        msg = "test_binary has problem. Content = " + str(content["tree"])
+        self.assertEqual("/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec", content["tree"][0]["text"])
+
+    def test_binary_by_id(self):
+        # this test has not fixture
+        name = "image_" + utils.generate_random_name()
+        appID = "1"
+        path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
+        with open(path, 'rb') as f:
+            file = f.read()
+        files = {'Data': file}
+        data = {"Name": name, "ApplicationId": appID}
+        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
+                                              files, token)
+        res = self.assertTxInBlock(resp, token)
+        self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
+        # test
+        lastRec = funcs.get_count(url, "binaries", token)
+        content = self.check_page("Binary().ById("+lastRec+")")
+        msg = "test_binary has problem. Content = " + str(content["tree"])
+        self.assertEqual("/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec", content["tree"][0]["text"])
+
+    def test_image_binary(self):
+        # this test has not fixture
+        name = "image_" + utils.generate_random_name()
+        appID = "1"
+        path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
+        with open(path, 'rb') as f:
+            file = f.read()
+        files = {'Data': file}
+        data = {"Name": name, "ApplicationId": appID}
+        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
+                                              files, token)
+        self.assertTxInBlock(resp, token)
+        self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
+        # test
+        MemberID = utils.getFounderId(dbHost, dbName, login, password)
+        lastRec = funcs.get_count(url, "binaries", token)
+        content = self.check_page("Image(Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+"))")
+        partContent = content["tree"][0]
+        mustBe = dict(tag=partContent['tag'],
+                      src=partContent['attr']["src"])
+        page = dict(tag="image",
+                    src="/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec")
+        self.assertDictEqual(mustBe, page,
+                             "test_image_binary has problem: " + str(content["tree"]))
+
+    def test_image_binary_by_id(self):
+        # this test has not fixture
+        name = "image_" + utils.generate_random_name()
+        appID = "1"
+        path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
+        with open(path, 'rb') as f:
+            file = f.read()
+        files = {'Data': file}
+        data = {"Name": name, "ApplicationId": appID}
+        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
+                                              files, token)
+        self.assertTxInBlock(resp, token)
+        self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
+        # test
+        lastRec = funcs.get_count(url, "binaries", token)
+        content = self.check_page("Image(Binary().ById("+lastRec+"))")
+        partContent = content["tree"][0]
+        mustBe = dict(tag=partContent['tag'],
+                      src=partContent['attr']["src"])
+        page = dict(tag="image",
+                    src="/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec")
+        self.assertDictEqual(mustBe, page,
+                             "test_image_binary_by_id has problem: " + str(content["tree"]))
+        
     def test_address(self):
         contract = self.pages["address"]
         content = self.check_page(contract["code"])

@@ -86,6 +86,12 @@ class ApiTestCase(unittest.TestCase):
         asserts = ["id", "name", "value", "conditions"]
         data = {}
         self.check_get_api("/ecosystemparam/founder_account/", data, asserts)
+        
+    def test_get_incorrect_ecosys_parametr(self):
+        asserts = ["id", "name", "value", "conditions"]
+        data = {}
+        error, message = self.get_error_api("/ecosystemparam/icorrectParam/", "")
+        self.assertEqual(error, "E_PARAMNOTFOUND", "Incorrect error: " + error + message)
 
     def test_get_tables_of_current_ecosystem(self):
         asserts = ["list", "count"]
@@ -466,6 +472,23 @@ class ApiTestCase(unittest.TestCase):
                                       conf["1"]["login"], conf["1"]["pass"],
                                       data1["key_id"])
         self.assertTrue(res, "Wallet for new user didn't created")
+        
+    def test_login2(self):
+        isOne = False
+        keys = config.getKeys() 
+        data1 = utils.login(url, keys["key3"])
+        time.sleep(5)
+        conf = config.getNodeConfig()
+        res = utils.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],
+                                      conf["1"]["login"], conf["1"]["pass"],
+                                      data1["key_id"])
+        if res == True:
+            data2 = utils.login(url, keys["key1"])
+            time.sleep(5)
+            isOne = utils.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],
+                                            conf["1"]["login"], conf["1"]["pass"],
+                                            data2["key_id"])
+            self.assertTrue(isOne, "Wallet for new user didn't created")
 
     def test_get_avatar_with_login(self):
         # add file in binaries
@@ -580,6 +603,36 @@ class ApiTestCase(unittest.TestCase):
         asserts = ["http://"]
         data = ""
         res = self.check_get_api("/config/centrifugo", data, asserts)
+
+    def test_content_hash(self):
+        # 1. test with login
+        # 2. test without login
+        # 3. negative test without login
+        def isHashNotEmpty(hash):
+            hash = str(hash)
+            if hash.find("{'hash':") != -1:
+                return True
+            else:
+                return False
+        name = "Page_" + utils.generate_random_name()
+        data = {"Name": name, "Value": "Div(,Hello page!)", "ApplicationId": 1,
+                "Conditions": "true", "Menu": "default_menu"}
+        res = self.call("NewPage", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        asserts = ["hash"]
+        authRes = self.check_post_api("/content/hash/" + name, "", asserts)
+        notAuthRes = requests.post(url + "/content/hash/" + name)
+        notAuthRes = notAuthRes.json()
+        page = "not_exist_page_xxxxxxxxx"
+        notAuthResNotExist = requests.post(url + "/content/hash/" + page)
+        notAuthResNotExist = notAuthResNotExist.json()
+        mustBe = dict(authRes=True,
+                      notAuthRes=True,
+                      msg="Page not found")
+        actual = dict(authRes=isHashNotEmpty(authRes),
+                      notAuthRes=isHashNotEmpty(notAuthRes),
+                      msg=notAuthResNotExist["msg"])
+        self.assertDictEqual(mustBe, actual, "Not all assertions passed in test_content_hash")
 
 if __name__ == '__main__':
     unittest.main()
