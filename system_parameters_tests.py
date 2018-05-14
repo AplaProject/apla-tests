@@ -11,7 +11,7 @@ import time
 class ApiTestCase(unittest.TestCase):
     def setUp(self):
         global url, token, prKey, pause,\
-            dbHost, dbName, login, password, contractName, maxInt
+            dbHost, dbName, login, password, contractName, maxInt, minInt
         self.config = config.getNodeConfig()
         url = self.config["2"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
