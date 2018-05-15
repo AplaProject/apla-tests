@@ -133,7 +133,83 @@ class SystemParametersCase(unittest.TestCase):
                       res7=res7)
         self.assertDictEqual(mustBe, actual, name+" has problem!")
 
-    #full_nodes
+    def test_full_nodes(self):
+        name = "full_nodes"
+        data1 = {"Name": name, "Value": -1}
+        data2 = {"Name": name, "Value": 0}
+        data3 = {"Name": name, "Value": 1000}
+        data4 = {"Name": name, "Value": "hello"}
+        data5 = {"Name": name, "Value": 1452.78}
+        #data6 = {"Name": name, "Value": "[]"} # correct data AP-824
+        data6 = {"Name": name, "Value": "1452.78"}
+        data7 = {"Name": name, "Value": "[{}]"}
+        data8 = {"Name": name, "Value": "[{},{}]"}
+        data9 = {"Name": name, "Value":  "[{\"tcp_addr\": \"127.0.0.1:7078\",\"api_address\": \"http://127.0.0.1:7079\",\"key_id\": \"193457000224851964\",\"public_key\": \"e279dbdeb9207bb2a49937a5234\"}]"}
+        data10 = {"Name": name, "Value": "[{\"tcp_address\": \"127.0.0.1:7078\",\"api_addr\": \"http://127.0.0.1:7079\",\"key_id\": \"193457000224851964\",\"public_key\": \"e279dbdeb9207bb2a49937a5234\"}]"}
+        data11 = {"Name": name, "Value": "[{\"tcp_address\": \"127.0.0.1:7078\",\"api_address\": \"http://127.0.0.1:7079\",\"key_ident\": \"193457000224851964\",\"public_key\": \"e279dbdeb9207bb2a49937a5234\"}]"}
+        data12 = {"Name": name, "Value": "[{\"tcp_address\": \"127.0.0.1:7078\",\"api_address\": \"http://127.0.0.1:7079\",\"key_id\": \"193457000224851964\",\"public_keyss\": \"e279dbdeb9207bb2a49937a5234\"}]"}
+        data13 = {"Name": name, "Value": "[{\"tcp_address\": \"127.0.0.1:7078\",\"api_address\": \"http://127.0.0.1:7079\",\"key_id\": \"193457000224851964\",\"public_key\": \"e279dbdeb9207bb2a49937a5234\"},{\"tcp_address1\": \"127.0.0.1:7078\",\"api_address1\": \"http://127.0.0.1:7079\",\"key_id1\": \"193457000224851964\",\"public_key1\": \"e279dbdeb9207bb2a49937a5234\"}]"}
+        data14 = {"Name": name, "Value": "[{\"tcp_address\": 100,\"api_address\": \"http://127.0.0.1:7079\",\"key_id\": \"193457000224851964\",\"public_keyss\": \"e279dbdeb9207bb2a49937a5234\"}]"}
+        data15 = {"Name": name, "Value": "[{\"tcp_address\": \"127.0.0.1:7078\",\"api_address\": http://127.0.0.1:7079,\"key_id\": \"193457000224851964\",\"public_keyss\": \"e279dbdeb9207bb2a49937a5234\"}]"}
+        data16 = {"Name": name, "Value": "[{\"tcp_address\": \"127.0.0.1:7078\",\"api_address\": \"http://127.0.0.1:7079\",\"key_id\": 1256.58,\"public_keyss\": \"e279dbdeb9207bb2a49937a5234\"}]"}
+        data17 = {"Name": name, "Value": "[{\"tcp_address\": \"127.0.0.1:7078\",\"api_address\": \"http://127.0.0.1:7079\",\"key_id\": 193457000224851964,\"public_keyss\": \"e279dbdeb9207bb2a49937a5234\"}]"}
+        data18 = {"Name": name, "Value": "[{\"tcp_address\": \"127.0.0.1:7078\",\"api_address\": \"http://127.0.0.1:7079\",\"key_id\": \"193457000224851964\",\"public_keyss\": 0}]"}
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = self.call(contractName, data6)
+        res7 = self.call(contractName, data7)
+        res8 = self.call(contractName, data8)
+        res9 = self.call(contractName, data9)
+        res10 = self.call(contractName, data10)
+        res11 = self.call(contractName, data11)
+        res12 = self.call(contractName, data12)
+        res13 = self.call(contractName, data13)
+        res14 = self.call(contractName, data14)
+        res15 = self.call(contractName, data15)
+        res16 = self.call(contractName, data16)
+        res17 = self.call(contractName, data17)
+        res18 = self.call(contractName, data18)
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=msg,
+                      res7=msg,
+                      res8=msg,
+                      res9=msg,
+                      res10=msg,
+                      res11=msg,
+                      res12=msg,
+                      res13=msg,
+                      res14=msg,
+                      res15=msg,
+                      res16=msg,
+                      res17=msg,
+                      res18=msg)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8,
+                      res9=res9,
+                      res10=res10,
+                      res11=res11,
+                      res12=res12,
+                      res13=res13,
+                      res14=res14,
+                      res15=res15,
+                      res16=res16,
+                      res17=res17,
+                      res18=res18)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
 
     def test_number_of_nodes(self):
         name = "number_of_nodes"
@@ -831,17 +907,7 @@ class SystemParametersCase(unittest.TestCase):
                       res9=res9,
                       res10=res10,
                       res11=res11,)
-        print(mustBe)
-        print(actual)
         self.assertDictEqual(mustBe, actual, name + " has problem!")
-
-    def test_1(self):
-        name = "commission_wallet"
-        data1 = {"Name": name, "Value": str(maxInt-1)}
-        res = self.call(contractName, data1)
-        print(res)
-        #print(mustBe)
-        #print(actual)
 
 if __name__ == '__main__':
     unittest.main()
