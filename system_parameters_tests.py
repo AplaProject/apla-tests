@@ -8,7 +8,7 @@ import os
 import time
 
 
-class ApiTestCase(unittest.TestCase):
+class SystemParametersCase(unittest.TestCase):
     def setUp(self):
         global url, token, prKey, pause,\
             dbHost, dbName, login, password, contractName, maxInt, minInt
