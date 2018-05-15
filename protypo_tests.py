@@ -694,6 +694,29 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertDictEqual(mustBe, page,
                              "money has problem: " + "\n" + str(content1["tree"]) + "\n" + str(content2["tree"]))
 
-        
+    def test_calculate(self):
+        contract = self.pages["calculate"]
+        content1 = self.check_page(contract["code1"])
+        content2 = self.check_page(contract["code2"])
+        content3 = self.check_page(contract["code3"])
+        content4 = self.check_page(contract["code4"])
+        content5 = self.check_page(contract["code5"])
+        partContent1 = content1['tree'][0]
+        partContent2 = content2['tree'][0]
+        partContent3 = content3['tree'][0]
+        partContent4 = content4['tree'][0]
+        partContent5 = content5['tree'][0]
+        contractContent1 = contract["content1"]
+        contractContent2 = contract["content2"]
+        contractContent3 = contract["content3"]
+        contractContent4 = contract["content4"]
+        contractContent5 = contract["content5"]
+        print(partContent1)
+        print(partContent2)
+        print(partContent3)
+        print(partContent4)
+        print(partContent5)
+
+
 if __name__ == '__main__':
     unittest.main()

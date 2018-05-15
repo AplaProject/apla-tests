@@ -416,5 +416,26 @@
 				}
 			  ]
 			}
+	},
+	"calculate": {
+		"code1": "SetVar(a,2) Span(Calculate( Exp: (3422788+5000)*(#a#-93278), Type: float ))",
+		"code2": "Calculate( Exp: 123.5554, Type: float, Prec :2 )",
+		"code3": "Span(Calculate( Exp: (3422788+5000)*(2-93278), Type: int, Prec:3 ))",
+		"code4": "Span(Calculate( Exp: (3422788+5000)*(2-93278), Type: float, Prec:-3 ))",
+		"code5": "Span(Calculate( Exp: (3422788+5000)*(2-93278), Type: int, Prec:0 ))",
+		"menu": "default_menu",
+		"content1": {
+			  "tag": "span",
+			  "children": [
+				{
+				  "tag": "text",
+				  "text": "-319730353488"
+				}
+			  ]
+			},
+		"content2": "",
+		"content3": "",
+		"content4": "",
+		"content5": ""
 	}
 }
