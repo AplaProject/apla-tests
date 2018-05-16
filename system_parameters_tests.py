@@ -222,24 +222,80 @@ class SystemParametersCase(unittest.TestCase):
         self.assertDictEqual(mustBe, actual, name + " has problem!")
 
     def test_full_nodes2(self):
+        # Positive test for 3 nodes
         name = "full_nodes"
         par = self.getSystemParameterValue(name)
-        print("Value of before = "+par)
         parJson = json.loads(par)
+        nodesCount = len(parJson)
         i = 0
-        while i < len(parJson):
+        while i < nodesCount:
             if parJson[i]["tcp_address"] == "127.0.0.1:7080":
                 parJson.pop(i)
                 break
             i += 1
         parJson = json.dumps(parJson)
-        print("Value of after  = " + parJson)
         data = {"Name": name, "Value": parJson}
         res = self.call(contractName, data)
-        print(res)
-        count_res = int(self.getCountBlocks())
-        print(str(count_res))
-
+        fullConfig = config.getNodeConfig()
+        nodes = nodesCount - 1
+        config1 = fullConfig["1"]
+        config2 = fullConfig["2"]
+        config3 = fullConfig["3"]
+        db1 = config1["dbName"]
+        db2 = config2["dbName"]
+        db3 = config3["dbName"]
+        login1 = config1["login"]
+        login2 = config2["login"]
+        login3 = config3["login"]
+        pas1 = config1["pass"]
+        pas2 = config2["pass"]
+        pas3 = config3["pass"]
+        host1 = config1["dbHost"]
+        host2 = config2["dbHost"]
+        host3 = config3["dbHost"]
+        ts_count = 8
+        self.data1 = utils.login(config1["url"], config1['private_key'])
+        i = 1
+        while i < ts_count:
+            contName = self.create_contract(config1["url"], config1['private_key'])
+            i = i + 1
+            time.sleep(1)
+        time.sleep(120)
+        count_contracts1 = utils.getCountDBObjects(host1, db1, login1, pas1)["contracts"]
+        count_contracts2 = utils.getCountDBObjects(host2, db2, login2, pas2)["contracts"]
+        count_contracts3 = utils.getCountDBObjects(host3, db3, login3, pas3)["contracts"]
+        maxBlockId1 = funcs.get_max_block_id(config1["url"], self.data1["jwtToken"])
+        self.data2 = utils.login(config2["url"], config1['private_key'])
+        maxBlockId2 = funcs.get_max_block_id(config2["url"], self.data2["jwtToken"])
+        self.data3 = utils.login(config3["url"], config3['private_key'])
+        maxBlockId3 = funcs.get_max_block_id(config3["url"], self.data3["jwtToken"])
+        maxBlockList = [maxBlockId1, maxBlockId2, maxBlockId3]
+        maxBlock = max(maxBlockList)
+        hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
+        hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
+        hash3 = utils.get_blockchain_hash(host3, db3, login3, pas3, maxBlock)
+        node_position = utils.compare_node_positions(host1, db1, login1, pas1, maxBlock, nodes)
+        dict1 = dict(count_contract=count_contracts1,
+                     hash=str(hash1),
+                     node_pos=str(node_position))
+        dict2 = dict(count_contract=count_contracts2,
+                     hash=str(hash2),
+                     node_pos="True")
+        dict3 = dict(count_contract=count_contracts3,
+                     hash=str(hash3),
+                     node_pos="False")
+        msg = "Test "+name+" is failed dict1 != dict2. contracts: \n"
+        msg += str(count_contracts1) + str(hash1) + str(node_position) + "\n"
+        msg += str(count_contracts2) + str(hash2) + str(node_position) + "\n"
+        self.assertDictEqual(dict1, dict2, msg)
+        msg = "Test " + name + " is failed dict2 != dict3. contracts: \n"
+        msg += str(count_contracts2) + str(hash2) + str(node_position) + "\n"
+        msg += str(count_contracts3) + str(hash3) + str(node_position) + "\n"
+        self.assertDictEqual(dict2, dict3, msg)
+        msg = "Test " + name + " is failed dict1 != dict3. contracts: \n"
+        msg += str(count_contracts1) + str(hash1) + str(node_position) + "\n"
+        msg += str(count_contracts3) + str(hash3) + str(node_position) + "\n"
+        self.assertDictEqual(dict1, dict3, msg)
 
     def test_number_of_nodes(self):
         name = "number_of_nodes"
