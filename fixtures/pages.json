@@ -393,5 +393,28 @@
 				}
 			  ]
 			}
+	},
+    "money": {
+		"code1": "Span(Money(200000000000))",
+		"code2": "Span(Money(10,-5))",
+		"menu": "default_menu",
+		"content1": {
+			  "tag": "span",
+			  "children": [
+				{
+				  "tag": "text",
+				  "text": "0.0000002"
+				}
+			  ]
+			},
+		"content2": {
+			  "tag": "span",
+			  "children": [
+				{
+				  "tag": "text",
+				  "text": "1000000"
+				}
+			  ]
+			}
 	}
 }

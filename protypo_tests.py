@@ -671,6 +671,29 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertDictEqual(mustBe, page,
                              "address has problem: " + str(content["tree"]))
 
+    def test_money(self):
+        contract = self.pages["money"]
+        content1 = self.check_page(contract["code1"])
+        content2 = self.check_page(contract["code2"])
+        partContent1 = content1['tree'][0]
+        partContent2 = content2['tree'][0]
+        contractContent1 = contract["content1"]
+        contractContent2 = contract["content2"]
+        mustBe = dict(tagOwner1=contractContent1['tag'],
+                      tag1=contractContent1['children'][0]["tag"],
+                      text1=contractContent1['children'][0]["text"],
+                      tagOwner2 = contractContent2['tag'],
+                      tag2 = contractContent2['children'][0]["tag"],
+                      text2 = contractContent2['children'][0]["text"])
+        page = dict(tagOwner1=partContent1['tag'],
+                    tag1=partContent1['children'][0]["tag"],
+                    text1=partContent1['children'][0]["text"],
+                    tagOwner2=partContent2['tag'],
+                    tag2=partContent2['children'][0]["tag"],
+                    text2=partContent2['children'][0]["text"])
+        self.assertDictEqual(mustBe, page,
+                             "money has problem: " + "\n" + str(content1["tree"]) + "\n" + str(content2["tree"]))
+
         
 if __name__ == '__main__':
     unittest.main()
