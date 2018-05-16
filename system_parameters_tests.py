@@ -58,6 +58,10 @@ class SystemParametersCase(unittest.TestCase):
     def getCountBlocks(self):
         return utils.getCountTable(dbHost, dbName, login, password, "block_chain")
 
+    def getSystemParameterValue(self, name):
+        return utils.getSystemParameterValue(dbHost, dbName, login, password, name)
+
+
 
     #default_ecosystem_page
     #default_ecosystem_menu
