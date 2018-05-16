@@ -41,7 +41,7 @@ class SystemContractsTestCase(unittest.TestCase):
         resp = self.assertTxInBlock(resp, token)
         return resp
     
-    def waitBlockId(old_block_id, limit):
+    def waitBlockId(self, old_block_id, limit):
         while True:
             # add contract, which get block_id
             body = "{\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
