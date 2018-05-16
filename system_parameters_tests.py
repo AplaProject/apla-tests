@@ -11,7 +11,7 @@ import time
 class SystemParametersCase(unittest.TestCase):
     def setUp(self):
         global url, token, prKey, pause,\
-            dbHost, dbName, login, password, contractName, maxInt, minInt
+            dbHost, dbName, login, password, contractName, maxInt, minInt, defaultValues, defaultValueKey
         self.config = config.getNodeConfig()
         url = self.config["2"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
@@ -25,7 +25,8 @@ class SystemParametersCase(unittest.TestCase):
         contractName = "UpdateSysParam"
         maxInt = 9223372036854775807
         minInt = -9223372036854775808
-        #self.defaultValues = self.readDefaultParameters()
+        defaultValueKey = "system_parameters"
+        defaultValues = self.readDefaultParameters()
 
     def readDefaultParameters(self):
         path = os.path.join(os.getcwd(), "defaultSystemParameters.json")
@@ -82,7 +83,7 @@ class SystemParametersCase(unittest.TestCase):
         data4 = {"Name": name, "Value": "hello"}
         data5 = {"Name": name, "Value": "1452.78"}
         data6 = {"Name": name, "Value": "3"}
-        data7 = {"Name": name, "Value": "2"} # set default value
+        data7 = {"Name": name, "Value": defaultValues[defaultValueKey][name]} # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -117,7 +118,7 @@ class SystemParametersCase(unittest.TestCase):
         data4 = {"Name": name, "Value": "hello"}
         data5 = {"Name": name, "Value": "1452.78"}
         data6 = {"Name": name, "Value": "999"}
-        data7 = {"Name": name, "Value": "60"} # set default value
+        data7 = {"Name": name, "Value": defaultValues[defaultValueKey][name]} # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -151,7 +152,8 @@ class SystemParametersCase(unittest.TestCase):
         data3 = {"Name": name, "Value": 1000}
         data4 = {"Name": name, "Value": "hello"}
         data5 = {"Name": name, "Value": 1452.78}
-        data6 = {"Name": name, "Value": "[]"}
+        #data6 = {"Name": name, "Value": "[]"}
+        data6 = {"Name": name, "Value": "1452.78"}
         data7 = {"Name": name, "Value": "[{}]"}
         data8 = {"Name": name, "Value": "[{},{}]"}
         data9 = {"Name": name, "Value":  "[{\"tcp_addr\": \"127.0.0.1:7078\",\"api_address\": \"http://127.0.0.1:7079\",\"key_id\": \"193457000224851964\",\"public_key\": \"e279dbdeb9207bb2a49937a5234\"}]"}
@@ -305,7 +307,7 @@ class SystemParametersCase(unittest.TestCase):
         data4 = {"Name": name, "Value": "hello"}
         data5 = {"Name": name, "Value": "1452.78"}
         data6 = {"Name": name, "Value": "999"}
-        data7 = {"Name": name, "Value": "101"}  # set default value
+        data7 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -341,7 +343,7 @@ class SystemParametersCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "59523"}
         data7 = {"Name": name, "Value": str(maxInt)}
-        data8 = {"Name": name, "Value": "1000"}  # set default value
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -382,7 +384,7 @@ class SystemParametersCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "59523"}
         data7 = {"Name": name, "Value": str(maxInt)}
-        data8 = {"Name": name, "Value": "200"}  # set default value
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -423,7 +425,7 @@ class SystemParametersCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "59523"}
         data7 = {"Name": name, "Value": str(maxInt)}
-        data8 = {"Name": name, "Value": "200"}  # set default value
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -464,7 +466,7 @@ class SystemParametersCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "59523"}
         data7 = {"Name": name, "Value": str(maxInt)}
-        data8 = {"Name": name, "Value": "200"}  # set default value
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -505,7 +507,7 @@ class SystemParametersCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "59523"}
         data7 = {"Name": name, "Value": str(maxInt)}
-        data8 = {"Name": name, "Value": "100"}  # set default value
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -546,7 +548,7 @@ class SystemParametersCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "59523"}
         data7 = {"Name": name, "Value": str(maxInt)}
-        data8 = {"Name": name, "Value": "100"}  # set default value
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -587,7 +589,7 @@ class SystemParametersCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "59523"}
         data7 = {"Name": name, "Value": str(maxInt)}
-        data8 = {"Name": name, "Value": "67108864"}  # set default value
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -627,7 +629,7 @@ class SystemParametersCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "59523"}
         data7 = {"Name": name, "Value": str(maxInt)}
-        data8 = {"Name": name, "Value": "33554432"}  # set default value
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -667,7 +669,7 @@ class SystemParametersCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "59523"}
         data7 = {"Name": name, "Value": str(maxInt)}
-        data8 = {"Name": name, "Value": "1000"}  # set default value
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -707,7 +709,7 @@ class SystemParametersCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "59523"}
         data7 = {"Name": name, "Value": str(maxInt)}
-        data8 = {"Name": name, "Value": "50"}  # set default value
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -747,7 +749,7 @@ class SystemParametersCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "59523"}
         data7 = {"Name": name, "Value": str(maxInt)}
-        data8 = {"Name": name, "Value": "5"}  # set default value
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -787,7 +789,7 @@ class SystemParametersCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "59523"}
         data7 = {"Name": name, "Value": str(maxInt)}
-        data8 = {"Name": name, "Value": "100"}  # set default value
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -827,7 +829,7 @@ class SystemParametersCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "5952300"}
         data7 = {"Name": name, "Value": str(maxInt)}
-        data8 = {"Name": name, "Value": "100000"}  # set default value
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -867,7 +869,7 @@ class SystemParametersCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "5952300"}
         data7 = {"Name": name, "Value": str(maxInt)}
-        data8 = {"Name": name, "Value": "100000"}  # set default value
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -907,7 +909,7 @@ class SystemParametersCase(unittest.TestCase):
         data5 = {"Name": name, "Value": "0"}
         data6 = {"Name": name, "Value": "5952300"}
         data7 = {"Name": name, "Value": str(maxInt)} #FAIL
-        data8 = {"Name": name, "Value": "3"}  # set default value
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
@@ -952,7 +954,7 @@ class SystemParametersCase(unittest.TestCase):
         data8 = {"Name": name, "Value": "-5958756388"}
         data9 = {"Name": name, "Value": str(minInt)}
         data10 = {"Name": name, "Value": str(maxInt)}
-        data11 = {"Name": name, "Value": "3"}  # set default value
+        data11 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
         res1 = self.call(contractName, data1)
         res2 = self.call(contractName, data2)
         res3 = self.call(contractName, data3)
