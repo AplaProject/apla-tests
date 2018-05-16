@@ -214,6 +214,26 @@ class SystemParametersCase(unittest.TestCase):
                       res18=res18)
         self.assertDictEqual(mustBe, actual, name + " has problem!")
 
+    def test_full_nodes2(self):
+        name = "full_nodes"
+        par = self.getSystemParameterValue(name)
+        print("Value of before = "+par)
+        parJson = json.loads(par)
+        i = 0
+        while i < len(parJson):
+            if parJson[i]["tcp_address"] == "127.0.0.1:7080":
+                parJson.pop(i)
+                break
+            i += 1
+        parJson = json.dumps(parJson)
+        print("Value of after  = " + parJson)
+        data = {"Name": name, "Value": parJson}
+        res = self.call(contractName, data)
+        print(res)
+        count_res = int(self.getCountBlocks())
+        print(str(count_res))
+
+
     def test_number_of_nodes(self):
         name = "number_of_nodes"
         data1 = {"Name": name, "Value": "-1"}
