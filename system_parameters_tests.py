@@ -55,6 +55,13 @@ class SystemParametersCase(unittest.TestCase):
         resp = self.assertTxInBlock(resp, token)
         return resp
 
+    def create_contract(self, url, prKey):
+        code,name = utils.generate_name_and_code("")
+        data = {'Wallet': '', 'Value': code, "ApplicationId": 1,
+                'Conditions': "ContractConditions(`MainCondition`)"}
+        resp = utils.call_contract(url, prKey, "NewContract", data, self.data1["jwtToken"])
+        return name
+
     def getCountBlocks(self):
         return utils.getCountTable(dbHost, dbName, login, password, "block_chain")
 
