@@ -1045,7 +1045,7 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # NewDelayedContract
-        newLimit = 5
+        newLimit = 3
         data = {"Contract": contract_name, "EveryBlock": "1", "Conditions": "true", "Limit":newLimit}
         res = self.call("NewDelayedContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
@@ -1063,7 +1063,7 @@ class SystemContractsTestCase(unittest.TestCase):
         # wait block_id until run CallDelayedContract
         self.waitBlockId(old_block_id, newLimit)
         # EditDelayedContract
-        editLimit = 4
+        editLimit = 2
         data = {"Id":id, "Contract": contract_name, "EveryBlock": "1", "Conditions": "true", "Limit":editLimit}
         res = self.call("EditDelayedContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
