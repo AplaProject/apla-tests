@@ -144,7 +144,7 @@ class SystemParametersCase(unittest.TestCase):
                       res7=res7)
         self.assertDictEqual(mustBe, actual, name+" has problem!")
 
-    def test_full_nodes(self):
+    def test_full_nodes1(self):
         name = "full_nodes"
         data1 = {"Name": name, "Value": -1}
         data2 = {"Name": name, "Value": 0}
