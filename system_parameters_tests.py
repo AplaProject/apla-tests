@@ -140,8 +140,7 @@ class SystemParametersCase(unittest.TestCase):
         data3 = {"Name": name, "Value": 1000}
         data4 = {"Name": name, "Value": "hello"}
         data5 = {"Name": name, "Value": 1452.78}
-        #data6 = {"Name": name, "Value": "[]"} # correct data AP-824
-        data6 = {"Name": name, "Value": "1452.78"}
+        data6 = {"Name": name, "Value": "[]"}
         data7 = {"Name": name, "Value": "[{}]"}
         data8 = {"Name": name, "Value": "[{},{}]"}
         data9 = {"Name": name, "Value":  "[{\"tcp_addr\": \"127.0.0.1:7078\",\"api_address\": \"http://127.0.0.1:7079\",\"key_id\": \"193457000224851964\",\"public_key\": \"e279dbdeb9207bb2a49937a5234\"}]"}
