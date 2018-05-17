@@ -255,8 +255,15 @@ class SystemParametersCase(unittest.TestCase):
         host1 = config1["dbHost"]
         host2 = config2["dbHost"]
         host3 = config3["dbHost"]
-        ts_count = 8
         self.data1 = utils.login(config1["url"], config1['private_key'])
+        self.data2 = utils.login(config2["url"], config1['private_key'])
+        self.data3 = utils.login(config3["url"], config3['private_key'])
+        minBlockId1 = funcs.get_max_block_id(config1["url"], self.data1["jwtToken"])
+        minBlockId2 = funcs.get_max_block_id(config2["url"], self.data2["jwtToken"])
+        minBlockId3 = funcs.get_max_block_id(config3["url"], self.data3["jwtToken"])
+        minBlockList = [minBlockId1, minBlockId2, minBlockId3]
+        minBlock = int(max(minBlockList)) + 2
+        ts_count = 20
         i = 1
         while i < ts_count:
             contName = self.create_contract(config1["url"], config1['private_key'])
@@ -267,36 +274,30 @@ class SystemParametersCase(unittest.TestCase):
         count_contracts2 = utils.getCountDBObjects(host2, db2, login2, pas2)["contracts"]
         count_contracts3 = utils.getCountDBObjects(host3, db3, login3, pas3)["contracts"]
         maxBlockId1 = funcs.get_max_block_id(config1["url"], self.data1["jwtToken"])
-        self.data2 = utils.login(config2["url"], config1['private_key'])
         maxBlockId2 = funcs.get_max_block_id(config2["url"], self.data2["jwtToken"])
-        self.data3 = utils.login(config3["url"], config3['private_key'])
         maxBlockId3 = funcs.get_max_block_id(config3["url"], self.data3["jwtToken"])
         maxBlockList = [maxBlockId1, maxBlockId2, maxBlockId3]
         maxBlock = max(maxBlockList)
         hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
         hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
         hash3 = utils.get_blockchain_hash(host3, db3, login3, pas3, maxBlock)
-        node_position = utils.compare_node_positions(host1, db1, login1, pas1, maxBlock, nodes)
+        missingNode = utils.check_for_missing_node(host1, db1, login1, pas1, minBlock, maxBlock)
         dict1 = dict(count_contract=count_contracts1,
                      hash=str(hash1),
-                     node_pos=str(node_position))
+                     node_pos=str(missingNode))
         dict2 = dict(count_contract=count_contracts2,
                      hash=str(hash2),
                      node_pos="True")
         dict3 = dict(count_contract=count_contracts3,
                      hash=str(hash3),
-                     node_pos="False")
+                     node_pos="True")
         msg = "Test "+name+" is failed dict1 != dict2. contracts: \n"
-        msg += str(count_contracts1) + str(hash1) + str(node_position) + "\n"
-        msg += str(count_contracts2) + str(hash2) + str(node_position) + "\n"
+        msg += str(count_contracts1) + str(hash1) + str(missingNode) + "\n"
+        msg += str(count_contracts2) + str(hash2) + str(missingNode) + "\n"
         self.assertDictEqual(dict1, dict2, msg)
-        msg = "Test " + name + " is failed dict2 != dict3. contracts: \n"
-        msg += str(count_contracts2) + str(hash2) + str(node_position) + "\n"
-        msg += str(count_contracts3) + str(hash3) + str(node_position) + "\n"
-        self.assertDictEqual(dict2, dict3, msg)
         msg = "Test " + name + " is failed dict1 != dict3. contracts: \n"
-        msg += str(count_contracts1) + str(hash1) + str(node_position) + "\n"
-        msg += str(count_contracts3) + str(hash3) + str(node_position) + "\n"
+        msg += str(count_contracts1) + str(hash1) + str(missingNode) + "\n"
+        msg += str(count_contracts3) + str(hash3) + str(missingNode) + "\n"
         self.assertDictEqual(dict1, dict3, msg)
 
     def test_number_of_nodes(self):
