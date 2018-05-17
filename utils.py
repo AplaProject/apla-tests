@@ -150,6 +150,18 @@ def compare_node_positions(dbHost, dbName, login, password, maxBlockId, nodes):
 		i = i + 1
 	return True
 
+def check_for_missing_node(dbHost, dbName, login, password, minBlockId, maxBlockId):
+	request = "SELECT node_position FROM block_chain WHERE id>=" + str(minBlockId) + " AND id<=" + str(maxBlockId)
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute(request)
+	positions = cursor.fetchall()
+	i = 0
+	while i < len(positions):
+		if positions[i][0] == 2:
+			return False
+		i = i + 1
+	return True
 
 def get_count_records_block_chain(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
