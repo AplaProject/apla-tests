@@ -116,7 +116,7 @@ def txstatus_multi(url, sleepTime, hshs, jvtToken):
 	time.sleep(len(hshs) * sleepTime)
 	urlEnd = url + '/txstatusMultiple/'
 	resp = requests.get(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
-	return resp.json()["results"]
+	return resp.json()
 
 
 def generate_random_name():
@@ -176,6 +176,23 @@ def compare_node_positions(dbHost, dbName, login, password, maxBlockId, nodes):
 	while i < len(positions):
 		if positions[i][1] < countBlocks-1:
 			print("Node " + str(i) + "generated " + str(positions[i][1]) + "blocks:" + str(positions))
+			return False
+		i = i + 1
+	return True
+
+
+def isCountTxInBlock(dbHost, dbName, login, password, maxBlockId, countTx):
+	minBlock = maxBlockId - 3
+	request = "SELECT id, tx FROM block_chain WHERE id>" + str(minBlock) + " AND id<" + str(maxBlockId)
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute(request)
+	tx = cursor.fetchall()
+	i = 0
+	while i < len(tx):
+		if tx[i][1] > countTx:
+			print("Block " + tx[i][0] + " contains " +\
+				tx[i][1] + " transactions")
 			return False
 		i = i + 1
 	return True
