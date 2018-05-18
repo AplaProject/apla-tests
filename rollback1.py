@@ -8,15 +8,15 @@ import os
 
 
 class Rollback1TestCase(unittest.TestCase):
-    
+
     def call(self, name, data):
         resp = utils.call_contract(url, prKey, name, data, token)
         res = utils.txstatus(url, waitTx,
-                       resp['hash'], token)
+                             resp['hash'], token)
         return res
-        
+
     def create_contract(self, data):
-        code,name = utils.generate_name_and_code("")
+        code, name = utils.generate_name_and_code("")
         dataC = {}
         if data == "":
             dataC = {"Wallet": '', "ApplicationId": 1,
@@ -26,76 +26,107 @@ class Rollback1TestCase(unittest.TestCase):
             dataC = data
         res = self.call("NewContract", dataC)
         return name, code
-        
+
+    def addNotification(self):
+        # create contract, wich added record in notifications table
+        keyID = "-8399130570195839739"
+        ins = """DBInsert("notifications", "recipient->member_id,notification->type,notification->header,notification->body", """ + keyID + """, 1, "Message header", "Message body")"""
+        body = """ { \n data {}	\n conditions {} \n	action { \n """ + ins + """ \n } }"""
+        name = "rollCon_" + utils.generate_random_name()
+        code = str("contract " + name + body)
+        data = {"Wallet": '', "ApplicationId": 1,
+                "Value": code,
+                "Conditions": "ContractConditions(`MainCondition`)"}
+        res = self.create_contract(data)
+        # change permission for notifications table
+        permission = """{"insert": "true","update" : "true","new_column": "true"}"""
+        dataEdit = {"Name": "notifications", "Permissions": permission}
+        res = self.call("EditTable", dataEdit)
+        # call contract, wich added record in notification table
+        res = self.call(name, "")
+        # change permission for notifications table back
+        permission = """{"insert": "ContractAccess(\\"Notifications_Single_Send_map\\",\\"Notifications_Roles_Send_map\\")", "update": "ContractConditions(\\"MainCondition\\")", "new_column": "ContractConditions(\\"MainCondition\\")"}"""
+        dataEdit = {"Name": "notifications", "Permissions": permission}
+        res = self.call("EditTable", dataEdit)
+
+    def addBinary(self):
+        name = "image_" + utils.generate_random_name()
+        path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
+        with open(path, 'rb') as f:
+            file = f.read()
+        files = {'Data': file}
+        data = {"Name": name, "ApplicationId": 1}
+        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
+                                              files, token)
+
     def create_ecosystem(self):
         data = {"Name": "Ecosys" + utils.generate_random_name()}
         res = self.call("NewEcosystem", data)
-        
+
     def money_transfer(self):
         data = {"Recipient": "0005-2070-2000-0006-0200",
                 "Amount": "1000"}
         res = self.call("MoneyTransfer", data)
-        
-        
-    def edit_contract(self,contract, code):
+
+    def edit_contract(self, contract, code):
         data2 = {"Id": funcs.get_contract_id(url, contract, token),
                  "Value": code,
                  "Conditions": "true",
                  "WalletId": "0005-2070-2000-0006-0200"}
         res = self.call("EditContract", data2)
-        
+
     def activate_contract(self, name):
         data = {"Id": funcs.get_contract_id(url, name, token)}
         res = self.call("ActivateContract", data)
-        
+
     def deactivate_contract(self, name):
         data = {"Id": funcs.get_contract_id(url, name, token)}
         res = self.call("DeactivateContract", data)
-        
+
     def new_parameter(self):
         name = "Par_" + utils.generate_random_name()
         data = {"Name": name, "ApplicationId": 1,
                 "Value": "test", "Conditions": "true"}
         res = self.call("NewParameter", data)
         return name
-    
+
     def edit_parameter(self, name):
         data = {"Id": funcs.get_parameter_id(url, name, token),
                 "Value": "test_edited", "Conditions": "true"}
         res = self.call("EditParameter", data)
-        
+
     def new_menu(self):
         name = "Menu_" + utils.generate_random_name()
         data = {"Name": name, "ApplicationId": 1,
                 "Value": "Item1", "Conditions": "true"}
         res = self.call("NewMenu", data)
         return name
-    
+
     def edit_menu(self):
         dataEdit = {"Id": funcs.get_count(url, "menu", token),
                     "Value": "ItemEdited", "Conditions": "true"}
         res = self.call("EditMenu", dataEdit)
-        
+
     def append_memu(self):
         count = funcs.get_count(url, "menu", token)
         dataEdit = {"Id": funcs.get_count(url, "menu", token),
                     "Value": "AppendedItem", "Conditions": "true"}
         res = self.call("AppendMenu", dataEdit)
-        
+
     def new_page(self):
         data = {"Name": "Page_" + utils.generate_random_name(),
                 "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true",
                 "Menu": "default_menu"}
         res = self.call("NewPage", data)
-        
+
     def edit_page(self):
         dataEdit = {"Id": funcs.get_count(url, "pages", token),
                     "Value": "Good by page!",
                     "Conditions": "true",
                     "Menu": "default_menu"}
         res = self.call("EditPage", dataEdit)
-        
+
     def append_page(self):
         count = funcs.get_count(url, "pages", token)
         dataEdit = {"Id": funcs.get_count(url, "pages", token),
@@ -103,19 +134,19 @@ class Rollback1TestCase(unittest.TestCase):
                     "Conditions": "true",
                     "Menu": "default_menu"}
         res = self.call("AppendPage", dataEdit)
-        
+
     def new_block(self):
         name = "Block_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewBlock", data)
-        
+
     def edit_block(self):
         count = funcs.get_count(url, "blocks", token)
         dataEdit = {"Id": count, "Value": "Good by!",
                     "Conditions": "true"}
         res = self.call("EditBlock", dataEdit)
-        
+
     def new_table(self):
         column = """[{"name":"MyName","type":"varchar",
         "index": "1","conditions":"true"}]"""
@@ -183,10 +214,10 @@ class Rollback1TestCase(unittest.TestCase):
         valueE += "\" ,  \"title\": \"" + name
         valueE += "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
         dataEdit = {"Id": funcs.get_count(url, "signatures", token),
-                   "Value": valueE,
-                   "Conditions": "true"}
+                    "Value": valueE,
+                    "Conditions": "true"}
         res = self.call("EditSign", dataEdit)
-        
+
     def test_rollback1(self):
         global url, prKey, token, waitTx
         self.conf = config.readMainConfig()
@@ -203,9 +234,13 @@ class Rollback1TestCase(unittest.TestCase):
             json.dump(dbInformation, fconf)
         lData = utils.login(url, prKey)
         token = lData["jwtToken"]
+
+        self.addBinary()
+        self.addNotification()
+
         self.money_transfer()
-        contract,code = self.create_contract("")
-        self.edit_contract(contract,code)
+        contract, code = self.create_contract("")
+        self.edit_contract(contract, code)
         self.activate_contract(contract)
         self.deactivate_contract(contract)
         param = self.new_parameter()
@@ -228,7 +263,7 @@ class Rollback1TestCase(unittest.TestCase):
         sign = self.new_sign()
         self.edit_sign(sign)
         time.sleep(20)
-        
+
+
 if __name__ == "__main__":
     unittest.main()
-        
