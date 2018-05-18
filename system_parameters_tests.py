@@ -1007,5 +1007,16 @@ class SystemParametersCase(unittest.TestCase):
         mustBe = "system parameters access denied"
         res = self.call(name, "")
         self.assertEqual(mustBe, res, "test_dbInsert_access_denied has problem!")
+
+    def test_dbUpdate_access_denied(self):
+        value = """ {data {} conditions {} action {DBUpdate("system_parameters", 1,"name,value,conditions", "my_param_upd", "hello_upd", "true")}}"""
+        code, name = utils.generate_name_and_code(value)
+        data = {'Wallet': '', 'Value': code, "ApplicationId": 1,
+                'Conditions': "ContractConditions(`MainCondition`)"}
+        res = self.call("NewContract", data)
+        mustBe = "system parameters access denied"
+        res = self.call(name, "")
+        self.assertEqual(mustBe, res, "test_dbUpdate_access_denied has problem!")
+
 if __name__ == '__main__':
     unittest.main()
