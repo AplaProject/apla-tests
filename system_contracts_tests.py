@@ -642,6 +642,18 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
+    def test_new_table_empty_name(self):
+        column = """[{"name":"MyName","type":"varchar",
+        "index": "1",  "conditions":"true"}]"""
+        permission = """{"insert": "false",
+        "update" : "true","new_column": "true"}"""
+        data = {"Name": "",
+                "Columns": column, "ApplicationId": 1,
+                "Permissions": permission}
+        res = self.call("NewTable", data)
+        msg = "The table name cannot be empty"
+        self.assertEqual(msg, res, "Incorrect message: " + res)
+
     def test_new_table_incorrect_condition1(self):
         data = {}
         data["Name"] = "Tab_" + utils.generate_random_name()
