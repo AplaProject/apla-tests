@@ -740,6 +740,55 @@ class PrototipoTestCase(unittest.TestCase):
         moneyContent14 = self.check_page(contract["moneyCode14"])
         partMoneyContent14 = moneyContent14['tree'][0]
         contractMoneyContent14 = contract["moneyContent14"]
+        moneyContent15 = self.check_page(contract["moneyCode15"])
+        partMoneyContent15 = moneyContent15['tree'][0]
+        contractMoneyContent15 = contract["moneyContent15"]
+        # Set for type of money
+        floatContent1 = self.check_page(contract["floatCode1"])
+        partFloatContent1 = floatContent1['tree'][0]
+        contractFloatContent1 = contract["floatContent1"]
+        floatContent2 = self.check_page(contract["floatCode2"])
+        partFloatContent2 = floatContent2['tree'][0]
+        contractFloatContent2 = contract["floatContent2"]
+        floatContent3 = self.check_page(contract["floatCode3"])
+        partFloatContent3 = floatContent3['tree'][0]
+        contractFloatContent3 = contract["floatContent3"]
+        floatContent4 = self.check_page(contract["floatCode4"])
+        partFloatContent4 = floatContent4['tree'][0]
+        contractFloatContent4 = contract["floatContent4"]
+        floatContent5 = self.check_page(contract["floatCode5"])
+        partFloatContent5 = floatContent5['tree'][0]
+        contractFloatContent5 = contract["floatContent5"]
+        floatContent6 = self.check_page(contract["floatCode6"])
+        partFloatContent6 = floatContent6['tree'][0]
+        contractFloatContent6 = contract["floatContent6"]
+        floatContent7 = self.check_page(contract["floatCode7"])
+        partFloatContent7 = floatContent7['tree'][0]
+        contractFloatContent7 = contract["floatContent7"]
+        floatContent8 = self.check_page(contract["floatCode8"])
+        partFloatContent8 = floatContent8['tree'][0]
+        contractFloatContent8 = contract["floatContent8"]
+        floatContent9 = self.check_page(contract["floatCode9"])
+        partFloatContent9 = floatContent9['tree'][0]
+        contractFloatContent9 = contract["floatContent9"]
+        floatContent10 = self.check_page(contract["floatCode10"])
+        partFloatContent10 = floatContent10['tree'][0]
+        contractFloatContent10 = contract["floatContent10"]
+        floatContent11 = self.check_page(contract["floatCode11"])
+        partFloatContent11 = floatContent11['tree'][0]
+        contractFloatContent11 = contract["floatContent11"]
+        floatContent12 = self.check_page(contract["floatCode12"])
+        partFloatContent12 = floatContent12['tree'][0]
+        contractFloatContent12 = contract["floatContent12"]
+        floatContent13 = self.check_page(contract["floatCode13"])
+        partFloatContent13 = floatContent13['tree'][0]
+        contractFloatContent13 = contract["floatContent13"]
+        floatContent14 = self.check_page(contract["floatCode14"])
+        partFloatContent14 = floatContent14['tree'][0]
+        contractFloatContent14 = contract["floatContent14"]
+        floatContent15 = self.check_page(contract["floatCode15"])
+        partFloatContent15 = floatContent15['tree'][0]
+        contractFloatContent15 = contract["floatContent15"]
 
         # money=contractMoneyContent['children'][0]["text"]
         mustBe = dict(money1=contractMoneyContent1['children'][0]["text"],
@@ -755,7 +804,23 @@ class PrototipoTestCase(unittest.TestCase):
                       money11=contractMoneyContent11['children'][0]["text"],
                       money12=contractMoneyContent12['children'][0]["text"],
                       money13=contractMoneyContent13['children'][0]["text"],
-                      money14=contractMoneyContent14['children'][0]["text"]
+                      money14=contractMoneyContent14['children'][0]["text"],
+                      money15=contractMoneyContent15['children'][0]["text"],
+                      float1=contractFloatContent1['children'][0]["text"],
+                      float2=contractFloatContent2['children'][0]["text"],
+                      float3=contractFloatContent3['children'][0]["text"],
+                      float4=contractFloatContent4['children'][0]["text"],
+                      float5=contractFloatContent5['children'][0]["text"],
+                      float6=contractFloatContent6['children'][0]["text"],
+                      float7=contractFloatContent7['children'][0]["text"],
+                      float8=contractFloatContent8['children'][0]["text"],
+                      float9=contractFloatContent9['children'][0]["text"],
+                      float10=contractFloatContent10['children'][0]["text"],
+                      float11=contractFloatContent11['children'][0]["text"],
+                      float12=contractFloatContent12['children'][0]["text"],
+                      float13=contractFloatContent13['children'][0]["text"],
+                      float14=contractFloatContent14['children'][0]["text"],
+                      float15=contractFloatContent15['children'][0]["text"]
                       )
 
         # money=partMoneyContent['children'][0]["text"]
@@ -772,7 +837,23 @@ class PrototipoTestCase(unittest.TestCase):
                     money11=partMoneyContent11['children'][0]["text"],
                     money12=partMoneyContent12['children'][0]["text"],
                     money13=partMoneyContent13['children'][0]["text"],
-                    money14=partMoneyContent14['children'][0]["text"]
+                    money14=partMoneyContent14['children'][0]["text"],
+                    money15=partMoneyContent15['children'][0]["text"],
+                    float1=partFloatContent1['children'][0]["text"],
+                    float2=partFloatContent2['children'][0]["text"],
+                    float3=partFloatContent3['children'][0]["text"],
+                    float4=partFloatContent4['children'][0]["text"],
+                    float5=partFloatContent5['children'][0]["text"],
+                    float6=partFloatContent6['children'][0]["text"],
+                    float7=partFloatContent7['children'][0]["text"],
+                    float8=partFloatContent8['children'][0]["text"],
+                    float9=partFloatContent9['children'][0]["text"],
+                    float10=partFloatContent10['children'][0]["text"],
+                    float11=partFloatContent11['children'][0]["text"],
+                    float12=partFloatContent12['children'][0]["text"],
+                    float13=partFloatContent13['children'][0]["text"],
+                    float14=partFloatContent14['children'][0]["text"],
+                    float15=partFloatContent15['children'][0]["text"]
                     )
 
         self.assertDictEqual(mustBe, page, "calculate has problem!")
