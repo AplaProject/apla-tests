@@ -651,7 +651,7 @@ class SystemContractsTestCase(unittest.TestCase):
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
         res = self.call("NewTable", data)
-        msg = "The table name cannot be empty"
+        msg = "Table name cannot be empty"
         self.assertEqual(msg, res, "Incorrect message: " + res)
 
     def test_new_table_incorrect_condition1(self):
