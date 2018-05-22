@@ -696,26 +696,85 @@ class PrototipoTestCase(unittest.TestCase):
 
     def test_calculate(self):
         contract = self.pages["calculate"]
-        content1 = self.check_page(contract["code1"])
-        content2 = self.check_page(contract["code2"])
-        content3 = self.check_page(contract["code3"])
-        content4 = self.check_page(contract["code4"])
-        content5 = self.check_page(contract["code5"])
-        partContent1 = content1['tree'][0]
-        partContent2 = content2['tree'][0]
-        partContent3 = content3['tree'][0]
-        partContent4 = content4['tree'][0]
-        partContent5 = content5['tree'][0]
-        contractContent1 = contract["content1"]
-        contractContent2 = contract["content2"]
-        contractContent3 = contract["content3"]
-        contractContent4 = contract["content4"]
-        contractContent5 = contract["content5"]
-        print(partContent1)
-        print(partContent2)
-        print(partContent3)
-        print(partContent4)
-        print(partContent5)
+        # Set for type of money
+        moneyContent1 = self.check_page(contract["moneyCode1"])
+        partMoneyContent1 = moneyContent1['tree'][0]
+        contractMoneyContent1 = contract["moneyContent1"]
+        moneyContent2 = self.check_page(contract["moneyCode2"])
+        partMoneyContent2 = moneyContent2['tree'][0]
+        contractMoneyContent2 = contract["moneyContent2"]
+        moneyContent3 = self.check_page(contract["moneyCode3"])
+        partMoneyContent3 = moneyContent3['tree'][0]
+        contractMoneyContent3 = contract["moneyContent3"]
+        moneyContent4 = self.check_page(contract["moneyCode4"])
+        partMoneyContent4 = moneyContent4['tree'][0]
+        contractMoneyContent4 = contract["moneyContent4"]
+        moneyContent5 = self.check_page(contract["moneyCode5"])
+        partMoneyContent5 = moneyContent5['tree'][0]
+        contractMoneyContent5 = contract["moneyContent5"]
+        moneyContent6 = self.check_page(contract["moneyCode6"])
+        partMoneyContent6 = moneyContent6['tree'][0]
+        contractMoneyContent6 = contract["moneyContent6"]
+        moneyContent7 = self.check_page(contract["moneyCode7"])
+        partMoneyContent7 = moneyContent7['tree'][0]
+        contractMoneyContent7 = contract["moneyContent7"]
+        moneyContent8 = self.check_page(contract["moneyCode8"])
+        partMoneyContent8 = moneyContent8['tree'][0]
+        contractMoneyContent8 = contract["moneyContent8"]
+        moneyContent9 = self.check_page(contract["moneyCode9"])
+        partMoneyContent9 = moneyContent9['tree'][0]
+        contractMoneyContent9 = contract["moneyContent9"]
+        moneyContent10 = self.check_page(contract["moneyCode10"])
+        partMoneyContent10 = moneyContent10['tree'][0]
+        contractMoneyContent10 = contract["moneyContent10"]
+        moneyContent11 = self.check_page(contract["moneyCode11"])
+        partMoneyContent11 = moneyContent11['tree'][0]
+        contractMoneyContent11 = contract["moneyContent11"]
+        moneyContent12 = self.check_page(contract["moneyCode12"])
+        partMoneyContent12 = moneyContent12['tree'][0]
+        contractMoneyContent12 = contract["moneyContent12"]
+        moneyContent13 = self.check_page(contract["moneyCode13"])
+        partMoneyContent13 = moneyContent13['tree'][0]
+        contractMoneyContent13 = contract["moneyContent13"]
+        moneyContent14 = self.check_page(contract["moneyCode14"])
+        partMoneyContent14 = moneyContent14['tree'][0]
+        contractMoneyContent14 = contract["moneyContent14"]
+
+        # money=contractMoneyContent['children'][0]["text"]
+        mustBe = dict(money1=contractMoneyContent1['children'][0]["text"],
+                      money2=contractMoneyContent2['children'][0]["text"],
+                      money3=contractMoneyContent3['children'][0]["text"],
+                      money4=contractMoneyContent4['children'][0]["text"],
+                      money5=contractMoneyContent5['children'][0]["text"],
+                      money6=contractMoneyContent6['children'][0]["text"],
+                      money7=contractMoneyContent7['children'][0]["text"],
+                      money8=contractMoneyContent8['children'][0]["text"],
+                      money9=contractMoneyContent9['children'][0]["text"],
+                      money10=contractMoneyContent10['children'][0]["text"],
+                      money11=contractMoneyContent11['children'][0]["text"],
+                      money12=contractMoneyContent12['children'][0]["text"],
+                      money13=contractMoneyContent13['children'][0]["text"],
+                      money14=contractMoneyContent14['children'][0]["text"]
+                      )
+
+        # money=partMoneyContent['children'][0]["text"]
+        page = dict(money1=partMoneyContent1['children'][0]["text"],
+                    money2=partMoneyContent2['children'][0]["text"],
+                    money3=partMoneyContent3['children'][0]["text"],
+                    money4=partMoneyContent4['children'][0]["text"],
+                    money5=partMoneyContent5['children'][0]["text"],
+                    money6=partMoneyContent6['children'][0]["text"],
+                    money7=partMoneyContent7['children'][0]["text"],
+                    money8=partMoneyContent8['children'][0]["text"],
+                    money9=partMoneyContent9['children'][0]["text"],
+                    money10=partMoneyContent10['children'][0]["text"],
+                    money11=partMoneyContent11['children'][0]["text"],
+                    money12=partMoneyContent12['children'][0]["text"],
+                    money13=partMoneyContent13['children'][0]["text"],
+                    money14=partMoneyContent14['children'][0]["text"]
+                    )
+
+        self.assertDictEqual(mustBe, page, "calculate has problem!")
 
 
 if __name__ == '__main__':
