@@ -789,8 +789,29 @@ class PrototipoTestCase(unittest.TestCase):
         floatContent15 = self.check_page(contract["floatCode15"])
         partFloatContent15 = floatContent15['tree'][0]
         contractFloatContent15 = contract["floatContent15"]
-
-        # money=contractMoneyContent['children'][0]["text"]
+        # Set for type of int
+        intContent1 = self.check_page(contract["intCode1"])
+        partIntContent1 = intContent1['tree'][0]
+        contractIntContent1 = contract["intContent1"]
+        intContent2 = self.check_page(contract["intCode2"])
+        partIntContent2 = intContent2['tree'][0]
+        contractIntContent2 = contract["intContent2"]
+        intContent3 = self.check_page(contract["intCode3"])
+        partIntContent3 = intContent3['tree'][0]
+        contractIntContent3 = contract["intContent3"]
+        intContent4 = self.check_page(contract["intCode4"])
+        partIntContent4 = intContent4['tree'][0]
+        contractIntContent4 = contract["intContent4"]
+        intContent5 = self.check_page(contract["intCode5"])
+        partIntContent5 = intContent5['tree'][0]
+        contractIntContent5 = contract["intContent5"]
+        intContent6 = self.check_page(contract["intCode6"])
+        partIntContent6 = intContent6['tree'][0]
+        contractIntContent6 = contract["intContent6"]
+        # Set wrong type
+        wrongContent1 = self.check_page(contract["wrongCode1"])
+        partWrongContent1 = wrongContent1['tree'][0]
+        contractWrongContent1 = contract["wrongContent1"]
         mustBe = dict(money1=contractMoneyContent1['children'][0]["text"],
                       money2=contractMoneyContent2['children'][0]["text"],
                       money3=contractMoneyContent3['children'][0]["text"],
@@ -820,10 +841,14 @@ class PrototipoTestCase(unittest.TestCase):
                       float12=contractFloatContent12['children'][0]["text"],
                       float13=contractFloatContent13['children'][0]["text"],
                       float14=contractFloatContent14['children'][0]["text"],
-                      float15=contractFloatContent15['children'][0]["text"]
-                      )
-
-        # money=partMoneyContent['children'][0]["text"]
+                      float15=contractFloatContent15['children'][0]["text"],
+                      int1=contractIntContent1['children'][0]["text"],
+                      int2=contractIntContent2['children'][0]["text"],
+                      int3=contractIntContent3['children'][0]["text"],
+                      int4=contractIntContent4['children'][0]["text"],
+                      int5=contractIntContent5['children'][0]["text"],
+                      int6=contractIntContent6['children'][0]["text"],
+                      wrong1=contractWrongContent1['children'][0]["text"])
         page = dict(money1=partMoneyContent1['children'][0]["text"],
                     money2=partMoneyContent2['children'][0]["text"],
                     money3=partMoneyContent3['children'][0]["text"],
@@ -853,11 +878,15 @@ class PrototipoTestCase(unittest.TestCase):
                     float12=partFloatContent12['children'][0]["text"],
                     float13=partFloatContent13['children'][0]["text"],
                     float14=partFloatContent14['children'][0]["text"],
-                    float15=partFloatContent15['children'][0]["text"]
-                    )
-
+                    float15=partFloatContent15['children'][0]["text"],
+                    int1=partIntContent1['children'][0]["text"],
+                    int2=partIntContent2['children'][0]["text"],
+                    int3=partIntContent3['children'][0]["text"],
+                    int4=partIntContent4['children'][0]["text"],
+                    int5=partIntContent5['children'][0]["text"],
+                    int6=partIntContent6['children'][0]["text"],
+                    wrong1=partWrongContent1['children'][0]["text"])
         self.assertDictEqual(mustBe, page, "calculate has problem!")
-
 
 if __name__ == '__main__':
     unittest.main()
