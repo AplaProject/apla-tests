@@ -22,6 +22,7 @@ class PrototipoTestCase(unittest.TestCase):
         dbName = self.config["2"]["dbName"]
         login = self.config["2"]["login"]
         password = self.config["2"]["pass"]
+        self.maxDiff = None
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
