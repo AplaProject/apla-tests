@@ -61,6 +61,9 @@ class Rollback1TestCase(unittest.TestCase):
         dataEdit = {"Name": "notifications", "Permissions": permission}
         res = self.call("EditTable", dataEdit)
 
+    def getCountTable(self,name):
+        return utils.getCountTable(host, db, login, pas, name)
+
     def addBinary(self):
         name = "image_" + utils.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
