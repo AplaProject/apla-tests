@@ -80,6 +80,41 @@ class Rollback1TestCase(unittest.TestCase):
             if newBinCount > binCount:
                 break
 
+    def addUserTable(self):
+        # add table
+        column = """[{"name":"MyName","type":"varchar", 
+        "index": "1", "conditions":"true"},{"name":"ver_on_null","type":"varchar", 
+        "index": "1", "conditions":"true"}]"""
+        permission = """{"insert": "true", 
+        "update" : "true","new_column": "true"}"""
+        tableName = "rollTab_" +  utils.generate_random_name()
+        data = {"Name": tableName,
+                "Columns": column, "ApplicationId": 1,
+                "Permissions": permission}
+        res = self.call("NewTable", data)
+        return tableName
+
+    def insertToUserTable(self, tableName):
+        # create contarct, wich added record in created table
+        function = "DBInsert(\"" + tableName + "\", \"MyName\" , \"insert\" )"
+        body = """ { \n data {}	\n conditions {} \n	action { \n """ + function + """ \n } }"""
+        code, name = utils.generate_name_and_code(body)
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
+        res = self.call("NewContract", data)
+        # call contarct, wich added record in created table
+        res = self.call(name, data)
+
+    def updateUserTable(self, tableName):
+        # create contarct, wich updated record in created table
+        function = "DBUpdate(\"" + tableName + "\", 1, \"MyName,ver_on_null\" ,\"update\",\"update\" )"
+        body = """ { \n data {}	\n conditions {} \n	action { \n """ + function + """ \n } }"""
+        code, name = utils.generate_name_and_code(body)
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
+        res = self.call("NewContract", data)
+        # call contarct, wich added record in created table
+        res = self.call(name, data)
 
     def create_ecosystem(self):
         data = {"Name": "Ecosys" + utils.generate_random_name()}
