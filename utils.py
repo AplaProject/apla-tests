@@ -226,6 +226,17 @@ def getCountDBObjects(dbHost, dbName, login, password):
 		tablesCount[table[2:]] = getCountTable(dbHost, dbName, login, password, table)
 	return tablesCount
 
+def getUserTableState(dbHost, dbName, login, password, userTable):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT * FROM \"" + userTable + "\"")
+	res = cursor.fetchall()
+	table = {}
+	table["id"] = res[0][0]
+	table["myname"] = res[0][1]
+	table["ver_on_null"] = res[0][2]
+	return table
+
 
 def getUserTokenAmounts(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
