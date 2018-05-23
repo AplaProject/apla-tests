@@ -87,7 +87,7 @@ class Rollback1TestCase(unittest.TestCase):
         "index": "1", "conditions":"true"}]"""
         permission = """{"insert": "true", 
         "update" : "true","new_column": "true"}"""
-        tableName = "rollTab_" +  utils.generate_random_name()
+        tableName = "rolltab_" +  utils.generate_random_name()
         data = {"Name": tableName,
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
@@ -280,11 +280,22 @@ class Rollback1TestCase(unittest.TestCase):
         self.addBinary()
         tableName = self.addUserTable()
         self.insertToUserTable(tableName)
+        # Save to file block id for rollback
         RollbackBlockId = funcs.get_max_block_id(url, token)
         file = os.path.join(os.getcwd(), "blockId.txt")
         with open(file, 'w') as f:
             f.write(str(RollbackBlockId))
+        # Save to file user table name
+        tableNameWithPrefix = "1_" + tableName
+        file = os.path.join(os.getcwd(), "userTableName.txt")
+        with open(file, 'w') as f:
+            f.write(str(tableNameWithPrefix))
         # Save to file user table state
+        dbUserTableInfo = utils.getUserTableState(host, db, login, pas, tableNameWithPrefix)
+        file = os.path.join(os.getcwd(), "dbUserTableState.json")
+        with open(file, 'w') as fconf:
+            json.dump(dbUserTableInfo, fconf)
+        # Save to file all tables state
         dbInformation = utils.getCountDBObjects(host, db, login, pas)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'w') as fconf:
