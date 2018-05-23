@@ -9,6 +9,19 @@ import os
 
 class Rollback1TestCase(unittest.TestCase):
 
+    def setUp(self):
+        global url, prKey, token, waitTx, host, db, pas, login
+        self.conf = config.readMainConfig()
+        url = self.conf["url"]
+        prKey = self.conf['private_key']
+        host = self.conf["dbHost"]
+        db = self.conf["dbName"]
+        login = self.conf["login"]
+        pas = self.conf["pass"]
+        waitTx = self.conf["time_wait_tx_in_block"]
+        lData = utils.login(url, prKey)
+        token = lData["jwtToken"]
+
     def call(self, name, data):
         resp = utils.call_contract(url, prKey, name, data, token)
         res = utils.txstatus(url, waitTx,
