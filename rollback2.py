@@ -13,6 +13,23 @@ class Rollback2TestCase(unittest.TestCase):
         db = self.conf["dbName"]
         login = self.conf["login"]
         pas = self.conf["pass"]
+
+        file = os.path.join(os.getcwd(), "userTableName.txt")
+        with open(file, 'r') as f:
+            tableName = f.read()
+
+        dbUserTableInfo = utils.getUserTableState(host, db, login, pas, tableName)
+        print(dbUserTableInfo)
+        file = os.path.join(os.getcwd(), "dbUserTableState.json")
+        with open(file, 'r') as dbUserFile:
+            data = dbUserFile.read()
+        dbUserJson = json.loads(data)
+        print(dbUserJson)
+        for key in dbUserJson:
+            dbUser1 = dbUserTableInfo[key]
+            dbUser2 = dbUserJson[key]
+            self.assertEqual(dbUser1, dbUser2,"Different info about in user table " + key)
+
         dbInformation = utils.getCountDBObjects(host, db, login, pas)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'r') as dbF:
