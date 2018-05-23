@@ -42,15 +42,14 @@ class Rollback1TestCase(unittest.TestCase):
 
     def addNotification(self):
         # create contract, wich added record in notifications table
-        keyID = "-8399130570195839739"
-        ins = """DBInsert("notifications", "recipient->member_id,notification->type,notification->header,notification->body", """ + keyID + """, 1, "Message header", "Message body")"""
-        body = """ { \n data {}	\n conditions {} \n	action { \n """ + ins + """ \n } }"""
-        name = "rollCon_" + utils.generate_random_name()
-        code = str("contract " + name + body)
+        function = """DBInsert("notifications", "recipient->member_id,notification->type,notification->header,notification->body", "-8399130570195839739", 1, "Message header", "Message body")"""
+        body = """ { \n data {}	\n conditions {} \n	action { \n """ + function + """ \n } }"""
+        code, name = utils.generate_name_and_code(body)
         data = {"Wallet": '', "ApplicationId": 1,
                 "Value": code,
                 "Conditions": "ContractConditions(`MainCondition`)"}
-        res = self.create_contract(data)
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res["blockid"]), 0, "BlockId is not generated: " + str(res))
         # change permission for notifications table
         permission = """{"insert": "true","update" : "true","new_column": "true"}"""
         dataEdit = {"Name": "notifications", "Permissions": permission}
