@@ -276,25 +276,20 @@ class Rollback1TestCase(unittest.TestCase):
         res = self.call("EditSign", dataEdit)
 
     def test_rollback1(self):
-        global url, prKey, token, waitTx
-        self.conf = config.readMainConfig()
-        url = self.conf["url"]
-        prKey = self.conf['private_key']
-        host = self.conf["dbHost"]
-        db = self.conf["dbName"]
-        login = self.conf["login"]
-        pas = self.conf["pass"]
-        waitTx = self.conf["time_wait_tx_in_block"]
+        self.addNotification()
+        self.addBinary()
+        tableName = self.addUserTable()
+        self.insertToUserTable(tableName)
+        RollbackBlockId = funcs.get_max_block_id(url, token)
+        file = os.path.join(os.getcwd(), "blockId.txt")
+        with open(file, 'w') as f:
+            f.write(str(RollbackBlockId))
+        # Save to file user table state
         dbInformation = utils.getCountDBObjects(host, db, login, pas)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'w') as fconf:
             json.dump(dbInformation, fconf)
-        lData = utils.login(url, prKey)
-        token = lData["jwtToken"]
-
-        self.addBinary()
-        self.addNotification()
-
+        self.updateUserTable(tableName)
         self.money_transfer()
         contract, code = self.create_contract("")
         self.edit_contract(contract, code)
