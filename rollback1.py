@@ -303,10 +303,10 @@ class Rollback1TestCase(unittest.TestCase):
         tableName = self.addUserTable()
         self.insertToUserTable(tableName)
         # Save to file block id for rollback
-        RollbackBlockId = funcs.get_max_block_id(url, token)
+        rollbackBlockId = funcs.get_max_block_id(url, token)
         file = os.path.join(os.getcwd(), "blockId.txt")
         with open(file, 'w') as f:
-            f.write(str(RollbackBlockId))
+            f.write(str(rollbackBlockId))
         # Save to file user table name
         tableNameWithPrefix = "1_" + tableName
         file = os.path.join(os.getcwd(), "userTableName.txt")
