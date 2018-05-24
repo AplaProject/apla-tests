@@ -309,7 +309,7 @@ class Rollback1TestCase(unittest.TestCase):
         tableNameWithPrefix = "1_" + tableName
         file = os.path.join(os.getcwd(), "userTableName.txt")
         with open(file, 'w') as f:
-            f.write(str(tableNameWithPrefix))
+            f.write(tableNameWithPrefix)
         # Save to file user table state
         dbUserTableInfo = utils.getUserTableState(host, db, login, pas, tableNameWithPrefix)
         file = os.path.join(os.getcwd(), "dbUserTableState.json")
