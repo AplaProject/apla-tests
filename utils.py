@@ -243,10 +243,8 @@ def getUserTableState(dbHost, dbName, login, password, userTable):
 	res = cursor.fetchall()
 	col = getTableColumnNames(dbHost, dbName, login, password, userTable)
 	table = {}
-	i = 0
-	while i<len(col):
+	for i in range(len(col)):
 		table[col[i][0]] = res[0][i]
-		i += 1
 	return table
 
 
