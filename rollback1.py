@@ -120,17 +120,15 @@ class Rollback1TestCase(unittest.TestCase):
 
     def updateUserTable(self, tableName):
         # create contarct, wich updated record in created table
-        #function = "DBUpdate(\"" + tableName + "\", 1, \"MyName,ver_on_null\" ,\"update\",\"update\" )"
-        #body = """ { \n data {}	\n conditions {} \n	action { \n """ + function + """ \n } }"""
         body = """
-               {
-               data {}
-               conditions {}
-               action {
-                   DBUpdate("%s", 1, "MyName,ver_on_null", "update", "update")
-                   }
-               }
-               """ % tableName
+        {
+        data {}
+        conditions {}
+        action {
+            DBUpdate("%s", 1, "MyName,ver_on_null", "update", "update")
+            }
+        }
+        """ % tableName
         code, name = utils.generate_name_and_code(body)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
