@@ -241,10 +241,12 @@ def getUserTableState(dbHost, dbName, login, password, userTable):
 	cursor = connect.cursor()
 	cursor.execute("SELECT * FROM \"" + userTable + "\"")
 	res = cursor.fetchall()
+	col = getTableColumnNames(dbHost, dbName, login, password, userTable)
 	table = {}
-	table["id"] = res[0][0]
-	table["myname"] = res[0][1]
-	table["ver_on_null"] = res[0][2]
+	i = 0
+	while i<len(col):
+		table[col[i][0]] = res[0][i]
+		i += 1
 	return table
 
 
