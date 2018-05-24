@@ -102,8 +102,15 @@ class Rollback1TestCase(unittest.TestCase):
 
     def insertToUserTable(self, tableName):
         # create contarct, wich added record in created table
-        function = "DBInsert(\"" + tableName + "\", \"MyName\" , \"insert\" )"
-        body = """ { \n data {}	\n conditions {} \n	action { \n """ + function + """ \n } }"""
+        body = """
+        {
+        data {}
+        conditions {}
+        action {
+            DBInsert("%s", "MyName" , "insert")
+            }
+        }
+        """ % tableName
         code, name = utils.generate_name_and_code(body)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
