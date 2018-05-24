@@ -42,8 +42,17 @@ class Rollback1TestCase(unittest.TestCase):
 
     def addNotification(self):
         # create contract, wich added record in notifications table
-        function = """DBInsert("notifications", "recipient->member_id,notification->type,notification->header,notification->body", "-8399130570195839739", 1, "Message header", "Message body")"""
-        body = """ { \n data {}	\n conditions {} \n	action { \n """ + function + """ \n } }"""
+        body = """
+        {
+        data {}
+        conditions {}
+        action {
+            DBInsert("notifications", 
+            "recipient->member_id,notification->type,notification->header,notification->body",
+             "-8399130570195839739", 1, "Message header", "Message body")
+            }
+        }
+        """
         code, name = utils.generate_name_and_code(body)
         data = {"Wallet": '', "ApplicationId": 1,
                 "Value": code,
