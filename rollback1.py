@@ -74,7 +74,6 @@ class Rollback1TestCase(unittest.TestCase):
         return utils.getCountTable(host, db, login, pas, name)
 
     def addBinary(self):
-        binCount = self.getCountTable("1_binaries")
         name = "image_" + utils.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
@@ -83,11 +82,9 @@ class Rollback1TestCase(unittest.TestCase):
         data = {"Name": name, "ApplicationId": 1}
         resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
                                               files, token)
-        while True:
-            time.sleep(1)
-            newBinCount = self.getCountTable("1_binaries")
-            if newBinCount > binCount:
-                break
+        res = utils.txstatus(url, waitTx,
+                             resp['hash'], token)
+        self.assertGreater(int(res['blockid']), 0, "BlockId is not generated: " + str(res))
 
     def addUserTable(self):
         # add table
