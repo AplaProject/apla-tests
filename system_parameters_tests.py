@@ -229,12 +229,17 @@ class SystemParametersCase(unittest.TestCase):
         par = self.getSystemParameterValue(name)
         parJson = json.loads(par)
         nodesCount = len(parJson)
+        for i in parJson:
+            if parJson[i]["tcp_address"] == "127.0.0.1:7080":
+                parJson.pop(i)
+        '''
         i = 0
         while i < nodesCount:
             if parJson[i]["tcp_address"] == "127.0.0.1:7080":
                 parJson.pop(i)
                 break
             i += 1
+        '''
         parJson = json.dumps(parJson)
         data = {"Name": name, "Value": parJson}
         res = self.call(contractName, data)
