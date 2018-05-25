@@ -124,7 +124,7 @@ def txstatus(url, sleepTime, hsh, jvtToken):
 def txstatus_multi(url, sleepTime, hshs, jvtToken):
 	time.sleep(len(hshs) * sleepTime)
 	urlEnd = url + '/txstatusMultiple/'
-	resp = requests.get(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
+	resp = requests.post(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
 	return resp.json()["results"]
 
 
