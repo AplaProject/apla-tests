@@ -1004,7 +1004,15 @@ class SystemParametersCase(unittest.TestCase):
         self.assertDictEqual(mustBe, actual, name + " has problem!")
 
     def test_dbInsert_access_denied(self):
-        value = """ {data {} conditions {} action {DBInsert("system_parameters", "name,value,conditions", "my_param", "hello", "true")}}"""
+        value = """
+        {
+        data {}
+        conditions {}
+        action {
+            DBInsert("system_parameters", "name,value,conditions", "my_param", "hello", "true")
+            }
+        }
+        """
         code, name = utils.generate_name_and_code(value)
         data = {'Wallet': '', 'Value': code, "ApplicationId": 1,
                 'Conditions': "ContractConditions(`MainCondition`)"}
@@ -1014,7 +1022,15 @@ class SystemParametersCase(unittest.TestCase):
         self.assertEqual(mustBe, res, "test_dbInsert_access_denied has problem!")
 
     def test_dbUpdate_access_denied(self):
-        value = """ {data {} conditions {} action {DBUpdate("system_parameters", 1,"name,value,conditions", "my_param_upd", "hello_upd", "true")}}"""
+        value = """
+        {
+        data {}
+        conditions {}
+        action {
+            DBUpdate("system_parameters", 1,"name,value,conditions", "my_param_upd", "hello_upd", "true")
+            }
+        }
+        """
         code, name = utils.generate_name_and_code(value)
         data = {'Wallet': '', 'Value': code, "ApplicationId": 1,
                 'Conditions': "ContractConditions(`MainCondition`)"}
