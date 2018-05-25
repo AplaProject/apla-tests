@@ -634,5 +634,23 @@ class ApiTestCase(unittest.TestCase):
                       msg=notAuthResNotExist["msg"])
         self.assertDictEqual(mustBe, actual, "Not all assertions passed in test_content_hash")
 
+    def test_get_ecosystem_name(self):
+        id = 1
+        asserts = ["ecosystem_name"]
+        self.check_get_api("/ecosystemname?id=" + str(id), "", asserts)
+
+    def test_get_ecosystem_name_new(self):
+        data = {"Name": "ecos_" + utils.generate_random_name()}
+        res = self.call("NewEcosystem",data)
+        id = int(res)
+        asserts = ["ecosystem_name"]
+        self.check_get_api("/ecosystemname?id=" + str(id), "", asserts)
+
+    def test_get_ecosystem_name_incorrect(self):
+        id = 99999
+        asserts = ["error"]
+        self.check_get_api("/ecosystemname?id=" + str(id), "", asserts)
+
+
 if __name__ == '__main__':
     unittest.main()
