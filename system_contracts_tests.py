@@ -1092,5 +1092,44 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("UpdateSysParam", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
+    def test_contract_recursive_call_by_name(self):
+        contractName = "recur_" + utils.generate_random_name()
+        body = """
+        {
+        data { }
+        conditions { }
+        action {
+            Println("hello1")
+            %s()
+            }
+        }
+        """ % contractName
+        code = utils.generate_code(contractName, body)
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
+        res = self.call("NewContract", data)
+        msg = "The contract can't call itself recursively"
+        self.assertEqual(msg, res, "Incorrect message: " + res)
+
+    def test_contract_recursive_call_contract(self):
+        contractName = "recur_" + utils.generate_random_name()
+        body = """
+        {
+        data { }
+        conditions { }
+        action {
+            Println("hello1")
+            var par map
+            CallContract("%s", par)
+            }
+        }
+        """ % contractName
+        code = utils.generate_code(contractName, body)
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
+        res = self.call("NewContract", data)
+        msg = "The contract can't call itself recursively"
+        self.assertEqual(msg, res, "Incorrect message: " + res)
+
 if __name__ == '__main__':
     unittest.main()
