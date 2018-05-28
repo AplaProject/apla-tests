@@ -1092,5 +1092,32 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("UpdateSysParam", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
+    def test_contract_memory_limit(self):
+        # add contract with memory limit
+        body = """
+        {
+        data {
+            Count int "optional"
+            }
+        action {
+            var a array
+            while (true) {
+                $Count = $Count + 1
+                a[Len(a)] = JSONEncode(a)
+                }
+            }
+        }
+        """
+        code, contract_name = utils.generate_name_and_code(body)
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # test
+        data = ""
+        msg = "Memory limit exceeded"
+        res = self.call(contract_name, data)
+        self.assertEqual(msg, res, "Incorrect message: " + res)
+
 if __name__ == '__main__':
     unittest.main()
