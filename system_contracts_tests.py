@@ -1130,6 +1130,34 @@ class SystemContractsTestCase(unittest.TestCase):
         msg = "Memory limit exceeded"
         res = self.call(contract_name, data)
         self.assertEqual(msg, res, "Incorrect message: " + res)
-
+        
+    def test_functions_recursive_limit(self):
+        # add contract with recursive
+        body = """
+        {
+        func myfunc(num int) int { 
+            num = num + 1
+            myfunc(num)
+            }
+        data{}
+        conditions{}
+        action {
+            $a = 0
+            myfunc($a)
+            }
+        }
+        """
+        code, contract_name = utils.generate_name_and_code(body)
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # test
+        data = ""
+        msg = "max call depth"
+        res = self.call(contract_name, data)
+        self.assertEqual(msg, res, "Incorrect message: " + res)
+        
+        
 if __name__ == '__main__':
     unittest.main()
