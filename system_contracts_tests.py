@@ -74,21 +74,30 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertDictEqual(mustBe, actual, "test_create_ecosystem is failed!")
 
     def test_edit_ecosystem_name(self):
+        currentBlockId = funcs.get_max_block_id(url, token)
         id = 1
         newName = "Ecosys_"+utils.generate_random_name()
         data = {"EcosystemID": id, "NewName": newName}
-        res = self.call("EditEcosystemName", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        resBlockId = self.call("EditEcosystemName", data)
         asserts = ["list"]
         res = self.check_get_api("/list/ecosystems", "", asserts)
         # iterating response elements
         i=0
-        requiredEcosysName=""
+        requiredEcosysNameAPI=""
         while i < int(res['count']):
             if int(res['list'][i]['id']) == id:
-                requiredEcosysName = res['list'][i]['name']
+                requiredEcosysNameAPI = res['list'][i]['name']
+                break
             i+=1
-        self.assertEqual(newName, requiredEcosysName)
+        query="SELECT name FROM \"1_ecosystems\" WHERE id='"+str(id)+"'"
+        requiredEcosysNameDB = utils.executeSQL(dbHost, dbName, login, pas, query)[0][0]
+        mustBe = dict(block = int(currentBlockId+1),
+                      ecosysNameAPI = newName,
+                      ecosysNameDB = newName)
+        actual = dict(block = int(resBlockId),
+                      ecosysNameAPI = requiredEcosysNameAPI,
+                      ecosysNameDB = requiredEcosysNameDB)
+        self.assertDictEqual(mustBe, actual, "test_edit_ecosystem_name is failed!")
 
     def test_edit_ecosystem_name_incorrect_id(self):
         id = 500
