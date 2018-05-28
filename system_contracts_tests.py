@@ -1092,7 +1092,7 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("UpdateSysParam", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
-    def test_contract_recursive_call_by_name(self):
+    def test_contract_recursive_call_by_name_action(self):
         contractName = "recur_" + utils.generate_random_name()
         body = """
         {
@@ -1111,7 +1111,47 @@ class SystemContractsTestCase(unittest.TestCase):
         msg = "The contract can't call itself recursively"
         self.assertEqual(msg, res, "Incorrect message: " + res)
 
-    def test_contract_recursive_call_contract(self):
+    def test_contract_recursive_call_by_name_conditions(self):
+        contractName = "recur_" + utils.generate_random_name()
+        body = """
+        {
+        data { }
+        conditions { 
+            Println("hello1")
+            %s()
+            }
+        action { }
+        }
+        """ % contractName
+        code = utils.generate_code(contractName, body)
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
+        res = self.call("NewContract", data)
+        msg = "The contract can't call itself recursively"
+        self.assertEqual(msg, res, "Incorrect message: " + res)
+
+    def test_contract_recursive_call_by_name_func_action(self):
+        contractName = "recur_" + utils.generate_random_name()
+        body = """
+        {
+        func runContract() int {
+            %s()
+            }
+        data { }
+        conditions { }
+        action {
+            runContract()
+            }
+        }
+        """ % contractName
+        code = utils.generate_code(contractName, body)
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
+        res = self.call("NewContract", data)
+        msg = "The contract can't call itself recursively"
+        self.assertEqual(msg, res, "Incorrect message: " + res)
+
+    def test_contract_recursive_call_contract_action(self):
         contractName = "recur_" + utils.generate_random_name()
         body = """
         {
@@ -1128,8 +1168,55 @@ class SystemContractsTestCase(unittest.TestCase):
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
-        msg = "The contract can't call itself recursively"
+        res = self.call(contractName, "")
+        msg = "there is loop in @1" + contractName + " contract"
         self.assertEqual(msg, res, "Incorrect message: " + res)
+
+    def test_contract_recursive_call_contract_conditions(self):
+        contractName = "recur_" + utils.generate_random_name()
+        body = """
+        {
+        data { }
+        conditions {
+         Println("hello1")
+            var par map
+            CallContract("%s", par)
+            }
+        action { }
+        }
+        """ % contractName
+        code = utils.generate_code(contractName, body)
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
+        res = self.call("NewContract", data)
+        res = self.call(contractName, "")
+        msg = "there is loop in @1" + contractName + " contract"
+        self.assertEqual(msg, res, "Incorrect message: " + res)
+
+    def test_contract_recursive_call_contract_func_conditions(self):
+        contractName = "recur_" + utils.generate_random_name()
+        body = """
+        {
+        func runContract() int {
+            var par map
+            CallContract("%s", par)
+            }
+        data { }
+        conditions {
+            runContract()
+            }
+        action { }
+        }
+        """ % contractName
+        code = utils.generate_code(contractName, body)
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
+        res = self.call("NewContract", data)
+        res = self.call(contractName, "")
+        msg = "there is loop in @1" + contractName + " contract"
+        self.assertEqual(msg, res, "Incorrect message: " + res)
+
+
 
 if __name__ == '__main__':
     unittest.main()
