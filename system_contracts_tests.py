@@ -1094,7 +1094,20 @@ class SystemContractsTestCase(unittest.TestCase):
 
     def test_functions_recursive_limit(self):
         # add contract with recursive
-        body = "{\n func myfunc(num int) int { num = num + 1\n myfunc(num)} \n data{} \n conditions{} \n action { \n  $a = 0 \n myfunc($a) \n } \n }"
+        body = """
+        {
+        func myfunc(num int) int { 
+            num = num + 1
+            myfunc(num)
+            }
+        data{}
+        conditions{}
+        action {
+            $a = 0
+            myfunc($a)
+            }
+        }
+        """
         code, contract_name = utils.generate_name_and_code(body)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
