@@ -1094,7 +1094,20 @@ class SystemContractsTestCase(unittest.TestCase):
 
     def test_contract_memory_limit(self):
         # add contract with memory limit
-        body = "{\n  data { Count int \"optional\" } \n action { \n var a array \n while (true) { \n $Count = $Count + 1 \n a[Len(a)] = JSONEncode(a) } \n } \n}"
+        body = """
+        {
+        data {
+            Count int "optional"
+            }
+        action {
+            var a array
+            while (true) {
+                $Count = $Count + 1
+                a[Len(a)] = JSONEncode(a)
+                }
+            }
+        }
+        """
         code, contract_name = utils.generate_name_and_code(body)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
