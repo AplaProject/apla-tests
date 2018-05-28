@@ -11,11 +11,15 @@ import time
 class SystemContractsTestCase(unittest.TestCase):
     
     def setUp(self):
-        global url, token, prKey, pause
+        global url, token, prKey, pause, dbHost, dbName, login, pas
         self.config = config.getNodeConfig()
         url = self.config["2"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
         prKey = self.config["1"]['private_key']
+        dbHost = self.config["1"]["dbHost"]
+        dbName = self.config["1"]['dbName']
+        login = self.config["1"]["login"]
+        pas = self.config["1"]['pass']
         self.data = utils.login(url, prKey)
         token = self.data["jwtToken"]
 
