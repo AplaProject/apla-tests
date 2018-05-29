@@ -50,6 +50,16 @@ class ContractFunctionsTestCase(unittest.TestCase):
         result = utils.txstatus(url, sleep, hash, token)
         self.assertIn(checkPoint, result["result"], "error")
 
+    def call(self, name, data):
+        url = self.config["2"]["url"]
+        prKey = self.config["1"]['private_key']
+        token = self.data["jwtToken"]
+        result = utils.call_contract(url, prKey, name, data, token)
+        status = utils.txstatus(url,
+                                self.config["1"]["time_wait_tx_in_block"],
+                                result['hash'], token)
+        return status
+
     def test_contract_dbfind(self):
         contract = self.contracts["dbFind"]
         self.check_contract(contract["code"], contract["asert"])
