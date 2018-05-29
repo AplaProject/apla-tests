@@ -397,5 +397,10 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["dbSelectMetricsAvg"]
         self.check_contract(contract["code"], str(ecosystem_pages))
 
+    def test_append(self):
+        contract = self.contracts["append"]
+        self.check_contract(contract["code"], contract["asert"])
+
+
 if __name__ == '__main__':
     unittest.main()
