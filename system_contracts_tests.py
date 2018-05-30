@@ -233,16 +233,34 @@ class SystemContractsTestCase(unittest.TestCase):
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        query = "SELECT * FROM \"1_contracts\" WHERE name='" + name + "'"
+        contractDataBefore = utils.executeSQL(dbHost, dbName, login, pas, query)
+        conValBefore = str(contractDataBefore[0][1])
+        currentBlockId = funcs.get_max_block_id(url, token)
         data2 = {}
         data2["Id"] = funcs.get_contract_id(url, name, token)
         data2["Value"] = code
         data2["Conditions"] = "true"
         data2["WalletId"] = newWallet
         res = self.call("EditContract", data2)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         end = url + "/contract/" + name
         ans = funcs.call_get_api(end, "", token)
-        self.assertEqual(ans["address"], newWallet, "Wallet didn't change.")
+        query = "SELECT * FROM \"1_contracts\" WHERE name='" + name + "'"
+        contractData = utils.executeSQL(dbHost, dbName, login, pas, query)
+        conID = contractData[0][0]
+        conVal = str(contractData[0][1])
+        conCond = contractData[0][6]
+        mustBe = dict(block=int(currentBlockId + 1),
+                      id=int(data2["Id"]),
+                      val= conValBefore,
+                      cond=data2["Conditions"],
+                      wallet=newWallet)
+        actual = dict(block=int(res),
+                      id=int(conID),
+                      val=conVal,
+                      cond=conCond,
+                      wallet=ans["address"])
+        self.assertDictEqual(mustBe, actual, "test_edit_contract is failed!")
 
     def test_edit_name_of_contract(self):
         newWallet = "0005-2070-2000-0006-0200"
