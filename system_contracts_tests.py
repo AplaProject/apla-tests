@@ -411,14 +411,36 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_new_menu(self):
+        countMenu = utils.getCountTable(dbHost, dbName, login, pas, "1_menu")
         name = "Menu_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewMenu", data)
+        asserts = ["name"]
+        contractNameAPI = self.check_get_api("/contract/" + name, "", asserts)["name"]
+        asserts = ["count"]
+        countMenuAfterAPI = self.check_get_api("/list/contracts", "", asserts)["count"]
+        countMenuAfterDB = utils.getCountTable(dbHost, dbName, login, pas, "1_menu")
+        # menuNameAPI
+        query = "SELECT name FROM \"1_menu\" WHERE name='" + name + "'"
+        menuNameDB = utils.executeSQL(dbHost, dbName, login, pas, query)
+        print(menuNameDB)
+
+
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = {'tree': [{'tag': 'text', 'text': 'Item1'}]}
         mContent = funcs.get_content(url, "menu", name, "", 1, token)
         self.assertEqual(mContent, content)
+
+        mustBe = dict(block=True,
+                      countMenuAfterAPI=countMenu + 1,
+                      countMenuAfterDB=countMenu + 1,
+                      content=content)
+        actual = dict(block=int(res)>0,
+                      countMenuAfterAPI=countMenuAfterAPI,
+                      countMenuAfterDB=countMenuAfterDB,
+                      content=mContent)
+        self.assertDictEqual(mustBe, actual, "test_new_menu is failed!")
 
     def test_new_menu_exist_name(self):
         name = "Menu_" + utils.generate_random_name()
