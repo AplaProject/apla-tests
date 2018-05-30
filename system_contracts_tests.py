@@ -534,10 +534,42 @@ class SystemContractsTestCase(unittest.TestCase):
         count = funcs.get_count(url, "menu", token)
         dataEdit = {"Id": count, "Value": "AppendedItem", "Conditions": "true"}
         res = self.call("AppendMenu", dataEdit)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        count = funcs.get_count(url, "menu", token)
+        asserts = ["list"]
+        menu = self.check_get_api("/list/menu", "", asserts)
+        i = 0
+        while i < len(menu["list"]):
+            if menu["list"][i]["name"] == name:
+                menuNameAPI = menu["list"][i]["name"]
+                menuValueAPI = menu["list"][i]["value"]
+                menuConditionsAPI = menu["list"][i]["conditions"]
+                break
+            i += 1
+        query = "SELECT * FROM \"1_menu\" WHERE name='" + name + "'"
+        menu = utils.executeSQL(dbHost, dbName, login, pas, query)
+        menuNameDB = menu[0][1]
+        menuValueDB = menu[0][3]
+        menuCondDB = menu[0][4]
         content = {'tree': [{'tag': 'text', 'text': 'Item1\r\nAppendedItem'}]}
         mContent = funcs.get_content(url, "menu", name, "", 1, token)
-        self.assertEqual(mContent, content)
+        menuVal = data["Value"] + "\r\n"+ dataEdit["Value"]
+        mustBe = dict(block=True,
+                      menuNameAPI=name,
+                      menuValueAPI=menuVal,
+                      menuConditionsAPI=dataEdit["Conditions"],
+                      menuNameDB=name,
+                      menuValueDB=menuVal,
+                      menuCondDB=dataEdit["Conditions"],
+                      content=content)
+        actual = dict(block=int(res) > 0,
+                      menuNameAPI=menuNameAPI,
+                      menuValueAPI=menuValueAPI,
+                      menuConditionsAPI=menuConditionsAPI,
+                      menuNameDB=menuNameDB,
+                      menuValueDB=menuValueDB,
+                      menuCondDB=menuCondDB,
+                      content=mContent)
+        self.assertDictEqual(mustBe, actual, "test_append_menu is failed!")
 
     def test_append_incorrect_menu(self):
         id = "999"
