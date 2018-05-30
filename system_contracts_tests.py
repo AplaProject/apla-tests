@@ -472,10 +472,41 @@ class SystemContractsTestCase(unittest.TestCase):
         count = funcs.get_count(url, "menu", token)
         dataEdit = {"Id": count, "Value": "ItemEdited", "Conditions": "true"}
         res = self.call("EditMenu", dataEdit)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        asserts = ["list"]
+        menu = self.check_get_api("/list/menu", "", asserts)
+        i = 0
+        while i < len(menu["list"]):
+            if menu["list"][i]["name"] == name:
+                menuNameAPI = menu["list"][i]["name"]
+                menuValueAPI = menu["list"][i]["value"]
+                menuConditionsAPI = menu["list"][i]["conditions"]
+                break
+            i += 1
+        query = "SELECT * FROM \"1_menu\" WHERE name='" + name + "'"
+        menu = utils.executeSQL(dbHost, dbName, login, pas, query)
+        menuNameDB = menu[0][1]
+        menuValueDB = menu[0][3]
+        menuCondDB = menu[0][4]
         content = {'tree': [{'tag': 'text', 'text': 'ItemEdited'}]}
         mContent = funcs.get_content(url, "menu", name, "", 1, token)
         self.assertEqual(mContent, content)
+        mustBe = dict(block=True,
+                      menuNameAPI=name,
+                      menuValueAPI=dataEdit["Value"],
+                      menuConditionsAPI=dataEdit["Conditions"],
+                      menuNameDB=name,
+                      menuValueDB=dataEdit["Value"],
+                      menuCondDB=dataEdit["Conditions"],
+                      content=content)
+        actual = dict(block=int(res) > 0,
+                      menuNameAPI=menuNameAPI,
+                      menuValueAPI=menuValueAPI,
+                      menuConditionsAPI=menuConditionsAPI,
+                      menuNameDB=menuNameDB,
+                      menuValueDB=menuValueDB,
+                      menuCondDB=menuCondDB,
+                      content=mContent)
+        self.assertDictEqual(mustBe, actual, "test_new_menu is failed!")
 
     def test_edit_incorrect_menu(self):
         id = "9999"
