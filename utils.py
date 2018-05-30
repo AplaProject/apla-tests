@@ -207,6 +207,19 @@ def getEcosysTables(dbHost, dbName, login, password):
 		i = i + 1  
 	return list
 
+def getEcosysTablesById(dbHost, dbName, login, password, ecosystemID):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute(
+		"select table_name from INFORMATION_SCHEMA.TABLES WHERE table_schema='public' AND table_name LIKE '"+str(ecosystemID)+"_%'")
+	tables = cursor.fetchall()
+	list = []
+	i = 0
+	while i < len(tables):
+		list.append(tables[i][0])
+		i = i + 1
+	return list
+
 def getCountTable(dbHost, dbName, login, password, table):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
