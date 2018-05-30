@@ -32,7 +32,9 @@ class BlockChainTestCase(unittest.TestCase):
         self.data1 = utils.login(config1["url"], config1['private_key'])
         i = 1
         while i < ts_count:
-            contName = self.create_contract(config1["url"], config1['private_key'])
+            contName = self.create_contract(config1["url"],
+                                            config1['private_key'],
+                                            )
             i = i + 1
             time.sleep(1)
         time.sleep(120)

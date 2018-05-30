@@ -1070,11 +1070,9 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_new_lang(self):
-        data = {}
-        data["AppID"] = 1
-        data["Name"] = "Lang_" + utils.generate_random_name()
-        data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
-        data["ApplicationId"] = 1
+        data = {"AppID": 1, "Name": "Lang_" + utils.generate_random_name(),
+                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}",
+                "ApplicationId": 1}
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
@@ -1214,7 +1212,8 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("UpdateSysParam", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
-    def test_contract_memory_limit(self):
+        
+def test_contract_memory_limit(self):
         # add contract with memory limit
         body = """
         {
@@ -1239,8 +1238,7 @@ class SystemContractsTestCase(unittest.TestCase):
         data = ""
         msg = "Memory limit exceeded"
         res = self.call(contract_name, data)
-        self.assertEqual(msg, res, "Incorrect message: " + res)
-        
+        self.assertEqual(msg, res, "Incorrect message: " + res)        
     def test_functions_recursive_limit(self):
         # add contract with recursive
         body = """
