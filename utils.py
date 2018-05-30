@@ -238,6 +238,27 @@ def getCountDBObjects(dbHost, dbName, login, password):
 		tablesCount[table[2:]] = getCountTable(dbHost, dbName, login, password, table)
 	return tablesCount
 
+def getTableColumnNames(dbHost, dbName, login, password, table):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	query = "SELECT pg_attribute.attname FROM pg_attribute, pg_class WHERE pg_class.relname='"+\
+			table+"' AND pg_class.relfilenode=pg_attribute.attrelid AND pg_attribute.attnum>0"
+	cursor.execute(query)
+	col = {}
+	col = cursor.fetchall()
+	return col
+
+def getUserTableState(dbHost, dbName, login, password, userTable):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT * FROM \"" + userTable + "\"")
+	res = cursor.fetchall()
+	col = getTableColumnNames(dbHost, dbName, login, password, userTable)
+	table = {}
+	for i in range(len(col)):
+		table[col[i][0]] = res[0][i]
+	return table
+
 
 def getUserTokenAmounts(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)

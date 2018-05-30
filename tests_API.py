@@ -114,7 +114,7 @@ class ApiTestCase(unittest.TestCase):
                     dictNamesAPI[table[2:]] = tableInfo["name"]
                 else:
                     self.fail("Answer from API /table/" + table + " is: " + str(tableInfo))
-        self.assertDictEqual(dictNames, dictNames,
+        self.assertDictEqual(dictNamesAPI, dictNames,
                              "Any of API tableInfo gives incorrect data")
         
     def test_get_incorrect_table_information(self):

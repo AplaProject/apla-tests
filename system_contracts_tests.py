@@ -41,7 +41,7 @@ class SystemContractsTestCase(unittest.TestCase):
         resp = self.assertTxInBlock(resp, token)
         return resp
     
-    def waitBlockId(old_block_id, limit):
+    def waitBlockId(self, old_block_id, limit):
         while True:
             # add contract, which get block_id
             body = "{\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
@@ -86,7 +86,7 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertEqual("Ecosystem "+str(id)+" does not exist", res)
 
     def test_money_transfer(self):
-        data = {"Recipient": "0005-2070-2000-0006-0200", "Amount": "2999479990390000000000000"}
+        data = {"Recipient": "0005-2070-2000-0006-0200", "Amount": "2999479990390000000"}
         res = self.call("MoneyTransfer", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
@@ -642,6 +642,18 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
+    def test_new_table_empty_name(self):
+        column = """[{"name":"MyName","type":"varchar",
+        "index": "1",  "conditions":"true"}]"""
+        permission = """{"insert": "false",
+        "update" : "true","new_column": "true"}"""
+        data = {"Name": "",
+                "Columns": column, "ApplicationId": 1,
+                "Permissions": permission}
+        res = self.call("NewTable", data)
+        msg = "Table name cannot be empty"
+        self.assertEqual(msg, res, "Incorrect message: " + res)
+
     def test_new_table_incorrect_condition1(self):
         data = {}
         data["Name"] = "Tab_" + utils.generate_random_name()
@@ -1043,7 +1055,7 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # NewDelayedContract
-        newLimit = 5
+        newLimit = 3
         data = {"Contract": contract_name, "EveryBlock": "1", "Conditions": "true", "Limit":newLimit}
         res = self.call("NewDelayedContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
@@ -1061,7 +1073,7 @@ class SystemContractsTestCase(unittest.TestCase):
         # wait block_id until run CallDelayedContract
         self.waitBlockId(old_block_id, newLimit)
         # EditDelayedContract
-        editLimit = 4
+        editLimit = 2
         data = {"Id":id, "Contract": contract_name, "EveryBlock": "1", "Conditions": "true", "Limit":editLimit}
         res = self.call("EditDelayedContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
@@ -1089,15 +1101,61 @@ class SystemContractsTestCase(unittest.TestCase):
         data = {"Name": "max_block_user_tx", "Value" : "2"}
         res = self.call("UpdateSysParam", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-    
-    def test_update_system_parameters1(self):
-        data = {"Name": "local_node_ban_time", "Value" : "10000"}
-        res = self.call("UpdateSysParam", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+
         
-    def test_update_system_parameters2(self):
-        data = {"Name": "max_block_user_tx", "Value" : "250000"}
-        res = self.call("UpdateSysParam", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)    
+def test_contract_memory_limit(self):
+        # add contract with memory limit
+        body = """
+        {
+        data {
+            Count int "optional"
+            }
+        action {
+            var a array
+            while (true) {
+                $Count = $Count + 1
+                a[Len(a)] = JSONEncode(a)
+                }
+            }
+        }
+        """
+        code, contract_name = utils.generate_name_and_code(body)
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # test
+        data = ""
+        msg = "Memory limit exceeded"
+        res = self.call(contract_name, data)
+        self.assertEqual(msg, res, "Incorrect message: " + res)        
+    def test_functions_recursive_limit(self):
+        # add contract with recursive
+        body = """
+        {
+        func myfunc(num int) int { 
+            num = num + 1
+            myfunc(num)
+            }
+        data{}
+        conditions{}
+        action {
+            $a = 0
+            myfunc($a)
+            }
+        }
+        """
+        code, contract_name = utils.generate_name_and_code(body)
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # test
+        data = ""
+        msg = "max call depth"
+        res = self.call(contract_name, data)
+        self.assertEqual(msg, res, "Incorrect message: " + res)
+        
+        
 if __name__ == '__main__':
     unittest.main()

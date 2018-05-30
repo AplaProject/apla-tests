@@ -22,6 +22,7 @@ class PrototipoTestCase(unittest.TestCase):
         dbName = self.config["2"]["dbName"]
         login = self.config["2"]["login"]
         password = self.config["2"]["pass"]
+        self.maxDiff = None
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
@@ -694,6 +695,198 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertDictEqual(mustBe, page,
                              "money has problem: " + "\n" + str(content1["tree"]) + "\n" + str(content2["tree"]))
 
-        
+    def test_calculate(self):
+        contract = self.pages["calculate"]
+        # Set for type of money
+        moneyContent1 = self.check_page(contract["moneyCode1"])
+        partMoneyContent1 = moneyContent1['tree'][0]
+        contractMoneyContent1 = contract["moneyContent1"]
+        moneyContent2 = self.check_page(contract["moneyCode2"])
+        partMoneyContent2 = moneyContent2['tree'][0]
+        contractMoneyContent2 = contract["moneyContent2"]
+        moneyContent3 = self.check_page(contract["moneyCode3"])
+        partMoneyContent3 = moneyContent3['tree'][0]
+        contractMoneyContent3 = contract["moneyContent3"]
+        moneyContent4 = self.check_page(contract["moneyCode4"])
+        partMoneyContent4 = moneyContent4['tree'][0]
+        contractMoneyContent4 = contract["moneyContent4"]
+        moneyContent5 = self.check_page(contract["moneyCode5"])
+        partMoneyContent5 = moneyContent5['tree'][0]
+        contractMoneyContent5 = contract["moneyContent5"]
+        moneyContent6 = self.check_page(contract["moneyCode6"])
+        partMoneyContent6 = moneyContent6['tree'][0]
+        contractMoneyContent6 = contract["moneyContent6"]
+        moneyContent7 = self.check_page(contract["moneyCode7"])
+        partMoneyContent7 = moneyContent7['tree'][0]
+        contractMoneyContent7 = contract["moneyContent7"]
+        moneyContent8 = self.check_page(contract["moneyCode8"])
+        partMoneyContent8 = moneyContent8['tree'][0]
+        contractMoneyContent8 = contract["moneyContent8"]
+        moneyContent9 = self.check_page(contract["moneyCode9"])
+        partMoneyContent9 = moneyContent9['tree'][0]
+        contractMoneyContent9 = contract["moneyContent9"]
+        moneyContent10 = self.check_page(contract["moneyCode10"])
+        partMoneyContent10 = moneyContent10['tree'][0]
+        contractMoneyContent10 = contract["moneyContent10"]
+        moneyContent11 = self.check_page(contract["moneyCode11"])
+        partMoneyContent11 = moneyContent11['tree'][0]
+        contractMoneyContent11 = contract["moneyContent11"]
+        moneyContent12 = self.check_page(contract["moneyCode12"])
+        partMoneyContent12 = moneyContent12['tree'][0]
+        contractMoneyContent12 = contract["moneyContent12"]
+        moneyContent13 = self.check_page(contract["moneyCode13"])
+        partMoneyContent13 = moneyContent13['tree'][0]
+        contractMoneyContent13 = contract["moneyContent13"]
+        moneyContent14 = self.check_page(contract["moneyCode14"])
+        partMoneyContent14 = moneyContent14['tree'][0]
+        contractMoneyContent14 = contract["moneyContent14"]
+        moneyContent15 = self.check_page(contract["moneyCode15"])
+        partMoneyContent15 = moneyContent15['tree'][0]
+        contractMoneyContent15 = contract["moneyContent15"]
+        # Set for type of money
+        floatContent1 = self.check_page(contract["floatCode1"])
+        partFloatContent1 = floatContent1['tree'][0]
+        contractFloatContent1 = contract["floatContent1"]
+        floatContent2 = self.check_page(contract["floatCode2"])
+        partFloatContent2 = floatContent2['tree'][0]
+        contractFloatContent2 = contract["floatContent2"]
+        floatContent3 = self.check_page(contract["floatCode3"])
+        partFloatContent3 = floatContent3['tree'][0]
+        contractFloatContent3 = contract["floatContent3"]
+        floatContent4 = self.check_page(contract["floatCode4"])
+        partFloatContent4 = floatContent4['tree'][0]
+        contractFloatContent4 = contract["floatContent4"]
+        floatContent5 = self.check_page(contract["floatCode5"])
+        partFloatContent5 = floatContent5['tree'][0]
+        contractFloatContent5 = contract["floatContent5"]
+        floatContent6 = self.check_page(contract["floatCode6"])
+        partFloatContent6 = floatContent6['tree'][0]
+        contractFloatContent6 = contract["floatContent6"]
+        floatContent7 = self.check_page(contract["floatCode7"])
+        partFloatContent7 = floatContent7['tree'][0]
+        contractFloatContent7 = contract["floatContent7"]
+        floatContent8 = self.check_page(contract["floatCode8"])
+        partFloatContent8 = floatContent8['tree'][0]
+        contractFloatContent8 = contract["floatContent8"]
+        floatContent9 = self.check_page(contract["floatCode9"])
+        partFloatContent9 = floatContent9['tree'][0]
+        contractFloatContent9 = contract["floatContent9"]
+        floatContent10 = self.check_page(contract["floatCode10"])
+        partFloatContent10 = floatContent10['tree'][0]
+        contractFloatContent10 = contract["floatContent10"]
+        floatContent11 = self.check_page(contract["floatCode11"])
+        partFloatContent11 = floatContent11['tree'][0]
+        contractFloatContent11 = contract["floatContent11"]
+        floatContent12 = self.check_page(contract["floatCode12"])
+        partFloatContent12 = floatContent12['tree'][0]
+        contractFloatContent12 = contract["floatContent12"]
+        floatContent13 = self.check_page(contract["floatCode13"])
+        partFloatContent13 = floatContent13['tree'][0]
+        contractFloatContent13 = contract["floatContent13"]
+        floatContent14 = self.check_page(contract["floatCode14"])
+        partFloatContent14 = floatContent14['tree'][0]
+        contractFloatContent14 = contract["floatContent14"]
+        floatContent15 = self.check_page(contract["floatCode15"])
+        partFloatContent15 = floatContent15['tree'][0]
+        contractFloatContent15 = contract["floatContent15"]
+        # Set for type of int
+        intContent1 = self.check_page(contract["intCode1"])
+        partIntContent1 = intContent1['tree'][0]
+        contractIntContent1 = contract["intContent1"]
+        intContent2 = self.check_page(contract["intCode2"])
+        partIntContent2 = intContent2['tree'][0]
+        contractIntContent2 = contract["intContent2"]
+        intContent3 = self.check_page(contract["intCode3"])
+        partIntContent3 = intContent3['tree'][0]
+        contractIntContent3 = contract["intContent3"]
+        intContent4 = self.check_page(contract["intCode4"])
+        partIntContent4 = intContent4['tree'][0]
+        contractIntContent4 = contract["intContent4"]
+        intContent5 = self.check_page(contract["intCode5"])
+        partIntContent5 = intContent5['tree'][0]
+        contractIntContent5 = contract["intContent5"]
+        intContent6 = self.check_page(contract["intCode6"])
+        partIntContent6 = intContent6['tree'][0]
+        contractIntContent6 = contract["intContent6"]
+        # Set wrong type
+        wrongContent1 = self.check_page(contract["wrongCode1"])
+        partWrongContent1 = wrongContent1['tree'][0]
+        contractWrongContent1 = contract["wrongContent1"]
+        mustBe = dict(money1=contractMoneyContent1['children'][0]["text"],
+                      money2=contractMoneyContent2['children'][0]["text"],
+                      money3=contractMoneyContent3['children'][0]["text"],
+                      money4=contractMoneyContent4['children'][0]["text"],
+                      money5=contractMoneyContent5['children'][0]["text"],
+                      money6=contractMoneyContent6['children'][0]["text"],
+                      money7=contractMoneyContent7['children'][0]["text"],
+                      money8=contractMoneyContent8['children'][0]["text"],
+                      money9=contractMoneyContent9['children'][0]["text"],
+                      money10=contractMoneyContent10['children'][0]["text"],
+                      money11=contractMoneyContent11['children'][0]["text"],
+                      money12=contractMoneyContent12['children'][0]["text"],
+                      money13=contractMoneyContent13['children'][0]["text"],
+                      money14=contractMoneyContent14['children'][0]["text"],
+                      money15=contractMoneyContent15['children'][0]["text"],
+                      float1=contractFloatContent1['children'][0]["text"],
+                      float2=contractFloatContent2['children'][0]["text"],
+                      float3=contractFloatContent3['children'][0]["text"],
+                      float4=contractFloatContent4['children'][0]["text"],
+                      float5=contractFloatContent5['children'][0]["text"],
+                      float6=contractFloatContent6['children'][0]["text"],
+                      float7=contractFloatContent7['children'][0]["text"],
+                      float8=contractFloatContent8['children'][0]["text"],
+                      float9=contractFloatContent9['children'][0]["text"],
+                      float10=contractFloatContent10['children'][0]["text"],
+                      float11=contractFloatContent11['children'][0]["text"],
+                      float12=contractFloatContent12['children'][0]["text"],
+                      float13=contractFloatContent13['children'][0]["text"],
+                      float14=contractFloatContent14['children'][0]["text"],
+                      float15=contractFloatContent15['children'][0]["text"],
+                      int1=contractIntContent1['children'][0]["text"],
+                      int2=contractIntContent2['children'][0]["text"],
+                      int3=contractIntContent3['children'][0]["text"],
+                      int4=contractIntContent4['children'][0]["text"],
+                      int5=contractIntContent5['children'][0]["text"],
+                      int6=contractIntContent6['children'][0]["text"],
+                      wrong1=contractWrongContent1['children'][0]["text"])
+        page = dict(money1=partMoneyContent1['children'][0]["text"],
+                    money2=partMoneyContent2['children'][0]["text"],
+                    money3=partMoneyContent3['children'][0]["text"],
+                    money4=partMoneyContent4['children'][0]["text"],
+                    money5=partMoneyContent5['children'][0]["text"],
+                    money6=partMoneyContent6['children'][0]["text"],
+                    money7=partMoneyContent7['children'][0]["text"],
+                    money8=partMoneyContent8['children'][0]["text"],
+                    money9=partMoneyContent9['children'][0]["text"],
+                    money10=partMoneyContent10['children'][0]["text"],
+                    money11=partMoneyContent11['children'][0]["text"],
+                    money12=partMoneyContent12['children'][0]["text"],
+                    money13=partMoneyContent13['children'][0]["text"],
+                    money14=partMoneyContent14['children'][0]["text"],
+                    money15=partMoneyContent15['children'][0]["text"],
+                    float1=partFloatContent1['children'][0]["text"],
+                    float2=partFloatContent2['children'][0]["text"],
+                    float3=partFloatContent3['children'][0]["text"],
+                    float4=partFloatContent4['children'][0]["text"],
+                    float5=partFloatContent5['children'][0]["text"],
+                    float6=partFloatContent6['children'][0]["text"],
+                    float7=partFloatContent7['children'][0]["text"],
+                    float8=partFloatContent8['children'][0]["text"],
+                    float9=partFloatContent9['children'][0]["text"],
+                    float10=partFloatContent10['children'][0]["text"],
+                    float11=partFloatContent11['children'][0]["text"],
+                    float12=partFloatContent12['children'][0]["text"],
+                    float13=partFloatContent13['children'][0]["text"],
+                    float14=partFloatContent14['children'][0]["text"],
+                    float15=partFloatContent15['children'][0]["text"],
+                    int1=partIntContent1['children'][0]["text"],
+                    int2=partIntContent2['children'][0]["text"],
+                    int3=partIntContent3['children'][0]["text"],
+                    int4=partIntContent4['children'][0]["text"],
+                    int5=partIntContent5['children'][0]["text"],
+                    int6=partIntContent6['children'][0]["text"],
+                    wrong1=partWrongContent1['children'][0]["text"])
+        self.assertDictEqual(mustBe, page, "calculate has problem!")
+
 if __name__ == '__main__':
     unittest.main()
