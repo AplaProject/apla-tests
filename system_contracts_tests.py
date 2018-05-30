@@ -423,7 +423,6 @@ class SystemContractsTestCase(unittest.TestCase):
         menuNameDB = utils.executeSQL(dbHost, dbName, login, pas, query)[0][0]
         asserts = ["list"]
         menu = self.check_get_api("/list/menu", "", asserts)
-        menuNameAPI = ""
         i = 0
         while i < len(menu["list"]):
             if menu["list"][i]["name"] == name:
