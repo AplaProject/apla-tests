@@ -416,29 +416,33 @@ class SystemContractsTestCase(unittest.TestCase):
         data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewMenu", data)
-        asserts = ["name"]
-        contractNameAPI = self.check_get_api("/contract/" + name, "", asserts)["name"]
         asserts = ["count"]
-        countMenuAfterAPI = self.check_get_api("/list/contracts", "", asserts)["count"]
+        countMenuAfterAPI = self.check_get_api("/list/menu", "", asserts)["count"]
         countMenuAfterDB = utils.getCountTable(dbHost, dbName, login, pas, "1_menu")
-        # menuNameAPI
         query = "SELECT name FROM \"1_menu\" WHERE name='" + name + "'"
-        menuNameDB = utils.executeSQL(dbHost, dbName, login, pas, query)
-        print(menuNameDB)
-
-
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        menuNameDB = utils.executeSQL(dbHost, dbName, login, pas, query)[0][0]
+        asserts = ["list"]
+        menu = self.check_get_api("/list/menu", "", asserts)
+        menuNameAPI = ""
+        i = 0
+        while i < len(menu["list"]):
+            if menu["list"][i]["name"] == name:
+                menuNameAPI = menu["list"][i]["name"]
+                break
+            i += 1
         content = {'tree': [{'tag': 'text', 'text': 'Item1'}]}
         mContent = funcs.get_content(url, "menu", name, "", 1, token)
-        self.assertEqual(mContent, content)
-
         mustBe = dict(block=True,
                       countMenuAfterAPI=countMenu + 1,
                       countMenuAfterDB=countMenu + 1,
+                      menuNameDB=name,
+                      menuNameAPI=name,
                       content=content)
         actual = dict(block=int(res)>0,
-                      countMenuAfterAPI=countMenuAfterAPI,
+                      countMenuAfterAPI=int(countMenuAfterAPI),
                       countMenuAfterDB=countMenuAfterDB,
+                      menuNameDB=menuNameDB,
+                      menuNameAPI=menuNameAPI,
                       content=mContent)
         self.assertDictEqual(mustBe, actual, "test_new_menu is failed!")
 
