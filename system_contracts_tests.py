@@ -146,11 +146,27 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_new_contract(self):
+        currentBlockId = funcs.get_max_block_id(url, token)
+        countContracts = utils.getCountTable(dbHost, dbName, login, pas, "1_contracts")
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        asserts = ["name"]
+        contractNameAPI = self.check_get_api("/contract/"+name, "", asserts)["name"]
+        asserts = ["count"]
+        countContractsAfter = self.check_get_api("/list/contracts", "", asserts)["count"]
+        query = "SELECT name FROM \"1_contracts\" WHERE name='" + name + "'"
+        contractName = utils.executeSQL(dbHost, dbName, login, pas, query)[0][0]
+        mustBe = dict(block=int(currentBlockId + 1),
+                      countContracts=int(countContracts + 1),
+                      contractNameDB=name,
+                      contractNameAPI="@1"+name)
+        actual = dict(block=int(res),
+                      countContracts=int(countContractsAfter),
+                      contractNameDB=contractName,
+                      contractNameAPI=contractNameAPI)
+        self.assertDictEqual(mustBe, actual, "test_new_contract is failed!")
 
     def test_new_contract_exists_name(self):
         code, name = utils.generate_name_and_code("")
