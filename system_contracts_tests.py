@@ -489,7 +489,6 @@ class SystemContractsTestCase(unittest.TestCase):
         menuCondDB = menu[0][4]
         content = {'tree': [{'tag': 'text', 'text': 'ItemEdited'}]}
         mContent = funcs.get_content(url, "menu", name, "", 1, token)
-        self.assertEqual(mContent, content)
         mustBe = dict(block=True,
                       menuNameAPI=name,
                       menuValueAPI=dataEdit["Value"],
