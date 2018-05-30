@@ -60,21 +60,19 @@ class SystemContractsTestCase(unittest.TestCase):
                 break
 
     def test_create_ecosystem(self):
-        currentBlockId = funcs.get_max_block_id(url, token)
         name = "Ecosys_" + utils.generate_random_name()
         data = {"Name": name}
         res = self.call("NewEcosystem", data)
         asserts = ["number"]
         ecosystemID = self.check_get_api("/ecosystems/", "", asserts)["number"]
         ecosystemTablesList = utils.getEcosysTablesById(dbHost, dbName, login, pas, ecosystemID)
-        mustBe = dict(block = currentBlockId+1,
+        mustBe = dict(block = True,
                       tablesCount = 19)
-        actual = dict(block=int(res),
+        actual = dict(block=int(res)>0,
                       tablesCount=len(ecosystemTablesList))
         self.assertDictEqual(mustBe, actual, "test_create_ecosystem is failed!")
 
     def test_edit_ecosystem_name(self):
-        currentBlockId = funcs.get_max_block_id(url, token)
         id = 1
         newName = "Ecosys_"+utils.generate_random_name()
         data = {"EcosystemID": id, "NewName": newName}
@@ -91,10 +89,10 @@ class SystemContractsTestCase(unittest.TestCase):
             i+=1
         query="SELECT name FROM \"1_ecosystems\" WHERE id='"+str(id)+"'"
         requiredEcosysNameDB = utils.executeSQL(dbHost, dbName, login, pas, query)[0][0]
-        mustBe = dict(block = int(currentBlockId+1),
+        mustBe = dict(block = True,
                       ecosysNameAPI = newName,
                       ecosysNameDB = newName)
-        actual = dict(block = int(resBlockId),
+        actual = dict(block = int(resBlockId)>0,
                       ecosysNameAPI = requiredEcosysNameAPI,
                       ecosysNameDB = requiredEcosysNameDB)
         self.assertDictEqual(mustBe, actual, "test_edit_ecosystem_name is failed!")
@@ -146,7 +144,6 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_new_contract(self):
-        currentBlockId = funcs.get_max_block_id(url, token)
         countContracts = utils.getCountTable(dbHost, dbName, login, pas, "1_contracts")
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
@@ -158,11 +155,11 @@ class SystemContractsTestCase(unittest.TestCase):
         countContractsAfter = self.check_get_api("/list/contracts", "", asserts)["count"]
         query = "SELECT name FROM \"1_contracts\" WHERE name='" + name + "'"
         contractName = utils.executeSQL(dbHost, dbName, login, pas, query)[0][0]
-        mustBe = dict(block=int(currentBlockId + 1),
+        mustBe = dict(block=True,
                       countContracts=int(countContracts + 1),
                       contractNameDB=name,
                       contractNameAPI="@1"+name)
-        actual = dict(block=int(res),
+        actual = dict(block=int(res)>0,
                       countContracts=int(countContractsAfter),
                       contractNameDB=contractName,
                       contractNameAPI=contractNameAPI)
@@ -236,7 +233,6 @@ class SystemContractsTestCase(unittest.TestCase):
         query = "SELECT * FROM \"1_contracts\" WHERE name='" + name + "'"
         contractDataBefore = utils.executeSQL(dbHost, dbName, login, pas, query)
         conValBefore = str(contractDataBefore[0][1])
-        currentBlockId = funcs.get_max_block_id(url, token)
         data2 = {}
         data2["Id"] = funcs.get_contract_id(url, name, token)
         data2["Value"] = code
@@ -250,12 +246,12 @@ class SystemContractsTestCase(unittest.TestCase):
         conID = contractData[0][0]
         conVal = str(contractData[0][1])
         conCond = contractData[0][6]
-        mustBe = dict(block=int(currentBlockId + 1),
+        mustBe = dict(block=True,
                       id=int(data2["Id"]),
                       val= conValBefore,
                       cond=data2["Conditions"],
                       wallet=newWallet)
-        actual = dict(block=int(res),
+        actual = dict(block=int(res)>0,
                       id=int(conID),
                       val=conVal,
                       cond=conCond,
@@ -331,7 +327,6 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_new_parameter(self):
-        currentBlockId = funcs.get_max_block_id(url, token)
         countParamsBefore = utils.getCountTable(dbHost, dbName, login, pas, "1_parameters")
         name = "Par_" + utils.generate_random_name()
         data = {"Name": name, "Value": "test", "ApplicationId": 1,
@@ -354,7 +349,7 @@ class SystemContractsTestCase(unittest.TestCase):
         paramNameDB = param[0][1]
         paramValueDB = param[0][2]
         paramCondDB = param[0][3]
-        mustBe = dict(block=int(currentBlockId + 1),
+        mustBe = dict(block=True,
                       countParamsAPI=int(countParamsBefore + 1),
                       countParamsDB=int(countParamsBefore + 1),
                       paramNameDB=name,
@@ -363,7 +358,7 @@ class SystemContractsTestCase(unittest.TestCase):
                       paramNameAPI=name,
                       paramValueAPI=data["Value"],
                       paramCondAPI=data["Conditions"])
-        actual = dict(block=int(res),
+        actual = dict(block=int(res)>0,
                       countParamsAPI=int(countParamsAPI),
                       countParamsDB=int(countParamsDB),
                       paramNameDB=paramNameDB,
