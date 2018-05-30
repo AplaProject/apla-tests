@@ -1213,7 +1213,7 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
         
-def test_contract_memory_limit(self):
+    def test_contract_memory_limit(self):
         # add contract with memory limit
         body = """
         {
@@ -1238,7 +1238,8 @@ def test_contract_memory_limit(self):
         data = ""
         msg = "Memory limit exceeded"
         res = self.call(contract_name, data)
-        self.assertEqual(msg, res, "Incorrect message: " + res)        
+        self.assertEqual(msg, res, "Incorrect message: " + res)
+
     def test_functions_recursive_limit(self):
         # add contract with recursive
         body = """
