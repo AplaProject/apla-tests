@@ -60,10 +60,18 @@ class SystemContractsTestCase(unittest.TestCase):
                 break
 
     def test_create_ecosystem(self):
-        name = "Ecosys" + utils.generate_random_name()
+        currentBlockId = funcs.get_max_block_id(url, token)
+        name = "Ecosys_" + utils.generate_random_name()
         data = {"Name": name}
         res = self.call("NewEcosystem", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        asserts = ["number"]
+        ecosystemID = self.check_get_api("/ecosystems/", "", asserts)["number"]
+        ecosystemTablesList = utils.getEcosysTablesById(dbHost, dbName, login, pas, ecosystemID)
+        mustBe = dict(block = currentBlockId+1,
+                      tablesCount = 19)
+        actual = dict(block=int(res),
+                      tablesCount=len(ecosystemTablesList))
+        self.assertDictEqual(mustBe, actual, "test_create_ecosystem is failed!")
 
     def test_edit_ecosystem_name(self):
         id = 1
