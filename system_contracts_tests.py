@@ -948,11 +948,9 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_new_lang(self):
-        data = {}
-        data["AppID"] = 1
-        data["Name"] = "Lang_" + utils.generate_random_name()
-        data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
-        data["ApplicationId"] = 1
+        data = {"AppID": 1, "Name": "Lang_" + utils.generate_random_name(),
+                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}",
+                "ApplicationId": 1}
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
@@ -1091,6 +1089,15 @@ class SystemContractsTestCase(unittest.TestCase):
         data = {"Name": "max_block_user_tx", "Value" : "2"}
         res = self.call("UpdateSysParam", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-
+    
+    def test_update_system_parameters1(self):
+        data = {"Name": "local_node_ban_time", "Value" : "10000"}
+        res = self.call("UpdateSysParam", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_update_system_parameters2(self):
+        data = {"Name": "max_block_user_tx", "Value" : "250000"}
+        res = self.call("UpdateSysParam", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)    
 if __name__ == '__main__':
     unittest.main()

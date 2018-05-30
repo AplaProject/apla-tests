@@ -6,6 +6,8 @@ import string
 import psycopg2
 import json
 from collections import Counter
+from genesis_blockchain_tools.crypto import sign
+from genesis_blockchain_tools.crypto import get_public_key
 
 
 def get_uid(url):
@@ -14,21 +16,17 @@ def get_uid(url):
 	return result['token'], result['uid']
 
 
-def sign(forsign, url, prKey):
-	data = {'forsign': forsign, 'private': prKey}
-	resp = requests.post(url + "/signtest/", params=data)
-	result = resp.json()
-	return result['signature'], result['pubkey']
-
-
 def login(url, prKey):
 	token, uid = get_uid(url)
-	signature, pubkey = sign("LOGIN" + uid, url, prKey)
+	print("prKey---", prKey, "data----", "LOGIN" + uid)
+	signature = sign(prKey, "LOGIN" + uid)
+	pubkey = get_public_key(prKey)
 	fullToken = 'Bearer ' + token
 	data = {'pubkey': pubkey, 'signature': signature}
 	head = {'Authorization': fullToken}
 	resp = requests.post(url + '/login', params=data, headers=head)
 	res = resp.json()
+	print(res)
 	result = {}
 	result["uid"] = uid
 	result["timeToken"] = res["refresh"]
@@ -40,22 +38,19 @@ def login(url, prKey):
 
 
 def prepare_tx(url, prKey, entity, jvtToken, data):
-	urlToCont = url + '/prepare/' + entity
 	heads = {'Authorization': jvtToken}
-	resp = requests.post(urlToCont, data=data, headers=heads)
+	resp = requests.post(url + '/prepare/' + entity, data=data, headers=heads)
 	result = resp.json()
-	forsign = result['forsign']
-	signature, _ = sign(forsign, url, prKey)
+	signature = sign(prKey, result['forsign'])
 	return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
 
 def prepare_tx_with_files(url, prKey, entity, jvtToken, data, files):
-	urlToCont = url + '/prepare/' + entity
 	heads = {'Authorization': jvtToken}
-	resp = requests.post(urlToCont, data=data, headers=heads, files=files)
+	resp = requests.post(url + '/prepare/' + entity,
+						data=data, headers=heads, files=files)
 	result = resp.json()
-	forsign = result['forsign']
-	signature, _ = sign(forsign, url, prKey)
+	signature = sign(prKey, result['forsign'])
 	return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
 def call_contract(url, prKey, name, data, jvtToken):
