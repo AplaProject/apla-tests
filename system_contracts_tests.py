@@ -331,11 +331,49 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_new_parameter(self):
+        currentBlockId = funcs.get_max_block_id(url, token)
+        countParamsBefore = utils.getCountTable(dbHost, dbName, login, pas, "1_parameters")
         name = "Par_" + utils.generate_random_name()
         data = {"Name": name, "Value": "test", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewParameter", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        asserts = ["count"]
+        paramsAPI = self.check_get_api("/list/parameters", "", asserts)
+        countParamsAPI = paramsAPI["count"]
+        i = 0
+        while i < len(paramsAPI["list"]):
+            if paramsAPI["list"][i]["name"] == name:
+                paramNameAPI = paramsAPI["list"][i]["name"]
+                paramValueAPI = paramsAPI["list"][i]["value"]
+                paramCondAPI = paramsAPI["list"][i]["conditions"]
+                break
+            i+=1
+        countParamsDB = utils.getCountTable(dbHost, dbName, login, pas, "1_parameters")
+        query = "SELECT * FROM \"1_parameters\" WHERE name='" + name + "'"
+        param = utils.executeSQL(dbHost, dbName, login, pas, query)
+        paramNameDB = param[0][1]
+        paramValueDB = param[0][2]
+        paramCondDB = param[0][3]
+        mustBe = dict(block=int(currentBlockId + 1),
+                      countParamsAPI=int(countParamsBefore + 1),
+                      countParamsDB=int(countParamsBefore + 1),
+                      paramNameDB=name,
+                      paramValueDB=data["Value"],
+                      paramCondDB=data["Conditions"],
+                      paramNameAPI=name,
+                      paramValueAPI=data["Value"],
+                      paramCondAPI=data["Conditions"])
+        actual = dict(block=int(res),
+                      countParamsAPI=int(countParamsAPI),
+                      countParamsDB=int(countParamsDB),
+                      paramNameDB=paramNameDB,
+                      paramValueDB=paramValueDB,
+                      paramCondDB=paramCondDB,
+                      paramNameAPI=paramNameAPI,
+                      paramValueAPI=paramValueAPI,
+                      paramCondAPI=paramCondAPI)
+        self.assertDictEqual(mustBe, actual, "test_new_parameter is failed!")
+
 
     def test_new_parameter_exist_name(self):
         name = "Par_" + utils.generate_random_name()
