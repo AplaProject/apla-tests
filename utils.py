@@ -263,7 +263,7 @@ def getUserTableState(dbHost, dbName, login, password, userTable):
 def getUserTokenAmounts(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
-	cursor.execute("select amount from \"1_keys\"")
+	cursor.execute("select amount from \"1_keys\" ORDER BY amount")
 	amounts = cursor.fetchall()
 	return amounts
 

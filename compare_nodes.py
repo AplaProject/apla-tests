@@ -54,7 +54,7 @@ class CompareNodes(unittest.TestCase):
                      summ = str(sumWalets),
                      hash = str(hash2),
                      node_pos = "True")
-        dict3 = dict(amounts = str(amounts2),
+        dict3 = dict(amounts = str(amounts3),
                      summ = str(sumWalets),
                      hash = str(hash3),
                      node_pos = "True")
