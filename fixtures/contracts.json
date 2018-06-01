@@ -270,5 +270,9 @@
 	"limits": {
 		"code": "{\n data {\n Count int\n }\n conditions {} \n action { \n var i int \n var res array \n while i < $Count { \n var res array\n res = DBFind(\"contracts\").Columns(\"name\")\n i = i + 1\n } \n}\n }",
 		"asert": ""
+	},
+	"getMapKeys": {
+		"code": "{\n data {} \n conditions {} \n action { \n var val map \n var arr array \n val[\"key\"] = \"hello\"  \n arr = GetMapKeys(val) \n $result = arr \n}\n }",
+		"asert": "[key]"
 	}
 }
