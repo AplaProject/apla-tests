@@ -274,5 +274,9 @@
 	"getMapKeys": {
 		"code": "{\n data {} \n conditions {} \n action { \n var val map \n var arr array \n val[\"key\"] = \"hello\"  \n arr = GetMapKeys(val) \n $result = arr \n}\n }",
 		"asert": "[key]"
+	},
+	"sortedKeys": {
+		"code": "{\n data {} \n conditions {} \n action { \n var val map \n var arr array \n val[\"k9\"] = \"3\" \n val[\"k5\"] = \"7\" \n val[\"k1\"] = \"1\" \n arr = SortedKeys(val) \n $result = arr \n}\n }",
+		"asert": "[k1 k5 k9]"
 	}
 }
