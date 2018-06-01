@@ -31,6 +31,27 @@
 			  }
 			]
 	},
+	"buttonPopup":{
+		"code": "Button(Body: popup).Popup(50, Hello)",
+		"Menu": "default_menu",
+		"content": [
+			  {
+				"tag": "button",
+				"attr": {
+				  "popup": {
+					"header": "Hello",
+					"width": "50"
+				  }
+				},
+				"children": [
+				  {
+					"tag": "text",
+					"text": "popup"
+				  }
+				]
+			  }
+			]
+	},
     "selectorFromDB":{
 		"code": "DBFind(\"menu\", data) %n Select(MySelect, data, \"name\")",
 		"menu": "default_menu",
