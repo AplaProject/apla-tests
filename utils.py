@@ -62,13 +62,13 @@ def call_contract(url, prKey, name, data, jvtToken):
 	return result
 
 def prepare_multi_tx(url, prKey, entity, jvtToken, data):
-	urlToCont = url + '/prepareMultiple/' + entity
+	urlToCont = url + '/prepareMultiple/'
 	heads = {'Authorization': jvtToken}
 	request = {"token_ecosystem": "",
-		   "max_sum":"",
-		   "payover": "",
-		   "signed_by": "",
-	           "params": data}
+			   "max_sum":"",
+			   "payover": "",
+			   "signed_by": "",
+			   "contracts": data}
 	resp = requests.post(urlToCont, data={"data":json.dumps(request)}, headers=heads)
 	result = resp.json()
 	forsigns = result['forsign']
@@ -110,8 +110,9 @@ def txstatus(url, sleepTime, hsh, jvtToken):
 def txstatus_multi(url, sleepTime, hshs, jvtToken):
 	time.sleep(len(hshs) * sleepTime)
 	urlEnd = url + '/txstatusMultiple/'
-	resp = requests.get(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
-	return resp.json()
+	resp = requests.post(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
+	return resp.json()["results"]
+
 
 
 def generate_random_name():
