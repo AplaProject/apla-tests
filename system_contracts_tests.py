@@ -642,6 +642,18 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
+    def test_new_table_empty_name(self):
+        column = """[{"name":"MyName","type":"varchar",
+        "index": "1",  "conditions":"true"}]"""
+        permission = """{"insert": "false",
+        "update" : "true","new_column": "true"}"""
+        data = {"Name": "",
+                "Columns": column, "ApplicationId": 1,
+                "Permissions": permission}
+        res = self.call("NewTable", data)
+        msg = "Table name cannot be empty"
+        self.assertEqual(msg, res, "Incorrect message: " + res)
+
     def test_new_table_incorrect_condition1(self):
         data = {}
         data["Name"] = "Tab_" + utils.generate_random_name()
@@ -948,11 +960,9 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_new_lang(self):
-        data = {}
-        data["AppID"] = 1
-        data["Name"] = "Lang_" + utils.generate_random_name()
-        data["Trans"] = "{\"en\": \"false\", \"ru\" : \"true\"}"
-        data["ApplicationId"] = 1
+        data = {"AppID": 1, "Name": "Lang_" + utils.generate_random_name(),
+                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}",
+                "ApplicationId": 1}
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
@@ -1092,5 +1102,61 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("UpdateSysParam", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
+        
+    def test_contract_memory_limit(self):
+        # add contract with memory limit
+        body = """
+        {
+        data {
+            Count int "optional"
+            }
+        action {
+            var a array
+            while (true) {
+                $Count = $Count + 1
+                a[Len(a)] = JSONEncode(a)
+                }
+            }
+        }
+        """
+        code, contract_name = utils.generate_name_and_code(body)
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # test
+        data = ""
+        msg = "Memory limit exceeded"
+        res = self.call(contract_name, data)
+        self.assertEqual(msg, res, "Incorrect message: " + res)
+
+    def test_functions_recursive_limit(self):
+        # add contract with recursive
+        body = """
+        {
+        func myfunc(num int) int { 
+            num = num + 1
+            myfunc(num)
+            }
+        data{}
+        conditions{}
+        action {
+            $a = 0
+            myfunc($a)
+            }
+        }
+        """
+        code, contract_name = utils.generate_name_and_code(body)
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
+        res = self.call("NewContract", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # test
+        data = ""
+        msg = "max call depth"
+        res = self.call(contract_name, data)
+        self.assertEqual(msg, res, "Incorrect message: " + res)
+        
+        
 if __name__ == '__main__':
     unittest.main()

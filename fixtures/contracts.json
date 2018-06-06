@@ -266,5 +266,9 @@
 	"dbSelectMetricsAvg": {
 		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_pages\", \"1 day\", \"avg\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n } \n $result = m[\"value\"] \n}\n }",
 		"asert": ""
+	},
+	"limits": {
+		"code": "{\n data {\n Count int\n }\n conditions {} \n action { \n var i int \n var res array \n while i < $Count { \n var res array\n res = DBFind(\"contracts\").Columns(\"name\")\n i = i + 1\n } \n}\n }",
+		"asert": ""
 	}
 }

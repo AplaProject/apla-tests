@@ -168,6 +168,8 @@ time.sleep(3)
 
 with open(os.path.join(workDir1, 'PrivateKey'), 'r') as f:
 	privKey1 = f.read()
+with open(os.path.join(workDir1, 'PublicKey'), 'r') as f:
+	pubKey1 = f.read()
 with open(os.path.join(workDir2, 'PrivateKey'), 'r') as f:
 	privKey2 = f.read()
 with open(os.path.join(workDir3, 'PrivateKey'), 'r') as f:
@@ -343,5 +345,4 @@ del lines[27]
 lines.insert(27, "\t\t\"keyID\": \""+keyID3+"\",\n")
 with open(config, 'w') as fconf:
  fconf.write(''.join(lines))
-
 
