@@ -6,6 +6,8 @@ import string
 import psycopg2
 import json
 from collections import Counter
+from genesis_blockchain_tools.crypto import sign
+from genesis_blockchain_tools.crypto import get_public_key
 
 
 def get_uid(url):
@@ -14,21 +16,17 @@ def get_uid(url):
 	return result['token'], result['uid']
 
 
-def sign(forsign, url, prKey):
-	data = {'forsign': forsign, 'private': prKey}
-	resp = requests.post(url + "/signtest/", params=data)
-	result = resp.json()
-	return result['signature'], result['pubkey']
-
-
 def login(url, prKey):
 	token, uid = get_uid(url)
-	signature, pubkey = sign("LOGIN" + uid, url, prKey)
+	print("prKey---", prKey, "data----", "LOGIN" + uid)
+	signature = sign(prKey, "LOGIN" + uid)
+	pubkey = get_public_key(prKey)
 	fullToken = 'Bearer ' + token
 	data = {'pubkey': pubkey, 'signature': signature}
 	head = {'Authorization': fullToken}
 	resp = requests.post(url + '/login', params=data, headers=head)
 	res = resp.json()
+	print(res)
 	result = {}
 	result["uid"] = uid
 	result["timeToken"] = res["refresh"]
@@ -40,21 +38,19 @@ def login(url, prKey):
 
 
 def prepare_tx(url, prKey, entity, jvtToken, data):
-	urlToCont = url + '/prepare/' + entity
 	heads = {'Authorization': jvtToken}
-	resp = requests.post(urlToCont, data=data, headers=heads)
+	resp = requests.post(url + '/prepare/' + entity, data=data, headers=heads)
 	result = resp.json()
-	forsign = result['forsign']
-	signature, _ = sign(forsign, url, prKey)
+	signature = sign(prKey, result['forsign'])
 	return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
+
 def prepare_tx_with_files(url, prKey, entity, jvtToken, data, files):
-	urlToCont = url + '/prepare/' + entity
 	heads = {'Authorization': jvtToken}
-	resp = requests.post(urlToCont, data=data, headers=heads, files=files)
+	resp = requests.post(url + '/prepare/' + entity,
+						data=data, headers=heads, files=files)
 	result = resp.json()
-	forsign = result['forsign']
-	signature, _ = sign(forsign, url, prKey)
+	signature = sign(prKey, result['forsign'])
 	return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
 def call_contract(url, prKey, name, data, jvtToken):
@@ -62,6 +58,28 @@ def call_contract(url, prKey, name, data, jvtToken):
 	dataContract = {"time": sign['time'], "signature": sign["signature"]}
 	urlEnd = url + '/contract/' + sign["reqID"]
 	resp = requests.post(urlEnd, data=dataContract, headers={"Authorization": jvtToken})
+	result = resp.json()
+	return result
+
+def prepare_multi_tx(url, prKey, entity, jvtToken, data):
+	urlToCont = url + '/prepareMultiple/'
+	heads = {'Authorization': jvtToken}
+	request = {"token_ecosystem": "",
+			   "max_sum":"",
+			   "payover": "",
+			   "signed_by": "",
+			   "contracts": data}
+	resp = requests.post(urlToCont, data={"data":json.dumps(request)}, headers=heads)
+	result = resp.json()
+	forsigns = result['forsign']
+	signatures = [sign(forsign, url, prKey)[0] for forsign in forsigns]
+	return {"time": result['time'], "signatures": signatures, "reqID": result['request_id']}
+
+def call_multi_contract(url, prKey, name, data, jvtToken):
+	sign = prepare_multi_tx(url, prKey, name, jvtToken, data)
+	dataContract = {"time": sign['time'], "signatures": sign["signatures"]}
+	urlEnd = url + '/contractMultiple/' + sign["reqID"]
+	resp = requests.post(urlEnd, data={"data":json.dumps(dataContract)}, headers={"Authorization": jvtToken})
 	result = resp.json()
 	return result
 
@@ -87,6 +105,14 @@ def txstatus(url, sleepTime, hsh, jvtToken):
 		else:
 			sec = sec + 1
 	return resp.json()	
+
+
+def txstatus_multi(url, sleepTime, hshs, jvtToken):
+	time.sleep(len(hshs) * sleepTime)
+	urlEnd = url + '/txstatusMultiple/'
+	resp = requests.post(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
+	return resp.json()["results"]
+
 
 
 def generate_random_name():
@@ -163,6 +189,23 @@ def check_for_missing_node(dbHost, dbName, login, password, minBlockId, maxBlock
 		i = i + 1
 	return True
 
+def isCountTxInBlock(dbHost, dbName, login, password, maxBlockId, countTx):
+	minBlock = maxBlockId - 3
+	request = "SELECT id, tx FROM block_chain WHERE id>" + str(minBlock) + " AND id<" + str(maxBlockId)
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute(request)
+	tx = cursor.fetchall()
+	i = 0
+	while i < len(tx):
+		if tx[i][1] > countTx:
+			print("Block " + tx[i][0] + " contains " +\
+				tx[i][1] + " transactions")
+			return False
+		i = i + 1
+	return True
+
+
 def get_count_records_block_chain(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
@@ -214,11 +257,32 @@ def getCountDBObjects(dbHost, dbName, login, password):
 		tablesCount[table[2:]] = getCountTable(dbHost, dbName, login, password, table)
 	return tablesCount
 
+def getTableColumnNames(dbHost, dbName, login, password, table):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	query = "SELECT pg_attribute.attname FROM pg_attribute, pg_class WHERE pg_class.relname='"+\
+			table+"' AND pg_class.relfilenode=pg_attribute.attrelid AND pg_attribute.attnum>0"
+	cursor.execute(query)
+	col = {}
+	col = cursor.fetchall()
+	return col
+
+def getUserTableState(dbHost, dbName, login, password, userTable):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT * FROM \"" + userTable + "\"")
+	res = cursor.fetchall()
+	col = getTableColumnNames(dbHost, dbName, login, password, userTable)
+	table = {}
+	for i in range(len(col)):
+		table[col[i][0]] = res[0][i]
+	return table
+
 
 def getUserTokenAmounts(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
-	cursor.execute("select amount from \"1_keys\"")
+	cursor.execute("select amount from \"1_keys\" ORDER BY amount")
 	amounts = cursor.fetchall()
 	return amounts
 
