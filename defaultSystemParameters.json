@@ -24,7 +24,6 @@
     "max_fuel_tx": "20000",
     "max_fuel_block": "100000",
     "commission_size": "3",
-    "commission_wallet": "[[\"1\",\"-1814381909862527295\"]]",
     "fuel_rate": "[[\"1\",\"1000000000000000\"]]",
     "extend_cost_address_to_id": "10",
     "extend_cost_id_to_address": "10",
@@ -61,7 +60,11 @@
     "extend_cost_perm_column": "50",
     "extend_cost_json_to_map": "50",
     "max_block_generation_time": "2000",
-    "block_reward": "1000"
+    "block_reward": "1000",
+    "incorrect_blocks_per_day": "10",
+    "node_ban_time": "86400000",
+    "local_node_ban_time": "1800000",
+    "commission_wallet": "[[\"1\",\"-4139309588435117158\"]]"
   },
-  "count": 62
+  "count": 65
 }
