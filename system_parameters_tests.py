@@ -1002,6 +1002,1368 @@ class SystemParametersCase(unittest.TestCase):
                       res11=res11,)
         self.assertDictEqual(mustBe, actual, name + " has problem!")
 
+    # fuel_rate - ?
+
+    def test_extend_cost_address_to_id(self):
+        name = "extend_cost_address_to_id"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt+1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_id_to_address(self):
+        name = "extend_cost_id_to_address"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt+1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_new_state(self):
+        name = "extend_cost_new_state"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_sha256(self):
+        name = "extend_cost_sha256"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_pub_to_id(self):
+        name = "extend_cost_pub_to_id"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_ecosys_param(self):
+        name = "extend_cost_ecosys_param"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_sys_param_string(self):
+        name = "extend_cost_sys_param_string"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_sys_param_int(self):
+        name = "extend_cost_sys_param_int"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_sys_fuel(self):
+        name = "extend_cost_sys_fuel"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_validate_condition(self):
+        name = "extend_cost_validate_condition"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_eval_condition(self):
+        name = "extend_cost_eval_condition"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_has_prefix(self):
+        name = "extend_cost_has_prefix"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_contains(self):
+        name = "extend_cost_contains"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+        def test_extend_cost_replace(self):
+            name = "extend_cost_replace"
+            data1 = {"Name": name, "Value": "-1"}
+            data2 = {"Name": name, "Value": str(maxInt + 1)}
+            data3 = {"Name": name, "Value": "hello"}
+            data4 = {"Name": name, "Value": "1452.78"}
+            data5 = {"Name": name, "Value": "0"}
+            data6 = {"Name": name, "Value": "59523"}
+            data7 = {"Name": name, "Value": str(maxInt)}
+            data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+            res1 = self.call(contractName, data1)
+            res2 = self.call(contractName, data2)
+            res3 = self.call(contractName, data3)
+            res4 = self.call(contractName, data4)
+            res5 = self.call(contractName, data5)
+            res6 = int(self.call(contractName, data6))
+            count_res6 = int(self.getCountBlocks())
+            res7 = int(self.call(contractName, data7))
+            count_res7 = int(self.getCountBlocks())
+            res8 = int(self.call(contractName, data8))
+            count_res8 = int(self.getCountBlocks())
+            msg = "Invalid value"
+            mustBe = dict(res1=msg,
+                          res2=msg,
+                          res3=msg,
+                          res4=msg,
+                          res5=msg,
+                          res6=count_res6,
+                          res7=count_res7,
+                          res8=count_res8)
+            actual = dict(res1=res1,
+                          res2=res2,
+                          res3=res3,
+                          res4=res4,
+                          res5=res5,
+                          res6=res6,
+                          res7=res7,
+                          res8=res8)
+            self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_join(self):
+        name = "extend_cost_join"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_update_lang(self):
+        name = "extend_cost_update_lang"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_size(self):
+        name = "extend_cost_size"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_substr(self):
+        name = "extend_cost_substr"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_contracts_list(self):
+        name = "extend_cost_contracts_list"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_is_object(self):
+        name = "extend_cost_is_object"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_compile_contract(self):
+        name = "extend_cost_compile_contract"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_flush_contract(self):
+        name = "extend_cost_flush_contract"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_eval(self):
+        name = "extend_cost_eval"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_len(self):
+        name = "extend_cost_len"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_activate(self):
+        name = "extend_cost_activate"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_deactivate(self):
+        name = "extend_cost_deactivate"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_create_ecosystem(self):
+        name = "extend_cost_create_ecosystem"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_table_conditions(self):
+        name = "extend_cost_table_conditions"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_create_table(self):
+        name = "extend_cost_create_table"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_perm_table(self):
+        name = "extend_cost_perm_table"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_column_condition(self):
+        name = "extend_cost_column_condition"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_create_column(self):
+        name = "extend_cost_create_column"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_perm_column(self):
+        name = "extend_cost_perm_column"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
+    def test_extend_cost_json_to_map(self):
+        name = "extend_cost_json_to_map"
+        data1 = {"Name": name, "Value": "-1"}
+        data2 = {"Name": name, "Value": str(maxInt + 1)}
+        data3 = {"Name": name, "Value": "hello"}
+        data4 = {"Name": name, "Value": "1452.78"}
+        data5 = {"Name": name, "Value": "0"}
+        data6 = {"Name": name, "Value": "59523"}
+        data7 = {"Name": name, "Value": str(maxInt)}
+        data8 = {"Name": name, "Value": defaultValues[defaultValueKey][name]}  # set default value
+        res1 = self.call(contractName, data1)
+        res2 = self.call(contractName, data2)
+        res3 = self.call(contractName, data3)
+        res4 = self.call(contractName, data4)
+        res5 = self.call(contractName, data5)
+        res6 = int(self.call(contractName, data6))
+        count_res6 = int(self.getCountBlocks())
+        res7 = int(self.call(contractName, data7))
+        count_res7 = int(self.getCountBlocks())
+        res8 = int(self.call(contractName, data8))
+        count_res8 = int(self.getCountBlocks())
+        msg = "Invalid value"
+        mustBe = dict(res1=msg,
+                      res2=msg,
+                      res3=msg,
+                      res4=msg,
+                      res5=msg,
+                      res6=count_res6,
+                      res7=count_res7,
+                      res8=count_res8)
+        actual = dict(res1=res1,
+                      res2=res2,
+                      res3=res3,
+                      res4=res4,
+                      res5=res5,
+                      res6=res6,
+                      res7=res7,
+                      res8=res8)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
     def test_dbInsert_access_denied(self):
         value = """
         {
