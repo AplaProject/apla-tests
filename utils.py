@@ -41,6 +41,7 @@ def prepare_tx(url, prKey, entity, jvtToken, data):
 	heads = {'Authorization': jvtToken}
 	resp = requests.post(url + '/prepare/' + entity, data=data, headers=heads)
 	result = resp.json()
+	print(result)
 	signature = sign(prKey, result['forsign'])
 	return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
@@ -72,7 +73,7 @@ def prepare_multi_tx(url, prKey, entity, jvtToken, data):
 	resp = requests.post(urlToCont, data={"data":json.dumps(request)}, headers=heads)
 	result = resp.json()
 	forsigns = result['forsign']
-	signatures = [sign(forsign, url, prKey)[0] for forsign in forsigns]
+	signatures = [sign(prKey, forsign)[0] for forsign in forsigns]
 	return {"time": result['time'], "signatures": signatures, "reqID": result['request_id']}
 
 def call_multi_contract(url, prKey, name, data, jvtToken):

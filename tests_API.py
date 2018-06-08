@@ -75,7 +75,7 @@ class ApiTestCase(unittest.TestCase):
 
     def test_get_param_current_ecosystem(self):
         asserts = ["list"]
-        self.check_get_api("/ecosystemparams/", "", asserts)
+        self.check_get_api("/ecosystemparams-/", "", asserts)
 
     def test_get_params_ecosystem_with_names(self):
         asserts = ["list"]
