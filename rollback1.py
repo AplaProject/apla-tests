@@ -60,14 +60,20 @@ class Rollback1TestCase(unittest.TestCase):
         res = self.call("NewContract", data)
         self.assertGreater(int(res["blockid"]), 0, "BlockId is not generated: " + str(res))
         # change permission for notifications table
-        permission = """{"insert": "true","update" : "true","new_column": "true"}"""
-        dataEdit = {"Name": "notifications", "Permissions": permission}
+        dataEdit = {}
+        dataEdit["Name"] = "notifications"
+        dataEdit["InsertPerm"] = "true"
+        dataEdit["UpdatePerm"] = "true"
+        dataEdit["NewColumnPerm"] = "true"
         res = self.call("EditTable", dataEdit)
         # call contract, wich added record in notification table
         res = self.call(name, "")
         # change permission for notifications table back
-        permission = """{"insert": "ContractAccess(\\"Notifications_Single_Send_map\\",\\"Notifications_Roles_Send_map\\")", "update": "ContractConditions(\\"MainCondition\\")", "new_column": "ContractConditions(\\"MainCondition\\")"}"""
-        dataEdit = {"Name": "notifications", "Permissions": permission}
+        dataEdit = {}
+        dataEdit["Name"] = "notifications"
+        dataEdit["InsertPerm"] = "ContractAccess(\"Notifications_Single_Send_map\",\"Notifications_Roles_Send_map\")"
+        dataEdit["UpdatePerm"] = "ContractConditions(\"MainCondition\")"
+        dataEdit["NewColumnPerm"] = "ContractConditions(\"MainCondition\")"
         res = self.call("EditTable", dataEdit)
 
     def getCountTable(self,name):
