@@ -266,13 +266,13 @@ class Rollback1TestCase(unittest.TestCase):
 
     def new_lang(self):
         name = "Lang_" + utils.generate_random_name()
-        data = {"Name": name, "AppID": 1,
+        data = {"Name": name, "ApplicationId": 1,
                 "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("NewLang", data)
         return name
 
     def edit_lang(self, id, name):
-        dataEdit = {"Id": id, "Name": name, "AppID": 1,
+        dataEdit = {"Id": id,
                     "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("EditLang", dataEdit)
 
