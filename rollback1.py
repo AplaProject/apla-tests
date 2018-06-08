@@ -236,13 +236,11 @@ class Rollback1TestCase(unittest.TestCase):
         return data["Name"]
 
     def edit_table(self, name):
-        column = """[{"name":"MyName","type":"varchar",
-        "index": "1","conditions":"true"}]"""
-        permission = """{"insert": "true",
-        "update" : "true","new_column": "true"}"""
-        dataEdit = {"Name": name,
-                    "Columns": column,
-                    "Permissions": permission}
+        dataEdit = {}
+        dataEdit["Name"] = name
+        dataEdit["InsertPerm"] = "true"
+        dataEdit["UpdatePerm"] = "true"
+        dataEdit["NewColumnPerm"] = "true"
         res = self.call("EditTable", dataEdit)
 
     def new_column(self, table):

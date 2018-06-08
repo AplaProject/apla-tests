@@ -32,12 +32,6 @@ def get_contract_id(url, name, token):
     res = call_get_api(endPoint, "", token)
     return res["tableid"]
 
-def get_table_id(url, name, token):
-    endPoint = url + "/table/" + name
-    res = call_get_api(endPoint, "", token)
-    print(res)
-    return res["id"]
-
 def is_contract_activated(url, name, token):
     endPoint = url + "/contract/" + name
     res = call_get_api(endPoint, "", token)
