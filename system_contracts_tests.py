@@ -61,6 +61,39 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewApplication", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
+    def test_edit_application(self):
+        name = "App" + utils.generate_random_name()
+        data = {"Name": name, "Conditions": "true"}
+        res = self.call("NewApplication", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        id = funcs.get_application_id(url, name, token)
+        data = {"ApplicationId": id, "Conditions": "false"}
+        res = self.call("EditApplication", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_activate_application(self):
+        name = "App" + utils.generate_random_name()
+        data = {"Name": name, "Conditions": "true"}
+        res = self.call("NewApplication", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        id = funcs.get_application_id(url, name, token)
+        dataDeact = {"ApplicationId": id, "Value": 0}
+        res = self.call("DelApplication", dataDeact)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        dataAct = {"ApplicationId": id, "Value": 1}
+        res = self.call("DelApplication", dataAct)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_export_application(self):
+        name = "App" + utils.generate_random_name()
+        data = {"Name": name, "Conditions": "true"}
+        res = self.call("NewApplication", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        id = funcs.get_application_id(url, name, token)
+        dataDeact = {"ApplicationId": id}
+        res = self.call("ExportNewApp", dataDeact)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
     def test_new_ecosystem(self):
         name = "Ecos" + utils.generate_random_name()
         data = {"Name": name}
