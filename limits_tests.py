@@ -94,6 +94,7 @@ class LimitsTestCase(unittest.TestCase):
             i = i + 1
         time.sleep(5)
         maxBlock = funcs.get_max_block_id(conf["2"]["url"], token)
+        print("maxBlock = ", maxBlock)
         self.assertTrue(utils.isCountTxInBlock(conf["2"]["dbHost"],
                                                conf["2"]["dbName"],
                                                conf["2"]["login"],
@@ -127,7 +128,7 @@ class LimitsTestCase(unittest.TestCase):
                                                conf["2"] ["pass"],
                                                maxBlock, 2),
                         "One of block contains more than 2 transaction")
-        self.update_sys_param("max_tx_count ", str(max_tx_count ))
+        self.update_sys_param("max_tx_count ", str(max_tx_count))
 
 
 if __name__ == '__main__':
