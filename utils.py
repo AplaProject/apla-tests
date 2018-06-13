@@ -185,8 +185,8 @@ def isCountTxInBlock(dbHost, dbName, login, password, maxBlockId, countTx):
 	i = 0
 	while i < len(tx):
 		if tx[i][1] > countTx:
-			print("Block " + tx[i][0] + " contains " +\
-				tx[i][1] + " transactions")
+			print("Block " + str(tx[i][0]) + " contains " +\
+				str(tx[i][1]) + " transactions")
 			return False
 		i = i + 1
 	return True

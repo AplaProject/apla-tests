@@ -27,6 +27,7 @@ class LimitsTestCase(unittest.TestCase):
         self.assertIn("hash", result)
         hash = result['hash']
         status = utils.txstatus(conf["2"]["url"], pause, hash, token)
+        print("status tx: ", status)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return status["blockid"]
@@ -95,13 +96,14 @@ class LimitsTestCase(unittest.TestCase):
         time.sleep(5)
         maxBlock = funcs.get_max_block_id(conf["2"]["url"], token)
         print("maxBlock = ", maxBlock)
-        self.assertTrue(utils.isCountTxInBlock(conf["2"]["dbHost"],
+        isOneOrTwo = utils.isCountTxInBlock(conf["2"]["dbHost"],
                                                conf["2"]["dbName"],
                                                conf["2"]["login"],
                                                conf["2"] ["pass"],
-                                               maxBlock, 1),
-                        "One of block contains more than 2 transaction")
+                                               maxBlock, 1)
         self.update_sys_param("max_block_user_tx ", str(max_block_user_tx ))
+        self.assertTrue(isOneOrTwo,
+                        "One of block contains more than 2 transaction")
         
         
     def test_max_tx_count (self):
