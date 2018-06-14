@@ -18,7 +18,6 @@ def get_uid(url):
 
 def login(url, prKey):
 	token, uid = get_uid(url)
-	print("prKey---", prKey, "data----", "LOGIN" + uid)
 	signature = sign(prKey, "LOGIN" + uid)
 	pubkey = get_public_key(prKey)
 	fullToken = 'Bearer ' + token
@@ -26,7 +25,6 @@ def login(url, prKey):
 	head = {'Authorization': fullToken}
 	resp = requests.post(url + '/login', params=data, headers=head)
 	res = resp.json()
-	print(res)
 	result = {}
 	result["uid"] = uid
 	result["timeToken"] = res["refresh"]
@@ -62,17 +60,17 @@ def call_contract(url, prKey, name, data, jvtToken):
 	return result
 
 def prepare_multi_tx(url, prKey, entity, jvtToken, data):
-	urlToCont = url + '/prepareMultiple/' + entity
+	urlToCont = url + '/prepareMultiple/'
 	heads = {'Authorization': jvtToken}
 	request = {"token_ecosystem": "",
-		   "max_sum":"",
-		   "payover": "",
-		   "signed_by": "",
-	           "params": data}
+			   "max_sum":"",
+			   "payover": "",
+			   "signed_by": "",
+			   "contracts": data}
 	resp = requests.post(urlToCont, data={"data":json.dumps(request)}, headers=heads)
 	result = resp.json()
 	forsigns = result['forsign']
-	signatures = [sign(forsign, url, prKey)[0] for forsign in forsigns]
+	signatures = [sign(prKey, forsign) for forsign in forsigns]
 	return {"time": result['time'], "signatures": signatures, "reqID": result['request_id']}
 
 def call_multi_contract(url, prKey, name, data, jvtToken):
@@ -110,8 +108,9 @@ def txstatus(url, sleepTime, hsh, jvtToken):
 def txstatus_multi(url, sleepTime, hshs, jvtToken):
 	time.sleep(len(hshs) * sleepTime)
 	urlEnd = url + '/txstatusMultiple/'
-	resp = requests.get(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
-	return resp.json()
+	resp = requests.post(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
+	return resp.json()["results"]
+
 
 
 def generate_random_name():
@@ -186,8 +185,8 @@ def isCountTxInBlock(dbHost, dbName, login, password, maxBlockId, countTx):
 	i = 0
 	while i < len(tx):
 		if tx[i][1] > countTx:
-			print("Block " + tx[i][0] + " contains " +\
-				tx[i][1] + " transactions")
+			print("Block " + str(tx[i][0]) + " contains " +\
+				str(tx[i][1]) + " transactions")
 			return False
 		i = i + 1
 	return True
@@ -282,7 +281,7 @@ def getUserTableState(dbHost, dbName, login, password, userTable):
 def getUserTokenAmounts(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
-	cursor.execute("select amount from \"1_keys\"")
+	cursor.execute("select amount from \"1_keys\" ORDER BY amount")
 	amounts = cursor.fetchall()
 	return amounts
 

@@ -58,7 +58,6 @@ class SystemContractsTestCase(unittest.TestCase):
             expected_block_id = old_block_id + limit + 1 # +1 spare block
             if currrent_block_id == expected_block_id:
                 break
-
     def test_create_ecosystem(self):
         name = "Ecosys_" + utils.generate_random_name()
         data = {"Name": name}
@@ -72,6 +71,52 @@ class SystemContractsTestCase(unittest.TestCase):
                       tablesCount=len(ecosystemTablesList))
         self.assertDictEqual(mustBe, actual, "test_create_ecosystem is failed!")
 
+
+    def test_new_application(self):
+        name = "App" + utils.generate_random_name()
+        data = {"Name": name, "Conditions": "true"}
+        res = self.call("NewApplication", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_edit_application(self):
+        name = "App" + utils.generate_random_name()
+        data = {"Name": name, "Conditions": "true"}
+        res = self.call("NewApplication", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        id = funcs.get_application_id(url, name, token)
+        data = {"ApplicationId": id, "Conditions": "false"}
+        res = self.call("EditApplication", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_activate_application(self):
+        name = "App" + utils.generate_random_name()
+        data = {"Name": name, "Conditions": "true"}
+        res = self.call("NewApplication", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        id = funcs.get_application_id(url, name, token)
+        dataDeact = {"ApplicationId": id, "Value": 0}
+        res = self.call("DelApplication", dataDeact)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        dataAct = {"ApplicationId": id, "Value": 1}
+        res = self.call("DelApplication", dataAct)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_export_application(self):
+        name = "App" + utils.generate_random_name()
+        data = {"Name": name, "Conditions": "true"}
+        res = self.call("NewApplication", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        id = funcs.get_application_id(url, name, token)
+        dataDeact = {"ApplicationId": id}
+        res = self.call("ExportNewApp", dataDeact)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_new_ecosystem(self):
+        name = "Ecos" + utils.generate_random_name()
+        data = {"Name": name}
+        res = self.call("NewEcosystem", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
     def test_edit_ecosystem_name(self):
         id = 1
         newName = "Ecosys_"+utils.generate_random_name()
@@ -172,8 +217,10 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         ans = self.call("NewContract", data)
-        msg = "Contract or function " + name + " exists"
-        self.assertEqual(ans, msg, "Incorrect message: " + ans)
+        #msg = "Contract or function " + name + " exists"
+        #self.assertEqual(ans, msg, "Incorrect message: " + ans)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+
 
     def test_new_contract_without_name(self):
         code = "contract {data { }    conditions {    }    action {    }    }"
@@ -817,18 +864,6 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
-    def test_new_table_empty_name(self):
-        column = """[{"name":"MyName","type":"varchar",
-        "index": "1",  "conditions":"true"}]"""
-        permission = """{"insert": "false",
-        "update" : "true","new_column": "true"}"""
-        data = {"Name": "",
-                "Columns": column, "ApplicationId": 1,
-                "Permissions": permission}
-        res = self.call("NewTable", data)
-        msg = "Table name cannot be empty"
-        self.assertEqual(msg, res, "Incorrect message: " + res)
-
     def test_new_table_incorrect_condition1(self):
         data = {}
         data["Name"] = "Tab_" + utils.generate_random_name()
@@ -842,7 +877,7 @@ class SystemContractsTestCase(unittest.TestCase):
         data["Permissions"] = per1 + per2 + per3
         data["ApplicationId"] = 1
         ans = self.call("NewTable", data)
-        msg = "unknown identifier "
+        msg = "unknown identifier " + condition
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_new_table_incorrect_condition2(self):
@@ -929,159 +964,11 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         dataEdit = {}
         dataEdit["Name"] = name
-        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
-        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        dataEdit["Insert_con"] = "true"
-        dataEdit["Update_con"] = "true"
-        dataEdit["New_column_con"] = "true"
+        dataEdit["InsertPerm"] = "true"
+        dataEdit["UpdatePerm"] = "true"
+        dataEdit["NewColumnPerm"] = "true"
         res = self.call("EditTable", dataEdit)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-
-    def test_edit_table_incorrect_condition1(self):
-        name = "Tab_" + utils.generate_random_name()
-        data = {}
-        data["Name"] = name
-        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
-        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        data["Columns"] = col1 + col2
-        per1 = "{\"insert\": \"false\","
-        per2 = " \"update\" : \"true\","
-        per3 = " \"new_column\": \"true\"}"
-        data["Permissions"] = per1 + per2 + per3
-        res = self.call("NewTable", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        dataEdit = {}
-        dataEdit["Name"] = name
-        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
-        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        condition = "tryam"
-        dataEdit["Insert_con"] = "tryam"
-        dataEdit["Update_con"] = "true"
-        dataEdit["New_column_con"] = "true"
-        ans = self.call("NewTable", data)
-        msg = "Insert condition is empty"
-        self.assertEqual(msg, ans, "Incorrect message: " + ans)
-
-    def test_edit_table_incorrect_condition1(self):
-        name = "Tab_" + utils.generate_random_name()
-        data = {}
-        data["Name"] = name
-        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
-        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        data["Columns"] = col1 + col2
-        per1 = "{\"insert\": \"false\","
-        per2 = " \"update\" : \"true\","
-        per3 = " \"new_column\": \"true\"}"
-        data["Permissions"] = per1 + per2 + per3
-        data["ApplicationId"] = 1
-        res = self.call("NewTable", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        dataEdit = {}
-        dataEdit["Name"] = name
-        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
-        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        condition = "tryam"
-        dataEdit["Insert_con"] = "true"
-        dataEdit["Update_con"] = "tryam"
-        dataEdit["New_column_con"] = "true"
-        ans = self.call("EditTable", data)
-        msg = "Insert condition is empty"
-        self.assertEqual(msg, ans, "Incorrect message: " + ans)
-
-    def test_edit_table_incorrect_condition2(self):
-        name = "Tab_" + utils.generate_random_name()
-        data = {}
-        data["Name"] = name
-        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
-        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        data["Columns"] = col1 + col2
-        per1 = "{\"insert\": \"false\","
-        per2 = " \"update\" : \"true\","
-        per3 = " \"new_column\": \"true\"}"
-        data["Permissions"] = per1 + per2 + per3
-        data["ApplicationId"] = 1
-        res = self.call("NewTable", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        dataEdit = {}
-        dataEdit["Name"] = name
-        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
-        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        condition = "tryam"
-        dataEdit["Insert_con"] = "true"
-        dataEdit["Update_con"] = "tryam"
-        dataEdit["New_column_con"] = "true"
-        ans = self.call("EditTable", data)
-        msg = "Insert condition is empty"
-        self.assertEqual(msg, ans, "Incorrect message: " + ans)
-
-    def test_edit_table_incorrect_condition3(self):
-        name = "Tab_" + utils.generate_random_name()
-        data = {}
-        data["Name"] = name
-        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
-        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        data["Columns"] = col1 + col2
-        per1 = "{\"insert\": \"false\","
-        per2 = " \"update\" : \"true\","
-        per3 = " \"new_column\": \"true\"}"
-        data["Permissions"] = per1 + per2 + per3
-        data["ApplicationId"] = 1
-        res = self.call("NewTable", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        dataEdit = {}
-        dataEdit["Name"] = name
-        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
-        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        condition = "tryam"
-        per1 = "{\"insert\": \"true\","
-        per2 = " \"update\" : \"true\","
-        per3 = " \"new_column\": \"" + condition + "\"}"
-        data["Permissions"] = per1 + per2 + per3
-        ans = self.call("EditTable", data)
-        msg = "unknown identifier " + condition
-        self.assertEqual(msg, ans, "Incorrect message: " + ans)
-
-    def test_edit_table_identical_columns(self):
-        name = "Tab_" + utils.generate_random_name()
-        data = {}
-        data["Name"] = name
-        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
-        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        data["Columns"] = col1 + col2
-        per1 = "{\"insert\": \"false\","
-        per2 = " \"update\" : \"true\","
-        per3 = " \"new_column\": \"true\"}"
-        data["Permissions"] = per1 + per2 + per3
-        data["ApplicationId"] = 1
-        res = self.call("NewTable", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        dataEdit = {}
-        dataEdit["Name"] = name
-        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
-        col2 = "\"index\": \"1\",  \"conditions\":\"true\"},"
-        col3 = "{\"name\":\"MyName\",\"type\":\"varchar\","
-        col4 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        dataEdit["Columns"] = col1 + col2 + col3 + col4
-        per1E = "{\"insert\": \"true\","
-        per2E = " \"update\" : \"true\","
-        per3E = " \"new_column\": \"true\"}"
-        dataEdit["Permissions"] = per1E + per2E + per3E
-        ans = self.call("EditTable", dataEdit)
-
-    def test_edit_incorrect_table(self):
-        name = "incorrect_name"
-        dataEdit = {}
-        dataEdit["Name"] = name
-        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
-        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        dataEdit["Columns"] = col1 + col2
-        per1E = "{\"insert\": \"true\","
-        per2E = " \"update\" : \"true\","
-        per3E = " \"new_column\": \"true\"}"
-        dataEdit["Permissions"] = per1E + per2E + per3E
-        ans = self.call("EditTable", dataEdit)
-        msg = "Table " + name + " has not been found"
-        self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_new_column(self):
         nameTab = "Tab_" + utils.generate_random_name()
