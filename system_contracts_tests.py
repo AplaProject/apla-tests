@@ -44,6 +44,19 @@ class SystemContractsTestCase(unittest.TestCase):
         resp = utils.call_contract(url, prKey, name, data, token)
         resp = self.assertTxInBlock(resp, token)
         return resp
+
+    def assertMultiTxInBlock(self, result, jwtToken):
+        self.assertIn("hashes", result)
+        hashes = result['hashes']
+        result = utils.txstatus_multi(url, pause, hashes, jwtToken)
+        for status in result.values():
+            self.assertNotIn('errmsg', status)
+            self.assertGreater(int(status["blockid"]), 0, "BlockID not generated")
+
+    def callMulti(self, name, data):
+        resp = utils.call_multi_contract(url, prKey, name, data, token)
+        resp = self.assertMultiTxInBlock(resp, token)
+        return resp
     
     def waitBlockId(self, old_block_id, limit):
         while True:
