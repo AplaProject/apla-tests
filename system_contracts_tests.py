@@ -1277,10 +1277,8 @@ class SystemContractsTestCase(unittest.TestCase):
         contractName = "Import"
         data = [{"contract": contractName,
                  "params": importAppData[i]} for i in range(len(importAppData))]
-        resImport = self.callMulti(contractName, data)
-        print(resImport)
-        self.assertGreater(int(resImport), 0, "BlockId is not generated: " + resImport)
-        
+        self.callMulti(contractName, data)
+
         
 if __name__ == '__main__':
     unittest.main()
