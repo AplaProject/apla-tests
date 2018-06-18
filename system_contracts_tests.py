@@ -1260,7 +1260,8 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertDictEqual(mustBe, actual, "test_Export is failed!")
 
     def test_ei3_ImportUpload(self):
-        path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
+        #path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
+        path = os.path.join(os.getcwd(), "fixtures", "notif_verify.json")
         with open(path, 'r') as f:
             file = f.read()
         files = {'input_file': file}
