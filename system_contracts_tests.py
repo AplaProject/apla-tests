@@ -53,6 +53,7 @@ class SystemContractsTestCase(unittest.TestCase):
             self.assertNotIn('errmsg', status)
             self.assertGreater(int(status["blockid"]), 0, "BlockID not generated")
 
+
     def callMulti(self, name, data):
         resp = utils.call_multi_contract(url, prKey, name, data, token)
         resp = self.assertMultiTxInBlock(resp, token)
@@ -1260,8 +1261,7 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertDictEqual(mustBe, actual, "test_Export is failed!")
 
     def test_ei3_ImportUpload(self):
-        #path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
-        path = os.path.join(os.getcwd(), "fixtures", "notif_verify.json")
+        path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
         with open(path, 'r') as f:
             file = f.read()
         files = {'input_file': file}
