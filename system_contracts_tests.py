@@ -44,6 +44,20 @@ class SystemContractsTestCase(unittest.TestCase):
         resp = utils.call_contract(url, prKey, name, data, token)
         resp = self.assertTxInBlock(resp, token)
         return resp
+
+    def assertMultiTxInBlock(self, result, jwtToken):
+        self.assertIn("hashes", result)
+        hashes = result['hashes']
+        result = utils.txstatus_multi(url, pause, hashes, jwtToken)
+        for status in result.values():
+            self.assertNotIn('errmsg', status)
+            self.assertGreater(int(status["blockid"]), 0, "BlockID not generated")
+
+
+    def callMulti(self, name, data):
+        resp = utils.call_multi_contract(url, prKey, name, data, token)
+        resp = self.assertMultiTxInBlock(resp, token)
+        return resp
     
     def waitBlockId(self, old_block_id, limit):
         while True:
@@ -1218,7 +1232,54 @@ class SystemContractsTestCase(unittest.TestCase):
         msg = "max call depth"
         res = self.call(contract_name, data)
         self.assertEqual(msg, res, "Incorrect message: " + res)
-        
+
+    def test_ei1_ExportNewApp(self):
+        appID = 1
+        data = {"ApplicationId": appID}
+        res = self.call("ExportNewApp", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+
+    def test_ei2_Export(self):
+        appID = 1
+        data = {}
+        resExport = self.call("Export", data)
+        founderID = utils.getFounderId(dbHost, dbName, login, pas)
+        exportAppHash = utils.getExportAppHash(dbHost, dbName, login, pas, appID, founderID)
+        res = self.check_get_api("/data/1_binaries/1/data/"+exportAppHash, "", "")
+        jsonApp = json.dumps(res)
+        path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
+        with open(path, 'w', encoding='UTF-8') as f:
+            data = f.write(jsonApp)
+        if os.path.exists(path):
+            fileExist = True
+        else:
+            fileExist = False
+        mustBe = dict(resultExport=True,
+                      resultFile=True)
+        actual = dict(resultExport=int(resExport)>0,
+                      resultFile=fileExist)
+        self.assertDictEqual(mustBe, actual, "test_Export is failed!")
+
+    def test_ei3_ImportUpload(self):
+        path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
+        with open(path, 'r') as f:
+            file = f.read()
+        files = {'input_file': file}
+        data = {}
+        resp = utils.call_contract_with_files(url, prKey, "ImportUpload", data,
+                                              files, token)
+        resImportUpload = self.assertTxInBlock(resp, token)
+        self.assertGreater(int(resImportUpload), 0, "BlockId is not generated: " + resImportUpload)
+
+    def test_ei4_Import(self):
+        founderID = utils.getFounderId(dbHost, dbName, login, pas)
+        importAppData = utils.getImportAppData(dbHost, dbName, login, pas, founderID)
+        importAppData = importAppData['data']
+        contractName = "Import"
+        data = [{"contract": contractName,
+                 "params": importAppData[i]} for i in range(len(importAppData))]
+        self.callMulti(contractName, data)
+
         
 if __name__ == '__main__':
     unittest.main()

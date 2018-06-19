@@ -106,10 +106,23 @@ def txstatus(url, sleepTime, hsh, jvtToken):
 
 
 def txstatus_multi(url, sleepTime, hshs, jvtToken):
-	time.sleep(len(hshs) * sleepTime)
 	urlEnd = url + '/txstatusMultiple/'
-	resp = requests.post(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
-	return resp.json()["results"]
+	allTxInBlocks = False
+	sec = 0
+	while sec < sleepTime:
+		time.sleep(1)
+		resp = requests.post(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
+		jresp = resp.json()["results"]
+		for status in jresp.values():
+			if (len(status['blockid']) > 0 and 'errmsg' not in json.dumps(status)):
+				allTxInBlocks = True
+			else:
+				allTxInBlocks = False
+		if allTxInBlocks == True:
+			return jresp
+		else:
+			sec = sec + 1
+	return jresp
 
 
 
@@ -247,6 +260,18 @@ def getFounderId(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute("SELECT value FROM \"1_parameters\" WHERE name = 'founder_account'")
+	return cursor.fetchall()[0][0]
+
+def getExportAppHash(dbHost, dbName, login, password, app_id, member_id):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT hash FROM \"1_binaries\" WHERE name = 'export' AND app_id = "+str(app_id)+" AND member_id = "+str(member_id))
+	return cursor.fetchall()[0][0]
+
+def getImportAppData(dbHost, dbName, login, password, member_id):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT value FROM \"1_buffer_data\" WHERE key = 'import' AND member_id = "+str(member_id))
 	return cursor.fetchall()[0][0]
 
 def getCountDBObjects(dbHost, dbName, login, password):
