@@ -106,10 +106,23 @@ def txstatus(url, sleepTime, hsh, jvtToken):
 
 
 def txstatus_multi(url, sleepTime, hshs, jvtToken):
-	time.sleep(len(hshs) * sleepTime)
 	urlEnd = url + '/txstatusMultiple/'
-	resp = requests.post(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
-	return resp.json()["results"]
+	allTxInBlocks = False
+	sec = 0
+	while sec < sleepTime:
+		time.sleep(1)
+		resp = requests.post(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
+		jresp = resp.json()["results"]
+		for status in jresp.values():
+			if (len(status['blockid']) > 0 and 'errmsg' not in json.dumps(status)):
+				allTxInBlocks = True
+			else:
+				allTxInBlocks = False
+		if allTxInBlocks == True:
+			return jresp
+		else:
+			sec = sec + 1
+	return jresp
 
 
 
