@@ -231,10 +231,8 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         ans = self.call("NewContract", data)
-        #msg = "Contract or function " + name + " exists"
-        #self.assertEqual(ans, msg, "Incorrect message: " + ans)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-
+        msg = "Contract " + name + " already exists"
+        self.assertEqual(ans, msg, "Incorrect message: " + ans)
 
     def test_new_contract_without_name(self):
         code = "contract {data { }    conditions {    }    action {    }    }"
