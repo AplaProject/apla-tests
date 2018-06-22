@@ -262,10 +262,10 @@ def getFounderId(dbHost, dbName, login, password):
 	cursor.execute("SELECT value FROM \"1_parameters\" WHERE name = 'founder_account'")
 	return cursor.fetchall()[0][0]
 
-def getExportAppHash(dbHost, dbName, login, password, app_id, member_id):
+def getExportAppData(dbHost, dbName, login, password, app_id, member_id):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
-	cursor.execute("SELECT hash FROM \"1_binaries\" WHERE name = 'export' AND app_id = "+str(app_id)+" AND member_id = "+str(member_id))
+	cursor.execute("SELECT data as TEXT FROM \"1_binaries\" WHERE name = 'export' AND app_id = "+str(app_id)+" AND member_id = "+str(member_id))
 	return cursor.fetchall()[0][0]
 
 def getImportAppData(dbHost, dbName, login, password, member_id):
