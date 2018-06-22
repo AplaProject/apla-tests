@@ -1242,9 +1242,10 @@ class SystemContractsTestCase(unittest.TestCase):
         data = {}
         resExport = self.call("Export", data)
         founderID = utils.getFounderId(dbHost, dbName, login, pas)
-        exportAppHash = utils.getExportAppHash(dbHost, dbName, login, pas, appID, founderID)
-        res = self.check_get_api("/data/1_binaries/1/data/"+exportAppHash, "", "")
-        jsonApp = json.dumps(res)
+        exportAppData = utils.getExportAppData(dbHost, dbName, login, pas, appID, founderID)
+        jsonApp = str(exportAppData, encoding='utf-8')
+        #res = self.check_get_api("/data/1_binaries/1/data/"+exportAppHash, "", "")
+        #jsonApp = json.dumps(res)
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
         with open(path, 'w', encoding='UTF-8') as f:
             data = f.write(jsonApp)
