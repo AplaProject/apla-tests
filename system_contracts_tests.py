@@ -13,7 +13,7 @@ class SystemContractsTestCase(unittest.TestCase):
     def setUp(self):
         global url, token, prKey, pause
         self.config = config.getNodeConfig()
-        url = self.config["2"]["url"]
+        url = self.config["1"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
         prKey = self.config["1"]['private_key']
         self.data = utils.login(url, prKey)
@@ -674,7 +674,13 @@ class SystemContractsTestCase(unittest.TestCase):
 
     def test_new_table(self):
         column = """[{"name":"MyName","type":"varchar",
-        "index": "1",  "conditions":"true"}]"""
+        "index": "1",  "conditions":"true"},{"name":"Myb","type":"json",
+        "index": "0",  "conditions":"true"}, {"name":"MyD","type":"datetime",
+        "index": "0",  "conditions":"true"}, {"name":"MyM","type":"money",
+        "index": "0",  "conditions":"true"},{"name":"MyT","type":"text",
+        "index": "0",  "conditions":"true"},{"name":"MyDouble","type":"double",
+        "index": "0",  "conditions":"true"},{"name":"MyC","type":"character",
+        "index": "0",  "conditions":"true"}]"""
         permission = """{"insert": "false",
         "update" : "true","new_column": "true"}"""
         data = {"Name": "Tab_" + utils.generate_random_name(),
@@ -793,25 +799,45 @@ class SystemContractsTestCase(unittest.TestCase):
         nameTab = "Tab_" + utils.generate_random_name()
         data = {}
         data["Name"] = nameTab
-        col1 = "[{\"name\":\"MyName\",\"type\":\"varchar\","
-        col2 = "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        data["Columns"] = col1 + col2
-        per1 = "{\"insert\": \"false\","
-        per2 = " \"update\" : \"true\","
-        per3 = " \"new_column\": \"true\"}"
-        data["Permissions"] = per1 + per2 + per3
+        data["Columns"] = """[{"name":"MyName","type":"varchar",
+        "index": "1",  "conditions":"true"}]"""
+        data["Permissions"] = """{"insert": "false",
+        "update" : "true","new_column": "true"}"""
         data["ApplicationId"] = 1
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        name = "Col_" + utils.generate_random_name()
-        dataCol = {}
-        dataCol["TableName"] = nameTab
-        dataCol["Name"] = name
-        dataCol["Type"] = "number"
-        dataCol["Index"] = "0"
-        dataCol["Permissions"] = "true"
-        res = self.call("NewColumn", dataCol)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        dataCol1 = {"TableName": nameTab, "Name": "var",
+                   "Type": "varchar", "Index": "0", "Permissions": "true"}
+        res1 = self.call("NewColumn", dataCol1)
+        self.assertGreater(int(res1), 0, "BlockId is not generated: " + res1)
+        dataCol2 = {"TableName": nameTab, "Name": "json",
+                   "Type": "json", "Index": "0", "Permissions": "true"}
+        res2 = self.call("NewColumn", dataCol2)
+        self.assertGreater(int(res2), 0, "BlockId is not generated: " + res2)
+        dataCol3 = {"TableName": nameTab, "Name": "num",
+                   "Type": "number", "Index": "0", "Permissions": "true"}
+        res3 = self.call("NewColumn", dataCol3)
+        self.assertGreater(int(res3), 0, "BlockId is not generated: " + res3)
+        dataCol4 = {"TableName": nameTab, "Name": "date",
+                   "Type": "datetime", "Index": "0", "Permissions": "true"}
+        res4 = self.call("NewColumn", dataCol4)
+        self.assertGreater(int(res4), 0, "BlockId is not generated: " + res4)
+        dataCol5 = {"TableName": nameTab, "Name": "sum",
+                   "Type": "money", "Index": "0", "Permissions": "true"}
+        res5 = self.call("NewColumn", dataCol5)
+        self.assertGreater(int(res5), 0, "BlockId is not generated: " + res5)
+        dataCol6 = {"TableName": nameTab, "Name": "name",
+                   "Type": "text", "Index": "0", "Permissions": "true"}
+        res6 = self.call("NewColumn", dataCol6)
+        self.assertGreater(int(res6), 0, "BlockId is not generated: " + res6)
+        dataCol7 = {"TableName": nameTab, "Name": "length",
+                   "Type": "double", "Index": "0", "Permissions": "true"}
+        res7 = self.call("NewColumn", dataCol7)
+        self.assertGreater(int(res7), 0, "BlockId is not generated: " + res7)
+        dataCol8 = {"TableName": nameTab, "Name": "code",
+                   "Type": "character", "Index": "0", "Permissions": "true"}
+        res8 = self.call("NewColumn", dataCol8)
+        self.assertGreater(int(res8), 0, "BlockId is not generated: " + res8)
 
     def test_edit_column(self):
         nameTab = "tab_" + utils.generate_random_name()
