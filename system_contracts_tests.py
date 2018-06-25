@@ -11,11 +11,15 @@ import time
 class SystemContractsTestCase(unittest.TestCase):
     
     def setUp(self):
-        global url, token, prKey, pause
+        global url, token, prKey, pause, dbHost, dbName, login, pas
         self.config = config.getNodeConfig()
         url = self.config["1"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
         prKey = self.config["1"]['private_key']
+        dbHost = self.config["1"]["dbHost"]
+        dbName = self.config["1"]['dbName']
+        login = self.config["1"]["login"]
+        pas = self.config["1"]['pass']
         self.data = utils.login(url, prKey)
         token = self.data["jwtToken"]
 
@@ -40,6 +44,20 @@ class SystemContractsTestCase(unittest.TestCase):
         resp = utils.call_contract(url, prKey, name, data, token)
         resp = self.assertTxInBlock(resp, token)
         return resp
+
+    def assertMultiTxInBlock(self, result, jwtToken):
+        self.assertIn("hashes", result)
+        hashes = result['hashes']
+        result = utils.txstatus_multi(url, pause, hashes, jwtToken)
+        for status in result.values():
+            self.assertNotIn('errmsg', status)
+            self.assertGreater(int(status["blockid"]), 0, "BlockID not generated")
+
+
+    def callMulti(self, name, data):
+        resp = utils.call_multi_contract(url, prKey, name, data, token)
+        resp = self.assertMultiTxInBlock(resp, token)
+        return resp
     
     def waitBlockId(self, old_block_id, limit):
         while True:
@@ -54,6 +72,19 @@ class SystemContractsTestCase(unittest.TestCase):
             expected_block_id = old_block_id + limit + 1 # +1 spare block
             if currrent_block_id == expected_block_id:
                 break
+    def test_create_ecosystem(self):
+        name = "Ecosys_" + utils.generate_random_name()
+        data = {"Name": name}
+        res = self.call("NewEcosystem", data)
+        asserts = ["number"]
+        ecosystemID = self.check_get_api("/ecosystems/", "", asserts)["number"]
+        ecosystemTablesList = utils.getEcosysTablesById(dbHost, dbName, login, pas, ecosystemID)
+        mustBe = dict(block = True,
+                      tablesCount = 19)
+        actual = dict(block=int(res)>0,
+                      tablesCount=len(ecosystemTablesList))
+        self.assertDictEqual(mustBe, actual, "test_create_ecosystem is failed!")
+
 
     def test_new_application(self):
         name = "App" + utils.generate_random_name()
@@ -104,18 +135,26 @@ class SystemContractsTestCase(unittest.TestCase):
         id = 1
         newName = "Ecosys_"+utils.generate_random_name()
         data = {"EcosystemID": id, "NewName": newName}
-        res = self.call("EditEcosystemName", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        resBlockId = self.call("EditEcosystemName", data)
         asserts = ["list"]
         res = self.check_get_api("/list/ecosystems", "", asserts)
         # iterating response elements
         i=0
-        requiredEcosysName=""
+        requiredEcosysNameAPI=""
         while i < int(res['count']):
             if int(res['list'][i]['id']) == id:
-                requiredEcosysName = res['list'][i]['name']
+                requiredEcosysNameAPI = res['list'][i]['name']
+                break
             i+=1
-        self.assertEqual(newName, requiredEcosysName)
+        query="SELECT name FROM \"1_ecosystems\" WHERE id='"+str(id)+"'"
+        requiredEcosysNameDB = utils.executeSQL(dbHost, dbName, login, pas, query)[0][0]
+        mustBe = dict(block = True,
+                      ecosysNameAPI = newName,
+                      ecosysNameDB = newName)
+        actual = dict(block = int(resBlockId)>0,
+                      ecosysNameAPI = requiredEcosysNameAPI,
+                      ecosysNameDB = requiredEcosysNameDB)
+        self.assertDictEqual(mustBe, actual, "test_edit_ecosystem_name is failed!")
 
     def test_edit_ecosystem_name_incorrect_id(self):
         id = 500
@@ -164,11 +203,26 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_new_contract(self):
+        countContracts = utils.getCountTable(dbHost, dbName, login, pas, "1_contracts")
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        asserts = ["name"]
+        contractNameAPI = self.check_get_api("/contract/"+name, "", asserts)["name"]
+        asserts = ["count"]
+        countContractsAfter = self.check_get_api("/list/contracts", "", asserts)["count"]
+        query = "SELECT name FROM \"1_contracts\" WHERE name='" + name + "'"
+        contractName = utils.executeSQL(dbHost, dbName, login, pas, query)[0][0]
+        mustBe = dict(block=True,
+                      countContracts=int(countContracts + 1),
+                      contractNameDB=name,
+                      contractNameAPI="@1"+name)
+        actual = dict(block=int(res)>0,
+                      countContracts=int(countContractsAfter),
+                      contractNameDB=contractName,
+                      contractNameAPI=contractNameAPI)
+        self.assertDictEqual(mustBe, actual, "test_new_contract is failed!")
 
     def test_new_contract_exists_name(self):
         code, name = utils.generate_name_and_code("")
@@ -177,10 +231,8 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         ans = self.call("NewContract", data)
-        #msg = "Contract or function " + name + " exists"
-        #self.assertEqual(ans, msg, "Incorrect message: " + ans)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-
+        msg = "Contract " + name + " already exists"
+        self.assertEqual(ans, msg, "Incorrect message: " + ans)
 
     def test_new_contract_without_name(self):
         code = "contract {data { }    conditions {    }    action {    }    }"
@@ -237,16 +289,33 @@ class SystemContractsTestCase(unittest.TestCase):
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        query = "SELECT * FROM \"1_contracts\" WHERE name='" + name + "'"
+        contractDataBefore = utils.executeSQL(dbHost, dbName, login, pas, query)
+        conValBefore = str(contractDataBefore[0][1])
         data2 = {}
         data2["Id"] = funcs.get_contract_id(url, name, token)
         data2["Value"] = code
         data2["Conditions"] = "true"
         data2["WalletId"] = newWallet
         res = self.call("EditContract", data2)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         end = url + "/contract/" + name
         ans = funcs.call_get_api(end, "", token)
-        self.assertEqual(ans["address"], newWallet, "Wallet didn't change.")
+        query = "SELECT * FROM \"1_contracts\" WHERE name='" + name + "'"
+        contractData = utils.executeSQL(dbHost, dbName, login, pas, query)
+        conID = contractData[0][0]
+        conVal = str(contractData[0][1])
+        conCond = contractData[0][6]
+        mustBe = dict(block=True,
+                      id=int(data2["Id"]),
+                      val= conValBefore,
+                      cond=data2["Conditions"],
+                      wallet=newWallet)
+        actual = dict(block=int(res)>0,
+                      id=int(conID),
+                      val=conVal,
+                      cond=conCond,
+                      wallet=ans["address"])
+        self.assertDictEqual(mustBe, actual, "test_edit_contract is failed!")
 
     def test_edit_name_of_contract(self):
         newWallet = "0005-2070-2000-0006-0200"
@@ -317,11 +386,48 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_new_parameter(self):
+        countParamsBefore = utils.getCountTable(dbHost, dbName, login, pas, "1_parameters")
         name = "Par_" + utils.generate_random_name()
         data = {"Name": name, "Value": "test", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewParameter", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        asserts = ["count"]
+        paramsAPI = self.check_get_api("/list/parameters", "", asserts)
+        countParamsAPI = paramsAPI["count"]
+        i = 0
+        while i < len(paramsAPI["list"]):
+            if paramsAPI["list"][i]["name"] == name:
+                paramNameAPI = paramsAPI["list"][i]["name"]
+                paramValueAPI = paramsAPI["list"][i]["value"]
+                paramCondAPI = paramsAPI["list"][i]["conditions"]
+                break
+            i+=1
+        countParamsDB = utils.getCountTable(dbHost, dbName, login, pas, "1_parameters")
+        query = "SELECT * FROM \"1_parameters\" WHERE name='" + name + "'"
+        param = utils.executeSQL(dbHost, dbName, login, pas, query)
+        paramNameDB = param[0][1]
+        paramValueDB = param[0][2]
+        paramCondDB = param[0][3]
+        mustBe = dict(block=True,
+                      countParamsAPI=int(countParamsBefore + 1),
+                      countParamsDB=int(countParamsBefore + 1),
+                      paramNameDB=name,
+                      paramValueDB=data["Value"],
+                      paramCondDB=data["Conditions"],
+                      paramNameAPI=name,
+                      paramValueAPI=data["Value"],
+                      paramCondAPI=data["Conditions"])
+        actual = dict(block=int(res)>0,
+                      countParamsAPI=int(countParamsAPI),
+                      countParamsDB=int(countParamsDB),
+                      paramNameDB=paramNameDB,
+                      paramValueDB=paramValueDB,
+                      paramCondDB=paramCondDB,
+                      paramNameAPI=paramNameAPI,
+                      paramValueAPI=paramValueAPI,
+                      paramCondAPI=paramCondAPI)
+        self.assertDictEqual(mustBe, actual, "test_new_parameter is failed!")
+
 
     def test_new_parameter_exist_name(self):
         name = "Par_" + utils.generate_random_name()
@@ -364,14 +470,39 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertEqual(msg, ans, "Incorrect message: " + ans)
 
     def test_new_menu(self):
+        countMenu = utils.getCountTable(dbHost, dbName, login, pas, "1_menu")
         name = "Menu_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewMenu", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        asserts = ["count"]
+        countMenuAfterAPI = self.check_get_api("/list/menu", "", asserts)["count"]
+        countMenuAfterDB = utils.getCountTable(dbHost, dbName, login, pas, "1_menu")
+        query = "SELECT name FROM \"1_menu\" WHERE name='" + name + "'"
+        menuNameDB = utils.executeSQL(dbHost, dbName, login, pas, query)[0][0]
+        asserts = ["list"]
+        menu = self.check_get_api("/list/menu", "", asserts)
+        i = 0
+        while i < len(menu["list"]):
+            if menu["list"][i]["name"] == name:
+                menuNameAPI = menu["list"][i]["name"]
+                break
+            i += 1
         content = {'tree': [{'tag': 'text', 'text': 'Item1'}]}
         mContent = funcs.get_content(url, "menu", name, "", 1, token)
-        self.assertEqual(mContent, content)
+        mustBe = dict(block=True,
+                      countMenuAfterAPI=countMenu + 1,
+                      countMenuAfterDB=countMenu + 1,
+                      menuNameDB=name,
+                      menuNameAPI=name,
+                      content=content)
+        actual = dict(block=int(res)>0,
+                      countMenuAfterAPI=int(countMenuAfterAPI),
+                      countMenuAfterDB=countMenuAfterDB,
+                      menuNameDB=menuNameDB,
+                      menuNameAPI=menuNameAPI,
+                      content=mContent)
+        self.assertDictEqual(mustBe, actual, "test_new_menu is failed!")
 
     def test_new_menu_exist_name(self):
         name = "Menu_" + utils.generate_random_name()
@@ -400,10 +531,40 @@ class SystemContractsTestCase(unittest.TestCase):
         count = funcs.get_count(url, "menu", token)
         dataEdit = {"Id": count, "Value": "ItemEdited", "Conditions": "true"}
         res = self.call("EditMenu", dataEdit)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        asserts = ["list"]
+        menu = self.check_get_api("/list/menu", "", asserts)
+        i = 0
+        while i < len(menu["list"]):
+            if menu["list"][i]["name"] == name:
+                menuNameAPI = menu["list"][i]["name"]
+                menuValueAPI = menu["list"][i]["value"]
+                menuConditionsAPI = menu["list"][i]["conditions"]
+                break
+            i += 1
+        query = "SELECT * FROM \"1_menu\" WHERE name='" + name + "'"
+        menu = utils.executeSQL(dbHost, dbName, login, pas, query)
+        menuNameDB = menu[0][1]
+        menuValueDB = menu[0][3]
+        menuCondDB = menu[0][4]
         content = {'tree': [{'tag': 'text', 'text': 'ItemEdited'}]}
         mContent = funcs.get_content(url, "menu", name, "", 1, token)
-        self.assertEqual(mContent, content)
+        mustBe = dict(block=True,
+                      menuNameAPI=name,
+                      menuValueAPI=dataEdit["Value"],
+                      menuConditionsAPI=dataEdit["Conditions"],
+                      menuNameDB=name,
+                      menuValueDB=dataEdit["Value"],
+                      menuCondDB=dataEdit["Conditions"],
+                      content=content)
+        actual = dict(block=int(res) > 0,
+                      menuNameAPI=menuNameAPI,
+                      menuValueAPI=menuValueAPI,
+                      menuConditionsAPI=menuConditionsAPI,
+                      menuNameDB=menuNameDB,
+                      menuValueDB=menuValueDB,
+                      menuCondDB=menuCondDB,
+                      content=mContent)
+        self.assertDictEqual(mustBe, actual, "test_new_menu is failed!")
 
     def test_edit_incorrect_menu(self):
         id = "9999"
@@ -432,10 +593,42 @@ class SystemContractsTestCase(unittest.TestCase):
         count = funcs.get_count(url, "menu", token)
         dataEdit = {"Id": count, "Value": "AppendedItem", "Conditions": "true"}
         res = self.call("AppendMenu", dataEdit)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        count = funcs.get_count(url, "menu", token)
+        asserts = ["list"]
+        menu = self.check_get_api("/list/menu", "", asserts)
+        i = 0
+        while i < len(menu["list"]):
+            if menu["list"][i]["name"] == name:
+                menuNameAPI = menu["list"][i]["name"]
+                menuValueAPI = menu["list"][i]["value"]
+                menuConditionsAPI = menu["list"][i]["conditions"]
+                break
+            i += 1
+        query = "SELECT * FROM \"1_menu\" WHERE name='" + name + "'"
+        menu = utils.executeSQL(dbHost, dbName, login, pas, query)
+        menuNameDB = menu[0][1]
+        menuValueDB = menu[0][3]
+        menuCondDB = menu[0][4]
         content = {'tree': [{'tag': 'text', 'text': 'Item1\r\nAppendedItem'}]}
         mContent = funcs.get_content(url, "menu", name, "", 1, token)
-        self.assertEqual(mContent, content)
+        menuVal = data["Value"] + "\r\n"+ dataEdit["Value"]
+        mustBe = dict(block=True,
+                      menuNameAPI=name,
+                      menuValueAPI=menuVal,
+                      menuConditionsAPI=dataEdit["Conditions"],
+                      menuNameDB=name,
+                      menuValueDB=menuVal,
+                      menuCondDB=dataEdit["Conditions"],
+                      content=content)
+        actual = dict(block=int(res) > 0,
+                      menuNameAPI=menuNameAPI,
+                      menuValueAPI=menuValueAPI,
+                      menuConditionsAPI=menuConditionsAPI,
+                      menuNameDB=menuNameDB,
+                      menuValueDB=menuValueDB,
+                      menuCondDB=menuCondDB,
+                      content=mContent)
+        self.assertDictEqual(mustBe, actual, "test_append_menu is failed!")
 
     def test_append_incorrect_menu(self):
         id = "999"
@@ -1063,7 +1256,55 @@ class SystemContractsTestCase(unittest.TestCase):
         msg = "max call depth"
         res = self.call(contract_name, data)
         self.assertEqual(msg, res, "Incorrect message: " + res)
-        
+
+    def test_ei1_ExportNewApp(self):
+        appID = 1
+        data = {"ApplicationId": appID}
+        res = self.call("ExportNewApp", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+
+    def test_ei2_Export(self):
+        appID = 1
+        data = {}
+        resExport = self.call("Export", data)
+        founderID = utils.getFounderId(dbHost, dbName, login, pas)
+        exportAppData = utils.getExportAppData(dbHost, dbName, login, pas, appID, founderID)
+        jsonApp = str(exportAppData, encoding='utf-8')
+        #res = self.check_get_api("/data/1_binaries/1/data/"+exportAppHash, "", "")
+        #jsonApp = json.dumps(res)
+        path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
+        with open(path, 'w', encoding='UTF-8') as f:
+            data = f.write(jsonApp)
+        if os.path.exists(path):
+            fileExist = True
+        else:
+            fileExist = False
+        mustBe = dict(resultExport=True,
+                      resultFile=True)
+        actual = dict(resultExport=int(resExport)>0,
+                      resultFile=fileExist)
+        self.assertDictEqual(mustBe, actual, "test_Export is failed!")
+
+    def test_ei3_ImportUpload(self):
+        path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
+        with open(path, 'r') as f:
+            file = f.read()
+        files = {'input_file': file}
+        data = {}
+        resp = utils.call_contract_with_files(url, prKey, "ImportUpload", data,
+                                              files, token)
+        resImportUpload = self.assertTxInBlock(resp, token)
+        self.assertGreater(int(resImportUpload), 0, "BlockId is not generated: " + resImportUpload)
+
+    def test_ei4_Import(self):
+        founderID = utils.getFounderId(dbHost, dbName, login, pas)
+        importAppData = utils.getImportAppData(dbHost, dbName, login, pas, founderID)
+        importAppData = importAppData['data']
+        contractName = "Import"
+        data = [{"contract": contractName,
+                 "params": importAppData[i]} for i in range(len(importAppData))]
+        self.callMulti(contractName, data)
+
         
 if __name__ == '__main__':
     unittest.main()
