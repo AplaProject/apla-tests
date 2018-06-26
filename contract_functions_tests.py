@@ -63,7 +63,6 @@ class ContractFunctionsTestCase(unittest.TestCase):
 
     def check_contract_with_data(self, sourse, data, checkPoint):
         code, name = self.generate_name_and_code(sourse)
-        print(code)
         self.create_contract(code)
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
@@ -445,6 +444,26 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["getContractHistory"]
         self.check_contract_with_data(contract["code"], data, contract["asert"])
 
+    def test_getPageHistory(self):
+        # create page
+        name = utils.generate_random_name()
+        page = "Div(Body: Hello)"
+        data = {"ApplicationId": "1",
+                "Name": name,
+                "Value": page,
+                "Menu": "default_menu",
+                "Conditions": "true"}
+        self.call_contract("NewPage", data)
+        # change page
+        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_pages", name)
+        newValuePage = page.replace("Hello", "new_var")
+        data = {"Id": id,
+                "Value": newValuePage}
+        self.call_contract("EditPage", data)
+        # test
+        data = {"ID": id}
+        contract = self.contracts["getPageHistory"]
+        self.check_contract_with_data(contract["code"], data, contract["asert"])
 
 if __name__ == '__main__':
     unittest.main()
