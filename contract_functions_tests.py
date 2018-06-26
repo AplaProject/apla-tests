@@ -422,5 +422,29 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["dbSelectMetricsAvg"]
         self.check_contract(contract["code"], str(ecosystem_pages))
 
+    def test_getContractHistory(self):
+        # create contract
+        replacedString = "variable_for_replace"
+        code = """
+        { 
+            data{}
+            conditions{}
+            action{ var %s int }
+        }
+        """ %replacedString
+        code, name = self.generate_name_and_code(code)
+        self.create_contract(code)
+        # change contract
+        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_contracts", name)
+        newCode = code.replace(replacedString, "new_var")
+        data = {"Id": id,
+                "Value": newCode}
+        self.call_contract("EditContract", data)
+        # test
+        data = {"ID": id}
+        contract = self.contracts["getContractHistory"]
+        self.check_contract_with_data(contract["code"], data, contract["asert"])
+
+
 if __name__ == '__main__':
     unittest.main()
