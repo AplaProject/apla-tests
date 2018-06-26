@@ -10,10 +10,14 @@ import funcs
 class ContractFunctionsTestCase(unittest.TestCase):
     def setUp(self):
         self.config = config.getNodeConfig()
-        global url, prKey,token
+        global url, prKey,token, dbHost, dbName, login, pas
         self.contracts = config.readFixtures("contracts")
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
+        dbHost = self.config["1"]["dbHost"]
+        dbName = self.config["1"]['dbName']
+        login = self.config["1"]["login"]
+        pas = self.config["1"]['pass']
         self.data = utils.login(url,prKey)
         token = self.data["jwtToken"]
 
