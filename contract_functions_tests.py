@@ -42,6 +42,12 @@ class ContractFunctionsTestCase(unittest.TestCase):
                                      data, token)
         self.assertTxInBlock(result, token)
 
+    def call_contract(self, name, data):
+        result = utils.call_contract(url, prKey, name,
+                                     data, token)
+        self.assertTxInBlock(result, token)
+
+
     def check_contract(self, sourse, checkPoint):
         code, name = self.generate_name_and_code(sourse)
         self.create_contract(code)
