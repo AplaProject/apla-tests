@@ -61,6 +61,20 @@ class ContractFunctionsTestCase(unittest.TestCase):
         print(result)
         self.assertIn(checkPoint, result["result"], "error")
 
+    def check_contract_with_data(self, sourse, data, checkPoint):
+        code, name = self.generate_name_and_code(sourse)
+        print(code)
+        self.create_contract(code)
+        url = self.config["2"]["url"]
+        prKey = self.config["1"]['private_key']
+        token = self.data["jwtToken"]
+        sleep = self.config["1"]["time_wait_tx_in_block"]
+        res = utils.call_contract(url, prKey, name, data, token)
+        hash = res["hash"]
+        result = utils.txstatus(url, sleep, hash, token)
+        print(result)
+        self.assertIn(checkPoint, result["result"], "error")
+
     def test_contract_dbfind(self):
         contract = self.contracts["dbFind"]
         self.check_contract(contract["code"], contract["asert"])
