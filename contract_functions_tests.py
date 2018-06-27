@@ -482,7 +482,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["getMenuHistory"]
         self.check_contract_with_data(contract["code"], data, menu)
 
-    def test_getPageHistory(self):
+    def test_getBlockHistory(self):
         # create block
         name = utils.generate_random_name()
         block = "Div(Body: Hello)"
