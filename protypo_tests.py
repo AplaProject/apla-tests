@@ -32,6 +32,19 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
+    def create_contract(self, code):
+        data = {"Wallet": "", "ApplicationId": 1,
+                "Value": code,
+                "Conditions": "ContractConditions(`MainCondition`)"}
+        result = utils.call_contract(url, prKey, "NewContract",
+                                     data, token)
+        self.assertTxInBlock(result, token)
+
+    def call_contract(self, name, data):
+        result = utils.call_contract(url, prKey, name,
+                                     data, token)
+        self.assertTxInBlock(result, token)
+
     def check_page(self, sourse):
         name = "Page_" + utils.generate_random_name()
         data = {"Name": name, "Value": sourse, "ApplicationId": 1,
