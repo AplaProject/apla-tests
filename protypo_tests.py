@@ -925,5 +925,27 @@ class PrototipoTestCase(unittest.TestCase):
         partContent = content['tree'][0]["attr"]["data"][0]
         self.assertIn(replacedString, str(partContent), "getContractHistory has problem: " + str(content["tree"]))
 
+    def test_getPageHistory(self):
+        # it test has not fixture
+        # create page
+        name = utils.generate_random_name()
+        page = "Div(Body: Hello)"
+        data = {"ApplicationId": "1",
+                "Name": name,
+                "Value": page,
+                "Menu": "default_menu",
+                "Conditions": "true"}
+        self.call_contract("NewPage", data)
+        # change page
+        id = utils.getObjectIdByName(dbHost, dbName, login, password, "1_pages", name)
+        newValuePage = page.replace("Hello", "new_var")
+        data = {"Id": id,
+                "Value": newValuePage}
+        self.call_contract("EditPage", data)
+        # test
+        content = self.check_page("GetPageHistory(src, "+str(id)+")")
+        partContent = content['tree'][0]["attr"]["data"][0]
+        self.assertIn(page, str(partContent), "getPageHistory has problem: " + str(content["tree"]))
+
 if __name__ == '__main__':
     unittest.main()
