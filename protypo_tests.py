@@ -967,5 +967,28 @@ class PrototipoTestCase(unittest.TestCase):
         partContent = content['tree'][0]["attr"]["data"][0]
         self.assertIn(menu, str(partContent), "getMenuHistory has problem: " + str(content["tree"]))
 
+    def test_getBlockHistory(self):
+        # it test has not fixture
+        # create block
+        name = utils.generate_random_name()
+        block = "Div(Body: Hello)"
+        data = {"ApplicationId": "1",
+                "Name": name,
+                "Value": block,
+                "Conditions": "true"}
+        self.call_contract("NewBlock", data)
+        # change block
+        id = utils.getObjectIdByName(dbHost, dbName, login, password, "1_blocks", name)
+        newValueBlock = block.replace("Hello", "new_var")
+        data = {"Id": id,
+                "Value": newValueBlock}
+        self.call_contract("EditBlock", data)
+        # test
+        content = self.check_page("GetBlockHistory(src, "+str(id)+")")
+        partContent = content['tree'][0]["attr"]["data"][0]
+        self.assertIn(block, str(partContent), "getBlockHistory has problem: " + str(content["tree"]))
+
+
+
 if __name__ == '__main__':
     unittest.main()
