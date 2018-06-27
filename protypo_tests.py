@@ -901,5 +901,29 @@ class PrototipoTestCase(unittest.TestCase):
                     wrong1=partWrongContent1['children'][0]["text"])
         self.assertDictEqual(mustBe, page, "calculate has problem!")
 
+    def test_getContractHistory(self):
+        # it test has not fixture
+        # create contract
+        replacedString = "variable_for_replace"
+        code = """
+                { 
+                    data{}
+                    conditions{}
+                    action{ var %s int }
+                }
+                """ % replacedString
+        code, name = utils.generate_name_and_code(code)
+        self.create_contract(code)
+        # change contract
+        id = utils.getObjectIdByName(dbHost, dbName, login, password, "1_contracts", name)
+        newCode = code.replace(replacedString, "new_var")
+        data = {"Id": id,
+                "Value": newCode}
+        self.call_contract("EditContract", data)
+        # test
+        content = self.check_page("GetContractHistory(src, "+str(id)+")")
+        partContent = content['tree'][0]["attr"]["data"][0]
+        self.assertIn(replacedString, str(partContent), "getContractHistory has problem: " + str(content["tree"]))
+
 if __name__ == '__main__':
     unittest.main()
