@@ -947,5 +947,25 @@ class PrototipoTestCase(unittest.TestCase):
         partContent = content['tree'][0]["attr"]["data"][0]
         self.assertIn(page, str(partContent), "getPageHistory has problem: " + str(content["tree"]))
 
+    def test_getMenuHistory(self):
+        # it test has not fixture
+        # create menu
+        name = utils.generate_random_name()
+        menu = "This is new menu"
+        data = {"Name": name,
+                "Value": menu,
+                "Conditions": "true"}
+        self.call_contract("NewMenu", data)
+        # change menu
+        id = utils.getObjectIdByName(dbHost, dbName, login, password, "1_menu", name)
+        newValueMenu = menu.replace("new menu", "new_var")
+        data = {"Id": id,
+                "Value": newValueMenu}
+        self.call_contract("EditMenu", data)
+        # test
+        content = self.check_page("GetMenuHistory(src, "+str(id)+")")
+        partContent = content['tree'][0]["attr"]["data"][0]
+        self.assertIn(menu, str(partContent), "getMenuHistory has problem: " + str(content["tree"]))
+
 if __name__ == '__main__':
     unittest.main()
