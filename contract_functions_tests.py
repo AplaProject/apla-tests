@@ -465,5 +465,44 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["getPageHistory"]
         self.check_contract_with_data(contract["code"], data, page)
 
+    def test_getMenuHistory(self):
+        # create menu
+        name = utils.generate_random_name()
+        menu = "This is new menu"
+        data = {"Name": name,
+                "Value": menu,
+                "Conditions": "true"}
+        self.call_contract("NewMenu", data)
+        # change menu
+        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_menu", name)
+        newValueMenu = menu.replace("new menu", "new_var")
+        data = {"Id": id,
+                "Value": newValueMenu}
+        self.call_contract("EditMenu", data)
+        # test
+        data = {"ID": id}
+        contract = self.contracts["getMenuHistory"]
+        self.check_contract_with_data(contract["code"], data, menu)
+
+    def test_getPageHistory(self):
+        # create block
+        name = utils.generate_random_name()
+        block = "Div(Body: Hello)"
+        data = {"ApplicationId": "1",
+                "Name": name,
+                "Value": block,
+                "Conditions": "true"}
+        self.call_contract("NewBlock", data)
+        # change block
+        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_blocks", name)
+        newValueBlock = block.replace("Hello", "new_var")
+        data = {"Id": id,
+                "Value": newValueBlock}
+        self.call_contract("EditBlock", data)
+        # test
+        data = {"ID": id}
+        contract = self.contracts["getBlockHistory"]
+        self.check_contract_with_data(contract["code"], data, block)
+
 if __name__ == '__main__':
     unittest.main()
