@@ -273,10 +273,10 @@
 	},
 	"getContractHistory": {
 		"code": "{\n data {\n ID int\n }\n conditions {} \n action { \n var list array \n var item map \n list = GetContractHistory($ID) \n if Len(list)>0 { \n item = list[0] } \n $result = item \n}\n }",
-		"asert": "variable_for_replace"
+		"asert": ""
 	},
 	"getPageHistory": {
 		"code": "{\n data {\n ID int\n }\n conditions {} \n action { \n var list array \n var item map \n list = GetPageHistory($ID) \n if Len(list)>0 { \n item = list[0] } \n $result = item \n}\n }",
-		"asert": "Div(Body: Hello)"
+		"asert": ""
 	}
 }

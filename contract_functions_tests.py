@@ -442,7 +442,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         # test
         data = {"ID": id}
         contract = self.contracts["getContractHistory"]
-        self.check_contract_with_data(contract["code"], data, contract["asert"])
+        self.check_contract_with_data(contract["code"], data, replacedString)
 
     def test_getPageHistory(self):
         # create page
@@ -463,7 +463,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         # test
         data = {"ID": id}
         contract = self.contracts["getPageHistory"]
-        self.check_contract_with_data(contract["code"], data, contract["asert"])
+        self.check_contract_with_data(contract["code"], data, page)
 
 if __name__ == '__main__':
     unittest.main()
