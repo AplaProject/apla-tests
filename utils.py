@@ -189,11 +189,23 @@ def compare_node_positions(dbHost, dbName, login, password, maxBlockId, nodes):
 	i = 0
 	while i < len(positions):
 		if positions[i][1] < countBlocks-1:
-			print("Node " + str(i) + "generated " + str(positions[i][1]) + "blocks:" + str(positions))
+			print("Node " + str(i) + " generated " + str(positions[i][1]) + " blocks:" + str(positions))
 			return False
 		i = i + 1
 	return True
 
+def check_for_missing_node(dbHost, dbName, login, password, minBlockId, maxBlockId):
+	request = "SELECT node_position FROM block_chain WHERE id>=" + str(minBlockId) + " AND id<=" + str(maxBlockId)
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute(request)
+	positions = cursor.fetchall()
+	i = 0
+	while i < len(positions):
+		if positions[i][0] == 2:
+			return False
+		i = i + 1
+	return True
 
 def isCountTxInBlock(dbHost, dbName, login, password, maxBlockId, countTx):
 	minBlock = maxBlockId - 3
@@ -275,6 +287,12 @@ def getFounderId(dbHost, dbName, login, password):
 	cursor.execute("SELECT value FROM \"1_parameters\" WHERE name = 'founder_account'")
 	return cursor.fetchall()[0][0]
 
+def getSystemParameterValue(dbHost, dbName, login, password, name):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT value FROM \"1_system_parameters\" WHERE name = '"+name+"'")
+  return cursor.fetchall()[0][0]
+  
 def getExportAppData(dbHost, dbName, login, password, app_id, member_id):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
