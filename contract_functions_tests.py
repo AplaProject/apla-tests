@@ -418,7 +418,15 @@ class ContractFunctionsTestCase(unittest.TestCase):
         ecosystem_pages = self.getMetrics(1,"ecosystem_pages")
         contract = self.contracts["dbSelectMetricsAvg"]
         self.check_contract(contract["code"], str(ecosystem_pages))
+        
+    def test_getMapKeys(self):
+        contract = self.contracts["getMapKeys"]
+        self.check_contract(contract["code"], contract["asert"])
 
+    def test_sortedKeys(self):
+        contract = self.contracts["sortedKeys"]
+        self.check_contract(contract["code"], contract["asert"])
+        
     def test_getContractHistory(self):
         # create contract
         replacedString = "variable_for_replace"
