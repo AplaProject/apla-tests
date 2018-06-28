@@ -103,6 +103,23 @@ class PrototipoTestCase(unittest.TestCase):
                     compositeData=contractContent[0]["attr"]["composite"][0]["data"][0],
                     text=contractContent[0]["children"][0]["text"])
         self.assertDictEqual(mustBe, page, "now has problem: " + str(content["tree"]))
+
+
+    def test_page_button_popup(self):
+        contract = self.pages["buttonPopup"]
+        content = self.check_page(contract["code"])
+        partContent = content["tree"]
+        contractContent = contract["content"]
+        mustBe = dict(tag=partContent[0]["tag"],
+                      popupHeader=partContent[0]["attr"]["popup"]["header"],
+                      popupWidth=partContent[0]["attr"]["popup"]["width"],
+                      text=partContent[0]["children"][0]["text"])
+        page = dict(tag=contractContent[0]["tag"],
+                    popupHeader=contractContent[0]["attr"]["popup"]["header"],
+                    popupWidth=contractContent[0]["attr"]["popup"]["width"],
+                    text=contractContent[0]["children"][0]["text"])
+        self.assertDictEqual(mustBe, page, "now has problem: " + str(content["tree"]))
+
         
     def test_page_selectorFromDB(self):
         contract = self.pages["selectorFromDB"]
