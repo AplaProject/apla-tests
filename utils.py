@@ -143,6 +143,13 @@ def generate_name_and_code(sourceCode):
 	code = "contract " + name + sCode
 	return code, name
 
+def generate_code(contractName, sourceCode):
+	if sourceCode == "":
+		sCode = """{data { }	conditions {	}	action {	}	}"""
+	else:
+		sCode = sourceCode
+	code = "contract " + contractName + sCode
+	return code
 
 def compare_keys_cout(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
