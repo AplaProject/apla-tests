@@ -5,6 +5,8 @@ import json
 import time
 import funcs
 import os
+from genesis_blockchain_tools.crypto import sign
+from genesis_blockchain_tools.crypto import get_public_key
 
 
 class CostTestCase(unittest.TestCase):
@@ -14,7 +16,6 @@ class CostTestCase(unittest.TestCase):
         conf = config.getNodeConfig()
         keys = config.getKeys()
         self.createContracts(self)
-        self.createrUsers(self)
         
     def setUp(self):
         self.data = utils.login(conf["2"]["url"],keys["key2"])
@@ -141,7 +142,8 @@ class CostTestCase(unittest.TestCase):
         summBefore = sum(summ[0] for summ in sumsBefore)
         bNodeBalance = self.getNodeBalances()
         tokenRunner, uid = utils.get_uid(conf["2"]["url"])
-        signature, pubRunner = utils.sign(uid, conf["2"]["url"], keys["key2"])
+        signature = sign(keys["key2"], uid)
+        pubRunner = get_public_key(keys["key2"])
         balanceRunnerB = utils.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                          conf["1"]["dbName"],
                                                          conf["1"]["login"],
@@ -212,7 +214,8 @@ class CostTestCase(unittest.TestCase):
         summBefore = sum(summ[0] for summ in sumsBefore)
         bNodeBalance = self.getNodeBalances()
         tokenRunner, uid = utils.get_uid(conf["2"]["url"])
-        signature, pubRunner = utils.sign(uid, conf["2"]["url"], keys["key2"])
+        signature = sign(keys["key2"], uid)
+        pubRunner = get_public_key(keys["key2"])
         balanceRunnerB = utils.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                          conf["1"]["dbName"],
                                                          conf["1"]["login"],
@@ -296,7 +299,8 @@ class CostTestCase(unittest.TestCase):
                                                      conf["1"] ["pass"],
                                                      commisionWallet)
         tokenRunner, uid = utils.get_uid(conf["2"]["url"])
-        signature, pubRunner = utils.sign(uid, conf["2"]["url"], keys["key2"])
+        signature = sign(keys["key2"], uid)
+        pubRunner = get_public_key(keys["key2"])
         balanceRunnerB = utils.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                          conf["1"]["dbName"],
                                                          conf["1"]["login"],
@@ -376,7 +380,8 @@ class CostTestCase(unittest.TestCase):
                                                      conf["1"] ["pass"],
                                                      "commission_size")
         tokenRunner, uid = utils.get_uid(conf["2"]["url"])
-        signature, pubRunner = utils.sign(uid, conf["2"]["url"], keys["key2"])
+        signature = sign(keys["key2"], uid)
+        pubRunner = get_public_key(keys["key2"])
         balanceRunnerB = utils.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                          conf["1"]["dbName"],
                                                          conf["1"]["login"],

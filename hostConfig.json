@@ -2,8 +2,8 @@
 	"1":
 	{
 		"url": "http://localhost:7079/api/v2",
-		"private_key": "1326c365693e0af6755569043a67a54d8e564f39fc79de5e248d70ed50e321a8",
-		"keyID": "434675782746087839",
+		"private_key": "401ab9ddbc9949918b4602cde51d5a692bc82e27571b10068b52a9e3e6daa210",
+		"keyID": "-5107954317660905636",
 		"dbHost": "localhost",
 		"dbName": "gen1",
 		"login": "postgres",
@@ -13,8 +13,8 @@
 	"2":
 	{
 		"url": "http://localhost:7018/api/v2",
-		"private_key": "ace8726712bedac1ec59f37e65033980873ae5588a746dd97be2bf0bc0fbec0b",
-		"keyID": "-7271513804118188199",
+		"private_key": "ac3877a3b66584ecce9ab3ab661d85aa04006cb54ca6401a3845d0cfefc97d16",
+		"keyID": "9181368160441649410",
 		"dbHost": "localhost",
 		"dbName": "gen2",
 		"login": "postgres",
@@ -24,8 +24,8 @@
 	"3":
 	{
 		"url": "http://localhost:7082/api/v2",
-		"private_key": "e2d265c269cc727dbcef9b8dec5c443a4f89652d1e26482878aa5df809ef4624",
-		"keyID": "-6815965313284891035",
+		"private_key": "dde5bfd518755a0f6997c22f3727bc717a3ab3a46f92b24e6ddf6ec4eb9b7beb",
+		"keyID": "-7073483191424910863",
 		"dbHost": "localhost",
 		"dbName": "gen3",
 		"login": "postgres",

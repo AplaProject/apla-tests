@@ -1,7 +1,10 @@
 import requests
 import time
 import sys
-
+from genesis_blockchain_tools.crypto import sign
+from genesis_blockchain_tools.crypto import get_public_key
+	
+	
 if __name__ == "__main__":
 	if len (sys.argv) < 4:
 		print ("Error: Too few parameters")
@@ -15,13 +18,12 @@ if __name__ == "__main__":
 		baseUrl = "http://"+host1+":"+httpPort1+"/api/v2"
 		respUid = requests.get(baseUrl + '/getuid')
 		resultGetuid = respUid.json()
-
-		respSignTest = requests.post(baseUrl + '/signtest/', params={'forsign': "LOGIN" + resultGetuid['uid'], 'private': prKey1})
-		resultSignTest = respSignTest.json()
-		print(resultSignTest)
+		
+		signature = sign(prKey1, "LOGIN" + resultGetuid['uid'])
+		print("signature----------", signature)
 
 		fullToken = 'Bearer ' + resultGetuid['token']
-		respLogin = requests.post(baseUrl +'/login', params={'pubkey': resultSignTest['pubkey'], 'signature': resultSignTest['signature']}, headers={'Authorization': fullToken})
+		respLogin = requests.post(baseUrl +'/login', params={'pubkey': get_public_key(prKey1), 'signature': signature}, headers={'Authorization': fullToken})
 		resultLogin = respLogin.json()
 		address = resultLogin["address"]
 		timeToken = resultLogin["refresh"]
@@ -34,10 +36,10 @@ if __name__ == "__main__":
 		print(jsPrepareCall)
 		print("-------------------------------")
 		respSignTestPCall = requests.post(baseUrl + '/signtest/', params={'forsign': jsPrepareCall['forsign'], 'private': prKey1})
-		resultSignTestPCall = respSignTestPCall.json()
-		print(resultSignTestPCall)
+		signatureCall = sign(prKey1, jsPrepareCall['forsign'])
+		print("signatureCall----------", signatureCall)
 
-		sign_resCall = {"time": jsPrepareCall['time'], "signature": resultSignTestPCall['signature']}
+		sign_resCall = {"time": jsPrepareCall['time'], "signature": signatureCall}
 		respCall = requests.post(baseUrl + '/contract/' + jsPrepareCall['request_id'], data=sign_resCall, headers={"Authorization": jvtToken})
 		resultCallContract = respCall.json()
 		print(resultCallContract)

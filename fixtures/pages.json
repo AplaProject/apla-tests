@@ -31,6 +31,27 @@
 			  }
 			]
 	},
+	"buttonPopup":{
+		"code": "Button(Body: popup).Popup(50, Hello)",
+		"Menu": "default_menu",
+		"content": [
+			  {
+				"tag": "button",
+				"attr": {
+				  "popup": {
+					"header": "Hello",
+					"width": "50"
+				  }
+				},
+				"children": [
+				  {
+					"tag": "text",
+					"text": "popup"
+				  }
+				]
+			  }
+			]
+	},
     "selectorFromDB":{
 		"code": "DBFind(\"menu\", data) %n Select(MySelect, data, \"name\")",
 		"menu": "default_menu",
@@ -415,6 +436,417 @@
 				  "text": "1000000"
 				}
 			  ]
+			}
+	},
+	"calculate": {
+		"info_money": "Set for type of money",
+		"moneyCode1": "SetVar(two_val1, 125) Span(Calculate(#two_val1#, money, Prec:2))",
+		"moneyCode2": "SetVar(three_val1, 125.1) Span(Calculate(#three_val1#, money, Prec:2))",
+		"moneyCode3": "SetVar(three_val2, 125.25) Span(Calculate(#three_val2#, money, Prec:7))",
+		"moneyCode4": "SetVar(four_val1, 125.452) Span(Calculate(#four_val1#, money, Prec:2))",
+		"moneyCode5": "SetVar(four_val2, 125.452) Span(Calculate(#four_val2#, money, Prec:1))",
+		"moneyCode6": "SetVar(four_val3, 125.4527) Span(Calculate(#four_val3#, money, Prec:3))",
+		"moneyCode7": "SetVar(five_val1, 125.452) Span(Calculate(#five_val1#, money, Prec:0))",
+		"moneyCode8": "SetVar(five_val2, 125.55) Span(Calculate(#five_val2#, money, Prec:0))",
+		"moneyCode9": "SetVar(five_val3, 125.7) Span(Calculate(#five_val3#, money, Prec:0))",
+		"moneyCode10": "SetVar(six_val1, 125.452) Span(Calculate(#six_val1#, money, Prec:-1))",
+		"moneyCode11": "SetVar(a,2) Span(Calculate( Exp: (342+5000)*(#a#-93278) - 0.45678, Type: money, Prec:3))",
+		"moneyCode12": "SetVar(a,2) Span(Calculate( Exp: (342+5000)*(#a#-93278) - 0.45678, Type: money))",
+		"moneyCode13": "SetVar(a,2) Span(Calculate( Exp: (342+5000)*(93278-#a#) - 0.45678, Type: money, Prec:0))",
+		"moneyCode14": "SetVar(a,2) Span(Calculate( Exp: (342+5000)*(#a#-93278) - 0.45678, Type: money, Prec:-5))",
+		"moneyCode15": "SetVar(a,123.5554) Span(Calculate( Exp: #a#, Type: money, Prec:3 ))",
+		"info_float": "Set for type of float",
+		"floatCode1": "SetVar(two_val1, 125) Span(Calculate(#two_val1#, float, Prec:2))",
+		"floatCode2": "SetVar(three_val1, 125.1) Span(Calculate(#three_val1#, float, Prec:2))",
+		"floatCode3": "SetVar(three_val2, 125.25) Span(Calculate(#three_val2#, float, Prec:7))",
+		"floatCode4": "SetVar(four_val1, 125.452) Span(Calculate(#four_val1#, float, Prec:2))",
+		"floatCode5": "SetVar(four_val2, 125.452) Span(Calculate(#four_val2#, float, Prec:1))",
+		"floatCode6": "SetVar(four_val3, 125.4527) Span(Calculate(#four_val3#, float, Prec:3))",
+		"floatCode7": "SetVar(five_val1, 125.452) Span(Calculate(#five_val1#, float, Prec:0))",
+		"floatCode8": "SetVar(five_val2, 125.55) Span(Calculate(#five_val2#, float, Prec:0))",
+		"floatCode9": "SetVar(five_val3, 125.7) Span(Calculate(#five_val3#, float, Prec:0))",
+		"floatCode10": "SetVar(six_val1, 125.452) Span(Calculate(#six_val1#, float, Prec:-1))",
+		"floatCode11": "SetVar(a,2) Span(Calculate( Exp: (342+5000)*(#a#-93278) - 0.45678, Type: float, Prec:3))",
+		"floatCode12": "SetVar(a,2) Span(Calculate( Exp: (342+5000)*(#a#-93278) - 0.45678, Type: float))",
+		"floatCode13": "SetVar(a,2) Span(Calculate( Exp: (342+5000)*(93278-#a#) - 0.45678, Type: float, Prec:0))",
+		"floatCode14": "SetVar(a,2) Span(Calculate( Exp: (342+5000)*(#a#-93278) - 0.45678, Type: float, Prec:-5))",
+		"floatCode15": "SetVar(a,123.5554) Span(Calculate( Exp: #a#, Type: float, Prec:2 ))",
+
+		"info_int": "Set for type of float",
+		"intCode1": "SetVar(int_val1, 10) Span(Calculate(#int_val1#, int))",
+		"intCode2": "SetVar(int_val1, 10) Span(Calculate(#int_val1#, int, Prec:2))",
+		"intCode3": "SetVar(int_val1, 10) Span(Calculate(#int_val1#, int, Prec:0))",
+		"intCode4": "SetVar(int_val1, 10) Span(Calculate(#int_val1#, int, Prec:-5))",
+		"intCode5": "SetVar(int_val1, 125.5) Span(Calculate(#int_val1#, int))",
+		"intCode6": "SetVar(a,2) Span(Calculate( Exp: (342+5000)*(#a#-93278), Type: int, Prec:5))",
+
+		"wrongCode1": "SetVar(h, \"hello\") Span(Calculate(#h#, int, Prec:0) Calculate(#h#, money, Prec:-6) Calculate(#h#, float, Prec:6))",
+
+		"menu": "default_menu",
+		"moneyContent1": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "125"
+				}
+			]
+		},
+		"moneyContent2": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "125.1"
+				}
+			]
+		},
+		"moneyContent3": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "125.25"
+				}
+			]
+		},
+		"moneyContent4": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "125.45"
+				}
+			]
+		},
+		"moneyContent5": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "125.5"
+				}
+			]
+		},
+		"moneyContent6": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "125.453"
+				}
+			]
+		},
+		"moneyContent7": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "125"
+				}
+			]
+		},
+		"moneyContent8": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "126"
+				}
+			]
+		},
+		"moneyContent9": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "126"
+				}
+			]
+		},
+		"moneyContent10": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "precision is negative"
+				}
+			]
+		},
+		"moneyContent11": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "-498280392.457"
+				}
+			]
+		},
+		"moneyContent12": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "-498280392.45678"
+				}
+			]
+		},
+		"moneyContent13": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "498280392"
+				}
+			]
+		},
+		"moneyContent14": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "precision is negative"
+				}
+			]
+		},
+		"moneyContent15": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "123.555"
+				}
+			]
+		},
+		"floatContent1": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "125"
+				}
+			]
+		},
+		"floatContent2": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "125.1"
+				}
+			]
+		},
+		"floatContent3": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "125.25"
+				}
+			]
+		},
+		"floatContent4": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "125.45"
+				}
+			]
+		},
+		"floatContent5": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "125.5"
+				}
+			]
+		},
+		"floatContent6": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "125.453"
+				}
+			]
+		},
+		"floatContent7": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "125"
+				}
+			]
+		},
+		"floatContent8": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "126"
+				}
+			]
+		},
+		"floatContent9": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "126"
+				}
+			]
+		},
+		"floatContent10": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "precision is negative"
+				}
+			]
+		},
+		"floatContent11": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "-498280392.457"
+				}
+			]
+		},
+		"floatContent12": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "-498280392.45678"
+				}
+			]
+		},
+		"floatContent13": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "498280392"
+				}
+			]
+		},
+		"floatContent14": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "precision is negative"
+				}
+			]
+		},
+		"floatContent15": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "123.56"
+				}
+			]
+		},
+		"intContent1": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "10"
+				}
+			]
+		},
+		"intContent2": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "10"
+				}
+			]
+		},
+		"intContent3": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "10"
+				}
+			]
+		},
+		"intContent4": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "10"
+				}
+			]
+		},
+		"intContent5": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "strconv.ParseInt: parsing \"125.5\": invalid syntax"
+				}
+			]
+		},
+		"intContent6": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "-498280392"
+				}
+			]
+		},
+		"wrongContent1": {
+			"tag": "span",
+			"children": [
+				{
+					"tag": "text",
+					"text": "wrong expressionwrong expressionwrong expression"
+				}
+			]
+		}
+	},
+    "arrayToSource": {
+		"code": "ArrayToSource(dat, [\"hello\", \"my name\",\"is Billy\"])",
+		"menu": "default_menu",
+		"content": {
+			  "tag": "arraytosource",
+			  "attr": {
+				"columns": [
+				  "key",
+				  "value"
+				],
+				"data": [
+				  [
+					"0",
+					"hello"
+				  ],
+				  [
+					"1",
+					"my name"
+				  ],
+				  [
+					"2",
+					"is Billy"
+				  ]
+				],
+				"source": "dat",
+				"types": [
+				  "text",
+				  "text"
+				]
+			  }
 			}
 	}
 }

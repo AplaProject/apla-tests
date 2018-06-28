@@ -70,8 +70,8 @@ class ApiTestCase(unittest.TestCase):
 
     def test_get_param_ecosystem(self):
         asserts = ["list"]
-        data = {'ecosystem': 1}
-        self.check_get_api("/ecosystemparams/", data, asserts)
+        ecosysNum = "1"
+        self.check_get_api("/ecosystemparams/?ecosystem="+ecosysNum, "", asserts)
 
     def test_get_param_current_ecosystem(self):
         asserts = ["list"]
@@ -79,8 +79,17 @@ class ApiTestCase(unittest.TestCase):
 
     def test_get_params_ecosystem_with_names(self):
         asserts = ["list"]
-        data = {'ecosystem': 1, 'names': "name"}
-        self.check_get_api("/ecosystemparams/", data, asserts)
+        names = "founder_account,new_table,changing_tables"
+        res = self.check_get_api("/ecosystemparams/?names="+names, "", asserts)
+        mustBe = dict(count=3,
+                      par1="founder_account",
+                      par2="new_table",
+                      par3="changing_tables")
+        actual = dict(count=len(res["list"]),
+                      par1=res["list"][0]["name"],
+                      par2=res["list"][1]["name"],
+                      par3=res["list"][2]["name"])
+        self.assertDictEqual(actual, mustBe, "test_get_params_ecosystem_with_names is failed!")
 
     def test_get_parametr_of_current_ecosystem(self):
         asserts = ["id", "name", "value", "conditions"]
@@ -88,9 +97,8 @@ class ApiTestCase(unittest.TestCase):
         self.check_get_api("/ecosystemparam/founder_account/", data, asserts)
         
     def test_get_incorrect_ecosys_parametr(self):
-        asserts = ["id", "name", "value", "conditions"]
-        data = {}
-        error, message = self.get_error_api("/ecosystemparam/icorrectParam/", "")
+        asserts = ""
+        error, message = self.get_error_api("/ecosystemparam/incorrectParam/", asserts)
         self.assertEqual(error, "E_PARAMNOTFOUND", "Incorrect error: " + error + message)
 
     def test_get_tables_of_current_ecosystem(self):
@@ -633,6 +641,24 @@ class ApiTestCase(unittest.TestCase):
                       notAuthRes=isHashNotEmpty(notAuthRes),
                       msg=notAuthResNotExist["msg"])
         self.assertDictEqual(mustBe, actual, "Not all assertions passed in test_content_hash")
+
+    def test_get_ecosystem_name(self):
+        id = 1
+        asserts = ["ecosystem_name"]
+        self.check_get_api("/ecosystemname?id=" + str(id), "", asserts)
+
+    def test_get_ecosystem_name_new(self):
+        data = {"Name": "ecos_" + utils.generate_random_name()}
+        res = self.call("NewEcosystem",data)
+        id = int(res)
+        asserts = ["ecosystem_name"]
+        self.check_get_api("/ecosystemname?id=" + str(id), "", asserts)
+
+    def test_get_ecosystem_name_incorrect(self):
+        id = 99999
+        asserts = ["error"]
+        self.check_get_api("/ecosystemname?id=" + str(id), "", asserts)
+
 
 if __name__ == '__main__':
     unittest.main()

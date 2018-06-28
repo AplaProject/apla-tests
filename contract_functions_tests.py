@@ -10,10 +10,14 @@ import funcs
 class ContractFunctionsTestCase(unittest.TestCase):
     def setUp(self):
         self.config = config.getNodeConfig()
-        global url, prKey,token
+        global url, prKey,token, dbHost, dbName, login, pas
         self.contracts = config.readFixtures("contracts")
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
+        dbHost = self.config["1"]["dbHost"]
+        dbName = self.config["1"]['dbName']
+        login = self.config["1"]["login"]
+        pas = self.config["1"]['pass']
         self.data = utils.login(url,prKey)
         token = self.data["jwtToken"]
 
@@ -38,6 +42,12 @@ class ContractFunctionsTestCase(unittest.TestCase):
                                      data, token)
         self.assertTxInBlock(result, token)
 
+    def call_contract(self, name, data):
+        result = utils.call_contract(url, prKey, name,
+                                     data, token)
+        self.assertTxInBlock(result, token)
+
+
     def check_contract(self, sourse, checkPoint):
         code, name = self.generate_name_and_code(sourse)
         self.create_contract(code)
@@ -46,6 +56,28 @@ class ContractFunctionsTestCase(unittest.TestCase):
         token = self.data["jwtToken"]
         sleep = self.config["1"]["time_wait_tx_in_block"]
         res = utils.call_contract(url, prKey, name, {}, token)
+        hash = res["hash"]
+        result = utils.txstatus(url, sleep, hash, token)
+        self.assertIn(checkPoint, result["result"], "error")
+
+    def call(self, name, data):
+        url = self.config["2"]["url"]
+        prKey = self.config["1"]['private_key']
+        token = self.data["jwtToken"]
+        result = utils.call_contract(url, prKey, name, data, token)
+        status = utils.txstatus(url,
+                                self.config["1"]["time_wait_tx_in_block"],
+                                result['hash'], token)
+        return status
+      
+    def check_contract_with_data(self, sourse, data, checkPoint):
+        code, name = self.generate_name_and_code(sourse)
+        self.create_contract(code)
+        url = self.config["2"]["url"]
+        prKey = self.config["1"]['private_key']
+        token = self.data["jwtToken"]
+        sleep = self.config["1"]["time_wait_tx_in_block"]
+        res = utils.call_contract(url, prKey, name, data, token)
         hash = res["hash"]
         result = utils.txstatus(url, sleep, hash, token)
         self.assertIn(checkPoint, result["result"], "error")
@@ -396,6 +428,137 @@ class ContractFunctionsTestCase(unittest.TestCase):
         ecosystem_pages = self.getMetrics(1,"ecosystem_pages")
         contract = self.contracts["dbSelectMetricsAvg"]
         self.check_contract(contract["code"], str(ecosystem_pages))
+        
+    def test_getMapKeys(self):
+        contract = self.contracts["getMapKeys"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_sortedKeys(self):
+        contract = self.contracts["sortedKeys"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_getContractHistory(self):
+        # create contract
+        replacedString = "variable_for_replace"
+        code = """
+        { 
+            data{}
+            conditions{}
+            action{ var %s int }
+        }
+        """ %replacedString
+        code, name = self.generate_name_and_code(code)
+        self.create_contract(code)
+        # change contract
+        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_contracts", name)
+        newCode = code.replace(replacedString, "new_var")
+        data = {"Id": id,
+                "Value": newCode}
+        self.call_contract("EditContract", data)
+        # test
+        data = {"ID": id}
+        contract = self.contracts["getContractHistory"]
+        self.check_contract_with_data(contract["code"], data, replacedString)
+
+    def test_getPageHistory(self):
+        # create page
+        name = utils.generate_random_name()
+        page = "Div(Body: Hello)"
+        data = {"ApplicationId": "1",
+                "Name": name,
+                "Value": page,
+                "Menu": "default_menu",
+                "Conditions": "true"}
+        self.call_contract("NewPage", data)
+        # change page
+        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_pages", name)
+        newValuePage = page.replace("Hello", "new_var")
+        data = {"Id": id,
+                "Value": newValuePage}
+        self.call_contract("EditPage", data)
+        # test
+        data = {"ID": id}
+        contract = self.contracts["getPageHistory"]
+        self.check_contract_with_data(contract["code"], data, page)
+
+    def test_getMenuHistory(self):
+        # create menu
+        name = utils.generate_random_name()
+        menu = "This is new menu"
+        data = {"Name": name,
+                "Value": menu,
+                "Conditions": "true"}
+        self.call_contract("NewMenu", data)
+        # change menu
+        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_menu", name)
+        newValueMenu = menu.replace("new menu", "new_var")
+        data = {"Id": id,
+                "Value": newValueMenu}
+        self.call_contract("EditMenu", data)
+        # test
+        data = {"ID": id}
+        contract = self.contracts["getMenuHistory"]
+        self.check_contract_with_data(contract["code"], data, menu)
+
+    def test_getBlockHistory(self):
+        # create block
+        name = utils.generate_random_name()
+        block = "Div(Body: Hello)"
+        data = {"ApplicationId": "1",
+                "Name": name,
+                "Value": block,
+                "Conditions": "true"}
+        self.call_contract("NewBlock", data)
+        # change block
+        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_blocks", name)
+        newValueBlock = block.replace("Hello", "new_var")
+        data = {"Id": id,
+                "Value": newValueBlock}
+        self.call_contract("EditBlock", data)
+        # test
+        data = {"ID": id}
+        contract = self.contracts["getBlockHistory"]
+        self.check_contract_with_data(contract["code"], data, block)
+
+    def test_append(self):
+        contract = self.contracts["append"]
+        self.check_contract(contract["code"], contract["asert"])
+
+
+    def test_sys_var_stack(self):
+        # This test has not a fixture
+        innerBody = """
+                {
+                data{}
+                conditions{}
+                action {
+                    $result = $stack
+                    }
+                }
+                """
+        innerCode, innerName = self.generate_name_and_code(innerBody)
+        self.create_contract(innerCode)
+        outerBody = """
+                {
+                data{}
+                conditions{}
+                action {
+                    var par map
+                    var res string
+                    res = CallContract("%s", par)
+                    $result = res
+                    }
+                }
+                """ % innerName
+        outerCode, outerName = self.generate_name_and_code(outerBody)
+        self.create_contract(outerCode)
+        data = {"Wallet": "", "ApplicationId": 1,
+                "Value": outerCode,
+                "Conditions": "ContractConditions(`MainCondition`)"}
+        res = self.call(outerName, data)
+        mustBe = "[@1" + outerName + " @1" + innerName +"]"
+        self.assertEqual(mustBe, res["result"], "test_sys_var_stack is failed!")
+
 
 if __name__ == '__main__':
     unittest.main()
