@@ -72,6 +72,7 @@ class SystemContractsTestCase(unittest.TestCase):
             expected_block_id = old_block_id + limit + 1 # +1 spare block
             if currrent_block_id == expected_block_id:
                 break
+            
     def test_create_ecosystem(self):
         name = "Ecosys_" + utils.generate_random_name()
         data = {"Name": name}
@@ -881,6 +882,28 @@ class SystemContractsTestCase(unittest.TestCase):
                 "Permissions": permission}
         res = self.call("NewTable", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_new_table_joint(self):
+        column = """[{"name":"MyName","type":"varchar",
+        "index": "1",  "conditions":"true"},{"name":"Myb","type":"json",
+        "index": "0",  "conditions":"true"}, {"name":"MyD","type":"datetime",
+        "index": "0",  "conditions":"true"}, {"name":"MyM","type":"money",
+        "index": "0",  "conditions":"true"},{"name":"MyT","type":"text",
+        "index": "0",  "conditions":"true"},{"name":"MyDouble","type":"double",
+        "index": "0",  "conditions":"true"},{"name":"MyC","type":"character",
+        "index": "0",  "conditions":"true"}]"""
+        columns = "[varchar, Myb, MyD, MyM, MyT, MyDouble, MyC]"
+        types = "[varchar, json, datetime, money, text, double, character]"
+        permission = """{"insert": "false",
+        "update" : "true","new_column": "true"}"""
+        data = {"Name": "Tab_" + utils.generate_random_name(),
+                "ColumnsArr": columns, "ApplicationId": 1,
+                "TypesArr": types,
+                "InsertPerm": "true",
+                "UpdatePerm": "true",
+                "NewColumnPerm": "true"}
+        res = self.call("NewTableJoint", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_new_table_incorrect_condition1(self):
         data = {}
@@ -1065,6 +1088,25 @@ class SystemContractsTestCase(unittest.TestCase):
                 "ApplicationId": 1}
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_new_lang_joint(self):
+        data = {"ApplicationId": 1,
+                "Name": "Lang_" + utils.generate_random_name(),
+                "ValueArr": ["en", "ru"], "LocaleArr": ["Hi", "Привет"]}
+        res = self.call("NewLangJoint", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_edit_lang_joint(self):
+        data = {"ApplicationId": 1,
+                "Name": "Lang_" + utils.generate_random_name(),
+                "ValueArr": ["en", "ru"], "LocaleArr": ["Hi", "Привет"]}
+        res = self.call("NewLangJoint", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        count = funcs.get_count(url, "languages", token)
+        dataE = {"Id": count, "ValueArr": ["en", "de"],
+                 "LocaleArr": ["Hi", "Hallo"]}
+        res = self.call("EditLangJoint", dataE)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_edit_lang(self):
         name = "Lang_" + utils.generate_random_name()
@@ -1075,50 +1117,59 @@ class SystemContractsTestCase(unittest.TestCase):
         data["ApplicationId"] = 1
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        # Get last record in languages table
-        asserts = ["count"]
-        res = self.check_get_api("/list/languages", "", asserts)
-        self.assertGreater(int(res["count"]), 0, "Count of languages not Greater 0: " + str(len(res["list"])))
-        # Edit langRes
-        dataEdit = {"Id": res["count"], "Name": name, "AppID": 1,
+        count = funcs.get_count(url, "languages", token)
+        dataEdit = {"Id": count, "Name": name, "AppID": 1,
                     "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("EditLang", dataEdit)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
     def test_new_sign(self):
         name = "Sign_" + utils.generate_random_name()
-        data = {}
-        data["Name"] = name
-        value = "{ \"forsign\" :\"" + name
-        value += "\" ,  \"field\" :  \"" + name
-        value += "\" ,  \"title\": \"" + name
-        value += "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
-        data["Value"] = value
-        data["Conditions"] = "true"
+        value = "{\"forsign\":\"" + name +\
+        "\", \"field\": \"" + name + "\", \"title\": \"" + name +\
+        "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
+        data = {"Name": name, "Value": value, "Conditions": "true"}
         res = self.call("NewSign", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-
+        
+    def test_new_sign_joint(self):
+        name = "Sign_" + utils.generate_random_name()
+        params = [{"name": "test", "text": "test"},
+                  {"name": "test2", "text": "test2"}]
+        values = ["one", "two"]
+        data = {"Name": name, "Title": name, "ParamArr": params,
+                "ValueArr": values, "Conditions": "true"}
+        res = self.call("NewSignJoint", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        
+    def test_edit_sign_joint(self):
+        name = "Sign_" + utils.generate_random_name()
+        params = [{"name": "test", "text": "test"},
+                  {"name": "test2", "text": "test2"}]
+        values = ["one", "two"]
+        data = {"Name": name, "Title": name, "ParamArr": params,
+                "ValueArr": values, "Conditions": "true"}
+        res = self.call("NewSignJoint", data)
+        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        count = funcs.get_count(url, "signatures", token)
+        dataE = {"Id": count, "Title": "NewTitle", "Parameter": str(params),
+                 "Conditions": "true"}
+        resE = self.call("EditSignJoint", dataE)
+        self.assertGreater(int(resE), 0, "BlockId is not generated: " + resE)
+        
     def test_edit_sign(self):
         name = "Sign_" + utils.generate_random_name()
-        data = {}
-        data["Name"] = name
-        value = "{ \"forsign\" :\"" + name
-        value += "\" ,  \"field\" :  \"" + name
-        value += "\" ,  \"title\": \"" + name
-        value += "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
-        data["Value"] = value
-        data["Conditions"] = "true"
+        value = "{\"forsign\":\"" + name +\
+        "\", \"field\": \"" + name + "\", \"title\": \"" + name +\
+        "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
+        data = {"Name": name, "Value": value, "Conditions": "true"}
         res = self.call("NewSign", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         count = funcs.get_count(url, "signatures", token)
-        dataEdit = {}
-        dataEdit["Id"] = count
-        valueE = "{ \"forsign\" :\"" + name
-        valueE += "\" ,  \"field\" :  \"" + name
-        valueE += "\" ,  \"title\": \"" + name
-        valueE += "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
-        dataEdit["Value"] = valueE
-        dataEdit["Conditions"] = "true"
+        valueE = "{\"forsign\": \"" + name + "\", \"field\": \"" +\
+        name + "\", \"title\": \"" + name +\
+        "\", \"params\":[{\"name\": \"test1\", \"text\": \"test2\"}]}"
+        dataEdit = {"Id": count, "Value": valueE, "Conditions": "true"}
         res = self.call("EditSign", dataEdit)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
