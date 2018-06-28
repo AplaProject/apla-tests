@@ -74,18 +74,18 @@ class SystemContractsTestCase(unittest.TestCase):
                 break
             
     def test_create_ecosystem(self):
+        currentBlockId = funcs.get_max_block_id(url, token)
         name = "Ecosys_" + utils.generate_random_name()
         data = {"Name": name}
         res = self.call("NewEcosystem", data)
         asserts = ["number"]
         ecosystemID = self.check_get_api("/ecosystems/", "", asserts)["number"]
         ecosystemTablesList = utils.getEcosysTablesById(dbHost, dbName, login, pas, ecosystemID)
-        mustBe = dict(block = True,
+        mustBe = dict(block = currentBlockId+1,
                       tablesCount = 19)
-        actual = dict(block=int(res)>0,
+        actual = dict(block=int(res),
                       tablesCount=len(ecosystemTablesList))
         self.assertDictEqual(mustBe, actual, "test_create_ecosystem is failed!")
-
 
     def test_new_application(self):
         name = "App" + utils.generate_random_name()
@@ -133,6 +133,7 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         
     def test_edit_ecosystem_name(self):
+        currentBlockId = funcs.get_max_block_id(url, token)
         id = 1
         newName = "Ecosys_"+utils.generate_random_name()
         data = {"EcosystemID": id, "NewName": newName}
@@ -149,10 +150,10 @@ class SystemContractsTestCase(unittest.TestCase):
             i+=1
         query="SELECT name FROM \"1_ecosystems\" WHERE id='"+str(id)+"'"
         requiredEcosysNameDB = utils.executeSQL(dbHost, dbName, login, pas, query)[0][0]
-        mustBe = dict(block = True,
+        mustBe = dict(block = int(currentBlockId+1),
                       ecosysNameAPI = newName,
                       ecosysNameDB = newName)
-        actual = dict(block = int(resBlockId)>0,
+        actual = dict(block = int(resBlockId),
                       ecosysNameAPI = requiredEcosysNameAPI,
                       ecosysNameDB = requiredEcosysNameDB)
         self.assertDictEqual(mustBe, actual, "test_edit_ecosystem_name is failed!")

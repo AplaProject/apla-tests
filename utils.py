@@ -244,17 +244,17 @@ def getEcosysTablesById(dbHost, dbName, login, password, ecosystemID):
 		i = i + 1
 	return list
 
-def executeSQL(dbHost, dbName, login, password, query):
-	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
-	cursor = connect.cursor()
-	cursor.execute(query)
-	return cursor.fetchall()
-
 def getCountTable(dbHost, dbName, login, password, table):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute("SELECT count(*) FROM \"" + table + "\"")
 	return cursor.fetchall()[0][0]
+
+def executeSQL(dbHost, dbName, login, password, query):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute(query)
+	return cursor.fetchall()
 
 def getObjectIdByName(dbHost, dbName, login, password, table, name):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)

@@ -510,5 +510,10 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["getBlockHistory"]
         self.check_contract_with_data(contract["code"], data, block)
 
+    def test_append(self):
+        contract = self.contracts["append"]
+        self.check_contract(contract["code"], contract["asert"])
+
+
 if __name__ == '__main__':
     unittest.main()
