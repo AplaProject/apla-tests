@@ -32,6 +32,16 @@ def get_contract_id(url, name, token):
     res = call_get_api(endPoint, "", token)
     return res["tableid"]
 
+def get_application_id(url, name, token):
+    id = None
+    endPoint = url + "/list/applications"
+    res = call_get_api(endPoint, "", token)
+    for app in res["list"]:
+        if app["name"] == name:
+            id = app["id"]
+    return id
+    
+
 def is_contract_activated(url, name, token):
     endPoint = url + "/contract/" + name
     res = call_get_api(endPoint, "", token)

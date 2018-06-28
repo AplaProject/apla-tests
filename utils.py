@@ -6,6 +6,8 @@ import string
 import psycopg2
 import json
 from collections import Counter
+from genesis_blockchain_tools.crypto import sign
+from genesis_blockchain_tools.crypto import get_public_key
 
 
 def get_uid(url):
@@ -14,16 +16,10 @@ def get_uid(url):
 	return result['token'], result['uid']
 
 
-def sign(forsign, url, prKey):
-	data = {'forsign': forsign, 'private': prKey}
-	resp = requests.post(url + "/signtest/", params=data)
-	result = resp.json()
-	return result['signature'], result['pubkey']
-
-
 def login(url, prKey):
 	token, uid = get_uid(url)
-	signature, pubkey = sign("LOGIN" + uid, url, prKey)
+	signature = sign(prKey, "LOGIN" + uid)
+	pubkey = get_public_key(prKey)
 	fullToken = 'Bearer ' + token
 	data = {'pubkey': pubkey, 'signature': signature}
 	head = {'Authorization': fullToken}
@@ -40,22 +36,19 @@ def login(url, prKey):
 
 
 def prepare_tx(url, prKey, entity, jvtToken, data):
-	urlToCont = url + '/prepare/' + entity
 	heads = {'Authorization': jvtToken}
-	resp = requests.post(urlToCont, data=data, headers=heads)
+	resp = requests.post(url + '/prepare/' + entity, data=data, headers=heads)
 	result = resp.json()
-	forsign = result['forsign']
-	signature, _ = sign(forsign, url, prKey)
+	signature = sign(prKey, result['forsign'])
 	return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
 
 def prepare_tx_with_files(url, prKey, entity, jvtToken, data, files):
-	urlToCont = url + '/prepare/' + entity
 	heads = {'Authorization': jvtToken}
-	resp = requests.post(urlToCont, data=data, headers=heads, files=files)
+	resp = requests.post(url + '/prepare/' + entity,
+						data=data, headers=heads, files=files)
 	result = resp.json()
-	forsign = result['forsign']
-	signature, _ = sign(forsign, url, prKey)
+	signature = sign(prKey, result['forsign'])
 	return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
 def call_contract(url, prKey, name, data, jvtToken):
@@ -67,17 +60,17 @@ def call_contract(url, prKey, name, data, jvtToken):
 	return result
 
 def prepare_multi_tx(url, prKey, entity, jvtToken, data):
-	urlToCont = url + '/prepareMultiple/' + entity
+	urlToCont = url + '/prepareMultiple/'
 	heads = {'Authorization': jvtToken}
 	request = {"token_ecosystem": "",
-		   "max_sum":"",
-		   "payover": "",
-		   "signed_by": "",
-	           "params": data}
+			   "max_sum":"",
+			   "payover": "",
+			   "signed_by": "",
+			   "contracts": data}
 	resp = requests.post(urlToCont, data={"data":json.dumps(request)}, headers=heads)
 	result = resp.json()
 	forsigns = result['forsign']
-	signatures = [sign(forsign, url, prKey)[0] for forsign in forsigns]
+	signatures = [sign(prKey, forsign) for forsign in forsigns]
 	return {"time": result['time'], "signatures": signatures, "reqID": result['request_id']}
 
 def call_multi_contract(url, prKey, name, data, jvtToken):
@@ -113,10 +106,24 @@ def txstatus(url, sleepTime, hsh, jvtToken):
 
 
 def txstatus_multi(url, sleepTime, hshs, jvtToken):
-	time.sleep(len(hshs) * sleepTime)
 	urlEnd = url + '/txstatusMultiple/'
-	resp = requests.get(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
-	return resp.json()["results"]
+	allTxInBlocks = False
+	sec = 0
+	while sec < sleepTime:
+		time.sleep(1)
+		resp = requests.post(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
+		jresp = resp.json()["results"]
+		for status in jresp.values():
+			if (len(status['blockid']) > 0 and 'errmsg' not in json.dumps(status)):
+				allTxInBlocks = True
+			else:
+				allTxInBlocks = False
+		if allTxInBlocks == True:
+			return jresp
+		else:
+			sec = sec + 1
+	return jresp
+
 
 
 def generate_random_name():
@@ -181,6 +188,23 @@ def compare_node_positions(dbHost, dbName, login, password, maxBlockId, nodes):
 	return True
 
 
+def isCountTxInBlock(dbHost, dbName, login, password, maxBlockId, countTx):
+	minBlock = maxBlockId - 3
+	request = "SELECT id, tx FROM block_chain WHERE id>" + str(minBlock) + " AND id<" + str(maxBlockId)
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute(request)
+	tx = cursor.fetchall()
+	i = 0
+	while i < len(tx):
+		if tx[i][1] > countTx:
+			print("Block " + str(tx[i][0]) + " contains " +\
+				str(tx[i][1]) + " transactions")
+			return False
+		i = i + 1
+	return True
+
+
 def get_count_records_block_chain(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
@@ -232,10 +256,28 @@ def executeSQL(dbHost, dbName, login, password, query):
 	cursor.execute(query)
 	return cursor.fetchall()
 
+def getObjectIdByName(dbHost, dbName, login, password, table, name):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT id FROM \"" + table + "\" WHERE name = '"+str(name)+"'")
+	return cursor.fetchall()[0][0]
+
 def getFounderId(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute("SELECT value FROM \"1_parameters\" WHERE name = 'founder_account'")
+	return cursor.fetchall()[0][0]
+
+def getExportAppData(dbHost, dbName, login, password, app_id, member_id):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT data as TEXT FROM \"1_binaries\" WHERE name = 'export' AND app_id = "+str(app_id)+" AND member_id = "+str(member_id))
+	return cursor.fetchall()[0][0]
+
+def getImportAppData(dbHost, dbName, login, password, member_id):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT value FROM \"1_buffer_data\" WHERE key = 'import' AND member_id = "+str(member_id))
 	return cursor.fetchall()[0][0]
 
 def getCountDBObjects(dbHost, dbName, login, password):
@@ -270,7 +312,7 @@ def getUserTableState(dbHost, dbName, login, password, userTable):
 def getUserTokenAmounts(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
-	cursor.execute("select amount from \"1_keys\"")
+	cursor.execute("select amount from \"1_keys\" ORDER BY amount")
 	amounts = cursor.fetchall()
 	return amounts
 
