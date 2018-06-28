@@ -256,6 +256,12 @@ def getCountTable(dbHost, dbName, login, password, table):
 	cursor.execute("SELECT count(*) FROM \"" + table + "\"")
 	return cursor.fetchall()[0][0]
 
+def getObjectIdByName(dbHost, dbName, login, password, table, name):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT id FROM \"" + table + "\" WHERE name = '"+str(name)+"'")
+	return cursor.fetchall()[0][0]
+
 def getFounderId(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
