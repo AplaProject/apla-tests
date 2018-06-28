@@ -905,6 +905,18 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewTableJoint", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
 
+    def test_new_table_incorrect_column_name_digit(self):
+        column = """[{"name":"123","type":"varchar",
+        "index": "1",  "conditions":"true"}]"""
+        permission = """{"insert": "false",
+        "update" : "true","new_column": "true"}"""
+        data = {"Name": "Tab_" + utils.generate_random_name(),
+                "Columns": column, "ApplicationId": 1,
+                "Permissions": permission}
+        ans = self.call("NewTable", data)
+        msg = "Column name cannot begin with digit"
+        self.assertEqual(msg, ans, "Incorrect message: " + ans)
+
     def test_new_table_incorrect_condition1(self):
         data = {}
         data["Name"] = "Tab_" + utils.generate_random_name()
