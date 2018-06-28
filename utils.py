@@ -291,7 +291,7 @@ def getSystemParameterValue(dbHost, dbName, login, password, name):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute("SELECT value FROM \"1_system_parameters\" WHERE name = '"+name+"'")
-  return cursor.fetchall()[0][0]
+	return cursor.fetchall()[0][0]
   
 def getExportAppData(dbHost, dbName, login, password, app_id, member_id):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
