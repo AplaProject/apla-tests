@@ -60,6 +60,16 @@ class ContractFunctionsTestCase(unittest.TestCase):
         result = utils.txstatus(url, sleep, hash, token)
         self.assertIn(checkPoint, result["result"], "error")
 
+    def call(self, name, data):
+        url = self.config["2"]["url"]
+        prKey = self.config["1"]['private_key']
+        token = self.data["jwtToken"]
+        result = utils.call_contract(url, prKey, name, data, token)
+        status = utils.txstatus(url,
+                                self.config["1"]["time_wait_tx_in_block"],
+                                result['hash'], token)
+        return status
+      
     def check_contract_with_data(self, sourse, data, checkPoint):
         code, name = self.generate_name_and_code(sourse)
         self.create_contract(code)
@@ -513,6 +523,41 @@ class ContractFunctionsTestCase(unittest.TestCase):
     def test_append(self):
         contract = self.contracts["append"]
         self.check_contract(contract["code"], contract["asert"])
+
+
+    def test_sys_var_stack(self):
+        # This test has not a fixture
+        innerBody = """
+                {
+                data{}
+                conditions{}
+                action {
+                    $result = $stack
+                    }
+                }
+                """
+        innerCode, innerName = self.generate_name_and_code(innerBody)
+        self.create_contract(innerCode)
+        outerBody = """
+                {
+                data{}
+                conditions{}
+                action {
+                    var par map
+                    var res string
+                    res = CallContract("%s", par)
+                    $result = res
+                    }
+                }
+                """ % innerName
+        outerCode, outerName = self.generate_name_and_code(outerBody)
+        self.create_contract(outerCode)
+        data = {"Wallet": "", "ApplicationId": 1,
+                "Value": outerCode,
+                "Conditions": "ContractConditions(`MainCondition`)"}
+        res = self.call(outerName, data)
+        mustBe = "[@1" + outerName + " @1" + innerName +"]"
+        self.assertEqual(mustBe, res["result"], "test_sys_var_stack is failed!")
 
 
 if __name__ == '__main__':
