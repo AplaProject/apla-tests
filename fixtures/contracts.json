@@ -270,5 +270,21 @@
 	"limits": {
 		"code": "{\n data {\n Count int\n }\n conditions {} \n action { \n var i int \n var res array \n while i < $Count { \n var res array\n res = DBFind(\"contracts\").Columns(\"name\")\n i = i + 1\n } \n}\n }",
 		"asert": ""
+	},
+	"getContractHistory": {
+		"code": "{\n data {\n ID int\n }\n conditions {} \n action { \n var list array \n var item map \n list = GetContractHistory($ID) \n if Len(list)>0 { \n item = list[0] } \n $result = item \n}\n }",
+		"asert": ""
+	},
+	"getPageHistory": {
+		"code": "{\n data {\n ID int\n }\n conditions {} \n action { \n var list array \n var item map \n list = GetPageHistory($ID) \n if Len(list)>0 { \n item = list[0] } \n $result = item \n}\n }",
+		"asert": ""
+	},
+	"getMenuHistory": {
+		"code": "{\n data {\n ID int\n }\n conditions {} \n action { \n var list array \n var item map \n list = GetMenuHistory($ID) \n if Len(list)>0 { \n item = list[0] } \n $result = item \n}\n }",
+		"asert": ""
+	},
+	"getBlockHistory": {
+		"code": "{\n data {\n ID int\n }\n conditions {} \n action { \n var list array \n var item map \n list = GetBlockHistory($ID) \n if Len(list)>0 { \n item = list[0] } \n $result = item \n}\n }",
+		"asert": ""
 	}
 }

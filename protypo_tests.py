@@ -32,6 +32,19 @@ class PrototipoTestCase(unittest.TestCase):
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
+    def create_contract(self, code):
+        data = {"Wallet": "", "ApplicationId": 1,
+                "Value": code,
+                "Conditions": "ContractConditions(`MainCondition`)"}
+        result = utils.call_contract(url, prKey, "NewContract",
+                                     data, token)
+        self.assertTxInBlock(result, token)
+
+    def call_contract(self, name, data):
+        result = utils.call_contract(url, prKey, name,
+                                     data, token)
+        self.assertTxInBlock(result, token)
+
     def check_page(self, sourse):
         name = "Page_" + utils.generate_random_name()
         data = {"Name": name, "Value": sourse, "ApplicationId": 1,
@@ -887,6 +900,95 @@ class PrototipoTestCase(unittest.TestCase):
                     int6=partIntContent6['children'][0]["text"],
                     wrong1=partWrongContent1['children'][0]["text"])
         self.assertDictEqual(mustBe, page, "calculate has problem!")
+
+    def test_getContractHistory(self):
+        # it test has not fixture
+        # create contract
+        replacedString = "variable_for_replace"
+        code = """
+                { 
+                    data{}
+                    conditions{}
+                    action{ var %s int }
+                }
+                """ % replacedString
+        code, name = utils.generate_name_and_code(code)
+        self.create_contract(code)
+        # change contract
+        id = utils.getObjectIdByName(dbHost, dbName, login, password, "1_contracts", name)
+        newCode = code.replace(replacedString, "new_var")
+        data = {"Id": id,
+                "Value": newCode}
+        self.call_contract("EditContract", data)
+        # test
+        content = self.check_page("GetContractHistory(src, "+str(id)+")")
+        partContent = content['tree'][0]["attr"]["data"][0]
+        self.assertIn(replacedString, str(partContent), "getContractHistory has problem: " + str(content["tree"]))
+
+    def test_getPageHistory(self):
+        # it test has not fixture
+        # create page
+        name = utils.generate_random_name()
+        page = "Div(Body: Hello)"
+        data = {"ApplicationId": "1",
+                "Name": name,
+                "Value": page,
+                "Menu": "default_menu",
+                "Conditions": "true"}
+        self.call_contract("NewPage", data)
+        # change page
+        id = utils.getObjectIdByName(dbHost, dbName, login, password, "1_pages", name)
+        newValuePage = page.replace("Hello", "new_var")
+        data = {"Id": id,
+                "Value": newValuePage}
+        self.call_contract("EditPage", data)
+        # test
+        content = self.check_page("GetPageHistory(src, "+str(id)+")")
+        partContent = content['tree'][0]["attr"]["data"][0]
+        self.assertIn(page, str(partContent), "getPageHistory has problem: " + str(content["tree"]))
+
+    def test_getMenuHistory(self):
+        # it test has not fixture
+        # create menu
+        name = utils.generate_random_name()
+        menu = "This is new menu"
+        data = {"Name": name,
+                "Value": menu,
+                "Conditions": "true"}
+        self.call_contract("NewMenu", data)
+        # change menu
+        id = utils.getObjectIdByName(dbHost, dbName, login, password, "1_menu", name)
+        newValueMenu = menu.replace("new menu", "new_var")
+        data = {"Id": id,
+                "Value": newValueMenu}
+        self.call_contract("EditMenu", data)
+        # test
+        content = self.check_page("GetMenuHistory(src, "+str(id)+")")
+        partContent = content['tree'][0]["attr"]["data"][0]
+        self.assertIn(menu, str(partContent), "getMenuHistory has problem: " + str(content["tree"]))
+
+    def test_getBlockHistory(self):
+        # it test has not fixture
+        # create block
+        name = utils.generate_random_name()
+        block = "Div(Body: Hello)"
+        data = {"ApplicationId": "1",
+                "Name": name,
+                "Value": block,
+                "Conditions": "true"}
+        self.call_contract("NewBlock", data)
+        # change block
+        id = utils.getObjectIdByName(dbHost, dbName, login, password, "1_blocks", name)
+        newValueBlock = block.replace("Hello", "new_var")
+        data = {"Id": id,
+                "Value": newValueBlock}
+        self.call_contract("EditBlock", data)
+        # test
+        content = self.check_page("GetBlockHistory(src, "+str(id)+")")
+        partContent = content['tree'][0]["attr"]["data"][0]
+        self.assertIn(block, str(partContent), "getBlockHistory has problem: " + str(content["tree"]))
+
+
 
 if __name__ == '__main__':
     unittest.main()
