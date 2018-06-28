@@ -266,5 +266,37 @@
 	"dbSelectMetricsAvg": {
 		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_pages\", \"1 day\", \"avg\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n } \n $result = m[\"value\"] \n}\n }",
 		"asert": ""
+	},
+	"append": {
+		"code": "{\n data {}\n conditions {} \n action { \n var a array \n a[0] = \"hello\" \n a = Append(a, 10) \n $result = a \n}\n }",
+		"asert": "[hello 10]"
+  },
+	"limits": {
+		"code": "{\n data {\n Count int\n }\n conditions {} \n action { \n var i int \n var res array \n while i < $Count { \n var res array\n res = DBFind(\"contracts\").Columns(\"name\")\n i = i + 1\n } \n}\n }",
+		"asert": ""
+	},
+	"getMapKeys": {
+		"code": "{\n data {} \n conditions {} \n action { \n var val map \n var arr array \n val[\"key\"] = \"hello\"  \n arr = GetMapKeys(val) \n $result = arr \n}\n }",
+		"asert": "[key]"
+	},
+	"sortedKeys": {
+		"code": "{\n data {} \n conditions {} \n action { \n var val map \n var arr array \n val[\"k9\"] = \"3\" \n val[\"k5\"] = \"7\" \n val[\"k1\"] = \"1\" \n arr = SortedKeys(val) \n $result = arr \n}\n }",
+		"asert": "[k1 k5 k9]"
+  },
+	"getContractHistory": {
+		"code": "{\n data {\n ID int\n }\n conditions {} \n action { \n var list array \n var item map \n list = GetContractHistory($ID) \n if Len(list)>0 { \n item = list[0] } \n $result = item \n}\n }",
+		"asert": ""
+	},
+	"getPageHistory": {
+		"code": "{\n data {\n ID int\n }\n conditions {} \n action { \n var list array \n var item map \n list = GetPageHistory($ID) \n if Len(list)>0 { \n item = list[0] } \n $result = item \n}\n }",
+		"asert": ""
+	},
+	"getMenuHistory": {
+		"code": "{\n data {\n ID int\n }\n conditions {} \n action { \n var list array \n var item map \n list = GetMenuHistory($ID) \n if Len(list)>0 { \n item = list[0] } \n $result = item \n}\n }",
+		"asert": ""
+	},
+	"getBlockHistory": {
+		"code": "{\n data {\n ID int\n }\n conditions {} \n action { \n var list array \n var item map \n list = GetBlockHistory($ID) \n if Len(list)>0 { \n item = list[0] } \n $result = item \n}\n }",
+		"asert": ""
 	}
 }

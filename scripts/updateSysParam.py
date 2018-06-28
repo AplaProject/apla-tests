@@ -1,6 +1,8 @@
 import requests
 import time
 import argparse
+from genesis_blockchain_tools.crypto import sign
+from genesis_blockchain_tools.crypto import get_public_key
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
@@ -18,11 +20,11 @@ if __name__ == "__main__":
 	respUid = requests.get(baseUrl + '/getuid')
 	resultGetuid = respUid.json()
 
-	respSignTest = requests.post(baseUrl + '/signtest/', params={'forsign': "LOGIN" + resultGetuid['uid'], 'private': args.privKey})
-	resultSignTest = respSignTest.json()
+	signature = sign(args.privKey, "LOGIN" + resultGetuid['uid'])
+	print("signature------------", signature)
 
 	fullToken = 'Bearer ' + resultGetuid['token']
-	respLogin = requests.post(baseUrl +'/login', params={'pubkey': resultSignTest['pubkey'], 'signature': resultSignTest['signature']}, headers={'Authorization': fullToken})
+	respLogin = requests.post(baseUrl +'/login', params={'pubkey': get_public_key(args.privKey), 'signature': signature}, headers={'Authorization': fullToken})
 	resultLogin = respLogin.json()
 	address = resultLogin["address"]
 	timeToken = resultLogin["refresh"]
@@ -34,9 +36,9 @@ if __name__ == "__main__":
 	resPrepareCall = requests.post(baseUrl +'/prepare/UpdateSysParam', data=dataCont, headers={'Authorization': jvtToken})
 	jsPrepareCall = resPrepareCall.json()
 
-	respSignTestPCall = requests.post(baseUrl + '/signtest/', params={'forsign': jsPrepareCall['forsign'], 'private': args.privKey})
-	resultSignTestPCall = respSignTestPCall.json()
-	sign_resCall = {"time": jsPrepareCall['time'], "signature": resultSignTestPCall['signature']}
+	signatureP = sign(args.privKey, jsPrepareCall['forsign'])
+	print("signatureP-------------", signatureP)
+	sign_resCall = {"time": jsPrepareCall['time'], "signature": signatureP}
 	respCall = requests.post(baseUrl + '/contract/' + jsPrepareCall['request_id'], data=sign_resCall, headers={"Authorization": jvtToken})
 	resultCallContract = respCall.json()
 	time.sleep(25)
