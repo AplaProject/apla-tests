@@ -18,7 +18,6 @@ def get_uid(url):
 
 def login(url, prKey):
 	token, uid = get_uid(url)
-	print("prKey---", prKey, "data----", "LOGIN" + uid)
 	signature = sign(prKey, "LOGIN" + uid)
 	pubkey = get_public_key(prKey)
 	fullToken = 'Bearer ' + token
@@ -26,7 +25,6 @@ def login(url, prKey):
 	head = {'Authorization': fullToken}
 	resp = requests.post(url + '/login', params=data, headers=head)
 	res = resp.json()
-	print(res)
 	result = {}
 	result["uid"] = uid
 	result["timeToken"] = res["refresh"]
@@ -62,17 +60,17 @@ def call_contract(url, prKey, name, data, jvtToken):
 	return result
 
 def prepare_multi_tx(url, prKey, entity, jvtToken, data):
-	urlToCont = url + '/prepareMultiple/' + entity
+	urlToCont = url + '/prepareMultiple/'
 	heads = {'Authorization': jvtToken}
 	request = {"token_ecosystem": "",
-		   "max_sum":"",
-		   "payover": "",
-		   "signed_by": "",
-	           "params": data}
+			   "max_sum":"",
+			   "payover": "",
+			   "signed_by": "",
+			   "contracts": data}
 	resp = requests.post(urlToCont, data={"data":json.dumps(request)}, headers=heads)
 	result = resp.json()
 	forsigns = result['forsign']
-	signatures = [sign(forsign, url, prKey)[0] for forsign in forsigns]
+	signatures = [sign(prKey, forsign) for forsign in forsigns]
 	return {"time": result['time'], "signatures": signatures, "reqID": result['request_id']}
 
 def call_multi_contract(url, prKey, name, data, jvtToken):
@@ -108,10 +106,24 @@ def txstatus(url, sleepTime, hsh, jvtToken):
 
 
 def txstatus_multi(url, sleepTime, hshs, jvtToken):
-	time.sleep(len(hshs) * sleepTime)
 	urlEnd = url + '/txstatusMultiple/'
-	resp = requests.get(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
-	return resp.json()
+	allTxInBlocks = False
+	sec = 0
+	while sec < sleepTime:
+		time.sleep(1)
+		resp = requests.post(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
+		jresp = resp.json()["results"]
+		for status in jresp.values():
+			if (len(status['blockid']) > 0 and 'errmsg' not in json.dumps(status)):
+				allTxInBlocks = True
+			else:
+				allTxInBlocks = False
+		if allTxInBlocks == True:
+			return jresp
+		else:
+			sec = sec + 1
+	return jresp
+
 
 
 def generate_random_name():
@@ -186,8 +198,8 @@ def isCountTxInBlock(dbHost, dbName, login, password, maxBlockId, countTx):
 	i = 0
 	while i < len(tx):
 		if tx[i][1] > countTx:
-			print("Block " + tx[i][0] + " contains " +\
-				tx[i][1] + " transactions")
+			print("Block " + str(tx[i][0]) + " contains " +\
+				str(tx[i][1]) + " transactions")
 			return False
 		i = i + 1
 	return True
@@ -219,16 +231,53 @@ def getEcosysTables(dbHost, dbName, login, password):
 		i = i + 1  
 	return list
 
+def getEcosysTablesById(dbHost, dbName, login, password, ecosystemID):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute(
+		"select table_name from INFORMATION_SCHEMA.TABLES WHERE table_schema='public' AND table_name LIKE '"+str(ecosystemID)+"_%'")
+	tables = cursor.fetchall()
+	list = []
+	i = 0
+	while i < len(tables):
+		list.append(tables[i][0])
+		i = i + 1
+	return list
+
+def executeSQL(dbHost, dbName, login, password, query):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute(query)
+	return cursor.fetchall()
+
 def getCountTable(dbHost, dbName, login, password, table):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute("SELECT count(*) FROM \"" + table + "\"")
 	return cursor.fetchall()[0][0]
 
+def getObjectIdByName(dbHost, dbName, login, password, table, name):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT id FROM \"" + table + "\" WHERE name = '"+str(name)+"'")
+	return cursor.fetchall()[0][0]
+
 def getFounderId(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute("SELECT value FROM \"1_parameters\" WHERE name = 'founder_account'")
+	return cursor.fetchall()[0][0]
+
+def getExportAppData(dbHost, dbName, login, password, app_id, member_id):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT data as TEXT FROM \"1_binaries\" WHERE name = 'export' AND app_id = "+str(app_id)+" AND member_id = "+str(member_id))
+	return cursor.fetchall()[0][0]
+
+def getImportAppData(dbHost, dbName, login, password, member_id):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT value FROM \"1_buffer_data\" WHERE key = 'import' AND member_id = "+str(member_id))
 	return cursor.fetchall()[0][0]
 
 def getCountDBObjects(dbHost, dbName, login, password):
