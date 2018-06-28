@@ -901,6 +901,23 @@ class PrototipoTestCase(unittest.TestCase):
                     wrong1=partWrongContent1['children'][0]["text"])
         self.assertDictEqual(mustBe, page, "calculate has problem!")
 
+    def test_arrayToSource(self):
+        contract = self.pages["arrayToSource"]
+        content = self.check_page(contract["code"])
+        partContent = content['tree'][0]
+        contractContent = contract["content"]
+        mustBe = dict(tag=partContent["tag"],
+                      data1=partContent["attr"]["data"][0],
+                      data2=partContent["attr"]["data"][1],
+                      data3=partContent["attr"]["data"][2],
+                      source=partContent["attr"]["source"])
+        page = dict(tag=contractContent["tag"],
+                    data1=contractContent["attr"]["data"][0],
+                    data2=contractContent["attr"]["data"][1],
+                    data3=contractContent["attr"]["data"][2],
+                    source=contractContent["attr"]["source"])
+        self.assertDictEqual(mustBe, page,
+                             "arrayToSource has problem: " + "\n" + str(content["tree"]))
     def test_getContractHistory(self):
         # it test has not fixture
         # create contract
@@ -987,7 +1004,6 @@ class PrototipoTestCase(unittest.TestCase):
         content = self.check_page("GetBlockHistory(src, "+str(id)+")")
         partContent = content['tree'][0]["attr"]["data"][0]
         self.assertIn(block, str(partContent), "getBlockHistory has problem: " + str(content["tree"]))
-
 
 
 if __name__ == '__main__':
