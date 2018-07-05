@@ -650,7 +650,7 @@ class ApiTestCase(unittest.TestCase):
     def test_get_ecosystem_name_new(self):
         data = {"Name": "ecos_" + utils.generate_random_name()}
         res = self.call("NewEcosystem",data)
-        id = int(res)
+        id = self.check_get_api("/list/ecosystems", "", [])["count"]
         asserts = ["ecosystem_name"]
         self.check_get_api("/ecosystemname?id=" + str(id), "", asserts)
 
