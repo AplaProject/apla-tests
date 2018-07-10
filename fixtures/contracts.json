@@ -298,5 +298,22 @@
 	"getBlockHistory": {
 		"code": "{\n data {\n ID int\n }\n conditions {} \n action { \n var list array \n var item map \n list = GetBlockHistory($ID) \n if Len(list)>0 { \n item = list[0] } \n $result = item[\"value\"] \n}\n }",
 		"asert": ""
+	},
+	"getContractHistoryRow": {
+		"code": "{\n data {\n ID, rID int\n }\n conditions {} \n action { \n var m map \n m = GetContractHistoryRow($ID, $rID) \n $result = m[\"value\"] \n}\n }",
+		"asert": ""
+	},
+	"getPageHistoryRow": {
+		"code": "{\n data {\n ID, rID int\n }\n conditions {} \n action { \n var m map \n m = GetPageHistoryRow($ID, $rID) \n $result = m[\"value\"] \n}\n }",
+		"asert": ""
+	},
+	"getMenuHistoryRow": {
+		"code": "{\n data {\n ID, rID int\n }\n conditions {} \n action { \n var m map \n m = GetMenuHistoryRow($ID, $rID) \n $result = m[\"value\"] \n}\n }",
+		"asert": ""
+	},
+	"getBlockHistoryRow": {
+		"code": "{\n data {\n ID, rID int\n }\n conditions {} \n action { \n var m map \n m = GetBlockHistoryRow($ID, $rID) \n $result = m[\"value\"] \n}\n }",
+		"asert": ""
 	}
+
 }
