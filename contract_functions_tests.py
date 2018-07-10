@@ -439,7 +439,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         
     def test_getContractHistory(self):
         # create contract
-        replacedString = "new_var"
+        replacedString = "old_var"
         code = """
         { 
             data{}
