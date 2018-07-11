@@ -12,7 +12,7 @@ class WebsiteTasks(TaskSet):
         url = self.config["2"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
         prKey = self.config["1"]['private_key']
-        self.data = utils.login(url, prKey)
+        self.data = utils.login(url, prKey, 0)
         token = self.data["jwtToken"]
     
     @task

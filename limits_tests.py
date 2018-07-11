@@ -20,7 +20,7 @@ class LimitsTestCase(unittest.TestCase):
         global pause, token
         pause = conf["1"]["time_wait_tx_in_block"]
         self.data = utils.login(conf["2"]["url"],
-                                conf["1"]['private_key'])
+                                conf["1"]['private_key'], 0)
         token = self.data["jwtToken"]        
 
     def assertTxInBlock(self, result, jwtToken):

@@ -16,7 +16,7 @@ class SystemParametersCase(unittest.TestCase):
         url = self.config["2"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
         prKey = self.config["1"]['private_key']
-        self.data = utils.login(url, prKey)
+        self.data = utils.login(url, prKey, 0)
         token = self.data["jwtToken"]
         dbHost = self.config["2"]["dbHost"]
         dbName = self.config["2"]["dbName"]
@@ -261,9 +261,9 @@ class SystemParametersCase(unittest.TestCase):
         host1 = config1["dbHost"]
         host2 = config2["dbHost"]
         host3 = config3["dbHost"]
-        self.data1 = utils.login(config1["url"], config1['private_key'])
-        self.data2 = utils.login(config2["url"], config1['private_key'])
-        self.data3 = utils.login(config3["url"], config3['private_key'])
+        self.data1 = utils.login(config1["url"], config1['private_key'], 0)
+        self.data2 = utils.login(config2["url"], config1['private_key'], 0)
+        self.data3 = utils.login(config3["url"], config3['private_key'], 0)
         minBlockId1 = funcs.get_max_block_id(config1["url"], self.data1["jwtToken"])
         minBlockId2 = funcs.get_max_block_id(config2["url"], self.data2["jwtToken"])
         minBlockId3 = funcs.get_max_block_id(config3["url"], self.data3["jwtToken"])

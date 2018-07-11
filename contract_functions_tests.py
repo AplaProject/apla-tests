@@ -18,7 +18,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         dbName = self.config["1"]['dbName']
         login = self.config["1"]["login"]
         pas = self.config["1"]['pass']
-        self.data = utils.login(url,prKey)
+        self.data = utils.login(url,prKey, 0)
         token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):

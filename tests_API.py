@@ -15,7 +15,7 @@ class ApiTestCase(unittest.TestCase):
         url = self.config["2"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
         prKey = self.config["1"]['private_key']
-        self.data = utils.login(url, prKey)
+        self.data = utils.login(url, prKey, 0)
         token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
@@ -462,7 +462,7 @@ class ApiTestCase(unittest.TestCase):
     def is_node_owner_false(self):
         keys = config.getKeys()
         prKey2 = keys["key1"]
-        data2 = utils.login(url, prKey2)
+        data2 = utils.login(url, prKey2, 0)
         token2 = data2["jwtToken"]
         data = {}
         resp = utils.call_contract(url, prKey2, "NodeOwnerCondition", data, token2)
@@ -473,7 +473,7 @@ class ApiTestCase(unittest.TestCase):
         
     def test_login(self):
         keys = config.getKeys()    
-        data1 = utils.login(url, keys["key5"])
+        data1 = utils.login(url, keys["key5"], 0)
         time.sleep(5)
         conf = config.getNodeConfig()
         res = utils.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],
@@ -484,7 +484,7 @@ class ApiTestCase(unittest.TestCase):
     def test_login2(self):
         isOne = False
         keys = config.getKeys() 
-        data1 = utils.login(url, keys["key3"])
+        data1 = utils.login(url, keys["key3"], 0)
         time.sleep(5)
         conf = config.getNodeConfig()
         res = utils.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],

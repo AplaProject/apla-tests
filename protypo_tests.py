@@ -16,7 +16,7 @@ class PrototipoTestCase(unittest.TestCase):
         self.pages = config.readFixtures("pages")
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
-        self.data = utils.login(url,prKey)
+        self.data = utils.login(url,prKey, 0)
         token = self.data["jwtToken"]
         dbHost = self.config["2"]["dbHost"]
         dbName = self.config["2"]["dbName"]

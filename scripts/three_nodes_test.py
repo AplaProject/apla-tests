@@ -166,6 +166,38 @@ generateKeys = subprocess.Popen([
 ])
 time.sleep(3)
 
+#Init database
+startFirstNode = subprocess.Popen([
+	binary,
+	'initDatabase',
+	'--config='+workDir2+'/config.toml'
+])
+time.sleep(3) 
+
+#Start third node
+startFirstNode = subprocess.Popen([
+	binary,
+	'start',
+	'--config='+workDir2+'/config.toml'
+])
+time.sleep(3)
+
+#Init database
+startThirdNode = subprocess.Popen([
+	binary,
+	'initDatabase',
+	'--config='+workDir3+'/config.toml'
+])
+time.sleep(3) 
+
+#Start third node
+startThirdNode = subprocess.Popen([
+	binary,
+	'start',
+	'--config='+workDir3+'/config.toml'
+])
+time.sleep(3)
+
 with open(os.path.join(workDir1, 'PrivateKey'), 'r') as f:
 	privKey1 = f.read()
 with open(os.path.join(workDir1, 'PublicKey'), 'r') as f:
@@ -191,158 +223,36 @@ with open(os.path.join(workDir3, 'NodePublicKey'), 'r') as f:
 with open(os.path.join(workDir3, 'PublicKey'), 'r') as f:
 	pubKey3 = f.read()
 
-print('Update keys for second node')
-code = subprocess.call([
-	'python',
-	os.path.join(curDir, 'updateKeys.py'),
-	privKey1,
-	'127.0.0.1',
-	args.httpPort1,
-	keyID2,
-	pubKey2,
-	'5000000000000000000000',
-])
-if code != 0:
-	print("Error update keys")
-	node1.kill()
-	exit(1)
-	
-print('Update keys for third node')
-code = subprocess.call([
-	'python',
-	os.path.join(curDir, 'updateKeys.py'),
-	privKey1,
-	'127.0.0.1',
-	args.httpPort1,
-	keyID3,
-	pubKey3,
-	'5000000000000000000000',
-])
-if code != 0:
-	print("Error update keys")
-	node1.kill()
-	exit(1)
-
-
-print('Update full_nodes')
-# generate full_nodes string
-host = '127.0.0.1'
-
-newVal = json.dumps([{"tcp_address":host+":"+args.tcpPort1,
-					  "api_address":"http://"+host+":"+args.httpPort1,
-					  "key_id":keyID1,
-					  "public_key":nodePubKey1},
-					 {"tcp_address": host + ":" + args.tcpPort2,
-					  "api_address": "http://" + host + ":" + args.httpPort2,
-					  "key_id": keyID2,
-					  "public_key": nodePubKey2},
-					  {"tcp_address": host + ":" + args.tcpPort3,
-					  "api_address": "http://" + host + ":" + args.httpPort3,
-					  "key_id": keyID3,
-					  "public_key": nodePubKey3}
-					 ])
-print(newVal)
-code = subprocess.call([
-	'python',
-	os.path.join(curDir, 'newValToFullNodes.py'),
-	privKey1,
-	'127.0.0.1',
-	args.httpPort1,
-	newVal
-])
-if code != 0:
-	print("Error update full_nodes")
-	node1.kill()
-	exit(1)
-else:
-	print('Full_nodes successfully updated')
-
-print('Update gap_between_blocks')
-code = subprocess.call([
-	'python',
-	os.path.join(curDir, 'updateSysParam.py'),
-	'-httpHost=127.0.0.1',
-	'-httpPort='+args.httpPort1,
-	'-privKey='+privKey1,
-	'-name=gap_between_blocks',
-	'-value='+args.gapBetweenBlocks
-])
-if code != 0:
-	print("Error update gap_between_blocks")
-	node1.kill()
-	exit(1)
-
-time.sleep(5)
-
-#Init database
-startFirstNode = subprocess.Popen([
-	binary,
-	'initDatabase',
-	'--config='+workDir2+'/config.toml'
-])
-time.sleep(3) 
-
-#Start third node
-startFirstNode = subprocess.Popen([
-	binary,
-	'start',
-	'--config='+workDir2+'/config.toml'
-])
-time.sleep(3)
-
-#Init database
-startThirdNode = subprocess.Popen([
-	binary,
-	'initDatabase',
-	'--config='+workDir3+'/config.toml'
-])
-time.sleep(3) 
-
-#Start third node
-startThirdNode = subprocess.Popen([
-	binary,
-	'start',
-	'--config='+workDir3+'/config.toml'
-])
-time.sleep(3)
+#-------------------------
+config = {"1":{"url": "http://localhost:" + args.httpPort1 + "/api/v2",
+			"private_key": privKey1, "keyID": keyID1,
+			"pubKey": nodePubKey1,
+			"tcp_address": "localhost:" + args.tcpPort1,
+			"api_address": "http://localhost:" + args.httpPort1,
+			"dbHost": "localhost", "dbName": "gen1", "login": "postgres",
+			"pass": "postgres", "time_wait_tx_in_block": 30},
+			"2": {"url": "http://localhost:" + args.httpPort2 + "/api/v2",
+				"private_key": privKey2, "keyID": keyID2,
+				"pubKey": nodePubKey2,
+				"tcp_address": "localhost:" + args.tcpPort2,
+				"api_address": "http://localhost:" + args.httpPort2,
+				"dbHost": "localhost", "dbName": "gen2",
+				"login": "postgres", "pass": "postgres",
+				"time_wait_tx_in_block": 30}, "3": {
+					"url": "http://localhost:" + args.httpPort3 + "/api/v2",
+					"private_key": privKey3,
+					"keyID": keyID3, "pubKey": nodePubKey3,
+					"tcp_address": "localhost:" + args.tcpPort3,
+					"api_address": "http://localhost:" + args.httpPort3,
+					"dbHost": "localhost", "dbName": "gen3",
+					"login": "postgres", "pass": "postgres",
+					"time_wait_tx_in_block": 30}}
 
 # Update config for tests
-config = os.path.join(curDir+ '/../', 'hostConfig.json')
-with open(config) as fconf:
- lines = fconf.readlines()
+confPath = os.path.join(curDir+ '/../', 'hostConfig.json')
 
-# Update URLs in config
-del lines[3]
-lines.insert(3, "\t\t\"url\": \"""http://localhost:"+args.httpPort1+"/api/v2" + "\",\n")
-del lines[14]
-lines.insert(14, "\t\t\"url\": \"""http://localhost:"+args.httpPort2+"/api/v2" + "\",\n")
-del lines[25]
-lines.insert(25, "\t\t\"url\": \"""http://localhost:"+args.httpPort3+"/api/v2" + "\",\n")
+with open(confPath, 'w') as fconf:
+	fconf.write(json.dumps(config))
 
-# Update DB names in config
-del lines[7]
-lines.insert(7, "\t\t\"dbName\": \""+args.dbName1+"\",\n")
-del lines[18]
-lines.insert(18, "\t\t\"dbName\": \""+args.dbName2+"\",\n")
-del lines[29]
-lines.insert(29, "\t\t\"dbName\": \""+args.dbName3+"\",\n")
-
-# Update private keys in config
-del lines[4]
-lines.insert(4, "\t\t\"private_key\": \""+privKey1+"\",\n")
-del lines[15]
-lines.insert(15, "\t\t\"private_key\": \""+privKey2+"\",\n")
-del lines[26]
-lines.insert(26, "\t\t\"private_key\": \""+privKey3+"\",\n")
-
- 
- # Update keyID in config
-del lines[5]
-lines.insert(5, "\t\t\"keyID\": \""+keyID1+"\",\n")
-del lines[16]
-lines.insert(16, "\t\t\"keyID\": \""+keyID2+"\",\n")
-del lines[27]
-lines.insert(27, "\t\t\"keyID\": \""+keyID3+"\",\n")
-with open(config, 'w') as fconf:
- fconf.write(''.join(lines))
+print("Nodes successfully linced")
 
