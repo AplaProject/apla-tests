@@ -1343,7 +1343,7 @@ class SystemContractsTestCase(unittest.TestCase):
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         res = self.call(contractName, "")
-        msg = "there is loop in @1" + contractName + " contract"
+        msg = "There is loop in @1" + contractName + " contract"
         self.assertEqual(msg, res, "Incorrect message: " + res)
 
     def test_contract_recursive_call_contract_conditions(self):
@@ -1364,7 +1364,7 @@ class SystemContractsTestCase(unittest.TestCase):
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         res = self.call(contractName, "")
-        msg = "there is loop in @1" + contractName + " contract"
+        msg = "There is loop in @1" + contractName + " contract"
         self.assertEqual(msg, res, "Incorrect message: " + res)
 
     def test_contract_recursive_call_contract_func_conditions(self):
@@ -1387,7 +1387,7 @@ class SystemContractsTestCase(unittest.TestCase):
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         res = self.call(contractName, "")
-        msg = "there is loop in @1" + contractName + " contract"
+        msg = "There is loop in @1" + contractName + " contract"
         self.assertEqual(msg, res, "Incorrect message: " + res)
         
     def test_contract_memory_limit(self):
