@@ -599,10 +599,10 @@ class ApiTestCase(unittest.TestCase):
     def test_get_centrifugo_address_without_login(self):
         resp = requests.get(url + '/config/centrifugo')
         res = resp.json()
-        self.assertIn("http://", res, "Centrifugo is not connection to node!")
+        self.assertIn("ws://", res, "Centrifugo is not connection to node!")
 
     def test_get_centrifugo_address_with_login(self):
-        asserts = ["http://"]
+        asserts = ["ws://"]
         data = ""
         res = self.check_get_api("/config/centrifugo", data, asserts)
 
