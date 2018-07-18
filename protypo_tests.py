@@ -304,6 +304,22 @@ class PrototipoTestCase(unittest.TestCase):
                     text=contractContent['children'][0]['text'])
         self.assertDictEqual(mustBe, page,
                              "getVar has problem: " + str(content["tree"]))
+        
+    def test_page_hint(self):
+        page = self.pages["hint"]
+        content = self.check_page(page["code"])
+        partContent = content['tree'][0]
+        pageContent = page["content"]
+        mustBe = dict(tag = partContent['tag'],
+                      icon = partContent['attr']['icon'],
+                      title = partContent['attr']['title'],
+                      text = partContent['attr']['text'])
+        page = dict(tag = pageContent['tag'],
+                    icon = pageContent['attr']['icon'],
+                    title = pageContent['attr']['title'],
+                    text = pageContent['attr']['text'])
+        self.assertDictEqual(mustBe, page,
+                             "getVar has problem: " + str(content["tree"]))
 
     def test_page_iff(self):
         contract = self.pages["iff"]

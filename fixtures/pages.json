@@ -57,6 +57,17 @@
 		"menu": "default_menu",
 		"content": ""
 	},
+	"hint":{
+		"code": "Hint(Icon: icon.jpg, Title: \"Hi\", Text: \"Im hint\")",
+		"menu": "default_menu",
+		"content": {
+		"tag": "hint",
+		"attr": {
+		"icon": "icon.jpg",
+		"text": "Im hint",
+		"title": "Hi"}
+		}
+	},
 	"selectorFromData":{
 		"code": "Data(myData, \"gender\"){\"Men\", \"Women\", \"Between\"} %n Select(mySelect, myData, \"gender\")",
 		"menu": "default_menu",
