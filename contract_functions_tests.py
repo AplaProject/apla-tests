@@ -26,6 +26,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         status = utils.txstatus(url,
                                 self.config["1"]["time_wait_tx_in_block"],
                                 result['hash'], jwtToken)
+        print(status)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
@@ -40,6 +41,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 "Conditions": "ContractConditions(`MainCondition`)"}
         result = utils.call_contract(url, prKey, "NewContract",
                                      data, token)
+        print(result)
         self.assertTxInBlock(result, token)
 
     def call_contract(self, name, data):
@@ -58,6 +60,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         res = utils.call_contract(url, prKey, name, {}, token)
         hash = res["hash"]
         result = utils.txstatus(url, sleep, hash, token)
+        print(result)
         self.assertIn(checkPoint, result["result"], "error")
 
     def call(self, name, data):
@@ -160,6 +163,10 @@ class ContractFunctionsTestCase(unittest.TestCase):
 
     def test_contract_Sprintf(self):
         contract = self.contracts["sprintf"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_contract_toUpper(self):
+        contract = self.contracts["toUpper"]
         self.check_contract(contract["code"], contract["asert"])
 
     def test_contract_str(self):
