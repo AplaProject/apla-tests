@@ -41,6 +41,15 @@ def get_application_id(url, name, token):
         if app["name"] == name:
             id = app["id"]
     return id
+
+def get_object_id(url, name, object, token):
+    id = None
+    endPoint = url + "/list/" + object
+    res = call_get_api(endPoint, "", token)
+    for object in res["list"]:
+        if object["name"] == name:
+            id = object["id"]
+    return id
     
 
 def is_contract_activated(url, name, token):

@@ -16,7 +16,7 @@ class PrototipoTestCase(unittest.TestCase):
         self.pages = config.readFixtures("pages")
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
-        self.data = utils.login(url,prKey)
+        self.data = utils.login(url,prKey, 0)
         token = self.data["jwtToken"]
         dbHost = self.config["2"]["dbHost"]
         dbName = self.config["2"]["dbName"]
@@ -302,6 +302,22 @@ class PrototipoTestCase(unittest.TestCase):
                       text=partContent['children'][0]['text'])
         page = dict(tag=contractContent['tag'],
                     text=contractContent['children'][0]['text'])
+        self.assertDictEqual(mustBe, page,
+                             "getVar has problem: " + str(content["tree"]))
+        
+    def test_page_hint(self):
+        page = self.pages["hint"]
+        content = self.check_page(page["code"])
+        partContent = content['tree'][0]
+        pageContent = page["content"]
+        mustBe = dict(tag = partContent['tag'],
+                      icon = partContent['attr']['icon'],
+                      title = partContent['attr']['title'],
+                      text = partContent['attr']['text'])
+        page = dict(tag = pageContent['tag'],
+                    icon = pageContent['attr']['icon'],
+                    title = pageContent['attr']['title'],
+                    text = pageContent['attr']['text'])
         self.assertDictEqual(mustBe, page,
                              "getVar has problem: " + str(content["tree"]))
 

@@ -19,7 +19,7 @@ class Rollback1TestCase(unittest.TestCase):
         login = self.conf["login"]
         pas = self.conf["pass"]
         waitTx = self.conf["time_wait_tx_in_block"]
-        lData = utils.login(url, prKey)
+        lData = utils.login(url, prKey, 0)
         token = lData["jwtToken"]
 
     def call(self, name, data):
