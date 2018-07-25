@@ -20,9 +20,6 @@ def login(url, prKey, role):
 	token, uid = get_uid(url)
 	signature = sign(prKey, "LOGIN" + uid)
 	pubkey = get_public_key(prKey)
-	print("prKey---", prKey)
-	print("pubkey", pubkey)
-	print("signature---", signature)
 	fullToken = 'Bearer ' + token
 	if role > 0:
 		data = {'pubkey': pubkey, 'signature': signature, "role_id": role}
@@ -31,7 +28,6 @@ def login(url, prKey, role):
 	head = {'Authorization': fullToken}
 	resp = requests.post(url + '/login', params=data, headers=head)
 	res = resp.json()
-	print(res)
 	result = {}
 	result["uid"] = uid
 	result["timeToken"] = res["refresh"]
@@ -46,7 +42,6 @@ def prepare_tx(url, prKey, entity, jvtToken, data):
 	heads = {'Authorization': jvtToken}
 	resp = requests.post(url + '/prepare/' + entity, data=data, headers=heads)
 	result = resp.json()
-	print(result)
 	signature = sign(prKey, result['forsign'])
 	return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
