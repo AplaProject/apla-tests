@@ -60,8 +60,8 @@ class SystemContractsTestCase(unittest.TestCase):
             data = {"Value": code, "ApplicationId": 1,
                     "Conditions": "true"}
             res = self.call("NewContract", data)
-            self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-            currrent_block_id = int(res)
+            self.assertGreater(res["blockid"], 0, "BlockId is not generated: " + str(res))
+            currrent_block_id = res["blockid"]
             expected_block_id = old_block_id + limit + 1 # +1 spare block
             if currrent_block_id == expected_block_id:
                 break
@@ -232,7 +232,7 @@ class SystemContractsTestCase(unittest.TestCase):
                  "WalletId": newWallet}
         ans = self.call("EditContract", data2)
         msg = "New contract owner " + newWallet + " is invalid"
-        self.assertEqual(msg["error"], ans, "Incorrect message: " + str(ans))
+        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract(self):
         code, name = utils.generate_name_and_code("")
@@ -286,7 +286,7 @@ class SystemContractsTestCase(unittest.TestCase):
         data = {"Id": id}
         ans = self.call("ActivateContract", data)
         msg = "Contract " + id + " does not exist"
-        self.assertEqual(msg["error"], ans, "Incorrect message: " + str(ans))
+        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_deactivate_contract(self):
         code, name = utils.generate_name_and_code("")
@@ -443,19 +443,6 @@ class SystemContractsTestCase(unittest.TestCase):
         ans = self.call("AppendMenu", dataEdit)
         msg = "Item " + id + " has not been found"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
-    def test_append_menu_incorrect_condition(self):
-        name = "Menu_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Item1", "Conditions": "true"}
-        res = self.call("NewMenu", data)
-        self.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "menu", token)
-        condition = "tryam"
-        dataEdit = {"Id": count, "Value": "AppendedItem", "Conditions": condition}
-        ans = self.call("AppendMenu", dataEdit)
-        msg = "some-one message"
-        self.assertEqual(msg, ans["error"], str(ans))
 
     def test_new_page(self):
         name = "Page_" + utils.generate_random_name()
@@ -1016,7 +1003,7 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("EditDelayedContract", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        old_block_id = int(res)
+        old_block_id = res["blockid"]
         # wait block_id until run CallDelayedContract
         self.waitBlockId(old_block_id, editLimit)
         # verify records count in table
@@ -1119,7 +1106,7 @@ class SystemContractsTestCase(unittest.TestCase):
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         res = self.call(contractName, "")
-        msg = "there is loop in @1" + contractName + " contract"
+        msg = "There is loop in @1" + contractName + " contract"
         self.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
 
     def test_contract_recursive_call_contract_conditions(self):
@@ -1140,7 +1127,7 @@ class SystemContractsTestCase(unittest.TestCase):
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         res = self.call(contractName, "")
-        msg = "there is loop in @1" + contractName + " contract"
+        msg = "There is loop in @1" + contractName + " contract"
         self.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
 
     def test_contract_recursive_call_contract_func_conditions(self):
@@ -1163,7 +1150,7 @@ class SystemContractsTestCase(unittest.TestCase):
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         res = self.call(contractName, "")
-        msg = "there is loop in @1" + contractName + " contract"
+        msg = "There is loop in @1" + contractName + " contract"
         self.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
         
     def test_contract_memory_limit(self):

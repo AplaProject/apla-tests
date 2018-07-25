@@ -485,7 +485,7 @@ class ApiTestCase(unittest.TestCase):
                                       conf["1"]["login"], conf["1"]["pass"],
                                       data1["key_id"])
         if res == True:
-            data2 = utils.login(url, keys["key1"])
+            data2 = utils.login(url, keys["key1"], 0)
             time.sleep(5)
             isOne = utils.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],
                                             conf["1"]["login"], conf["1"]["pass"],
