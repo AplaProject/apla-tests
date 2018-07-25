@@ -326,12 +326,6 @@ class ApiTestCase(unittest.TestCase):
         childrenText = res["tree"][1]["children"][0]["text"]
         self.assertEqual("#a#", childrenText)
 
-    def test_get_content_source_empty(self):
-        name = "default_page"
-        asserts = ["tree"]
-        res = self.check_post_api("/content/source/" + name, "", asserts)
-        self.assertEqual(0, len(res["tree"]))
-
     def test_get_content_with_param_from_address_string(self):
         # Create new page for test
         name = "Page_" + utils.generate_random_name()
@@ -605,10 +599,10 @@ class ApiTestCase(unittest.TestCase):
     def test_get_centrifugo_address_without_login(self):
         resp = requests.get(url + '/config/centrifugo')
         res = resp.json()
-        self.assertIn("http://", res, "Centrifugo is not connection to node!")
+        self.assertIn("ws://", res, "Centrifugo is not connection to node!")
 
     def test_get_centrifugo_address_with_login(self):
-        asserts = ["http://"]
+        asserts = ["ws://"]
         data = ""
         res = self.check_get_api("/config/centrifugo", data, asserts)
 
@@ -650,7 +644,7 @@ class ApiTestCase(unittest.TestCase):
     def test_get_ecosystem_name_new(self):
         data = {"Name": "ecos_" + utils.generate_random_name()}
         res = self.call("NewEcosystem",data)
-        id = int(res)
+        id = self.check_get_api("/list/ecosystems", "", [])["count"]
         asserts = ["ecosystem_name"]
         self.check_get_api("/ecosystemname?id=" + str(id), "", asserts)
 
