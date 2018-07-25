@@ -156,6 +156,10 @@ class ContractFunctionsTestCase(unittest.TestCase):
     def test_contract_size(self):
         contract = self.contracts["size"]
         self.check_contract(contract["code"], contract["asert"])
+        
+    def test_contract_blockTime(self):
+        contract = self.contracts["blockTime"]
+        self.check_contract(contract["code"], contract["asert"])
 
     def test_contract_sha256(self):
         contract = self.contracts["sha256"]
@@ -163,6 +167,10 @@ class ContractFunctionsTestCase(unittest.TestCase):
 
     def test_contract_Sprintf(self):
         contract = self.contracts["sprintf"]
+        self.check_contract(contract["code"], contract["asert"])
+        
+    def test_contract_elseif(self):
+        contract = self.contracts["elseif"]
         self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_toUpper(self):

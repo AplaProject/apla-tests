@@ -89,27 +89,7 @@ class CostTestCase(unittest.TestCase):
         return utils.get_balance_from_db(conf["1"]["dbHost"], conf["1"]["dbName"],
                                          conf["1"]["login"], conf["1"] ["pass"],
                                          commisionWallet)
-           
-    def createrUsers(self):
-        token, uid = utils.get_uid(conf["1"]["url"])
-        signature, pubkey1 = utils.sign(uid, conf["1"]["url"], keys["key1"])
-        token, uid = utils.get_uid(conf["1"]["url"])
-        signature, pubkey2 = utils.sign(uid, conf["1"]["url"], keys["key2"])
-        dataKey1 = utils.login(conf["1"]["url"],keys["key1"], 0)
-        dataKey2 = utils.login(conf["1"]["url"],keys["key2"], 0)
-        dataPlatform = utils.login(conf["1"]["url"],conf["1"]["private_key"], 0)
-        tokenPlatform = dataPlatform["jwtToken"]
-        data1 = {"Recipient": dataKey1["address"], "Amount": "100000000000000000000"}
-        data2 = {"Recipient": dataKey2["address"], "Amount": "100000000000000000000"}
-        result = utils.call_contract(conf["1"]["url"], conf["1"]["private_key"],
-                                     "MoneyTransfer", data1, tokenPlatform)
-        status = utils.txstatus(conf["1"]["url"], conf["1"]["time_wait_tx_in_block"],
-                                result['hash'], tokenPlatform) 
-        result = utils.call_contract(conf["1"]["url"], conf["1"]["private_key"],
-                                     "MoneyTransfer", data2, tokenPlatform)
-        status = utils.txstatus(conf["1"]["url"], conf["1"]["time_wait_tx_in_block"],
-                                result['hash'], tokenPlatform)
-        
+            
     def isCommissionsInHistory(self, nodeCommision, idFrom, platformaCommission, node):
         isNodeCommission = utils.isCommissionInHistory(conf["1"]["dbHost"],
                                                        conf["1"]["dbName"],

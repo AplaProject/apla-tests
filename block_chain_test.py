@@ -39,7 +39,7 @@ class BlockChainTestCase(unittest.TestCase):
         host1 = config1["dbHost"]
         host2 = config2["dbHost"]
         ts_count = 30
-        self.data1 = utils.login(config1["url"], config1['private_key'])
+        self.data1 = utils.login(config1["url"], config1['private_key'], 0)
         i = 1
         while i < ts_count:
             contName = self.create_contract(config1["url"],
@@ -105,13 +105,13 @@ class BlockChainTestCase(unittest.TestCase):
         amounts2 = utils.getUserTokenAmounts(host2, db2, login2, pas2)
         sumAmounts = sum(amount[0] for amount in amounts1)
         maxBlockId1 = funcs.get_max_block_id(config1["url"],self.data1["jwtToken"])
-        self.data2 = utils.login(config2["url"], config1['private_key'])
+        self.data2 = utils.login(config2["url"], config1['private_key'], 0)
         maxBlockId2 = funcs.get_max_block_id(config2["url"],self.data2["jwtToken"])
         maxBlock = max(maxBlockId2, maxBlockId1)
         hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
         hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
         node_position = utils.compare_node_positions(host1, db1, login1, pas1, maxBlock, nodes)
-        sumWalets = 50000000000000000000000 + (5000000000000000000000 * (nodes - 1))
+        sumWalets = 52000000000000000000000
         dict1 = dict(count_contract = count_contracts1,
                      amounts = str(amounts1), summ = str(sumAmounts),
                      hash = str(hash1),

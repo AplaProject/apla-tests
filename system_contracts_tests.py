@@ -662,24 +662,24 @@ class SystemContractsTestCase(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         
     def test_new_table_joint(self):
-        column = """[{"name":"MyName","type":"varchar",
-        "index": "1",  "conditions":"true"},{"name":"Myb","type":"json",
-        "index": "0",  "conditions":"true"}, {"name":"MyD","type":"datetime",
-        "index": "0",  "conditions":"true"}, {"name":"MyM","type":"money",
-        "index": "0",  "conditions":"true"},{"name":"MyT","type":"text",
-        "index": "0",  "conditions":"true"},{"name":"MyDouble","type":"double",
-        "index": "0",  "conditions":"true"},{"name":"MyC","type":"character",
-        "index": "0",  "conditions":"true"}]"""
-        columns = "[varchar, Myb, MyD, MyM, MyT, MyDouble, MyC]"
-        types = "[varchar, json, datetime, money, text, double, character]"
+        columns = ["varchar", "Myb", "MyD", "MyM", "MyT", "MyDouble", "MyC"]
+        types = ["varchar", "json", "datetime", "money", "text", "double", "character"]
+        dicColumns = {"ColumnsArr[]": len(columns), "ColumnsArr[0]": columns[0],
+                      "ColumnsArr[1]": columns[1], "ColumnsArr[2]": columns[2],
+                      "ColumnsArr[3]": columns[3], "ColumnsArr[4]": columns[4],
+                      "ColumnsArr[5]": columns[5], "ColumnsArr[6]": columns[6]}
+        dicTypes = {"TypesArr[]": len(types), "TypesArr[0]": types[0],
+                    "TypesArr[1]": types[1], "TypesArr[2]": types[2],
+                    "TypesArr[3]": types[3], "TypesArr[4]": types[4],
+                    "TypesArr[5]": types[5], "TypesArr[6]": types[6]}
         permission = """{"insert": "false",
         "update" : "true","new_column": "true"}"""
         data = {"Name": "Tab_" + utils.generate_random_name(),
-                "ColumnsArr": columns, "ApplicationId": 1,
-                "TypesArr": types,
-                "InsertPerm": "true",
-                "UpdatePerm": "true",
+                "ApplicationId": 1, "TypesArr": dicTypes,
+                "InsertPerm": "true", "UpdatePerm": "true",
                 "NewColumnPerm": "true"}
+        data.update(dicColumns)
+        data.update(dicTypes)
         res = self.call("NewTableJoint", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))

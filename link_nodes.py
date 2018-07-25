@@ -63,6 +63,7 @@ def editAppParam(name, val, url, prKey, token):
         exit(1)
     
 def updateProfile(name, url, prKey, token):
+    time.sleep(5)
     path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
     with open(path, 'rb') as f:
         file = f.read()
@@ -142,14 +143,14 @@ if __name__ == "__main__":
     setAplaConsensus(conf["2"]['keyID'], url, prKey1, token1)
     setAplaConsensus(conf["3"]['keyID'], url, prKey1, token1)
     setAplaConsensus(conf["1"]['keyID'], url, prKey1, token1)
-    
+    print("Start create voting 1")
     data = utils.login(url, prKey2, 3)
     token2 = data["jwtToken"]
-    
     createVoiting(conf["2"]["tcp_address"], conf["2"]["api_address"],
                  conf["2"]["keyID"], conf["2"]["pubKey"],
                  url, prKey2, token2)
     time.sleep(120)
+    
     data = utils.login(url, prKey3, 3)
     token3 = data["jwtToken"]
     voiting(1, url, prKey3, token3)
@@ -159,5 +160,24 @@ if __name__ == "__main__":
     data = utils.login(url, prKey2, 3)
     token2 = data["jwtToken"]
     voiting(1, url, prKey2, token2)
+    time.sleep(10)
+    
+    print("Start create voting 2")
+    data = utils.login(url, prKey3, 3)
+    token3 = data["jwtToken"]
+    createVoiting(conf["3"]["tcp_address"], conf["3"]["api_address"],
+                 conf["3"]["keyID"], conf["3"]["pubKey"],
+                 url, prKey3, token3)
+    time.sleep(120)
+    
+    data = utils.login(url, prKey3, 3)
+    token3 = data["jwtToken"]
+    voiting(2, url, prKey3, token3)
+    data = utils.login(url, prKey1, 3)
+    token1 = data["jwtToken"]
+    voiting(2, url, prKey1, token1)
+    data = utils.login(url, prKey2, 3)
+    token2 = data["jwtToken"]
+    voiting(2, url, prKey2, token2)
     
     

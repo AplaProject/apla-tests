@@ -12,8 +12,12 @@
 		"asert": "HELLO MY FRIENDS!"
 	},
 	"elseif":{
-		"code": "{ \n data {}\n conditions {}\n action { \n var val int \n val = 10 \n if val > 7 {$result = \"val>10\"}\n elif val>8 {$result = \"val>8\"} \n elif val>8{ \n $result = \"val>5\"}\n else{$result=\"val<5\"}\n }}",
-		"asert": "val>8"
+		"code": "{ \n data {}\n conditions {}\n action { \n var val int \n val = 8 \n if val > 10 {$result = \"val>10\"}\n elif val>8 {$result = \"val>8\"} \n elif val>5{ \n $result = \"val>5\"}\n else{$result=\"val<5\"}\n }}",
+		"asert": "val>5"
+	},
+	"blockTime":{
+		"code": "{ \n data {}\n conditions {}\n action { \n $result = BlockTime()\n }}",
+		"asert": ""
 	},
 	"ecosysParam":{
 		"code": "{ \n data {}\n conditions {}\n action { \n var res string\n res = EcosysParam(\"changing_menu\")\n $result=res\n }\n }",
