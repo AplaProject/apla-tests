@@ -19,6 +19,11 @@ For each node:
 * pass: password of data base,
 * time_wait_tx_in_block:time in seconds to wait, while transaction will be writed to block 
 
+### three nodes script
+```
+python3 scripts/three_nodes_test.py -binary=$GOPATH/src/github.com/GenesisKernel/go-genesis/go-genesis -dbPassword=postgres -dbName1=genesis -dbName2=genesis2 -dbName3=genesis3 -centrifugo=~/centrifugo
+```
+
 ### Installation contract functions tests
 
 ```
