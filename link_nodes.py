@@ -100,6 +100,7 @@ def voiting(id, url, prKey, token):
     data = {"votingID": id}
     call = utils.call_contract(url, prKey, "voting_AcceptDecision",
                                data, token)
+    time.sleep(10)
     if not isInBlock(call, url, token):
         print("voting_AcceptDecision " + id + " is failed")
         exit(1)
@@ -155,12 +156,15 @@ if __name__ == "__main__":
     
     data = utils.login(url, prKey3, 3)
     token3 = data["jwtToken"]
+    time.sleep(10)
     voiting(1, url, prKey3, token3)
     data = utils.login(url, prKey1, 3)
     token1 = data["jwtToken"]
+    time.sleep(10)
     voiting(1, url, prKey1, token1)
     data = utils.login(url, prKey2, 3)
     token2 = data["jwtToken"]
+    time.sleep(10)
     voiting(1, url, prKey2, token2)
     time.sleep(10)
     
@@ -174,12 +178,15 @@ if __name__ == "__main__":
     
     data = utils.login(url, prKey3, 3)
     token3 = data["jwtToken"]
+    time.sleep(10)
     voiting(2, url, prKey3, token3)
     data = utils.login(url, prKey1, 3)
     token1 = data["jwtToken"]
+    time.sleep(10)
     voiting(2, url, prKey1, token1)
     data = utils.login(url, prKey2, 3)
     token2 = data["jwtToken"]
+    time.sleep(10)
     if voiting(2, url, prKey2, token2) == True:
         exit(0)
     
