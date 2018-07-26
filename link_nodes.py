@@ -38,7 +38,6 @@ def impApp(appName, url, prKey, token):
                 hashes = resp['hashes']
                 result = utils.txstatus_multi(url, 30, hashes, token)
                 for status in result.values():
-                    print(status)
                     if int(status["blockid"]) < 1:
                         print("Import is failed")
                         exit(1)
@@ -70,8 +69,6 @@ def updateProfile(name, url, prKey, token):
     data = {"member_name": name}
     resp = utils.call_contract_with_files(url, prKey, "Profile_Edit",
                                           data, files, token)
-    print("********************************")
-    print(resp)
     if not isInBlock(resp, url, token):
         print("UpdateProfile " + name + " is failed")
         exit(1)
