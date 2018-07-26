@@ -13,6 +13,7 @@ from genesis_blockchain_tools.crypto import get_public_key
 def get_uid(url):
 	resp = requests.get(url + '/getuid')
 	result = resp.json()
+	print(result)
 	return result['token'], result['uid']
 
 
