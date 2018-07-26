@@ -103,6 +103,8 @@ def voiting(id, url, prKey, token):
     if not isInBlock(call, url, token):
         print("voting_AcceptDecision " + id + " is failed")
         exit(1)
+        return False
+    return True
     
 
 if __name__ == "__main__":
@@ -178,6 +180,7 @@ if __name__ == "__main__":
     voiting(2, url, prKey1, token1)
     data = utils.login(url, prKey2, 3)
     token2 = data["jwtToken"]
-    voiting(2, url, prKey2, token2)
+    if voiting(2, url, prKey2, token2) == True:
+        exit(0)
     
     
