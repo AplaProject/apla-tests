@@ -224,29 +224,46 @@ with open(os.path.join(workDir3, 'PublicKey'), 'r') as f:
 	pubKey3 = f.read()
 
 #-------------------------
-config = {"1":{"url": "http://localhost:" + args.httpPort1 + "/api/v2",
-			"private_key": privKey1, "keyID": keyID1,
-			"pubKey": nodePubKey1,
-			"tcp_address": "localhost:" + args.tcpPort1,
-			"api_address": "http://localhost:" + args.httpPort1,
-			"dbHost": "localhost", "dbName": "gen1", "login": "postgres",
-			"pass": "postgres", "time_wait_tx_in_block": 30},
-			"2": {"url": "http://localhost:" + args.httpPort2 + "/api/v2",
-				"private_key": privKey2, "keyID": keyID2,
-				"pubKey": nodePubKey2,
-				"tcp_address": "localhost:" + args.tcpPort2,
-				"api_address": "http://localhost:" + args.httpPort2,
-				"dbHost": "localhost", "dbName": "gen2",
-				"login": "postgres", "pass": "postgres",
-				"time_wait_tx_in_block": 30}, "3": {
-					"url": "http://localhost:" + args.httpPort3 + "/api/v2",
-					"private_key": privKey3,
-					"keyID": keyID3, "pubKey": nodePubKey3,
-					"tcp_address": "localhost:" + args.tcpPort3,
-					"api_address": "http://localhost:" + args.httpPort3,
-					"dbHost": "localhost", "dbName": "gen3",
-					"login": "postgres", "pass": "postgres",
-					"time_wait_tx_in_block": 30}}
+config = {
+    "1": {
+        "url": "http://localhost:" + args.httpPort1 + "/api/v2",
+		"private_key": privKey1,
+        "keyID": keyID1,
+		"pubKey": nodePubKey1,
+		"tcp_address": "localhost:" + args.tcpPort1,
+		"api_address": "http://localhost:" + args.httpPort1,
+		"dbHost": args.dbHost,
+        "dbName": args.dbName1,
+        "login": args.dbUser,
+		"pass": args.dbPassword,
+        "time_wait_tx_in_block": 30
+    },
+    "2": {
+        "url": "http://localhost:" + args.httpPort2 + "/api/v2",
+        "private_key": privKey2,
+        "keyID": keyID2,
+        "pubKey": nodePubKey2,
+		"tcp_address": "localhost:" + args.tcpPort2,
+		"api_address": "http://localhost:" + args.httpPort2,
+        "dbHost": args.dbHost,
+        "dbName": args.dbName2,
+        "login": args.dbUser,
+        "pass": args.dbPassword,
+        "time_wait_tx_in_block": 30
+    },
+    "3": {
+        "url": "http://localhost:" + args.httpPort3 + "/api/v2",
+		"private_key": privKey3,
+		"keyID": keyID3,
+        "pubKey": nodePubKey3,
+		"tcp_address": "localhost:" + args.tcpPort3,
+		"api_address": "http://localhost:" + args.httpPort3,
+        "dbHost": args.dbHost,
+        "dbName": args.dbName3,
+        "login": args.dbUser,
+        "pass": args.dbPassword,
+        "time_wait_tx_in_block": 30
+    }}
 
 # Update config for tests
 confPath = os.path.join(curDir+ '/../', 'hostConfig.json')
@@ -255,4 +272,3 @@ with open(confPath, 'w') as fconf:
 	fconf.write(json.dumps(config))
 
 print("Nodes successfully linced")
-
