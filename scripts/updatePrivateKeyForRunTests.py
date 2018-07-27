@@ -1,5 +1,6 @@
 import os
 import argparse
+import json
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-privateKeyPath', default='D:\\genesis-go')
@@ -9,36 +10,38 @@ args = parser.parse_args()
 
 with open(os.path.join(args.privateKeyPath, 'PrivateKey'), 'r') as f:
 	privKey1 = f.read()
-
+'''
 config = os.path.join(args.configPath, 'hostConfig.json')
 with open(config) as fconf:
-	lines = fconf.readlines()
+	lines = json.load(fconf)
+'''
+
+
+file = os.path.join(args.configPath, "hostConfig.json")
+with open(file, 'r') as f:
+	data = f.read()
+	lines = json.loads(data)
 
 # Update private keys in config
-del lines[4]
-lines.insert(4, "\t\t\"private_key\": \""+privKey1+"\",\n")
-del lines[15]
-lines.insert(15, "\t\t\"private_key\": \""+privKey1+"\",\n")
-del lines[26]
-lines.insert(26, "\t\t\"private_key\": \""+privKey1+"\",\n")
+lines["1"]["private_key"] = privKey1
+lines["2"]["private_key"] = privKey1
+lines["3"]["private_key"] = privKey1
 
 # Update url in config
-del lines[14]
-lines.insert(14, lines[3])
-del lines[25]
-lines.insert(25, lines[3])
+lines["2"]["url"] = lines["1"]["url"]
+lines["3"]["url"] = lines["1"]["url"]
 
 # Update DB name in config
-del lines[7]
-lines.insert(7, "\t\t\"dbName\": \""+args.dbName+"\",\n")
-del lines[18]
-lines.insert(18, "\t\t\"dbName\": \""+args.dbName+"\",\n")
-del lines[29]
-lines.insert(29, "\t\t\"dbName\": \""+args.dbName+"\",\n")
+lines["1"]["dbName"] = args.dbName
+lines["2"]["dbName"] = args.dbName
+lines["3"]["dbName"] = args.dbName
 
-
-with open(config, 'w') as fconf:
-	fconf.write(''.join(lines))
+with open(file, 'w') as f:
+	json.dump(lines, f)
+'''
+with open(args.configPath, 'w') as fconf:
+	fconf.write(json.dumps(lines))
+'''
 
 print("hostConfig.json is updated!")
 
