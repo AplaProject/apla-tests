@@ -573,7 +573,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
 
     def test_getContractHistoryRow(self):
         # create contract
-        rollc_before = utils.getCountTable(dbHost, dbName, login, pas, "rollback_tx")
+        rollc_before = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         replacedString = "old_var"
         code = """
            { 
@@ -584,7 +584,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
            """ % replacedString
         code, name = self.generate_name_and_code(code)
         self.create_contract(code)
-        rollc_after = utils.getCountTable(dbHost, dbName, login, pas, "rollback_tx")
+        rollc_after = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         # change contract
         id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_contracts", name)
         newCode = code.replace(replacedString, "new_var")
@@ -601,7 +601,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
 
     def test_getPageHistoryRow(self):
         # create page
-        rollc_before = utils.getCountTable(dbHost, dbName, login, pas, "rollback_tx")
+        rollc_before = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         name = utils.generate_random_name()
         page = "Div(Body: Hello)"
         data = {"ApplicationId": "1",
@@ -610,7 +610,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 "Menu": "default_menu",
                 "Conditions": "true"}
         self.call_contract("NewPage", data)
-        rollc_after = utils.getCountTable(dbHost, dbName, login, pas, "rollback_tx")
+        rollc_after = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         # change page
         id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_pages", name)
         newValuePage = page.replace("Hello", "new_var")
@@ -627,14 +627,14 @@ class ContractFunctionsTestCase(unittest.TestCase):
 
     def test_getMenuHistoryRow(self):
         # create menu
-        rollc_before = utils.getCountTable(dbHost, dbName, login, pas, "rollback_tx")
+        rollc_before = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         name = utils.generate_random_name()
         menu = "This is new menu"
         data = {"Name": name,
                 "Value": menu,
                 "Conditions": "true"}
         self.call_contract("NewMenu", data)
-        rollc_after = utils.getCountTable(dbHost, dbName, login, pas, "rollback_tx")
+        rollc_after = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         # change menu
         id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_menu", name)
         newValueMenu = menu.replace("new menu", "new_var")
@@ -651,7 +651,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
 
     def test_getBlockHistoryRow(self):
         # create block
-        rollc_before = utils.getCountTable(dbHost, dbName, login, pas, "rollback_tx")
+        rollc_before = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         name = utils.generate_random_name()
         block = "Div(Body: Hello)"
         data = {"ApplicationId": "1",
@@ -659,7 +659,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 "Value": block,
                 "Conditions": "true"}
         self.call_contract("NewBlock", data)
-        rollc_after = utils.getCountTable(dbHost, dbName, login, pas, "rollback_tx")
+        rollc_after = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         # change block
         id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_blocks", name)
         newValueBlock = block.replace("Hello", "new_var")

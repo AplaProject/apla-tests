@@ -46,7 +46,6 @@ class LimitsTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0,
                            "Block is not generated for updating sysparam: " +\
                            res)
-        time.sleep(10)
         
     def test_max_tx_size(self):
         max_tx_size = utils.get_system_parameter(conf["1"]["dbHost"],
