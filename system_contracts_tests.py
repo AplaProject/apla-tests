@@ -451,11 +451,9 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewPage", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        content = {"menu": 'default_menu', "menutree": [],
-                   "tree": [{'tag': 'text', 'text': 'Hello page!'}],
-                   "nodesCount": 1}
+        content = [{'tag': 'text', 'text': 'Hello page!'}]
         cont = funcs.get_content(url, "page", name, "", 1, token)
-        self.assertEqual(cont, content)
+        self.assertEqual(cont['tree'], content)
 
     def test_new_page_exist_name(self):
         name = "Page_" + utils.generate_random_name()
@@ -490,11 +488,9 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("EditPage", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        content = {"menu": 'default_menu', "menutree": [],
-                   "tree": [{'tag': 'text', 'text': 'Good by page!'}],
-                   "nodesCount": 1}
+        content = [{'tag': 'text', 'text': 'Good by page!'}]
         pContent = funcs.get_content(url, "page", name, "", 1, token)
-        self.assertEqual(pContent, content)
+        self.assertEqual(pContent['tree'], content)
 
     def test_edit_page_with_validate_count(self):
         name = "Page_" + utils.generate_random_name()
@@ -510,11 +506,9 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("EditPage", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        content = {"menu": 'default_menu', "menutree": [],
-                   "tree": [{'tag': 'text', 'text': 'Good by page!'}],
-                   "nodesCount": 1}
+        content = [{'tag': 'text', 'text': 'Good by page!'}]
         pContent = funcs.get_content(url, "page", name, "", 1, token)
-        self.assertEqual(pContent, content)
+        self.assertEqual(pContent['tree'], content)
 
     def test_edit_incorrect_page(self):
         id = "9999"
@@ -554,11 +548,9 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("AppendPage", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        content = {"menu": 'default_menu', "menutree": [],
-                   "tree": [{'tag': 'text', 'text': 'Hello!\r\nGood by!'}],
-                   "nodesCount": 1}
+        content = [{'tag': 'text', 'text': 'Hello!\r\nGood by!'}]
         pContent = funcs.get_content(url, "page", name, "", 1, token)
-        self.assertEqual(pContent, content)
+        self.assertEqual(pContent['tree'], content)
 
     def test_append_page_incorrect_id(self):
         id = "9999"

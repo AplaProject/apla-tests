@@ -212,27 +212,19 @@ class ApiTestCase(unittest.TestCase):
                     "Menu": "default_menu"}
         res = self.call("NewPage", dataPage)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        content = {"menu": 'default_menu', "menutree": [],
-                   "tree": [{'tag': 'text', 'text': 'Hello, World_en'}],
-                   "nodesCount": 1}
-        contentRu = {"menu": 'default_menu', "menutree": [],
-                     "tree": [{'tag': 'text', 'text': 'Hello, Мир_ru'}],
-                   "nodesCount": 1}
-        contentFr = {"menu": 'default_menu', "menutree": [],
-                       "tree": [{'tag': 'text', 'text': 'Hello, Monde_fr-FR'}],
-                   "nodesCount": 1}
-        contentDe = {"menu": 'default_menu', "menutree": [],
-                       "tree": [{'tag': 'text', 'text': 'Hello, Welt_de'}],
-                   "nodesCount": 1}
+        content = [{'tag': 'text', 'text': 'Hello, World_en'}]
+        contentRu = [{'tag': 'text', 'text': 'Hello, Мир_ru'}]
+        contentFr = [{'tag': 'text', 'text': 'Hello, Monde_fr-FR'}]
+        contentDe = [{'tag': 'text', 'text': 'Hello, Welt_de'}]
         dictExp ={"default" : content, "ru": contentRu,
                   "fr": contentFr, "de": contentDe, "pe": content}
-        pContent = funcs.get_content(url, "page", namePage, "en", 1, token)          # should be: en
+        pContent = funcs.get_content(url, "page", namePage, "en", 1, token)     # should be: en
         ruPContent = funcs.get_content(url, "page", namePage, "ru", 1, token)      # should be: ru
         frPcontent = funcs.get_content(url, "page", namePage, "fr-FR", 1, token) # should be: fr-FR
         dePcontent = funcs.get_content(url, "page", namePage, "de-DE", 1, token)   # should be: de
         pePcontent = funcs.get_content(url, "page", namePage, "pe", 1, token)      # should be: en
-        dictCur = {"default" : pContent, "ru": ruPContent,
-                  "fr": frPcontent, "de": dePcontent, "pe": pePcontent}
+        dictCur = {"default" : pContent['tree'], "ru": ruPContent['tree'],
+                  "fr": frPcontent['tree'], "de": dePcontent['tree'], "pe": pePcontent['tree']}
         self.assertDictEqual(dictCur, dictExp, "One of langRes is faild")
         
     def test_content_lang_after_edit(self):
@@ -254,18 +246,10 @@ class ApiTestCase(unittest.TestCase):
                 "\"fr-FR\": \"Monde_fr-FR_ed\", \"de\": \"Welt_de_ed\"}"}
         res = self.call("EditLang", dataEdit)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        content = {"menu": 'default_menu', "menutree": [],
-                   "tree": [{'tag': 'text', 'text': 'Hello, World_en_ed'}],
-                   "nodesCount": 1}
-        contentRu = {"menu": 'default_menu', "menutree": [],
-                     "tree": [{'tag': 'text', 'text': 'Hello, Мир_ru_ed'}],
-                   "nodesCount": 1}
-        contentFr = {"menu": 'default_menu', "menutree": [],
-                       "tree": [{'tag': 'text', 'text': 'Hello, Monde_fr-FR_ed'}],
-                   "nodesCount": 1}
-        contentDe = {"menu": 'default_menu', "menutree": [],
-                     "tree": [{'tag': 'text', 'text': 'Hello, Welt_de_ed'}],
-                     "nodesCount": 1}
+        content = [{'tag': 'text', 'text': 'Hello, World_en_ed'}]
+        contentRu = [{'tag': 'text', 'text': 'Hello, Мир_ru_ed'}]
+        contentFr = [{'tag': 'text', 'text': 'Hello, Monde_fr-FR_ed'}]
+        contentDe = [{'tag': 'text', 'text': 'Hello, Welt_de_ed'}]
         dictExp ={"default" : content, "ru": contentRu,
                   "fr": contentFr, "de": contentDe, "pe": content}
         pContent = funcs.get_content(url, "page", namePage, "en", 1, token)          # should be: en
@@ -273,8 +257,8 @@ class ApiTestCase(unittest.TestCase):
         frPcontent = funcs.get_content(url, "page", namePage, "fr-FR", 1, token) # should be: fr-FR
         dePcontent = funcs.get_content(url, "page", namePage, "de-DE", 1, token)   # should be: de
         pePcontent = funcs.get_content(url, "page", namePage, "pe", 1, token)      # should be: en
-        dictCur = {"default" : pContent, "ru": ruPContent,
-                  "fr": frPcontent, "de": dePcontent, "pe": pePcontent}
+        dictCur = {"default" : pContent['tree'], "ru": ruPContent['tree'],
+                  "fr": frPcontent['tree'], "de": dePcontent['tree'], "pe": pePcontent['tree']}
         self.assertDictEqual(dictCur, dictExp, "One of langRes is faild")
 
     def test_get_content_from_template(self):
