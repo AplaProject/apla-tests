@@ -10,12 +10,6 @@ args = parser.parse_args()
 
 with open(os.path.join(args.privateKeyPath, 'PrivateKey'), 'r') as f:
 	privKey1 = f.read()
-'''
-config = os.path.join(args.configPath, 'hostConfig.json')
-with open(config) as fconf:
-	lines = json.load(fconf)
-'''
-
 
 file = os.path.join(args.configPath, "hostConfig.json")
 with open(file, 'r') as f:
@@ -38,10 +32,6 @@ lines["3"]["dbName"] = args.dbName
 
 with open(file, 'w') as f:
 	json.dump(lines, f)
-'''
-with open(args.configPath, 'w') as fconf:
-	fconf.write(json.dumps(lines))
-'''
 
 print("hostConfig.json is updated!")
 
