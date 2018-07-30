@@ -113,22 +113,7 @@ class PrototipoTestCase(unittest.TestCase):
         mustBe = dict(tag=partContent[0]["tag"],
                       popupHeader=partContent[0]["attr"]["popup"]["header"],
                       popupWidth=partContent[0]["attr"]["popup"]["width"],
-                      text=partContent[0]["cив
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      ildren"][0]["text"])
+                      text=partContent[0]["children"][0]["text"])
         page = dict(tag=contractContent[0]["tag"],
                     popupHeader=contractContent[0]["attr"]["popup"]["header"],
                     popupWidth=contractContent[0]["attr"]["popup"]["width"],
