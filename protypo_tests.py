@@ -113,7 +113,22 @@ class PrototipoTestCase(unittest.TestCase):
         mustBe = dict(tag=partContent[0]["tag"],
                       popupHeader=partContent[0]["attr"]["popup"]["header"],
                       popupWidth=partContent[0]["attr"]["popup"]["width"],
-                      text=partContent[0]["children"][0]["text"])
+                      text=partContent[0]["cив
+                      
+                      
+                      
+                      
+                      
+                      
+                      
+                      
+                      
+                      
+                      
+                      
+                      
+                      
+                      ildren"][0]["text"])
         page = dict(tag=contractContent[0]["tag"],
                     popupHeader=contractContent[0]["attr"]["popup"]["header"],
                     popupWidth=contractContent[0]["attr"]["popup"]["width"],
@@ -965,7 +980,7 @@ class PrototipoTestCase(unittest.TestCase):
         code, name = utils.generate_name_and_code(code)
         self.create_contract(code)
         # change contract
-        id = utils.getObjectIdByName(dbHost, dbName, login, password, "1_contracts", name)
+        id = funcs.get_object_id(url, name, "contracts", token)
         newCode = code.replace(replacedString, "new_var")
         data = {"Id": id,
                 "Value": newCode}
@@ -987,7 +1002,7 @@ class PrototipoTestCase(unittest.TestCase):
                 "Conditions": "true"}
         self.call_contract("NewPage", data)
         # change page
-        id = utils.getObjectIdByName(dbHost, dbName, login, password, "1_pages", name)
+        id = funcs.get_object_id(url, name, "pages", token)
         newValuePage = page.replace("Hello", "new_var")
         data = {"Id": id,
                 "Value": newValuePage}
@@ -1007,7 +1022,7 @@ class PrototipoTestCase(unittest.TestCase):
                 "Conditions": "true"}
         self.call_contract("NewMenu", data)
         # change menu
-        id = utils.getObjectIdByName(dbHost, dbName, login, password, "1_menu", name)
+        id = funcs.get_object_id(url, name, "menu", token)
         newValueMenu = menu.replace("new menu", "new_var")
         data = {"Id": id,
                 "Value": newValueMenu}
@@ -1028,7 +1043,7 @@ class PrototipoTestCase(unittest.TestCase):
                 "Conditions": "true"}
         self.call_contract("NewBlock", data)
         # change block
-        id = utils.getObjectIdByName(dbHost, dbName, login, password, "1_blocks", name)
+        id = funcs.get_object_id(url, name, "blocks", token)
         newValueBlock = block.replace("Hello", "new_var")
         data = {"Id": id,
                 "Value": newValueBlock}
