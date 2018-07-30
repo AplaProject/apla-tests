@@ -282,12 +282,14 @@ def executeSQL(dbHost, dbName, login, password, query):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute(query)
+	print(cursor.fetchall())
 	return cursor.fetchall()
 
 def getObjectIdByName(dbHost, dbName, login, password, table, name):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute("SELECT id FROM \"" + table + "\" WHERE name = '"+str(name)+"'")
+	print(cursor.fetchall())
 	return cursor.fetchall()[0][0]
 
 def getFounderId(dbHost, dbName, login, password):

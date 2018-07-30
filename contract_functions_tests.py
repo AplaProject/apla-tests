@@ -26,6 +26,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         status = utils.txstatus(url,
                                 self.config["1"]["time_wait_tx_in_block"],
                                 result['hash'], jwtToken)
+        print(status)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
@@ -80,6 +81,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         res = utils.call_contract(url, prKey, name, data, token)
         hash = res["hash"]
         result = utils.txstatus(url, sleep, hash, token)
+        print(result)
         self.assertIn(checkPoint, result["result"], "error")
 
     def test_contract_dbfind(self):
@@ -462,7 +464,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         code, name = self.generate_name_and_code(code)
         self.create_contract(code)
         # change contract
-        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_contracts", name)
+        id = funcs.get_object_id(url, name, "contracts", token)
         newCode = code.replace(replacedString, "new_var")
         data = {"Id": id,
                 "Value": newCode}
@@ -483,7 +485,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 "Conditions": "true"}
         self.call_contract("NewPage", data)
         # change page
-        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_pages", name)
+        id = funcs.get_object_id(url, name, "pages", token)
         newValuePage = page.replace("Hello", "new_var")
         data = {"Id": id,
                 "Value": newValuePage}
@@ -502,7 +504,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 "Conditions": "true"}
         self.call_contract("NewMenu", data)
         # change menu
-        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_menu", name)
+        id = funcs.get_object_id(url, name, "menu", token)
         newValueMenu = menu.replace("new menu", "new_var")
         data = {"Id": id,
                 "Value": newValueMenu}
@@ -522,7 +524,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 "Conditions": "true"}
         self.call_contract("NewBlock", data)
         # change block
-        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_blocks", name)
+        id = funcs.get_object_id(url, name, "blocks", token)
         newValueBlock = block.replace("Hello", "new_var")
         data = {"Id": id,
                 "Value": newValueBlock}
@@ -586,7 +588,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.create_contract(code)
         rollc_after = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         # change contract
-        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_contracts", name)
+        id = funcs.get_object_id(url, name, "contracts", token)
         newCode = code.replace(replacedString, "new_var")
         data = {"Id": id,
                 "Value": newCode}
@@ -612,7 +614,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.call_contract("NewPage", data)
         rollc_after = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         # change page
-        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_pages", name)
+        id = funcs.get_object_id(url, name, "pages", token)
         newValuePage = page.replace("Hello", "new_var")
         data = {"Id": id,
                 "Value": newValuePage}
@@ -636,7 +638,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.call_contract("NewMenu", data)
         rollc_after = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         # change menu
-        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_menu", name)
+        id = funcs.get_object_id(url, name, "menu", token)
         newValueMenu = menu.replace("new menu", "new_var")
         data = {"Id": id,
                 "Value": newValueMenu}
@@ -661,11 +663,12 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.call_contract("NewBlock", data)
         rollc_after = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         # change block
-        id = utils.getObjectIdByName(dbHost, dbName, login, pas, "1_blocks", name)
+        id = funcs.get_object_id(url, name, "blocks", token)
         newValueBlock = block.replace("Hello", "new_var")
         data = {"Id": id,
                 "Value": newValueBlock}
         self.call_contract("EditBlock", data)
+        
         # test
         query = """SELECT id FROM "rollback_tx" WHERE table_name = '1_blocks' AND data='' AND id >= %s AND id <= %s""" % (
             rollc_before, rollc_after)
