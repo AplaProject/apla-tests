@@ -639,7 +639,106 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewTable", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        
+
+    def test_new_table_not_readable(self):
+        # create new table
+        column = """[
+        {"name":"Text","type":"varchar", "index": "1",  "conditions": {"update":"true", "read": "true"}},
+        {"name":"num","type":"varchar", "index": "0",  "conditions":{"update":"true", "read": "true"}}
+        ]"""
+        permission = """
+        {"read" : "false", "insert": "true", "update" : "true",  "new_column": "true"}
+        """
+        tableName = "tab_" + utils.generate_random_name()
+        data = {"Name": tableName,
+                "Columns": column, "ApplicationId": 1,
+                "Permissions": permission}
+        res = self.call("NewTable", data)
+        self.assertGreater(int(res["blockid"]), 0, "BlockId is not generated: " + str(res))
+        # create new page
+        name = "Page_" + utils.generate_random_name()
+        data = {"Name": name, "Value": "DBFind("+tableName+",src)", "ApplicationId": 1,
+                "Conditions": "true", "Menu": "default_menu"}
+        res = self.call("NewPage", data)
+        self.assertGreater(res["blockid"], 0,
+                           "BlockId is not generated: " + str(res))
+        # test
+        content = [{'tag': 'text', 'text': 'Access denied'}]
+        cont = funcs.get_content(url, "page", name, "", 1, token)
+        self.assertEqual(cont['tree'], content)
+
+    def test_new_table_not_readable_all_columns(self):
+        # create new table
+        column = """[
+        {"name":"Text","type":"varchar", "index": "1",  "conditions": {"update":"true", "read": "false"}},
+        {"name":"num","type":"varchar", "index": "0",  "conditions":{"update":"true", "read": "false"}}
+        ]"""
+        permission = """
+        {"read" : "true", "insert": "true", "update" : "true",  "new_column": "true"}
+        """
+        tableName = "tab_" + utils.generate_random_name()
+        data = {"Name": tableName,
+                "Columns": column, "ApplicationId": 1,
+                "Permissions": permission}
+        res = self.call("NewTable", data)
+        self.assertGreater(int(res["blockid"]), 0, "BlockId is not generated: " + str(res))
+        # create new page
+        name = "Page_" + utils.generate_random_name()
+        data = {"Name": name, "Value": "DBFind("+tableName+",src)", "ApplicationId": 1,
+                "Conditions": "true", "Menu": "default_menu"}
+        res = self.call("NewPage", data)
+        self.assertGreater(res["blockid"], 0,
+                           "BlockId is not generated: " + str(res))
+        # test
+        content = [{'tag': 'text', 'text': 'Access denied'}]
+        cont = funcs.get_content(url, "page", name, "", 1, token)
+        self.assertEqual(cont['tree'], content)
+
+    def test_new_table_not_readable_one_column(self):
+        # create new table
+        column = """[
+        {"name":"Text","type":"varchar", "index": "1",  "conditions": {"update":"true", "read": "false"}},
+        {"name":"num","type":"varchar", "index": "0",  "conditions":{"update":"true", "read": "true"}}
+        ]"""
+        permission = """
+        {"read" : "true", "insert": "true", "update" : "true",  "new_column": "true"}
+        """
+        tableName = "tab_" + utils.generate_random_name()
+        data = {"Name": tableName,
+                "Columns": column, "ApplicationId": 1,
+                "Permissions": permission}
+        res = self.call("NewTable", data)
+        self.assertGreater(int(res["blockid"]), 0, "BlockId is not generated: " + str(res))
+        # create new contract, which added record in table
+        code = """{
+        data {}	
+        conditions {}	
+        action {
+            DBInsert("%s","text,num", "text1", "num1")    
+        }
+        }""" %tableName
+        code, name = utils.generate_name_and_code(code)
+        data = {"Value": code, "ApplicationId": 1,
+                "Conditions": "true"}
+        res = self.call("NewContract", data)
+        self.assertGreater(res["blockid"], 0,
+                           "BlockId is not generated: " + str(res))
+        # call contract
+        res = self.call(name, "")
+        self.assertGreater(res["blockid"], 0,
+                           "BlockId is not generated: " + str(res))
+        # create new page
+        name = "Page_" + utils.generate_random_name()
+        data = {"Name": name, "Value": "DBFind("+tableName+",src)", "ApplicationId": 1,
+                "Conditions": "true", "Menu": "default_menu"}
+        res = self.call("NewPage", data)
+        self.assertGreater(res["blockid"], 0,
+                           "BlockId is not generated: " + str(res))
+        # test
+        content = [['num1', '1']]
+        cont = funcs.get_content(url, "page", name, "", 1, token)
+        self.assertEqual(cont['tree'][0]['attr']['data'], content)
+
     def test_new_table_joint(self):
         columns = ["varchar", "Myb", "MyD", "MyM", "MyT", "MyDouble", "MyC"]
         types = ["varchar", "json", "datetime", "money", "text", "double", "character"]
