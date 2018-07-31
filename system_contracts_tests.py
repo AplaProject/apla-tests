@@ -742,6 +742,18 @@ class SystemContractsTestCase(unittest.TestCase):
         msg = "table " + name + " exists"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
+    def test_new_table_incorrect_name_cyrillic(self):
+        name = "таблица"
+        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
+                  "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        permissions = "{\"insert\": \"false\", \"update\" : \"true\"," + \
+                      " \"new_column\": \"true\"}"
+        data = {"Name": name, "Columns": columns,
+                "Permissions": permissions, "ApplicationId": 1}
+        ans = self.call("NewTable", data)
+        msg = "Name "+name+" must only contain latin, digit and '_', '-' characters"
+        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+
     def test_new_table_identical_columns(self):
         name = "tab_" + utils.generate_random_name()
         columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
