@@ -675,6 +675,19 @@ class SystemContractsTestCase(unittest.TestCase):
         msg = "Column name cannot begin with digit"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
+    def test_new_table_incorrect_column_name_cyrillic(self):
+        word = "привет"
+        column = """[{"name":"%s","type":"varchar",
+        "index": "1",  "conditions":"true"}]""" % word
+        permission = """{"insert": "false",
+        "update" : "true","new_column": "true"}"""
+        data = {"Name": "Tab_" + utils.generate_random_name(),
+                "Columns": column, "ApplicationId": 1,
+                "Permissions": permission}
+        ans = self.call("NewTable", data)
+        msg = "Name "+ word +" must only contain latin, digit and '_', '-' characters"
+        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+
     def test_new_table_incorrect_condition1(self):
         columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," +\
         "\"index\": \"1\",  \"conditions\":\"true\"}]"
@@ -727,6 +740,18 @@ class SystemContractsTestCase(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         ans = self.call("NewTable", data)
         msg = "table " + name + " exists"
+        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+
+    def test_new_table_incorrect_name_cyrillic(self):
+        name = "таблица"
+        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
+                  "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        permissions = "{\"insert\": \"false\", \"update\" : \"true\"," + \
+                      " \"new_column\": \"true\"}"
+        data = {"Name": name, "Columns": columns,
+                "Permissions": permissions, "ApplicationId": 1}
+        ans = self.call("NewTable", data)
+        msg = "Name "+name+" must only contain latin, digit and '_', '-' characters"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_identical_columns(self):
