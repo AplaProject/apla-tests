@@ -81,7 +81,6 @@ class ContractFunctionsTestCase(unittest.TestCase):
         res = utils.call_contract(url, prKey, name, data, token)
         hash = res["hash"]
         result = utils.txstatus(url, sleep, hash, token)
-        print(result)
         self.assertIn(checkPoint, result["result"], "error")
 
     def test_contract_dbfind(self):
@@ -451,7 +450,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["sortedKeys"]
         self.check_contract(contract["code"], contract["asert"])
         
-    def test_getContractHistory(self):
+    def test_getHistoryContract(self):
         # create contract
         replacedString = "old_var"
         code = """
@@ -470,11 +469,11 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 "Value": newCode}
         self.call_contract("EditContract", data)
         # test
-        data = {"ID": id}
-        contract = self.contracts["getContractHistory"]
+        data = {"Table": "contracts", "ID": id}
+        contract = self.contracts["getHistory"]
         self.check_contract_with_data(contract["code"], data, replacedString)
 
-    def test_getPageHistory(self):
+    def test_getHistoryPage(self):
         # create page
         name = utils.generate_random_name()
         page = "Div(Body: Hello)"
@@ -491,53 +490,13 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 "Value": newValuePage}
         self.call_contract("EditPage", data)
         # test
-        data = {"ID": id}
-        contract = self.contracts["getPageHistory"]
+        data = {"Table": "pages", "ID": id}
+        contract = self.contracts["getHistory"]
         self.check_contract_with_data(contract["code"], data, page)
-
-    def test_getMenuHistory(self):
-        # create menu
-        name = utils.generate_random_name()
-        menu = "This is new menu"
-        data = {"Name": name,
-                "Value": menu,
-                "Conditions": "true"}
-        self.call_contract("NewMenu", data)
-        # change menu
-        id = funcs.get_object_id(url, name, "menu", token)
-        newValueMenu = menu.replace("new menu", "new_var")
-        data = {"Id": id,
-                "Value": newValueMenu}
-        self.call_contract("EditMenu", data)
-        # test
-        data = {"ID": id}
-        contract = self.contracts["getMenuHistory"]
-        self.check_contract_with_data(contract["code"], data, menu)
-
-    def test_getBlockHistory(self):
-        # create block
-        name = utils.generate_random_name()
-        block = "Div(Body: Hello)"
-        data = {"ApplicationId": "1",
-                "Name": name,
-                "Value": block,
-                "Conditions": "true"}
-        self.call_contract("NewBlock", data)
-        # change block
-        id = funcs.get_object_id(url, name, "blocks", token)
-        newValueBlock = block.replace("Hello", "new_var")
-        data = {"Id": id,
-                "Value": newValueBlock}
-        self.call_contract("EditBlock", data)
-        # test
-        data = {"ID": id}
-        contract = self.contracts["getBlockHistory"]
-        self.check_contract_with_data(contract["code"], data, block)
 
     def test_append(self):
         contract = self.contracts["append"]
         self.check_contract(contract["code"], contract["asert"])
-
 
     def test_sys_var_stack(self):
         # This test has not a fixture
@@ -573,61 +532,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         mustBe = "[@1" + outerName + " CallContract @1" + innerName +"]"
         self.assertEqual(mustBe, res["result"], "test_sys_var_stack is failed!")
 
-    def test_getContractHistoryRow(self):
-        # create contract
-        rollc_before = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
-        replacedString = "old_var"
-        code = """
-           { 
-               data{}
-               conditions{}
-               action{ var %s int }
-           }
-           """ % replacedString
-        code, name = self.generate_name_and_code(code)
-        self.create_contract(code)
-        rollc_after = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
-        # change contract
-        id = funcs.get_object_id(url, name, "contracts", token)
-        newCode = code.replace(replacedString, "new_var")
-        data = {"Id": id,
-                "Value": newCode}
-        self.call_contract("EditContract", data)
-        # test
-        query = """SELECT id FROM "rollback_tx" WHERE table_name = '1_contracts' AND data='' AND id >= %s AND id <= %s""" % (
-            rollc_before, rollc_after)
-        rollback_id = utils.executeSQL(dbHost, dbName, login, pas, query)[0][0]
-        data = {"ID": id, "rID": rollback_id}
-        contract = self.contracts["getContractHistoryRow"]
-        self.check_contract_with_data(contract["code"], data, replacedString)
-
-    def test_getPageHistoryRow(self):
-        # create page
-        rollc_before = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
-        name = utils.generate_random_name()
-        page = "Div(Body: Hello)"
-        data = {"ApplicationId": "1",
-                "Name": name,
-                "Value": page,
-                "Menu": "default_menu",
-                "Conditions": "true"}
-        self.call_contract("NewPage", data)
-        rollc_after = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
-        # change page
-        id = funcs.get_object_id(url, name, "pages", token)
-        newValuePage = page.replace("Hello", "new_var")
-        data = {"Id": id,
-                "Value": newValuePage}
-        self.call_contract("EditPage", data)
-        # test
-        query = """SELECT id FROM "rollback_tx" WHERE table_name = '1_pages' AND data='' AND id >= %s AND id <= %s""" % (
-        rollc_before, rollc_after)
-        rollback_id = utils.executeSQL(dbHost, dbName, login, pas, query)[0][0]
-        data = {"ID": id, "rID":rollback_id}
-        contract = self.contracts["getPageHistoryRow"]
-        self.check_contract_with_data(contract["code"], data, page)
-
-    def test_getMenuHistoryRow(self):
+    def test_getHistoryRowMenu(self):
         # create menu
         rollc_before = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         name = utils.generate_random_name()
@@ -647,11 +552,11 @@ class ContractFunctionsTestCase(unittest.TestCase):
         query = """SELECT id FROM "rollback_tx" WHERE table_name = '1_menu' AND data='' AND id >= %s AND id <= %s""" % (
             rollc_before, rollc_after)
         rollback_id = utils.executeSQL(dbHost, dbName, login, pas, query)[0][0]
-        data = {"ID": id, "rID": rollback_id}
-        contract = self.contracts["getMenuHistoryRow"]
+        data = {"Table": "menu", "ID": id, "rID": rollback_id}
+        contract = self.contracts["getHistoryRow"]
         self.check_contract_with_data(contract["code"], data, menu)
 
-    def test_getBlockHistoryRow(self):
+    def test_getHistoryRowBlock(self):
         # create block
         rollc_before = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         name = utils.generate_random_name()
@@ -668,13 +573,12 @@ class ContractFunctionsTestCase(unittest.TestCase):
         data = {"Id": id,
                 "Value": newValueBlock}
         self.call_contract("EditBlock", data)
-        
         # test
         query = """SELECT id FROM "rollback_tx" WHERE table_name = '1_blocks' AND data='' AND id >= %s AND id <= %s""" % (
             rollc_before, rollc_after)
         rollback_id = utils.executeSQL(dbHost, dbName, login, pas, query)[0][0]
-        data = {"ID": id, "rID": rollback_id}
-        contract = self.contracts["getBlockHistoryRow"]
+        data = {"Table": "blocks", "ID": id, "rID": rollback_id}
+        contract = self.contracts["getHistoryRow"]
         self.check_contract_with_data(contract["code"], data, block)
 
 if __name__ == '__main__':
