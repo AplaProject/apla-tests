@@ -328,6 +328,45 @@ class ApiTestCase(unittest.TestCase):
         res = self.check_post_api("/content/page/" + name + param + value, "", asserts)
         self.assertEqual(value, res["tree"][0]["text"])
 
+    def test_get_content_from_another_ecosystem(self):
+        # create new ecosystem
+        ecosysName = "Ecosys_" + utils.generate_random_name()
+        data = {"Name": ecosysName}
+        res = self.call("NewEcosystem", data)
+        self.assertGreater(int(res), 0,
+                           "BlockId is not generated: " + str(res))
+        ecosysNum = funcs.call_get_api(url + "/ecosystems/", "", token)["number"]
+        # login founder in new ecosystem
+        data2 = utils.login(url, prKey, 0, ecosysNum)
+        token2 = data2["jwtToken"]
+        # create page in new ecosystem
+        pageName = "Page_" + utils.generate_random_name()
+        pageText = "Page in "+str(ecosysNum)+" ecosystem"
+        pageValue = "Span("+pageText+")"
+        data = {"Name": pageName, "Value": pageValue, "ApplicationId": 1,
+                "Conditions": "true", "Menu": "default_menu"}
+        resp = utils.call_contract(url, prKey, "@1NewPage", data, token2)
+        status = utils.txstatus(url, pause, resp["hash"], token2)
+        self.assertGreater(int(status["blockid"]), 0,"BlockId is not generated: " + str(status))
+        # create menu in new ecosystem
+        menuName = "Menu_" + utils.generate_random_name()
+        menuTitle = "Test menu"
+        data = {"Name": menuName, "Value": "MenuItem(Title:\""+menuTitle+"\")", "ApplicationId": 1,
+                "Conditions": "true"}
+        resp = utils.call_contract(url, prKey, "@1NewMenu", data, token2)
+        status = utils.txstatus(url, pause, resp["hash"], token2)
+        self.assertGreater(int(status["blockid"]), 0, "BlockId is not generated: " + str(status))
+        # test
+        data = ""
+        asserts = ["tree"]
+        resPage = self.check_post_api("/content/page/@" + str(ecosysNum) + pageName, data, asserts)
+        resMenu = self.check_post_api("/content/menu/@" + str(ecosysNum) + menuName, data, asserts)
+        mustBe = dict(pageText=pageText,
+                      menu=menuTitle)
+        expectedValue = dict(pageText=resPage["tree"][0]["children"][0]["text"],
+                      menu=resMenu["tree"][0]["attr"]["title"])
+        self.assertEqual(mustBe, expectedValue, "Dictionaries are different!")
+
     def test_get_back_api_version(self):
         asserts = ["."]
         data = ""
