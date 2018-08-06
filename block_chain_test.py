@@ -41,6 +41,8 @@ class BlockChainTestCase(unittest.TestCase):
         ts_count = 30
         self.data1 = utils.login(config1["url"], config1['private_key'], 0)
         i = 1
+        amountsB = utils.getUserTokenAmounts(host1, db1, login1, pas1)
+        sumAmountsBefore = sum(amount[0] for amount in amountsB)
         while i < ts_count:
             contName = self.create_contract(config1["url"],
                                             config1['private_key'],
@@ -60,14 +62,13 @@ class BlockChainTestCase(unittest.TestCase):
         hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
         hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
         node_position = utils.compare_node_positions(host1, db1, login1, pas1, maxBlock, nodes)
-        sumWalets = 52000000000000000000000
         dict1 = dict(count_contract = count_contracts1,
                      amounts = str(amounts1), summ = str(sumAmounts),
                      hash = str(hash1),
                      node_pos = str(node_position))
         dict2 = dict(count_contract = count_contracts2,
                      amounts = str(amounts2),
-                     summ = str(sumWalets),
+                     summ = str(sumAmountsBefore),
                      hash = str(hash2),
                      node_pos = "True")
         msg = "Test two_nodes is faild. contracts: \n"
@@ -94,6 +95,8 @@ class BlockChainTestCase(unittest.TestCase):
         id = self.new_menu(config1["url"], config1['private_key'])
         time.sleep(10)
         i = 1
+        amountsB = utils.getUserTokenAmounts(host1, db1, login1, pas1)
+        sumAmountsBefore = sum(amount[0] for amount in amountsB)
         while i < ts_count:
             self.edit_menu(config1["url"],
                                       config1['private_key'], id)
@@ -111,14 +114,13 @@ class BlockChainTestCase(unittest.TestCase):
         hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
         hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
         node_position = utils.compare_node_positions(host1, db1, login1, pas1, maxBlock, nodes)
-        sumWalets = 52000000000000000000000
         dict1 = dict(count_contract = count_contracts1,
                      amounts = str(amounts1), summ = str(sumAmounts),
                      hash = str(hash1),
                      node_pos = str(node_position))
         dict2 = dict(count_contract = count_contracts2,
                      amounts = str(amounts2),
-                     summ = str(sumWalets),
+                     summ = str(sumAmountsBefore),
                      hash = str(hash2),
                      node_pos = "True")
         msg = "Test two_nodes is faild. contracts: \n"
