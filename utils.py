@@ -16,15 +16,12 @@ def get_uid(url):
 	return result['token'], result['uid']
 
 
-def login(url, prKey, role):
+def login(url, prKey, role=0, ecosystem=1):
 	token, uid = get_uid(url)
 	signature = sign(prKey, "LOGIN" + uid)
 	pubkey = get_public_key(prKey)
 	fullToken = 'Bearer ' + token
-	if role > 0:
-		data = {'pubkey': pubkey, 'signature': signature, "role_id": role}
-	else:
-		data = {'pubkey': pubkey, 'signature': signature}
+	data = {'pubkey': pubkey, 'signature': signature, "role_id": role, "ecosystem": ecosystem}
 	head = {'Authorization': fullToken}
 	resp = requests.post(url + '/login', params=data, headers=head)
 	res = resp.json()
