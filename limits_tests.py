@@ -102,6 +102,7 @@ class LimitsTestCase(unittest.TestCase):
                                                conf["2"] ["pass"],
                                                maxBlock, 1)
         self.update_sys_param("max_block_user_tx ", str(max_block_user_tx ))
+        time.sleep(30)
         self.assertTrue(isOneOrTwo,
                         "One of block contains more than 2 transaction")
         
