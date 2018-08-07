@@ -47,8 +47,9 @@ class SystemContractsTestCase(unittest.TestCase):
             self.assertGreater(int(status["blockid"]), 0,
                                "BlockID not generated")
 
-    def callMulti(self, name, data):
+    def callMulti(self, name, data, sleep=0):
         resp = utils.call_multi_contract(url, prKey, name, data, token)
+        time.sleep(sleep)
         resp = self.assertMultiTxInBlock(resp, token)
         return resp
     
@@ -1370,7 +1371,7 @@ class SystemContractsTestCase(unittest.TestCase):
         contractName = "Import"
         data = [{"contract": contractName,
                  "params": importAppData[i]} for i in range(len(importAppData))]
-        self.callMulti(contractName, data)
+        self.callMulti(contractName, data, 60)
 
 
 if __name__ == '__main__':
