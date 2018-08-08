@@ -46,16 +46,13 @@ class CompareNodes(unittest.TestCase):
         hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
         hash3 = utils.get_blockchain_hash(host3, db3, login3, pas3, maxBlock)
         node_position = utils.compare_node_positions(host1, db1, login1, pas1, maxBlock, nodes)
-        sumWalets = 52000000000000000000000
-        dict1 = dict(amounts = str(amounts1), summ = str(sumAmounts),
+        dict1 = dict(amounts = str(amounts1),
                      hash = str(hash1),
                      node_pos = str(node_position))
         dict2 = dict(amounts = str(amounts2),
-                     summ = str(sumWalets),
                      hash = str(hash2),
                      node_pos = "True")
         dict3 = dict(amounts = str(amounts3),
-                     summ = str(sumWalets),
                      hash = str(hash3),
                      node_pos = "True")
         msg = "Test three nodes is faild. contracts: \n"
