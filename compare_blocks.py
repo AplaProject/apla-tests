@@ -2,6 +2,7 @@ import unittest
 import utils
 import config
 import funcs
+import time
 
 class CompareBlocks(unittest.TestCase):
     
@@ -19,6 +20,7 @@ class CompareBlocks(unittest.TestCase):
     
     def test_compare_blocks(self):
         conf = config.getNodeConfig()
+        time.sleep(30)
         data2 = utils.login(conf['2']['url'], conf['1']['private_key'], 0)
         maxBlockId2 = funcs.get_max_block_id(conf["2"]["url"], data2["jwtToken"])
         data1 = utils.login(conf['1']['url'], conf['1']['private_key'], 0)
