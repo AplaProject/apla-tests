@@ -24,10 +24,10 @@ class CompareBlocks(unittest.TestCase):
         data2 = utils.login(conf['2']['url'], conf['1']['private_key'], 0)
         maxBlockId2 = funcs.get_max_block_id(conf["2"]["url"], data2["jwtToken"])
         data1 = utils.login(conf['1']['url'], conf['1']['private_key'], 0)
-        time = self.get_load_time(conf["1"]["url"], data1["jwtToken"], maxBlockId2)
+        res = self.get_load_time(conf["1"]["url"], data1["jwtToken"], maxBlockId2)
         msg = "All " + str(maxBlockId2) +\
-         " blocks doesn't load in time. Last loaded block is " + str(time['blocks'])
-        self.assertLess(time['time'], 12000, msg)
+         " blocks doesn't load in time. Last loaded block is " + str(res['blocks'])
+        self.assertLess(res['time'], 12000, msg)
 		
 if __name__ == "__main__":
     unittest.main()
