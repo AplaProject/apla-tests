@@ -6,15 +6,16 @@ import funcs
 class CompareBlocks(unittest.TestCase):
     
     def get_load_time(self, url, token, maxBlock):
-        maxTime = 600
+        maxTime = 12000
         sec = 1
         while sec < maxTime:
             maxBlockId1 = funcs.get_max_block_id(url, token)
             if maxBlockId1 == maxBlock:
+                print("Time: ", sec)
                 return {"time": sec, "blocks": maxBlockId1}
             else:
                 sec = sec + 1
-        return {"time": 601, "blocks": maxBlockId1}
+        return {"time": 12001, "blocks": maxBlockId1}
     
     def test_compare_blocks(self):
         conf = config.getNodeConfig()
@@ -24,7 +25,7 @@ class CompareBlocks(unittest.TestCase):
         time = self.get_load_time(conf["1"]["url"], data1["jwtToken"], maxBlockId2)
         msg = "All " + str(maxBlockId2) +\
          " blocks doesn't load in time. Last loaded block is " + str(time['blocks'])
-        self.assertLess(time['time'], 600, msg)
+        self.assertLess(time['time'], 12000, msg)
 		
 if __name__ == "__main__":
     unittest.main()
