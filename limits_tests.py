@@ -76,6 +76,7 @@ class LimitsTestCase(unittest.TestCase):
         error = self.call("NewContract", data)
         self.assertEqual(error, "stop generating block", "Incorrect error: " + error)
         self.update_sys_param("max_block_size", str(max_block_size))
+        time.sleep(30)
       
     def test_max_block_user_tx(self):
         max_block_user_tx = utils.get_system_parameter(conf["1"]["dbHost"],
