@@ -90,6 +90,7 @@ class CostTestCase(unittest.TestCase):
     def test_activated_contract(self):
         if funcs.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == False:
             self.activateContract()
+        time.sleep(10)
         walletId = funcs.get_activated_wallet(conf["2"]["url"],
                                               "CostContract", self.token)
         sumsBefore = utils.getUserTokenAmounts(conf["1"]["dbHost"],
