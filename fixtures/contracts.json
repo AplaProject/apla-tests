@@ -47,7 +47,7 @@
 		"asert": ""
 	},
     "dbUpdateExt": {
-		"code": "{\n data {}\n conditions {}\n action {\n DBUpdateExt(\"test\", \"name\", \"block2\", \"test\", \"updatedByName\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n DBUpdateExt(\"test\", \"name\", \"block2\", {test: \"updatedByName\"})\n }\n }",
 		"asert": ""
 	},	
     "findEcosystem": {
