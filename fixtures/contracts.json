@@ -38,7 +38,7 @@
 		"information":"needs to create language resourse with name - test and localisacions:en- test_en, de- test_de"
 	},		
     "dbInsert": {
-		"code": "{\n data {}\n conditions {}\n action {\n $result=DBInsert(\"test\", \"name,test\", \"block2\", \"val1\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n $result=DBInsert(\"test\", {name: \"block2\", test: \"val1\"})\n }\n }",
 		"asert":"",
 		"information":"needs to create table \"test\" with \"name\" and \"test\" string columns"
 	},
