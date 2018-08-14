@@ -715,7 +715,7 @@ class SystemContractsTestCase(unittest.TestCase):
         data {}	
         conditions {}	
         action {
-            DBInsert("%s","text,num", "text1", "num1")    
+            DBInsert("%s", {text: "text1", num: "num1"})    
         }
         }""" %tableName
         code, name = utils.generate_name_and_code(code)
