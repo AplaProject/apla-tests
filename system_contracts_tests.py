@@ -1089,7 +1089,15 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         # add contract which insert records in table in progress CallDelayedContract
-        body = "{\n data{} \n conditions{} \n action { \n  DBInsert(\""+table_name+"\", \"id_block\", $block) \n } \n }"
+        body = """
+        {
+            data{}
+            conditions{}
+            action {
+                DBInsert("%s", {id_block: $block})
+            }
+        }
+        """ % table_name
         code, contract_name = utils.generate_name_and_code(body)
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
         res = self.call("NewContract", data)
