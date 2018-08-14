@@ -751,11 +751,14 @@ class SystemContractsTestCase(unittest.TestCase):
                     "TypesArr[1]": types[1], "TypesArr[2]": types[2],
                     "TypesArr[3]": types[3], "TypesArr[4]": types[4],
                     "TypesArr[5]": types[5], "TypesArr[6]": types[6]}
-        permission = """{"insert": "false",
-        "update" : "true","new_column": "true"}"""
-        data = {"Name": "Tab_" + utils.generate_random_name(),
-                "ApplicationId": 1, "TypesArr": dicTypes,
-                "InsertPerm": "true", "UpdatePerm": "true",
+        permission = """{"insert": "false", "update" : "true","new_column": "true"}"""
+        data = {"ApplicationId": 1,
+                "Name" :"Tab_" + utils.generate_random_name(),
+                "ColumnsArr": dicColumns,
+                "TypesArr": dicTypes,
+                "InsertPerm": "true",
+                "UpdatePerm": "true",
+                "ReadPerm": "true",
                 "NewColumnPerm": "true"}
         data.update(dicColumns)
         data.update(dicTypes)
