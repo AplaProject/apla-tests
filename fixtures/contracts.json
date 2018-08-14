@@ -4,7 +4,7 @@
 		"asert":""
 	},
     "dbFind":{
-		"code": "{ \n data {}\n conditions {}\n action { \n var res array\n var val map\n res = DBFind(\"pages\").Columns(\"name\").Where(\"id=?\", 1).Order(\"id\")\n val = res[0]\n $result = val[\"name\"]\n }\n }",
+		"code": "{ \n data {}\n conditions {}\n action { \n var res array\n var val map\n res = DBFind(\"pages\").Columns(\"name\").Where({id: \"1\"}).Order(\"id\")\n val = res[0]\n $result = val[\"name\"]\n }\n }",
 		"asert": "default"
 	},
 	"toUpper":{
