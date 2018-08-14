@@ -870,17 +870,18 @@ class SystemContractsTestCase(unittest.TestCase):
 
     def test_edit_table(self):
         name = "Tab_" + utils.generate_random_name()
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," +\
-        "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        permissions = "{\"insert\": \"false\", \"update\" : \"true\"," +\
-        " \"new_column\": \"true\"}"
+        columns = """[{"name": "MyName", "type": "varchar", "index": "1", "conditions": "true"}]"""
+        permissions = """{"insert": "false", "update": "true", "new_column": "true"}"""
         data = {"Name": name, "Columns": columns,
                 "Permissions": permissions, "ApplicationId": 1}
         res = self.call("NewTable", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataEdit = {"Name": name, "InsertPerm": "true",
-                    "UpdatePerm": "true", "NewColumnPerm": "true"}
+        dataEdit = {"Name": name,
+                    "InsertPerm": "true",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true",
+                    "NewColumnPerm": "true"}
         res = self.call("EditTable", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
