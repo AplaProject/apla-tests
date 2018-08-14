@@ -888,52 +888,76 @@ class SystemContractsTestCase(unittest.TestCase):
 
     def test_new_column(self):
         nameTab = "Tab_" + utils.generate_random_name()
-        columns = """[{"name":"MyName","type":"varchar",
-        "index": "1",  "conditions":"true"}]"""
-        permissions = """{"insert": "false",
-        "update" : "true","new_column": "true"}"""
-        data = {"Name": nameTab, "Columns": columns,
-                "Permissions": permissions, "ApplicationId": 1}
+        columns = """[{"name": "MyName", "type":"varchar", "index": "1", "conditions": "true"}]"""
+        permissions = """{"insert": "false", "update": "true", "new_column": "true"}"""
+        data = {"ApplicationId": 1,
+                "Name": nameTab,
+                "Columns": columns,
+                "Permissions": permissions, }
         res = self.call("NewTable", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol1 = {"TableName": nameTab, "Name": "var",
-                   "Type": "varchar", "Index": "0", "Permissions": "true"}
+        dataCol1 = {"TableName": nameTab,
+                    "Name": "var",
+                    "Type": "varchar",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res1 = self.call("NewColumn", dataCol1)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol2 = {"TableName": nameTab, "Name": "json",
-                   "Type": "json", "Index": "0", "Permissions": "true"}
+        dataCol2 = {"TableName": nameTab,
+                    "Name": "json",
+                    "Type": "json",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res2 = self.call("NewColumn", dataCol2)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol3 = {"TableName": nameTab, "Name": "num",
-                   "Type": "number", "Index": "0", "Permissions": "true"}
+        dataCol3 = {"TableName": nameTab,
+                    "Name": "num",
+                    "Type": "number",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res3 = self.call("NewColumn", dataCol3)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol4 = {"TableName": nameTab, "Name": "date",
-                   "Type": "datetime", "Index": "0", "Permissions": "true"}
+        dataCol4 = {"TableName": nameTab,
+                    "Name": "date",
+                    "Type": "datetime",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res4 = self.call("NewColumn", dataCol4)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol5 = {"TableName": nameTab, "Name": "sum",
-                   "Type": "money", "Index": "0", "Permissions": "true"}
+        dataCol5 = {"TableName": nameTab,
+                    "Name": "sum",
+                    "Type": "money",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res5 = self.call("NewColumn", dataCol5)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol6 = {"TableName": nameTab, "Name": "name",
-                   "Type": "text", "Index": "0", "Permissions": "true"}
+        dataCol6 = {"TableName": nameTab,
+                    "Name": "name",
+                    "Type": "text",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res6 = self.call("NewColumn", dataCol6)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol7 = {"TableName": nameTab, "Name": "length",
-                   "Type": "double", "Index": "0", "Permissions": "true"}
+        dataCol7 = {"TableName": nameTab,
+                    "Name": "length",
+                    "Type": "double",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res7 = self.call("NewColumn", dataCol7)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol8 = {"TableName": nameTab, "Name": "code",
-                   "Type": "character", "Index": "0", "Permissions": "true"}
+        dataCol8 = {"TableName": nameTab,
+                    "Name": "code",
+                    "Type": "character",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res8 = self.call("NewColumn", dataCol8)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
