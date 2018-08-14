@@ -43,7 +43,7 @@
 		"information":"needs to create table \"test\" with \"name\" and \"test\" string columns"
 	},
     "dbUpdate": {
-		"code": "{\n data {}\n conditions {}\n action {\n $result=DBUpdate(\"test\", 1, \"test\", \"updated\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n $result=DBUpdate(\"test\", 1, {test: \"updated\"})\n }\n }",
 		"asert": ""
 	},
     "dbUpdateExt": {
