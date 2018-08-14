@@ -29,7 +29,7 @@
 		"information":"needs to add record to history table"
 	},
     "dbRow":{
-		"code":"{\n data {}\n conditions {}\n action {\n var vals map\n vals = DBRow(\"pages\").Columns(\"name, menu\").Where(\"id = ?\", 1)\n $result = vals[\"name\"]\n }\n }",
+		"code":"{\n data {}\n conditions {}\n action {\n var vals map\n vals = DBRow(\"pages\").Columns(\"name, menu\").Where({id: \"1\"})\n $result = vals[\"name\"]\n }\n }",
 		"asert": "default_page"
 	},	
     "langRes":{
