@@ -950,12 +950,12 @@ class SystemContractsTestCase(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         name = "Col_" + utils.generate_random_name()
         dataCol = {"TableName": nameTab, "Name": name, "Type": "number",
-                   "Index": "0", "Permissions": "true"}
+                   "UpdatePerm": "true", "ReadPerm": "true"}
         res = self.call("NewColumn", dataCol)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataEdit = {"TableName": nameTab, "Name": name,
-                    "Permissions": "false"}
+        dataEdit = {"TableName": nameTab, "Name": name, "Type": "number",
+                   "UpdatePerm": "false", "ReadPerm": "false"}
         res = self.call("EditColumn", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
