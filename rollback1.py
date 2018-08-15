@@ -47,9 +47,10 @@ class Rollback1TestCase(unittest.TestCase):
         data {}
         conditions {}
         action {
-            DBInsert("notifications", 
-            "recipient->member_id,notification->type,notification->header,notification->body",
-             "-8399130570195839739", 1, "Message header", "Message body")
+            DBInsert("notifications", {"recipient->member_id": "-8399130570195839739",
+                                        "notification->type": 1,
+                                        "notification->header": "Message header",
+                                        "notification->body": "Message body"}) 
             }
         }
         """
