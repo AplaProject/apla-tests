@@ -93,6 +93,7 @@ class Rollback1TestCase(unittest.TestCase):
         dataEdit["Name"] = "notifications"
         dataEdit["InsertPerm"] = "true"
         dataEdit["UpdatePerm"] = "true"
+        dataEdit["ReadPerm"] = "true"
         dataEdit["NewColumnPerm"] = "true"
         res = self.call("EditTable", dataEdit)
         # call contract, wich added record in notification table
@@ -102,6 +103,7 @@ class Rollback1TestCase(unittest.TestCase):
         dataEdit["Name"] = "notifications"
         dataEdit["InsertPerm"] = "ContractAccess(\"Notifications_Single_Send_map\",\"Notifications_Roles_Send_map\")"
         dataEdit["UpdatePerm"] = "ContractConditions(\"MainCondition\")"
+        dataEdit["ReadPerm"] = "ContractConditions(\"MainCondition\")"
         dataEdit["NewColumnPerm"] = "ContractConditions(\"MainCondition\")"
         res = self.call("EditTable", dataEdit)
 
@@ -258,7 +260,10 @@ class Rollback1TestCase(unittest.TestCase):
 
     def new_block(self):
         name = "Block_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Hello page!"}
+        data = {"ApplicationId": 1,
+                "Name": name,
+                "Value": "Hello page!",
+                "Conditions": "true"}
         res = self.call("NewBlock", data)
 
     def edit_block(self):
@@ -340,6 +345,8 @@ class Rollback1TestCase(unittest.TestCase):
         res = self.call("EditSign", dataEdit)
 
     def test_rollback1(self):
+        print("Start rollback test")
+        # Install apps
         self.impApp("admin", url, prKey, token)
         self.impApp("system_parameters", url, prKey, token)
 
