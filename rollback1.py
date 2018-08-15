@@ -345,11 +345,10 @@ class Rollback1TestCase(unittest.TestCase):
         res = self.call("EditSign", dataEdit)
 
     def test_rollback1(self):
-        print("Start rollback test")
         # Install apps
         self.impApp("admin", url, prKey, token)
         self.impApp("system_parameters", url, prKey, token)
-
+        print("Start rollback test")
         self.addNotification()
         self.addBinary()
         tableName = self.addUserTable()
