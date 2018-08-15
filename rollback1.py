@@ -96,10 +96,13 @@ class Rollback1TestCase(unittest.TestCase):
     def addUserTable(self):
         # add table
         column = """[{"name":"MyName","type":"varchar", 
-        "index": "1", "conditions":"true"},{"name":"ver_on_null","type":"varchar", 
-        "index": "1", "conditions":"true"}]"""
-        permission = """{"insert": "true", 
-        "update" : "true","new_column": "true"}"""
+                    "index": "1", "conditions":"true"},
+                    {"name":"ver_on_null","type":"varchar",
+                    "index": "1", "conditions":"true"}]"""
+        permission = """{"read": "true",
+                        "insert": "true",
+                        "update": "true",
+                        "new_column": "true"}"""
         tableName = "rolltab_" +  utils.generate_random_name()
         data = {"Name": tableName,
                 "Columns": column, "ApplicationId": 1,
@@ -114,7 +117,7 @@ class Rollback1TestCase(unittest.TestCase):
         data {}
         conditions {}
         action {
-            DBInsert("%s", "MyName" , "insert")
+            DBInsert("%s", {MyName: "insert"})
             }
         }
         """ % tableName
@@ -132,7 +135,7 @@ class Rollback1TestCase(unittest.TestCase):
         data {}
         conditions {}
         action {
-            DBUpdate("%s", 1, "MyName,ver_on_null", "update", "update")
+            DBUpdate("%s", 1, {MyName: "update", ver_on_null: "update"})
             }
         }
         """ % tableName
@@ -169,8 +172,9 @@ class Rollback1TestCase(unittest.TestCase):
 
     def new_parameter(self):
         name = "Par_" + utils.generate_random_name()
-        data = {"Name": name, "ApplicationId": 1,
-                "Value": "test", "Conditions": "true"}
+        data = {"Name": name,
+                "Value": "test",
+                "Conditions": "true"}
         res = self.call("NewParameter", data)
         return name
 
@@ -181,27 +185,32 @@ class Rollback1TestCase(unittest.TestCase):
 
     def new_menu(self):
         name = "Menu_" + utils.generate_random_name()
-        data = {"Name": name, "ApplicationId": 1,
-                "Value": "Item1", "Conditions": "true"}
+        data = {"Name": name,
+                "Value": "Item1",
+                "Title": name,
+                "Conditions": "true"}
         res = self.call("NewMenu", data)
         return name
 
     def edit_menu(self):
         dataEdit = {"Id": funcs.get_count(url, "menu", token),
-                    "Value": "ItemEdited", "Conditions": "true"}
+                    "Value": "ItemEdited",
+                    "Title": "TitleEdited",
+                    "Conditions": "true"}
         res = self.call("EditMenu", dataEdit)
 
     def append_memu(self):
         count = funcs.get_count(url, "menu", token)
         dataEdit = {"Id": funcs.get_count(url, "menu", token),
-                    "Value": "AppendedItem", "Conditions": "true"}
+                    "Value": "AppendedItem"}
         res = self.call("AppendMenu", dataEdit)
 
     def new_page(self):
-        data = {"Name": "Page_" + utils.generate_random_name(),
-                "Value": "Hello page!", "ApplicationId": 1,
-                "Conditions": "true",
-                "Menu": "default_menu"}
+        data = {"ApplicationId": 1,
+                "Name": "Page_" + utils.generate_random_name(),
+                "Value": "Hello page!",
+                "Menu": "default_menu",
+                "Conditions": "true"}
         res = self.call("NewPage", data)
 
     def edit_page(self):
@@ -221,8 +230,7 @@ class Rollback1TestCase(unittest.TestCase):
 
     def new_block(self):
         name = "Block_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
-                "Conditions": "true"}
+        data = {"Name": name, "Value": "Hello page!"}
         res = self.call("NewBlock", data)
 
     def edit_block(self):
@@ -233,9 +241,11 @@ class Rollback1TestCase(unittest.TestCase):
 
     def new_table(self):
         column = """[{"name":"MyName","type":"varchar",
-        "index": "1","conditions":"true"}]"""
-        permission = """{"insert": "false",
-        "update" : "true","new_column": "true"}"""
+                    "index": "1","conditions":"true"}]"""
+        permission = """{"read": "true",
+                        "insert": "false",
+                        "update" : "true",
+                        "new_column": "true"}"""
         data = {"Name": "Tab_" + utils.generate_random_name(),
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
@@ -247,6 +257,7 @@ class Rollback1TestCase(unittest.TestCase):
         dataEdit["Name"] = name
         dataEdit["InsertPerm"] = "true"
         dataEdit["UpdatePerm"] = "true"
+        dataEdit["ReadPerm"] = "true"
         dataEdit["NewColumnPerm"] = "true"
         res = self.call("EditTable", dataEdit)
 
@@ -255,14 +266,16 @@ class Rollback1TestCase(unittest.TestCase):
         dataCol = {"TableName": table,
                    "Name": name,
                    "Type": "number",
-                   "Index": "0",
-                   "Permissions": "true"}
+                   "UpdatePerm": "true",
+                   "ReadPerm": "true"}
         res = self.call("NewColumn", dataCol)
         return name
 
     def edit_column(self, table, column):
-        dataEdit = {"TableName": table, "Name": column,
-                    "Permissions": "false"}
+        dataEdit = {"TableName": table,
+                    "Name": column,
+                    "UpdatePerm": "false",
+                    "ReadPerm": "false"}
         res = self.call("EditColumn", dataEdit)
 
     def new_lang(self):
@@ -283,9 +296,7 @@ class Rollback1TestCase(unittest.TestCase):
         value += "\" ,  \"field\" :  \"" + name
         value += "\" ,  \"title\": \"" + name
         value += "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
-        data = {"Name": name, "ApplicationId": 1,
-                "Value": value,
-                "Conditions": "true"}
+        data = {"Name": name, "Value": value}
         res = self.call("NewSign", data)
         return name
 
