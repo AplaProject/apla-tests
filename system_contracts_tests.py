@@ -1032,7 +1032,8 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
-    def test_new_sign(self):
+    # off
+    def _new_sign(self):
         name = "Sign_" + utils.generate_random_name()
         value = "{\"forsign\":\"" + name +\
         "\", \"field\": \"" + name + "\", \"title\": \"" + name +\
@@ -1041,8 +1042,9 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewSign", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        
-    def test_new_sign_joint(self):
+
+    # off
+    def _new_sign_joint(self):
         name = "Sign_" + utils.generate_random_name()
         params = [{"name": "test", "text": "test"},
                   {"name": "test2", "text": "test2"}]
@@ -1052,8 +1054,9 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewSignJoint", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        
-    def test_edit_sign_joint(self):
+
+    # off
+    def _edit_sign_joint(self):
         name = "Sign_" + utils.generate_random_name()
         params = [{"name": "test", "text": "test"},
                   {"name": "test2", "text": "test2"}]
@@ -1070,7 +1073,8 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         
-    def test_edit_sign(self):
+    # off
+    def _edit_sign(self):
         name = "Sign_" + utils.generate_random_name()
         value = "{\"forsign\":\"" + name +\
         "\", \"field\": \"" + name + "\", \"title\": \"" + name +\
