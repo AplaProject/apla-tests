@@ -333,9 +333,6 @@ class Rollback1TestCase(unittest.TestCase):
         res = self.call("EditSign", dataEdit)
 
     def test_rollback1(self):
-
-        self.impApp("app_for_rollback", url, prKey, token)
-
         self.addNotification()
         self.addBinary()
         tableName = self.addUserTable()
@@ -368,9 +365,6 @@ class Rollback1TestCase(unittest.TestCase):
         self.deactivate_contract(contract)
         param = self.new_parameter()
         self.edit_parameter(param)
-
-        self.impApp("basic", url, prKey, token)
-
         menu = self.new_menu()
         self.edit_menu()
         self.append_memu()
@@ -388,6 +382,7 @@ class Rollback1TestCase(unittest.TestCase):
         self.edit_lang(langs["count"], lang)
         sign = self.new_sign()
         self.edit_sign(sign)
+        self.impApp("basic", url, prKey, token)
         time.sleep(20)
 
 
