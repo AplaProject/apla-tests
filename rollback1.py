@@ -22,6 +22,34 @@ class Rollback1TestCase(unittest.TestCase):
         lData = utils.login(url, prKey, 0)
         token = lData["jwtToken"]
 
+    def impApp(self, appName, url, prKey, token):
+        path = os.path.join(os.getcwd(), "fixtures", "basic", appName + ".json")
+        with open(path, 'r', encoding="utf8") as f:
+            file = f.read()
+        files = {'input_file': file}
+        resp = utils.call_contract_with_files(url, prKey, "ImportUpload", {},
+                                              files, token)
+        if ("hash" in resp):
+            resImportUpload = utils.txstatus(url, 30,
+                                             resp["hash"], token)
+            if int(resImportUpload["blockid"]) > 0:
+                founderID = utils.getFounderId(host, db, login, pas)
+                importApp = utils.getImportAppData(host, db, login, pas, founderID)
+                importAppData = importApp['data']
+                contractName = "Import"
+                data = [{"contract": contractName,
+                         "params": importAppData[i]} for i in range(len(importAppData))]
+                resp = utils.call_multi_contract(url, prKey, contractName, data, token)
+                time.sleep(30)
+                if "hashes" in resp:
+                    hashes = resp['hashes']
+                    result = utils.txstatus_multi(url, 30, hashes, token)
+                    for status in result.values():
+                        if int(status["blockid"]) < 1:
+                            print("Import is failed")
+                            exit(1)
+                    print("App '" + appName + "' successfully installed")
+
     def call(self, name, data):
         resp = utils.call_contract(url, prKey, name, data, token)
         res = utils.txstatus(url, waitTx,
@@ -47,9 +75,10 @@ class Rollback1TestCase(unittest.TestCase):
         data {}
         conditions {}
         action {
-            DBInsert("notifications", 
-            "recipient->member_id,notification->type,notification->header,notification->body",
-             "-8399130570195839739", 1, "Message header", "Message body")
+            DBInsert("notifications", {"recipient->member_id": "-8399130570195839739",
+                                        "notification->type": 1,
+                                        "notification->header": "Message header",
+                                        "notification->body": "Message body"}) 
             }
         }
         """
@@ -64,6 +93,7 @@ class Rollback1TestCase(unittest.TestCase):
         dataEdit["Name"] = "notifications"
         dataEdit["InsertPerm"] = "true"
         dataEdit["UpdatePerm"] = "true"
+        dataEdit["ReadPerm"] = "true"
         dataEdit["NewColumnPerm"] = "true"
         res = self.call("EditTable", dataEdit)
         # call contract, wich added record in notification table
@@ -73,6 +103,7 @@ class Rollback1TestCase(unittest.TestCase):
         dataEdit["Name"] = "notifications"
         dataEdit["InsertPerm"] = "ContractAccess(\"Notifications_Single_Send_map\",\"Notifications_Roles_Send_map\")"
         dataEdit["UpdatePerm"] = "ContractConditions(\"MainCondition\")"
+        dataEdit["ReadPerm"] = "ContractConditions(\"MainCondition\")"
         dataEdit["NewColumnPerm"] = "ContractConditions(\"MainCondition\")"
         res = self.call("EditTable", dataEdit)
 
@@ -95,10 +126,13 @@ class Rollback1TestCase(unittest.TestCase):
     def addUserTable(self):
         # add table
         column = """[{"name":"MyName","type":"varchar", 
-        "index": "1", "conditions":"true"},{"name":"ver_on_null","type":"varchar", 
-        "index": "1", "conditions":"true"}]"""
-        permission = """{"insert": "true", 
-        "update" : "true","new_column": "true"}"""
+                    "index": "1", "conditions":"true"},
+                    {"name":"ver_on_null","type":"varchar",
+                    "index": "1", "conditions":"true"}]"""
+        permission = """{"read": "true",
+                        "insert": "true",
+                        "update": "true",
+                        "new_column": "true"}"""
         tableName = "rolltab_" +  utils.generate_random_name()
         data = {"Name": tableName,
                 "Columns": column, "ApplicationId": 1,
@@ -113,7 +147,7 @@ class Rollback1TestCase(unittest.TestCase):
         data {}
         conditions {}
         action {
-            DBInsert("%s", "MyName" , "insert")
+            DBInsert("%s", {MyName: "insert"})
             }
         }
         """ % tableName
@@ -131,7 +165,7 @@ class Rollback1TestCase(unittest.TestCase):
         data {}
         conditions {}
         action {
-            DBUpdate("%s", 1, "MyName,ver_on_null", "update", "update")
+            DBUpdate("%s", 1, {MyName: "update", ver_on_null: "update"})
             }
         }
         """ % tableName
@@ -168,8 +202,9 @@ class Rollback1TestCase(unittest.TestCase):
 
     def new_parameter(self):
         name = "Par_" + utils.generate_random_name()
-        data = {"Name": name, "ApplicationId": 1,
-                "Value": "test", "Conditions": "true"}
+        data = {"Name": name,
+                "Value": "test",
+                "Conditions": "true"}
         res = self.call("NewParameter", data)
         return name
 
@@ -180,27 +215,32 @@ class Rollback1TestCase(unittest.TestCase):
 
     def new_menu(self):
         name = "Menu_" + utils.generate_random_name()
-        data = {"Name": name, "ApplicationId": 1,
-                "Value": "Item1", "Conditions": "true"}
+        data = {"Name": name,
+                "Value": "Item1",
+                "Title": name,
+                "Conditions": "true"}
         res = self.call("NewMenu", data)
         return name
 
     def edit_menu(self):
         dataEdit = {"Id": funcs.get_count(url, "menu", token),
-                    "Value": "ItemEdited", "Conditions": "true"}
+                    "Value": "ItemEdited",
+                    "Title": "TitleEdited",
+                    "Conditions": "true"}
         res = self.call("EditMenu", dataEdit)
 
     def append_memu(self):
         count = funcs.get_count(url, "menu", token)
         dataEdit = {"Id": funcs.get_count(url, "menu", token),
-                    "Value": "AppendedItem", "Conditions": "true"}
+                    "Value": "AppendedItem"}
         res = self.call("AppendMenu", dataEdit)
 
     def new_page(self):
-        data = {"Name": "Page_" + utils.generate_random_name(),
-                "Value": "Hello page!", "ApplicationId": 1,
-                "Conditions": "true",
-                "Menu": "default_menu"}
+        data = {"ApplicationId": 1,
+                "Name": "Page_" + utils.generate_random_name(),
+                "Value": "Hello page!",
+                "Menu": "default_menu",
+                "Conditions": "true"}
         res = self.call("NewPage", data)
 
     def edit_page(self):
@@ -220,7 +260,9 @@ class Rollback1TestCase(unittest.TestCase):
 
     def new_block(self):
         name = "Block_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
+        data = {"ApplicationId": 1,
+                "Name": name,
+                "Value": "Hello page!",
                 "Conditions": "true"}
         res = self.call("NewBlock", data)
 
@@ -232,9 +274,11 @@ class Rollback1TestCase(unittest.TestCase):
 
     def new_table(self):
         column = """[{"name":"MyName","type":"varchar",
-        "index": "1","conditions":"true"}]"""
-        permission = """{"insert": "false",
-        "update" : "true","new_column": "true"}"""
+                    "index": "1","conditions":"true"}]"""
+        permission = """{"read": "true",
+                        "insert": "false",
+                        "update" : "true",
+                        "new_column": "true"}"""
         data = {"Name": "Tab_" + utils.generate_random_name(),
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
@@ -246,6 +290,7 @@ class Rollback1TestCase(unittest.TestCase):
         dataEdit["Name"] = name
         dataEdit["InsertPerm"] = "true"
         dataEdit["UpdatePerm"] = "true"
+        dataEdit["ReadPerm"] = "true"
         dataEdit["NewColumnPerm"] = "true"
         res = self.call("EditTable", dataEdit)
 
@@ -254,14 +299,16 @@ class Rollback1TestCase(unittest.TestCase):
         dataCol = {"TableName": table,
                    "Name": name,
                    "Type": "number",
-                   "Index": "0",
-                   "Permissions": "true"}
+                   "UpdatePerm": "true",
+                   "ReadPerm": "true"}
         res = self.call("NewColumn", dataCol)
         return name
 
     def edit_column(self, table, column):
-        dataEdit = {"TableName": table, "Name": column,
-                    "Permissions": "false"}
+        dataEdit = {"TableName": table,
+                    "Name": column,
+                    "UpdatePerm": "false",
+                    "ReadPerm": "false"}
         res = self.call("EditColumn", dataEdit)
 
     def new_lang(self):
@@ -282,9 +329,7 @@ class Rollback1TestCase(unittest.TestCase):
         value += "\" ,  \"field\" :  \"" + name
         value += "\" ,  \"title\": \"" + name
         value += "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
-        data = {"Name": name, "ApplicationId": 1,
-                "Value": value,
-                "Conditions": "true"}
+        data = {"Name": name, "Value": value}
         res = self.call("NewSign", data)
         return name
 
@@ -300,6 +345,10 @@ class Rollback1TestCase(unittest.TestCase):
         res = self.call("EditSign", dataEdit)
 
     def test_rollback1(self):
+        # Install apps
+        self.impApp("admin", url, prKey, token)
+        self.impApp("system_parameters", url, prKey, token)
+        print("Start rollback test")
         self.addNotification()
         self.addBinary()
         tableName = self.addUserTable()

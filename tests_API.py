@@ -503,11 +503,23 @@ class ApiTestCase(unittest.TestCase):
                 founderID = res['list'][i]['id']
             i += 1
         # change column permissions
-        data = {"TableName": "members", "Name":"image_id","Permissions": "true"}
+        data = {"TableName": "members",
+                "Name":"image_id",
+                "UpdatePerm": "true",
+                "ReadPerm": "true"}
         res = self.call("EditColumn", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # update members table
-        code, name = utils.generate_name_and_code("{data{} conditions{} action{ DBUpdate(\"members\", "+founderID+",\"image_id\", "+lastRec+") } }")
+        code = """
+        {
+            data{}
+            conditions{}
+            action{
+                DBUpdate("members", %s, {image_id: "%s"})
+            }
+        }
+        """ % (founderID, lastRec)
+        code, name = utils.generate_name_and_code(code)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -517,7 +529,10 @@ class ApiTestCase(unittest.TestCase):
         res = self.assertTxInBlock(resp, token)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # rollback changes column permissions
-        data = {"TableName": "members", "Name":"image_id","Permissions": "ContractAccess(\"Profile_Edit\")"}
+        data = {"TableName": "members",
+                "Name":"image_id",
+                "UpdatePerm": "ContractAccess(\"Profile_Edit\")",
+                "ReadPerm": "true"}
         res = self.call("EditColumn", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # test
@@ -556,11 +571,23 @@ class ApiTestCase(unittest.TestCase):
                 founderID = res['list'][i]['id']
             i += 1
         # change column permissions
-        data = {"TableName": "members", "Name":"image_id","Permissions": "true"}
+        data = {"TableName": "members",
+                "Name": "image_id",
+                "UpdatePerm": "true",
+                "ReadPerm": "true"}
         res = self.call("EditColumn", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # update members table
-        code, name = utils.generate_name_and_code("{data{} conditions{} action{ DBUpdate(\"members\", "+founderID+",\"image_id\", "+lastRec+") } }")
+        code = """
+               {
+                   data{}
+                   conditions{}
+                   action{
+                       DBUpdate("members", %s, {image_id: "%s"})
+                   }
+               }
+               """ % (founderID, lastRec)
+        code, name = utils.generate_name_and_code(code)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -570,7 +597,10 @@ class ApiTestCase(unittest.TestCase):
         res = self.assertTxInBlock(resp, token)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # rollback changes column permissions
-        data = {"TableName": "members", "Name":"image_id","Permissions": "ContractAccess(\"Profile_Edit\")"}
+        data = {"TableName": "members",
+                "Name":"image_id",
+                "UpdatePerm": "ContractAccess(\"Profile_Edit\")",
+                "ReadPerm": "true"}
         res = self.call("EditColumn", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # test
