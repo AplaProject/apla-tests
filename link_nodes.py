@@ -26,9 +26,13 @@ def impApp(appName, url, prKey, token):
         resImportUpload = utils.txstatus(url, 30,
                                          resp["hash"], token)
         if int(resImportUpload["blockid"]) > 0:
-            founderID = utils.getFounderId(dbHost, dbName, login, pas)
-            importApp = utils.getImportAppData(dbHost, dbName, login, pas, founderID)
-            importAppData = importApp['data']
+            founderID = funcs.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
+            result = funcs.call_get_api(url + "/list/buffer_data", "", token)
+            buferDataList = result['list']
+            for item in buferDataList:
+                if item['key'] == "import" and item['member_id'] == founderID:
+                    importAppData = json.loads(item['value'])['data']
+                    break
             contractName = "Import"
             data = [{"contract": contractName,
                      "params": importAppData[i]} for i in range(len(importAppData))]
