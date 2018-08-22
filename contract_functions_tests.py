@@ -327,10 +327,6 @@ class ContractFunctionsTestCase(unittest.TestCase):
     def test_type_string(self):
         contract = self.contracts["type_string"]
         self.check_contract(contract["code"], contract["asert"])
-
-    def test_uuid(self):
-        contract = self.contracts["uuid"]
-        self.check_contract(contract["code"], contract["asert"])
         
     def test_getBlock(self):
         contract = self.contracts["getBlock"]
