@@ -271,4 +271,4 @@ confPath = os.path.join(curDir+ '/../', 'hostConfig.json')
 with open(confPath, 'w') as fconf:
 	fconf.write(json.dumps(config))
 
-print("Nodes successfully linced")
+print("Nodes successfully started")

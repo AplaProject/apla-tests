@@ -715,7 +715,7 @@ class SystemContractsTestCase(unittest.TestCase):
         data {}	
         conditions {}	
         action {
-            DBInsert("%s","text,num", "text1", "num1")    
+            DBInsert("%s", {text: "text1", num: "num1"})    
         }
         }""" %tableName
         code, name = utils.generate_name_and_code(code)
@@ -751,11 +751,14 @@ class SystemContractsTestCase(unittest.TestCase):
                     "TypesArr[1]": types[1], "TypesArr[2]": types[2],
                     "TypesArr[3]": types[3], "TypesArr[4]": types[4],
                     "TypesArr[5]": types[5], "TypesArr[6]": types[6]}
-        permission = """{"insert": "false",
-        "update" : "true","new_column": "true"}"""
-        data = {"Name": "Tab_" + utils.generate_random_name(),
-                "ApplicationId": 1, "TypesArr": dicTypes,
-                "InsertPerm": "true", "UpdatePerm": "true",
+        permission = """{"insert": "false", "update" : "true","new_column": "true"}"""
+        data = {"ApplicationId": 1,
+                "Name" :"Tab_" + utils.generate_random_name(),
+                "ColumnsArr": dicColumns,
+                "TypesArr": dicTypes,
+                "InsertPerm": "true",
+                "UpdatePerm": "true",
+                "ReadPerm": "true",
                 "NewColumnPerm": "true"}
         data.update(dicColumns)
         data.update(dicTypes)
@@ -870,69 +873,94 @@ class SystemContractsTestCase(unittest.TestCase):
 
     def test_edit_table(self):
         name = "Tab_" + utils.generate_random_name()
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," +\
-        "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        permissions = "{\"insert\": \"false\", \"update\" : \"true\"," +\
-        " \"new_column\": \"true\"}"
+        columns = """[{"name": "MyName", "type": "varchar", "index": "1", "conditions": "true"}]"""
+        permissions = """{"insert": "false", "update": "true", "new_column": "true"}"""
         data = {"Name": name, "Columns": columns,
                 "Permissions": permissions, "ApplicationId": 1}
         res = self.call("NewTable", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataEdit = {"Name": name, "InsertPerm": "true",
-                    "UpdatePerm": "true", "NewColumnPerm": "true"}
+        dataEdit = {"Name": name,
+                    "InsertPerm": "true",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true",
+                    "NewColumnPerm": "true"}
         res = self.call("EditTable", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_new_column(self):
         nameTab = "Tab_" + utils.generate_random_name()
-        columns = """[{"name":"MyName","type":"varchar",
-        "index": "1",  "conditions":"true"}]"""
-        permissions = """{"insert": "false",
-        "update" : "true","new_column": "true"}"""
-        data = {"Name": nameTab, "Columns": columns,
-                "Permissions": permissions, "ApplicationId": 1}
+        columns = """[{"name": "MyName", "type":"varchar", "index": "1", "conditions": "true"}]"""
+        permissions = """{"insert": "false", "update": "true", "new_column": "true"}"""
+        data = {"ApplicationId": 1,
+                "Name": nameTab,
+                "Columns": columns,
+                "Permissions": permissions, }
         res = self.call("NewTable", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol1 = {"TableName": nameTab, "Name": "var",
-                   "Type": "varchar", "Index": "0", "Permissions": "true"}
+        dataCol1 = {"TableName": nameTab,
+                    "Name": "var",
+                    "Type": "varchar",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res1 = self.call("NewColumn", dataCol1)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol2 = {"TableName": nameTab, "Name": "json",
-                   "Type": "json", "Index": "0", "Permissions": "true"}
+        dataCol2 = {"TableName": nameTab,
+                    "Name": "json",
+                    "Type": "json",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res2 = self.call("NewColumn", dataCol2)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol3 = {"TableName": nameTab, "Name": "num",
-                   "Type": "number", "Index": "0", "Permissions": "true"}
+        dataCol3 = {"TableName": nameTab,
+                    "Name": "num",
+                    "Type": "number",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res3 = self.call("NewColumn", dataCol3)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol4 = {"TableName": nameTab, "Name": "date",
-                   "Type": "datetime", "Index": "0", "Permissions": "true"}
+        dataCol4 = {"TableName": nameTab,
+                    "Name": "date",
+                    "Type": "datetime",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res4 = self.call("NewColumn", dataCol4)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol5 = {"TableName": nameTab, "Name": "sum",
-                   "Type": "money", "Index": "0", "Permissions": "true"}
+        dataCol5 = {"TableName": nameTab,
+                    "Name": "sum",
+                    "Type": "money",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res5 = self.call("NewColumn", dataCol5)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol6 = {"TableName": nameTab, "Name": "name",
-                   "Type": "text", "Index": "0", "Permissions": "true"}
+        dataCol6 = {"TableName": nameTab,
+                    "Name": "name",
+                    "Type": "text",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res6 = self.call("NewColumn", dataCol6)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol7 = {"TableName": nameTab, "Name": "length",
-                   "Type": "double", "Index": "0", "Permissions": "true"}
+        dataCol7 = {"TableName": nameTab,
+                    "Name": "length",
+                    "Type": "double",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res7 = self.call("NewColumn", dataCol7)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataCol8 = {"TableName": nameTab, "Name": "code",
-                   "Type": "character", "Index": "0", "Permissions": "true"}
+        dataCol8 = {"TableName": nameTab,
+                    "Name": "code",
+                    "Type": "character",
+                    "UpdatePerm": "true",
+                    "ReadPerm": "true"}
         res8 = self.call("NewColumn", dataCol8)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -950,12 +978,12 @@ class SystemContractsTestCase(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         name = "Col_" + utils.generate_random_name()
         dataCol = {"TableName": nameTab, "Name": name, "Type": "number",
-                   "Index": "0", "Permissions": "true"}
+                   "UpdatePerm": "true", "ReadPerm": "true"}
         res = self.call("NewColumn", dataCol)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataEdit = {"TableName": nameTab, "Name": name,
-                    "Permissions": "false"}
+        dataEdit = {"TableName": nameTab, "Name": name, "Type": "number",
+                   "UpdatePerm": "false", "ReadPerm": "false"}
         res = self.call("EditColumn", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -1004,7 +1032,8 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
-    def test_new_sign(self):
+    # off
+    def _new_sign(self):
         name = "Sign_" + utils.generate_random_name()
         value = "{\"forsign\":\"" + name +\
         "\", \"field\": \"" + name + "\", \"title\": \"" + name +\
@@ -1013,8 +1042,9 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewSign", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        
-    def test_new_sign_joint(self):
+
+    # off
+    def _new_sign_joint(self):
         name = "Sign_" + utils.generate_random_name()
         params = [{"name": "test", "text": "test"},
                   {"name": "test2", "text": "test2"}]
@@ -1024,8 +1054,9 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewSignJoint", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        
-    def test_edit_sign_joint(self):
+
+    # off
+    def _edit_sign_joint(self):
         name = "Sign_" + utils.generate_random_name()
         params = [{"name": "test", "text": "test"},
                   {"name": "test2", "text": "test2"}]
@@ -1042,7 +1073,8 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         
-    def test_edit_sign(self):
+    # off
+    def _edit_sign(self):
         name = "Sign_" + utils.generate_random_name()
         value = "{\"forsign\":\"" + name +\
         "\", \"field\": \"" + name + "\", \"title\": \"" + name +\
@@ -1089,7 +1121,15 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         # add contract which insert records in table in progress CallDelayedContract
-        body = "{\n data{} \n conditions{} \n action { \n  DBInsert(\""+table_name+"\", \"id_block\", $block) \n } \n }"
+        body = """
+        {
+            data{}
+            conditions{}
+            action {
+                DBInsert("%s", {id_block: $block})
+            }
+        }
+        """ % table_name
         code, contract_name = utils.generate_name_and_code(body)
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
         res = self.call("NewContract", data)

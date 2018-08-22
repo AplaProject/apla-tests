@@ -4,7 +4,7 @@
 		"asert":""
 	},
     "dbFind":{
-		"code": "{ \n data {}\n conditions {}\n action { \n var res array\n var val map\n res = DBFind(\"pages\").Columns(\"name\").Where(\"id=?\", 1).Order(\"id\")\n val = res[0]\n $result = val[\"name\"]\n }\n }",
+		"code": "{ \n data {}\n conditions {}\n action { \n var res array\n var val map\n res = DBFind(\"pages\").Columns(\"name\").Where({id: \"1\"}).Order(\"id\")\n val = res[0]\n $result = val[\"name\"]\n }\n }",
 		"asert": "default"
 	},
 	"toUpper":{
@@ -29,7 +29,7 @@
 		"information":"needs to add record to history table"
 	},
     "dbRow":{
-		"code":"{\n data {}\n conditions {}\n action {\n var vals map\n vals = DBRow(\"pages\").Columns(\"name, menu\").Where(\"id = ?\", 1)\n $result = vals[\"name\"]\n }\n }",
+		"code":"{\n data {}\n conditions {}\n action {\n var vals map\n vals = DBRow(\"pages\").Columns(\"name, menu\").Where({id: \"1\"})\n $result = vals[\"name\"]\n }\n }",
 		"asert": "default_page"
 	},	
     "langRes":{
@@ -38,16 +38,16 @@
 		"information":"needs to create language resourse with name - test and localisacions:en- test_en, de- test_de"
 	},		
     "dbInsert": {
-		"code": "{\n data {}\n conditions {}\n action {\n $result=DBInsert(\"test\", \"name,test\", \"block2\", \"val1\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n $result=DBInsert(\"test\", {name: \"block2\", test: \"val1\"})\n }\n }",
 		"asert":"",
 		"information":"needs to create table \"test\" with \"name\" and \"test\" string columns"
 	},
     "dbUpdate": {
-		"code": "{\n data {}\n conditions {}\n action {\n $result=DBUpdate(\"test\", 1, \"test\", \"updated\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n $result=DBUpdate(\"test\", 1, {test: \"updated\"})\n }\n }",
 		"asert": ""
 	},
     "dbUpdateExt": {
-		"code": "{\n data {}\n conditions {}\n action {\n DBUpdateExt(\"test\", \"name\", \"block2\", \"test\", \"updatedByName\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n DBUpdateExt(\"test\", \"name\", \"block2\", {test: \"updatedByName\"})\n }\n }",
 		"asert": ""
 	},	
     "findEcosystem": {
@@ -221,10 +221,6 @@
 		"code": "{\n data {}\n conditions {}\n action {var s, s1 string \n s = \"hello\" \n s1 = \"world\" \n $result = s+s1}\n }",
 		"asert": "helloworld"
 	},
-	"uuid": {
-		"code": "{\n data {}\n conditions {}\n action {\n $result = UUID() }\n }",
-		"asert": "-"
-	},
 	"getColumnType": {
 		"code": "{\n data {}\n conditions {}\n action {\n $result = GetColumnType(\"contracts\", \"id\") }\n }",
 		"asert": "number"
@@ -238,7 +234,7 @@
 		"asert": "SGVsbG8h"
 	},
 	"for_cost": {
-		"code": "{\n data {\n State int\n }\n conditions {}\n action {\n var res array\n res = DBFind(\"pages\").Columns(\"name\").Where(\"id=?\", 1)\n if $State < 1 {\n var par map\n CallContract(\"incorrectContract\", par)\n $result = GetContractById(999999999999)\n }\n else {\n $result = \"OK\"} }\n }",
+		"code": "{\n data {\n State int\n }\n conditions {}\n action {\n var res array\n res = DBFind(\"pages\").Columns(\"name\").Where({id: \"1\"})\n if $State < 1 {\n var par map\n CallContract(\"incorrectContract\", par)\n $result = GetContractById(999999999999)\n }\n else {\n $result = \"OK\"} }\n }",
 		"asert": "_"
 	},
 	"get_keyId": {
