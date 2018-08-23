@@ -43,6 +43,7 @@ def impApp(appName, url, prKey, token):
                 hashes = resp['hashes']
                 result = utils.txstatus_multi(url, 30, hashes, token)
                 for status in result.values():
+                    print(status)
                     if int(status["blockid"]) < 1:
                         print("Import is failed")
                         exit(1)
