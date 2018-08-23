@@ -10,6 +10,7 @@ def isInBlock(call, url, token):
     if "hash" in call:
         status = utils.txstatus(url, 30, call["hash"], token)
         if "blockid" not in status or int(status["blockid"]) < 0:
+            print(status)
             return False 
     else:
         return False
