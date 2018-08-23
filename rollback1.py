@@ -33,9 +33,13 @@ class Rollback1TestCase(unittest.TestCase):
             resImportUpload = utils.txstatus(url, 30,
                                              resp["hash"], token)
             if int(resImportUpload["blockid"]) > 0:
-                founderID = utils.getFounderId(host, db, login, pas)
-                importApp = utils.getImportAppData(host, db, login, pas, founderID)
-                importAppData = importApp['data']
+                founderID = funcs.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
+                result = funcs.call_get_api(url + "/list/buffer_data", "", token)
+                buferDataList = result['list']
+                for item in buferDataList:
+                    if item['key'] == "import" and item['member_id'] == founderID:
+                        importAppData = json.loads(item['value'])['data']
+                        break
                 contractName = "Import"
                 data = [{"contract": contractName,
                          "params": importAppData[i]} for i in range(len(importAppData))]
@@ -49,6 +53,7 @@ class Rollback1TestCase(unittest.TestCase):
                             print("Import is failed")
                             exit(1)
                     print("App '" + appName + "' successfully installed")
+
 
     def call(self, name, data):
         resp = utils.call_contract(url, prKey, name, data, token)
@@ -398,6 +403,7 @@ class Rollback1TestCase(unittest.TestCase):
         self.edit_lang(langs["count"], lang)
         sign = self.new_sign()
         self.edit_sign(sign)
+        self.impApp("basic", url, prKey, token)
         time.sleep(20)
 
 
