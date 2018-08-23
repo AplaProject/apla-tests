@@ -1,5 +1,6 @@
 {
     "name": "Basic application",
+    "conditions": "ContractConditions(\"MainCondition\")",
     "data": [
         {
             "Name": "APL_not_required",
@@ -67,6 +68,11 @@
             "Type": "languages"
         },
         {
+            "Name": "add_parameter",
+            "Trans": "{\"en\":\"Add parameter\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "add_role",
             "Trans": "{\"en\": \"Add role\", \"ru\": \"Добавить роль\"}",
             "Type": "languages"
@@ -99,6 +105,16 @@
         {
             "Name": "amount",
             "Trans": "{\"en\": \"Amount\", \"ru\": \"Сумма\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "api_address",
+            "Trans": "{\"en\": \"API address\", \"ru\": \"АПИ адрес\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "app_params",
+            "Trans": "{\"en\": \"Application parameters\", \"ru\": \"Параметры приложения\"}",
             "Type": "languages"
         },
         {
@@ -144,6 +160,41 @@
         {
             "Name": "attention",
             "Trans": "{\"en\": \"ATTENTION! The page has not received parameters and is unavailable for viewing.\", \"ru\": \"ВНИМАНИЕ! Страница не получила параметров и не доступна для просмотра.\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "attention_not_validator",
+            "Trans": "{\"en\": \"You are not a Validator\", \"ru\": \"Вы не валидатор\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "attorney",
+            "Trans": "{\"en\":\"Attorney\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "attorney_add",
+            "Trans": "{\"en\":\"Add attorney\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "attorney_id",
+            "Trans": "{\"en\":\"Attorney wallet\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "attorney_info",
+            "Trans": "{\"en\":\"Attorney info\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "attorney_list",
+            "Trans": "{\"en\":\"Attorney list\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "attorney_view",
+            "Trans": "{\"en\":\"View power of attorney\"}",
             "Type": "languages"
         },
         {
@@ -497,6 +548,11 @@
             "Type": "languages"
         },
         {
+            "Name": "delete",
+            "Trans": "{\"en\":\"Delete\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "delete_node",
             "Trans": "{\"en\": \"Delete node\", \"ru\": \"Удалить узел\"}",
             "Type": "languages"
@@ -562,6 +618,11 @@
             "Type": "languages"
         },
         {
+            "Name": "ecosystems",
+            "Trans": "{\"en\":\"Ecosystems\",\"ru\":\"Экосистемы\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "edit",
             "Trans": "{\"en\":\"Edit\",\"ru\":\"Редактировать\"}",
             "Type": "languages"
@@ -624,6 +685,11 @@
         {
             "Name": "expiration",
             "Trans": "{\"en\": \"Expiration\", \"ru\": \"Окончание\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "expiration_date",
+            "Trans": "{\"en\":\"Expiration date\"}",
             "Type": "languages"
         },
         {
@@ -722,6 +788,11 @@
             "Type": "languages"
         },
         {
+            "Name": "install_default_roles",
+            "Trans": "{\n    \"en\": \"Install default roles\",\n    \"ru\": \"Установить роли\"\n}",
+            "Type": "languages"
+        },
+        {
             "Name": "install_default_templates",
             "Trans": "{\"en\":\"Install default templates\",\"ru\":\"Установить шаблоны\"}",
             "Type": "languages"
@@ -739,6 +810,11 @@
         {
             "Name": "invalid",
             "Trans": "{\"en\": \"Invalid\", \"ru\": \"Недействительно\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "issue",
+            "Trans": "{\"en\":\"Issue\"}",
             "Type": "languages"
         },
         {
@@ -832,6 +908,11 @@
             "Type": "languages"
         },
         {
+            "Name": "metrics",
+            "Trans": "{\"en\":\"Metrics\",\"ru\":\"Метрики\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "multiple",
             "Trans": "{\"en\": \"Multiple\", \"ru\": \"Множественные\"}",
             "Type": "languages"
@@ -917,6 +998,16 @@
             "Type": "languages"
         },
         {
+            "Name": "node_founder_key_id",
+            "Trans": "{\n    \"en\": \"The key ID of the founder of the node\",\n    \"ru\": \"Идентификатор ключа основателя узла\"\n}",
+            "Type": "languages"
+        },
+        {
+            "Name": "node_pub_key",
+            "Trans": "{\n    \"en\": \"The public key of the node\",\n    \"ru\": \"Публичный ключ узла\"\n}",
+            "Type": "languages"
+        },
+        {
             "Name": "not_enough_votes",
             "Trans": "{\"en\": \"Not enough votes\", \"ru\": \"Недостаточно голосов\"}",
             "Type": "languages"
@@ -979,6 +1070,11 @@
         {
             "Name": "num_members",
             "Trans": "{\"en\": \"Number of members\", \"ru\": \"Количество членов\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "old_value",
+            "Trans": "{\"en\": \"Old value\", \"ru\": \"Старое значение\"}",
             "Type": "languages"
         },
         {
@@ -1069,6 +1165,11 @@
         {
             "Name": "possible",
             "Trans": "{\"en\": \"Possible\", \"ru\": \"Возможно\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "power_of_attorney_params",
+            "Trans": "{\"en\":\"Power of attorney parameters\"}",
             "Type": "languages"
         },
         {
@@ -1377,6 +1478,16 @@
             "Type": "languages"
         },
         {
+            "Name": "sysparams_validator_resign",
+            "Trans": "{\"en\": \"Validator's resign\", \"ru\": \"Валидатор. Уйти в отставку\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "system_param",
+            "Trans": "{\"en\":\"System parameter\",\"ru\":\"Системный параметр\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "system_params",
             "Trans": "{\"en\":\"System parameters\",\"ru\":\"Системные параметры\"}",
             "Type": "languages"
@@ -1409,6 +1520,11 @@
         {
             "Name": "tables",
             "Trans": "{\"en\": \"Tables\", \"ru\": \"Таблицы\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "tcp_address",
+            "Trans": "{\"en\": \"TCP address\", \"ru\": \"ТСП адрес\"}",
             "Type": "languages"
         },
         {
@@ -1567,6 +1683,11 @@
             "Type": "languages"
         },
         {
+            "Name": "update_votings_statuses",
+            "Trans": "{\"en\": \"Update votings statuses\", \"ru\": \"Обновить статусы голосований\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "use",
             "Trans": "{\n    \"en\": \"Use\",\n    \"ru\": \"Использовать\"\n}",
             "Type": "languages"
@@ -1584,6 +1705,11 @@
         {
             "Name": "vacancies",
             "Trans": "{\"en\": \"Vacancies\", \"ru\": \"Вакансии\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "valid",
+            "Trans": "{\"en\": \"Valid\", \"ru\": \"Действительно\"}",
             "Type": "languages"
         },
         {
@@ -1697,6 +1823,11 @@
             "Type": "languages"
         },
         {
+            "Name": "voting_all_keys_added",
+            "Trans": "{\"en\":\"All members were added\",\"ru\":\"Все члены были добавлены\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "voting_all_members",
             "Trans": "{\"en\":\"All members were added automatically\",\"ru\":\"Все члены были добавлены автоматически\"}",
             "Type": "languages"
@@ -1767,6 +1898,11 @@
             "Type": "languages"
         },
         {
+            "Name": "voting_list",
+            "Trans": "{\"en\": \"List of votings\", \"ru\": \"Список голосований\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "voting_params",
             "Trans": "{\"en\": \"Voting params\", \"ru\": \"Параметры голосования \"}",
             "Type": "languages"
@@ -1812,8 +1948,18 @@
             "Type": "languages"
         },
         {
-            "Name": "voting_template_not_found",
+            "Name": "voting_template_id",
+            "Trans": "{\"en\": \"Voting template id\", \"ru\": \"Номер шаблона голосования\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "voting_template_id_not_found",
             "Trans": "{\"en\": \"The template ID to vote is not found in the parameters of the ecosystem\", \"ru\": \"Идентификатор шаблона голосования не найден в параметрах экосистемы\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "voting_template_not_found",
+            "Trans": "{\"en\": \"The voting template not found\", \"ru\": \"Шаблон голосования не найден\"}",
             "Type": "languages"
         },
         {
