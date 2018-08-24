@@ -49,6 +49,15 @@ def impApp(appName, url, prKey, token):
                         print("Import is failed")
                         exit(1)
                 print("App '" + appName + "' successfully installed")
+                
+def rolesInsatll(url, prKey, token):
+    data = {}
+    print("RolesInstall started")
+    call = utils.call_contract(url, prKey, "RolesInstall",
+                               data, token)
+    if not isInBlock(call, url, token):
+        print("RolesInstall is failed")
+        exit(1)
         
 def voitingInstall(url, prKey, token):
     data = {}
@@ -138,20 +147,8 @@ if __name__ == "__main__":
     impApp("basic", url, prKey1, token1)
     impApp("platform_ecosystem", url, prKey1, token1)
     impApp("language_resources", url, prKey1, token1)
-
-    data2 = utils.login(url, prKey2, 0)
-    token2 = data2["jwtToken"]
-    updateProfile("nodeowner1", url, prKey2, token2)
-    data3 = utils.login(url, prKey3, 0)
-    token3 = data3["jwtToken"]
-    updateProfile("nodeowner2", url, prKey3, token3)
     
-    data = utils.login(url, prKey1, 1)
-    token1 = data["jwtToken"]
-    
-    setAplaConsensus(conf["2"]['keyID'], url, prKey1, token1)
-    setAplaConsensus(conf["3"]['keyID'], url, prKey1, token1)
-    setAplaConsensus(conf["1"]['keyID'], url, prKey1, token1)
+    rolesInsatll(url,prKey1, token1)
     
     voitingInstall(url, prKey1, token1)
     editAppParam("voting_sysparams_template_id", 2, url, prKey1, token1)
@@ -168,6 +165,20 @@ if __name__ == "__main__":
                  conf["2"]["keyID"], conf["2"]["pubKey"],
                  url, prKey2, token2)
     voitingStatusUpdate(url, prKey1, token1)
+    
+    data2 = utils.login(url, prKey2, 0)
+    token2 = data2["jwtToken"]
+    updateProfile("nodeowner1", url, prKey2, token2)
+    data3 = utils.login(url, prKey3, 0)
+    token3 = data3["jwtToken"]
+    updateProfile("nodeowner2", url, prKey3, token3)
+    
+    data = utils.login(url, prKey1, 1)
+    token1 = data["jwtToken"]
+    
+    setAplaConsensus(conf["2"]['keyID'], url, prKey1, token1)
+    setAplaConsensus(conf["3"]['keyID'], url, prKey1, token1)
+    setAplaConsensus(conf["1"]['keyID'], url, prKey1, token1)
     
     data = utils.login(url, prKey3, 3)
     token3 = data["jwtToken"]
