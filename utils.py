@@ -25,6 +25,7 @@ def login(url, prKey, role=0, ecosystem=1):
 	head = {'Authorization': fullToken}
 	resp = requests.post(url + '/login', params=data, headers=head)
 	res = resp.json()
+	print(res)
 	result = {}
 	result["uid"] = uid
 	result["jwtToken"] = 'Bearer ' + res["token"]
