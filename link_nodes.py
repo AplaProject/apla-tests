@@ -9,6 +9,7 @@ import json
 def isInBlock(call, url, token):
     if "hash" in call:
         status = utils.txstatus(url, 30, call["hash"], token)
+        print(status)
         if "blockid" not in status or int(status["blockid"]) < 0:
             print(status)
             return False 
@@ -54,6 +55,7 @@ def voitingInstall(url, prKey, token):
     print("voitingInstall started")
     call = utils.call_contract(url, prKey, "VotingTemplatesInstall",
                                data, token)
+    time.sleep(30)
     if not isInBlock(call, url, token):
         print("VoitingInstall is failed")
         exit(1)
