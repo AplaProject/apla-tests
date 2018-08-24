@@ -27,7 +27,6 @@ def login(url, prKey, role=0, ecosystem=1):
 	res = resp.json()
 	result = {}
 	result["uid"] = uid
-	result["timeToken"] = res["refresh"]
 	result["jwtToken"] = 'Bearer ' + res["token"]
 	result["pubkey"] = pubkey
 	result["address"] = res["address"]
