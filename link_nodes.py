@@ -55,7 +55,6 @@ def voitingInstall(url, prKey, token):
     print("voitingInstall started")
     call = utils.call_contract(url, prKey, "VotingTemplatesInstall",
                                data, token)
-    time.sleep(30)
     if not isInBlock(call, url, token):
         print("VoitingInstall is failed")
         exit(1)
@@ -140,15 +139,6 @@ if __name__ == "__main__":
     impApp("platform_ecosystem", url, prKey1, token1)
     impApp("language_resources", url, prKey1, token1)
 
-    
-    voitingInstall(url, prKey1, token1)
-    editAppParam("voting_sysparams_template_id", 2, url, prKey1, token1)
-    node1 = json.dumps({"tcp_address": conf["1"]["tcp_address"],
-                      "api_address": conf["1"]["api_address"],
-                      "key_id": conf["1"]["keyID"],
-                      "public_key": conf["1"]["pubKey"]})
-    editAppParam("first_node", node1, url, prKey1, token1)
-    
     data2 = utils.login(url, prKey2, 0)
     token2 = data2["jwtToken"]
     updateProfile("nodeowner1", url, prKey2, token2)
@@ -162,6 +152,15 @@ if __name__ == "__main__":
     setAplaConsensus(conf["2"]['keyID'], url, prKey1, token1)
     setAplaConsensus(conf["3"]['keyID'], url, prKey1, token1)
     setAplaConsensus(conf["1"]['keyID'], url, prKey1, token1)
+    
+    voitingInstall(url, prKey1, token1)
+    editAppParam("voting_sysparams_template_id", 2, url, prKey1, token1)
+    node1 = json.dumps({"tcp_address": conf["1"]["tcp_address"],
+                      "api_address": conf["1"]["api_address"],
+                      "key_id": conf["1"]["keyID"],
+                      "public_key": conf["1"]["pubKey"]})
+    editAppParam("first_node", node1, url, prKey1, token1)
+    
     print("Start create voting 1")
     data = utils.login(url, prKey2, 3)
     token2 = data["jwtToken"]
