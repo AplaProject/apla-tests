@@ -70,7 +70,9 @@ def voitingInstall(url, prKey, token):
 
     
 def editAppParam(name, val, url, prKey, token):
-    data = {"Id": funcs.get_object_id(url, name, "app_params", token),
+    id = funcs.get_object_id(url, name, "app_params", token)
+    print("id", id)
+    data = {"Id": id,
             "Name": name, "Value": val, "Conditions": "true" }
     call = utils.call_contract(url, prKey, "EditAppParam",
                                data, token)
