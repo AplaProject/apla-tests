@@ -53,9 +53,11 @@ def prepare_tx_with_files(url, prKey, entity, jvtToken, data, files):
 
 def call_contract(url, prKey, name, data, jvtToken):
 	sign = prepare_tx(url, prKey, name, jvtToken, data)
+	print("sign", sign)
 	dataContract = {"time": sign['time'], "signature": sign["signature"]}
 	urlEnd = url + '/contract/' + sign["reqID"]
 	resp = requests.post(urlEnd, data=dataContract, headers={"Authorization": jvtToken})
+	print("resp", resp)
 	result = resp.json()
 	return result
 

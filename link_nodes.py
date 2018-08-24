@@ -51,6 +51,7 @@ def impApp(appName, url, prKey, token):
         
 def voitingInstall(url, prKey, token):
     data = {}
+    print("voitingInstall started")
     call = utils.call_contract(url, prKey, "VotingTemplatesInstall",
                                data, token)
     if not isInBlock(call, url, token):
