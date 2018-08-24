@@ -45,7 +45,10 @@ def get_application_id(url, name, token):
 def get_object_id(url, name, object, token):
     id = None
     endPoint = url + "/list/" + object
+    print("endPoint", endPoint)
     res = call_get_api(endPoint, "", token)
+    print("ans", res)
+    print("name", name)
     for object in res["list"]:
         if object["name"] == name:
             id = object["id"]
@@ -55,6 +58,7 @@ def get_object_id(url, name, object, token):
 def is_contract_activated(url, name, token):
     endPoint = url + "/contract/" + name
     res = call_get_api(endPoint, "", token)
+    print(res)
     return res["active"]
 
 def get_activated_wallet(url, name, token):
