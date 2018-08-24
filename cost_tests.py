@@ -46,6 +46,7 @@ class CostTestCase(unittest.TestCase):
                                      "NewContract", data, tokenCreater)
         status = utils.txstatus(conf["1"]["url"], conf["1"]["time_wait_tx_in_block"],
                                 result['hash'], tokenCreater)
+        print(status)
         
     def activateContract(self):
         dataCreater = utils.login(conf["2"]["url"],conf["1"]["private_key"], 0)
@@ -82,6 +83,10 @@ class CostTestCase(unittest.TestCase):
                                                            idFrom,
                                                            conf["1"]["keyID"],
                                                            platformaCommission)
+        print(str(isNodeCommission))
+        print(str(isPlatformCommission))
+        print("PlatformID  ", str(conf["1"]["keyID"]))
+        print("platforma commission: ", str(platformaCommission))
         if isNodeCommission and isPlatformCommission:
             return True
         else:
@@ -91,6 +96,7 @@ class CostTestCase(unittest.TestCase):
         if funcs.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == False:
             self.activateContract()
         time.sleep(10)
+        print(str(funcs.is_contract_activated(conf["2"]["url"], "CostContract", self.token)))
         walletId = funcs.get_activated_wallet(conf["2"]["url"],
                                               "CostContract", self.token)
         sumsBefore = utils.getUserTokenAmounts(conf["1"]["dbHost"],
@@ -117,6 +123,7 @@ class CostTestCase(unittest.TestCase):
         node = utils.get_block_gen_node(conf["1"]["dbHost"], conf["1"]["dbName"],
                                         conf["1"]["login"], conf["1"] ["pass"],
                                         result["blockid"])
+        print("node :", str(node))
         sumsAfter = utils.getUserTokenAmounts(conf["1"]["dbHost"],
                                                      conf["1"]["dbName"],
                                                      conf["1"]["login"],
