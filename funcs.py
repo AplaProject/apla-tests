@@ -44,7 +44,7 @@ def get_application_id(url, name, token):
 
 def get_object_id(url, name, object, token):
     id = None
-    endPoint = url + "/list/" + object
+    endPoint = url + "/list/" + object + "?limit=1000"
     print("endPoint", endPoint)
     res = call_get_api(endPoint, "", token)
     print("ans", res)
