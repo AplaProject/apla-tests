@@ -97,6 +97,8 @@ def setAplaConsensus(id, url, prKey, token):
     data = {"member_id": id, "rid": 3}
     call = utils.call_contract(url, prKey, "RolesAssign",
                                data, token)
+    print("--------------------------------------------------------------------------")
+    print("setAplaconsensus block: ", call)
     if not isInBlock(call, url, token):
         print("RolesAssign " + id + " is failed")
         exit(1)
@@ -160,14 +162,6 @@ if __name__ == "__main__":
                       "public_key": conf["1"]["pubKey"]})
     editAppParam("first_node", node1, url, prKey1, token1)
     
-    print("Start create voting 1")
-    data = utils.login(url, prKey2, 3)
-    token2 = data["jwtToken"]
-    createVoiting(conf["2"]["tcp_address"], conf["2"]["api_address"],
-                 conf["2"]["keyID"], conf["2"]["pubKey"],
-                 url, prKey2, token2)
-    voitingStatusUpdate(url, prKey1, token1)
-    
     data2 = utils.login(url, prKey2, 0)
     token2 = data2["jwtToken"]
     updateProfile("nodeowner1", url, prKey2, token2)
@@ -182,6 +176,15 @@ if __name__ == "__main__":
     setAplaConsensus(conf["3"]['keyID'], url, prKey1, token1)
     setAplaConsensus(conf["1"]['keyID'], url, prKey1, token1)
     
+    print("Start create voting 1")
+    
+    data = utils.login(url, prKey2, 3)
+    token2 = data["jwtToken"]
+    createVoiting(conf["2"]["tcp_address"], conf["2"]["api_address"],
+                 conf["2"]["keyID"], conf["2"]["pubKey"],
+                 url, prKey2, token2)
+    voitingStatusUpdate(url, prKey1, token1)
+
     data = utils.login(url, prKey3, 3)
     token3 = data["jwtToken"]
     voiting(1, url, prKey3, token3)
