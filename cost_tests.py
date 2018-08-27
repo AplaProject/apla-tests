@@ -130,8 +130,8 @@ class CostTestCase(unittest.TestCase):
                                                      conf["1"] ["pass"])
         summAfter = sum(summ[0] for summ in sumsAfter)
         aNodeBalance = self.getNodeBalances()
-        nodeCommission = 144530000000000000
-        platformaCommission = 4470000000000000
+        nodeCommission = 141620000000000000
+        platformaCommission = 4380000000000000
         balanceRunnerA = utils.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                          conf["1"]["dbName"],
                                                          conf["1"]["login"],
@@ -202,8 +202,8 @@ class CostTestCase(unittest.TestCase):
                                                      conf["1"] ["pass"])
         summAfter = sum(summ[0] for summ in sumsAfter)
         aNodeBalance = self.getNodeBalances()
-        nodeCommission = 144530000000000000
-        platformaCommission = 4470000000000000
+        nodeCommission = 141620000000000000
+        platformaCommission = 4380000000000000
         commission = nodeCommission + platformaCommission
         balanceRunnerA = utils.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                          conf["1"]["dbName"],
