@@ -131,10 +131,18 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertEqual("Ecosystem "+str(id)+" does not exist", res["error"])
 
     def test_money_transfer(self):
-        data = {"Recipient": "0005-2070-2000-0006-0200", "Amount": "2999479990390000000"}
+        data = {"Recipient": "0005-2070-2000-0006-0200", "Amount": "1000"}
         res = self.call("MoneyTransfer", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
+        self.assertTrue(utils.isCommissionInHistory(self.config["1"]["dbHost"],
+                                                    self.config["1"]["dbName"],
+                                                    self.config["1"]["login"],
+                                                    self.config["1"]["pass"],
+                                                    self.config["1"]["keyID"],
+                                                    "52070200000060200", "1000"),
+                        "No moneytransfer resord in history")
+
 
     def test_money_transfer_incorrect_wallet(self):
         wallet = "0005-2070-2000-0006"
