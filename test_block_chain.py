@@ -6,7 +6,7 @@ import time
 import funcs
 from builtins import sum
 
-class BlockChainTestCase(unittest.TestCase):
+class TestBlockChain(unittest.TestCase):
 
     def create_contract(self, url, prKey):
         code,name = utils.generate_name_and_code("")
@@ -130,8 +130,4 @@ class BlockChainTestCase(unittest.TestCase):
         msg += str(count_contracts2) + str(amounts1) + str(hash1) + str(node_position) + "\n"
         msg += "Amounts summ: " + str(sumAmounts)
         self.assertDictEqual(dict1, dict2, msg)
-
-        
-if __name__ == "__main__":
-    unittest.main()
     
