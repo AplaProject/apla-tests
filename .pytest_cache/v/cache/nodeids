@@ -1,0 +1,4 @@
+[
+  "test_block_chain.py::TestBlockChain::test_block_chain",
+  "test_block_chain.py::TestBlockChain::test_block_chain_edit"
+]

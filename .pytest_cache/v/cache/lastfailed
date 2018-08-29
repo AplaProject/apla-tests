@@ -1,0 +1,9 @@
+{
+  "scripts/run_sync_test.py": true,
+  "scripts/three_nodes_test.py": true,
+  "scripts/two_nodes_test.py": true,
+  "test_block_chain.py::TestBlockChain::()::test_block_chain": true,
+  "test_block_chain.py::TestBlockChain::()::test_block_chain_edit": true,
+  "test_block_chain.py::TestBlockChain::test_block_chain": true,
+  "test_block_chain.py::TestBlockChain::test_block_chain_edit": true
+}
