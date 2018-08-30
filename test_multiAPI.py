@@ -8,7 +8,7 @@ import os
 import time
 
 
-class MultiTxApiTestCase(unittest.TestCase):
+class TestMultiApi(unittest.TestCase):
     def setUp(self):
         global url, token, prKey, pause
         self.config = config.getNodeConfig()
@@ -63,8 +63,3 @@ class MultiTxApiTestCase(unittest.TestCase):
         data = [{"contract": contractName,
                  "params":{"Name":name, "Value":"SetVar(a,\"Hello\") \n Div(Body: #a#)", "Conditions":"true", "Menu":"default_menu", "ApplicationId": "1"}}]
         res = self.callMulti(contractName, data)
-
-
-
-if __name__ == '__main__':
-    unittest.main()

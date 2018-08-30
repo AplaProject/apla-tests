@@ -7,7 +7,7 @@ import time
 import funcs
 
 
-class ContractFunctionsTestCase(unittest.TestCase):
+class TestContractFunctions(unittest.TestCase):
     def setUp(self):
         self.config = config.getNodeConfig()
         global url, prKey,token, dbHost, dbName, login, pas
@@ -577,5 +577,3 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["getHistoryRow"]
         self.check_contract_with_data(contract["code"], data, block)
 
-if __name__ == '__main__':
-    unittest.main()

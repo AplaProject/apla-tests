@@ -4,7 +4,7 @@ import config
 import funcs
 import time
 
-class CompareBlocks(unittest.TestCase):
+class TestCompareBlocks(unittest.TestCase):
     
     def get_load_time(self, url, token, maxBlock):
         maxTime = 12000
@@ -28,7 +28,3 @@ class CompareBlocks(unittest.TestCase):
         msg = "All " + str(maxBlockId2) +\
          " blocks doesn't load in time. Last loaded block is " + str(res['blocks'])
         self.assertLess(res['time'], 12000, msg)
-		
-if __name__ == "__main__":
-    unittest.main()
-    

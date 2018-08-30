@@ -1,10 +1,7 @@
-import argparse
 import subprocess
 
 import pytest
 import os
-
-__author__ = 'krasnykh'
 
 
 def pytest_addoption(parser):
@@ -36,10 +33,26 @@ def pytest_addoption(parser):
     
     parser.addoption('--gapBetweenBlocks', action="store", default='2')
 
+    # Arguments for gemaxblockid
+    parser.addoption('--type1', action="store", default='http')
+    parser.addoption('--type2', action="store", default='http')
+    parser.addoption('--type3', action="store", default='http')
+    parser.addoption('--httpHost1', action="store", default='localhost')
+    parser.addoption('--httpHost2', action="store", default='localhost')
+    parser.addoption('--httpHost3', action="store", default='localhost')
 
+    # Arguments for quickStarterMonitoring
+    parser.addoption('--dbName', action="store", default='genesis')
+    parser.addoption('--logAll', action="store", default='1')
+    parser.addoption('--nodesCount', action="store", default='2')
+    parser.addoption('--timeout', action="store", default='2')
 
+    # Arguments for updatePrivateKeyForRollback and RunTests
+    parser.addoption('--privateKeyPath', action="store", default='D:\\genesis-go')
+    parser.addoption('--configPath', action="store", default='D:\\GitHub\\GenesisKernel\\genesis-tests\\')
 
-
-
-
+    # Arguments for test_update_sys_param
+    parser.addoption('--privKey', action="store", default='')
+    parser.addoption('--name', action="store", default='')
+    parser.addoption('--value', action="store", default='')
 

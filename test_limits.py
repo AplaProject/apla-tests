@@ -8,7 +8,7 @@ import os
 import time
 
 
-class LimitsTestCase(unittest.TestCase):
+class TestLimits(unittest.TestCase):
     
     @classmethod
     def setUpClass(self):
@@ -134,7 +134,3 @@ class LimitsTestCase(unittest.TestCase):
                                                maxBlock, 2),
                         "One of block contains more than 2 transaction")
         self.update_sys_param("max_tx_count ", str(max_tx_count))
-
-
-if __name__ == '__main__':
-    unittest.main()

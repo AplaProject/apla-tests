@@ -6,7 +6,7 @@ import time
 import funcs
 from builtins import sum
 
-class CompareNodes(unittest.TestCase):
+class TestCompareNodes(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         global config1, config2, config3, db1, db2, db3, login1, login2, login3
@@ -73,7 +73,3 @@ class CompareNodes(unittest.TestCase):
             dbInf3 = dbInformation3[key]
         self.assertEqual(dbInf1, dbInf2,"Different info about " + key)
         self.assertEqual(dbInf1, dbInf3,"Different info about " + key)
-
-        
-if __name__ == "__main__":
-    unittest.main()

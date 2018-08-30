@@ -4,11 +4,9 @@ import time
 import os
 import ctypes
 import json
-import argparse
 import shutil
 
 import pytest
-from _pytest.fixtures import pytestconfig
 
 def test_three_nodes(request):
 

@@ -9,7 +9,7 @@ import datetime
 import os
 
 
-class PrototipoTestCase(unittest.TestCase):
+class TestPrototipo(unittest.TestCase):
     def setUp(self):
         self.config = config.getNodeConfig()
         global url, prKey, token, dbHost, dbName, login, password
@@ -975,7 +975,3 @@ class PrototipoTestCase(unittest.TestCase):
         content = self.check_page("GetHistory(src, contracts, "+str(id)+")")
         partContent = content['tree'][0]["attr"]["data"][0]
         self.assertIn(replacedString, str(partContent), "getHistoryContract has problem: " + str(content["tree"]))
-
-
-if __name__ == '__main__':
-    unittest.main()
