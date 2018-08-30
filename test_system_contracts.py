@@ -8,7 +8,7 @@ import os
 import time
 
 
-class SystemContractsTestCase(unittest.TestCase):
+class TestSystemContracts(unittest.TestCase):
     
     def setUp(self):
         global url, token, prKey, pause, dbHost, dbName, login, pas, keys
@@ -1403,7 +1403,3 @@ class SystemContractsTestCase(unittest.TestCase):
         data = [{"contract": contractName,
                  "params": importAppData[i]} for i in range(len(importAppData))]
         self.callMulti(contractName, data, 60)
-
-
-if __name__ == '__main__':
-    unittest.main()

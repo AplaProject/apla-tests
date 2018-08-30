@@ -8,4 +8,5 @@ selenium==3.6.0
 urllib3==1.22
 virtualenv==15.1.0
 locustio==0.8.1
-git+https://github.com/blitzstern5/genesis-blockchain-tools@feature/send-tx
+pytest=3.7.1
+git+https://github.com/blitzstern5/genesis-blockchain-tools

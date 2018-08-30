@@ -8,7 +8,7 @@ import os
 import time
 
 
-class ApiTestCase(unittest.TestCase):
+class TestApi(unittest.TestCase):
     def setUp(self):
         global url, token, prKey, pause
         self.config = config.getNodeConfig()
@@ -666,6 +666,3 @@ class ApiTestCase(unittest.TestCase):
         asserts = ["error"]
         self.check_get_api("/ecosystemname?id=" + str(id), "", asserts)
 
-
-if __name__ == '__main__':
-    unittest.main()

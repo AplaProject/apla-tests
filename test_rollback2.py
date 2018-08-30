@@ -5,7 +5,7 @@ import os
 import json
 
 
-class Rollback2TestCase(unittest.TestCase):
+class TestRollback2(unittest.TestCase):
     
     def test_rollback1(self):
         self.conf = config.readMainConfig()
@@ -39,6 +39,3 @@ class Rollback2TestCase(unittest.TestCase):
             dbUser1 = dbUserTableInfo[key]
             dbUser2 = dbUserJson[key]
             self.assertEqual(dbUser1, dbUser2, "Different info about in user table " + key)
-            
-if __name__ == "__main__":
-    unittest.main()

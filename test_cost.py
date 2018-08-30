@@ -11,7 +11,7 @@ from genesis_blockchain_tools.crypto import get_public_key
 NODE_COMISSION = 139680000000000000
 PLATFORM_COMISSION = 4320000000000000
 
-class CostTestCase(unittest.TestCase):
+class TestCost(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         global conf, keys
@@ -381,7 +381,3 @@ class CostTestCase(unittest.TestCase):
         "balanceRunnerA:" + str(balanceRunnerA) + "\n" +\
         "balanceRunnerE:" + str(balanceRunnerB) + "\n"
         self.assertDictEqual(dictValid, dictExpect, msg)
-        
-                
-if __name__ == '__main__':
-    unittest.main()

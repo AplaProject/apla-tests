@@ -7,7 +7,7 @@ import funcs
 import os
 
 
-class Rollback1TestCase(unittest.TestCase):
+class TestRollback1(unittest.TestCase):
 
     def setUp(self):
         global url, prKey, token, waitTx, host, db, pas, login
@@ -397,7 +397,3 @@ class Rollback1TestCase(unittest.TestCase):
         #self.edit_sign(sign)
         self.impApp("conditions", url, prKey, token)
         time.sleep(20)
-
-
-if __name__ == "__main__":
-    unittest.main()

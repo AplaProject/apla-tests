@@ -5,12 +5,12 @@ import json
 import time
 import funcs
 import os
-import cost_tests
+import test_cost
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
 
 
-class CostTestCase(unittest.TestCase):
+class TestPrCost(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         global conf, keys, dataCreater
@@ -55,7 +55,7 @@ class CostTestCase(unittest.TestCase):
         
     def test_activated_contract(self):
         if funcs.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == False:
-            cost_tests.activateContract()
+            test_cost.activateContract()
         walletId = funcs.get_activated_wallet(conf["2"]["url"], "CostContract", self.token)
         balanceContractOwnerB = utils.get_balance_from_db(conf["1"]["dbHost"],
                                                          conf["1"]["dbName"],
@@ -242,8 +242,3 @@ class CostTestCase(unittest.TestCase):
                                                          conf["1"]["login"],
                                                          conf["1"] ["pass"],
                                                          pubRunner)
-        
-        
-                
-if __name__ == '__main__':
-    unittest.main()

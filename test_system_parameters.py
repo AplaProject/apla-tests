@@ -8,7 +8,7 @@ import os
 import time
 
 
-class SystemParametersCase(unittest.TestCase):
+class TestSystemParameters(unittest.TestCase):
     def setUp(self):
         global url, token, prKey, pause,\
             dbHost, dbName, login, password, contractName, maxInt, minInt, defaultValues, defaultValueKey
@@ -2491,5 +2491,3 @@ class SystemParametersCase(unittest.TestCase):
         res = self.call(name, "")
         self.assertEqual(mustBe, res, "test_dbUpdate_access_denied has problem!")
 
-if __name__ == '__main__':
-    unittest.main()
