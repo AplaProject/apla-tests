@@ -7,6 +7,8 @@ import funcs
 import os
 import time
 
+from model.database_queries import DatabaseQueries
+
 
 class TestSystemContracts(unittest.TestCase):
     
@@ -22,6 +24,9 @@ class TestSystemContracts(unittest.TestCase):
         pas = self.config["1"]['pass']
         self.data = utils.login(url, prKey, 0)
         token = self.data["jwtToken"]
+        self.db_query = DatabaseQueries()
+
+        wallet = "0005-2070-2000-0006-0200"
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
@@ -130,8 +135,8 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("EditEcosystemName", data)
         self.assertEqual("Ecosystem "+str(id)+" does not exist", res["error"])
 
-    def test_money_transfer(self):
-        data = {"Recipient": "0005-2070-2000-0006-0200", "Amount": "2999479990390000000"}
+    def test_money_transfer(self, wallet):
+        data = {"Recipient": wallet, "Amount": "2999479990390000000"}
         res = self.call("MoneyTransfer", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -143,29 +148,25 @@ class TestSystemContracts(unittest.TestCase):
         ans = self.call("MoneyTransfer", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
-    def test_money_transfer_zero_amount(self):
-        wallet = "0005-2070-2000-0006-0200"
+    def test_money_transfer_zero_amount(self, wallet):
         msg = "Amount must be greater then zero"
         data = {"Recipient": wallet, "Amount": "0"}
         ans = self.call("MoneyTransfer", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
-    def test_money_transfer_negative_amount(self):
-        wallet = "0005-2070-2000-0006-0200"
+    def test_money_transfer_negative_amount(self, wallet):
         msg = "Amount must be greater then zero"
         data = {"Recipient": wallet, "Amount": "-1000"}
         ans = self.call("MoneyTransfer", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
-    def test_money_transfer_amount_as_string(self):
-        wallet = "0005-2070-2000-0006-0200"
+    def test_money_transfer_amount_as_string(self, wallet):
         msg = "can't convert ttt to decimal"
         data = {"Recipient": wallet, "Amount": "ttt"}
         ans = self.call("MoneyTransfer", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
-    def test_money_transfer_with_comment(self):
-        wallet = "0005-2070-2000-0006-0200"
+    def test_money_transfer_with_comment(self, wallet):
         data = {"Recipient": wallet, "Amount": "1000", "Comment": "Test"}
         res = self.call("MoneyTransfer", data)
         self.assertGreater(res["blockid"], 0,
@@ -206,7 +207,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual("unknown identifier condition",
                          ans["error"], "Incorrect message: " + str(ans))
 
-    def test_edit_contract_incorrect_condition(self):
+    def test_edit_contract_incorrect_condition(self, wallet):
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
@@ -215,7 +216,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         data2 = {"Id": funcs.get_contract_id(url, name, token),
                  "Value": code, "Conditions": "tryam",
-                 "WalletId": "0005-2070-2000-0006-0200"}
+                 "WalletId": wallet}
         ans = self.call("EditContract", data2)
         self.assertEqual("unknown identifier tryam",
                          ans["error"], "Incorrect message: " + str(ans))
@@ -261,11 +262,11 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual("Contracts or functions names cannot be changed",
                          ans["error"], "Incorrect message: " + str(ans))
 
-    def test_edit_incorrect_contract(self):
+    def test_edit_incorrect_contract(self, wallet, id_):
         code, name = utils.generate_name_and_code("")
         id = "9999"
         data2 = {"Id": id, "Value": code, "Conditions": "true",
-                 "WalletId": "0005-2070-2000-0006-0200"}
+                 "WalletId": wallet}
         ans = self.call("EditContract", data2)
         self.assertEqual("Item " + id + " has not been found",
                          ans["error"], "Incorrect message: " + str(ans))
@@ -624,6 +625,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table(self):
+        dq = self.db_query
         column = """[{"name":"MyName","type":"varchar",
         "index": "1",  "conditions":"true"},{"name":"Myb","type":"json",
         "index": "0",  "conditions":"true"}, {"name":"MyD","type":"datetime",
@@ -632,8 +634,7 @@ class TestSystemContracts(unittest.TestCase):
         "index": "0",  "conditions":"true"},{"name":"MyDouble","type":"double",
         "index": "0",  "conditions":"true"},{"name":"MyC","type":"character",
         "index": "0",  "conditions":"true"}]"""
-        permission = """{"insert": "false",
-        "update" : "true","new_column": "true"}"""
+        permission = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
         data = {"Name": "Tab_" + utils.generate_random_name(),
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
@@ -642,14 +643,10 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_new_table_not_readable(self):
+        dq = self.db_query
         # create new table
-        column = """[
-        {"name":"Text","type":"varchar", "index": "1",  "conditions": {"update":"true", "read": "true"}},
-        {"name":"num","type":"varchar", "index": "0",  "conditions":{"update":"true", "read": "true"}}
-        ]"""
-        permission = """
-        {"read" : "false", "insert": "true", "update" : "true",  "new_column": "true"}
-        """
+        column = dq.new_db_table_2_column()
+        permission = dq.new_db_table_updater_permissions(r="false", i="true", u="true", new_column="true")
         tableName = "tab_" + utils.generate_random_name()
         data = {"Name": tableName,
                 "Columns": column, "ApplicationId": 1,
@@ -670,13 +667,9 @@ class TestSystemContracts(unittest.TestCase):
 
     def test_new_table_not_readable_all_columns(self):
         # create new table
-        column = """[
-        {"name":"Text","type":"varchar", "index": "1",  "conditions": {"update":"true", "read": "false"}},
-        {"name":"num","type":"varchar", "index": "0",  "conditions":{"update":"true", "read": "false"}}
-        ]"""
-        permission = """
-        {"read" : "true", "insert": "true", "update" : "true",  "new_column": "true"}
-        """
+        dq = self.db_query
+        column = dq.new_db_table_2_column(u_1="true", r_1="false", u_2="true", r_2="false")
+        permission = dq.new_db_table_updater_permissions(r="true", i="true", u="true", new_column="true")
         tableName = "tab_" + utils.generate_random_name()
         data = {"Name": tableName,
                 "Columns": column, "ApplicationId": 1,
@@ -697,13 +690,9 @@ class TestSystemContracts(unittest.TestCase):
 
     def test_new_table_not_readable_one_column(self):
         # create new table
-        column = """[
-        {"name":"Text","type":"varchar", "index": "1",  "conditions": {"update":"true", "read": "false"}},
-        {"name":"num","type":"varchar", "index": "0",  "conditions":{"update":"true", "read": "true"}}
-        ]"""
-        permission = """
-        {"read" : "true", "insert": "true", "update" : "true",  "new_column": "true"}
-        """
+        dq = self.db_query
+        column = dq.new_db_table_2_column(u_1="true", r_1="false", u_2="true", r_2="true")
+        permission = dq.new_db_table_updater_permissions(r="true", i="true", u="true", new_column="true")
         tableName = "tab_" + utils.generate_random_name()
         data = {"Name": tableName,
                 "Columns": column, "ApplicationId": 1,
@@ -767,10 +756,9 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_new_table_incorrect_column_name_digit(self):
-        column = """[{"name":"123","type":"varchar",
-        "index": "1",  "conditions":"true"}]"""
-        permission = """{"insert": "false",
-        "update" : "true","new_column": "true"}"""
+        dq = self.db_query
+        column = dq.db_one_column(name="123", type="varchar", index="1", conditions="true")
+        permission = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
         data = {"Name": "Tab_" + utils.generate_random_name(),
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
@@ -779,11 +767,10 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_incorrect_column_name_cyrillic(self):
+        dq = self.db_query
         word = "привет"
-        column = """[{"name":"%s","type":"varchar",
-        "index": "1",  "conditions":"true"}]""" % word
-        permission = """{"insert": "false",
-        "update" : "true","new_column": "true"}"""
+        column = dq.db_one_column(name=word, type="varchar", index="1", conditions="true")
+        permission = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
         data = {"Name": "Tab_" + utils.generate_random_name(),
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
@@ -792,52 +779,48 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_incorrect_condition1(self):
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," +\
-        "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        dq = self.db_query
         condition = "tryam"
-        permissions = "{\"insert\": \"" + condition +\
-        "\", \"update\" : \"true\", \"new_column\": \"true\"}"
+        columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
+        permission = dq.new_db_table_updater_permissions(r="true", i=condition, u="true", new_column="true")
         data = {"Name": "Tab_" + utils.generate_random_name(),
-                "Columns": columns, "Permissions": permissions,
+                "Columns": columns, "Permissions": permission,
                 "ApplicationId": 1}
         ans = self.call("NewTable", data)
         self.assertEqual("unknown identifier " + condition,
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_incorrect_condition2(self):
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," +\
-        "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        dq = self.db_query
         condition = "tryam"
-        permissions = "{\"insert\": \"true\", \"update\" : \"" +\
-        condition + "\", \"new_column\": \"true\"}"
+        columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
+        permission = dq.new_db_table_updater_permissions(r="true", i="true", u=condition, new_column="true")
         data = {"Name": "Tab_" + utils.generate_random_name(),
-                "Columns": columns, "Permissions": permissions,
+                "Columns": columns, "Permissions": permission,
                 "ApplicationId": 1}
         ans = self.call("NewTable", data)
         self.assertEqual("unknown identifier " + condition,
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_incorrect_condition3(self):
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," +\
-        "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        dq = self.db_query
         condition = "tryam"
-        permissions = "{\"insert\": \"true\", \"update\" : \"true\"," +\
-        " \"new_column\": \"" + condition + "\"}"
+        columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
+        permission = dq.new_db_table_updater_permissions(r="true", i="true", u="true", new_column=condition)
         data = {"Name": "Tab_" + utils.generate_random_name(),
-                "Columns": columns, "Permissions": permissions,
+                "Columns": columns, "Permissions": permission,
                 "ApplicationId": 1}
         ans = self.call("NewTable", data)
         self.assertEqual("unknown identifier " + condition,
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_exist_name(self):
+        dq = self.db_query
         name = "tab_" + utils.generate_random_name()
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," +\
-        "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        permissions = "{\"insert\": \"false\", \"update\" : \"true\"," +\
-        " \"new_column\": \"true\"}"
+        columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
+        permission = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
         data = {"Name": name, "Columns": columns,
-                "Permissions": permissions, "ApplicationId": 1}
+                "Permissions": permission, "ApplicationId": 1}
         res = self.call("NewTable", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -846,11 +829,10 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_incorrect_name_cyrillic(self):
+        dq = self.db_query
         name = "таблица"
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
-                  "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        permissions = "{\"insert\": \"false\", \"update\" : \"true\"," + \
-                      " \"new_column\": \"true\"}"
+        columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
+        permissions = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
         data = {"Name": name, "Columns": columns,
                 "Permissions": permissions, "ApplicationId": 1}
         ans = self.call("NewTable", data)
@@ -858,13 +840,12 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_identical_columns(self):
+        #TODO
+        dq = self.db_query
         name = "tab_" + utils.generate_random_name()
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
-        "\"index\": \"1\",  \"conditions\":\"true\"}," +\
-        "{\"name\":\"MyName\",\"type\":\"varchar\"," +\
-        "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        permissions = "{\"insert\": \"false\", \"update\": \"true\"," +\
-        " \"new_column\": \"true\"}"
+        columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true"), \
+                  dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
+        permissions = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
         data = {"Name": name, "Columns": columns,
                 "Permissions": permissions, "ApplicationId": 1}
         ans = self.call("NewTable", data)
@@ -872,9 +853,10 @@ class TestSystemContracts(unittest.TestCase):
                          "Incorrect message: " + str(ans))
 
     def test_edit_table(self):
+        dq = self.db_query
         name = "Tab_" + utils.generate_random_name()
-        columns = """[{"name": "MyName", "type": "varchar", "index": "1", "conditions": "true"}]"""
-        permissions = """{"insert": "false", "update": "true", "new_column": "true"}"""
+        columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
+        permissions = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
         data = {"Name": name, "Columns": columns,
                 "Permissions": permissions, "ApplicationId": 1}
         res = self.call("NewTable", data)
@@ -890,9 +872,10 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_new_column(self):
+        dq = self.db_query
         nameTab = "Tab_" + utils.generate_random_name()
-        columns = """[{"name": "MyName", "type":"varchar", "index": "1", "conditions": "true"}]"""
-        permissions = """{"insert": "false", "update": "true", "new_column": "true"}"""
+        columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
+        permissions = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
         data = {"ApplicationId": 1,
                 "Name": nameTab,
                 "Columns": columns,
@@ -966,11 +949,10 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_edit_column(self):
+        dq = self.db_query
         nameTab = "tab_" + utils.generate_random_name()
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," +\
-        "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        permissions = "{\"insert\": \"false\", \"update\": \"true\"," +\
-        " \"new_column\": \"true\"}"
+        columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
+        permissions = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
         data = {"Name": nameTab, "Columns": columns,
                 "Permissions": permissions, "ApplicationId": 1}
         res = self.call("NewTable", data)
@@ -1112,8 +1094,9 @@ class TestSystemContracts(unittest.TestCase):
 
     def test_delayed_contracts(self):
         # add table for test
-        column = """[{"name":"id_block","type":"number", "index": "1",  "conditions":"true"}]"""
-        permission = """{"insert": "true", "update" : "true","new_column": "true"}"""
+        dq = self.db_query
+        column = dq.db_one_column(name="id_block", type="number", index="1", conditions="true")
+        permission = dq.new_db_table_updater_permissions(r="true", i="true", u="true", new_column="true")
         table_name = "tab_delayed_" + utils.generate_random_name()
         data = {"Name": table_name, "Columns": column,
                 "ApplicationId": 1, "Permissions": permission}

@@ -6,6 +6,8 @@ import json
 import time
 import funcs
 
+from model.database_queries import DatabaseQueries
+
 
 class TestContractFunctions(unittest.TestCase):
     def setUp(self):
@@ -20,6 +22,7 @@ class TestContractFunctions(unittest.TestCase):
         pas = self.config["1"]['pass']
         self.data = utils.login(url,prKey, 0)
         token = self.data["jwtToken"]
+        self.db_query = DatabaseQueries()
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
@@ -217,12 +220,10 @@ class TestContractFunctions(unittest.TestCase):
         self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_dbInsert(self):
-        columns = """[{"name":"name","type":"varchar",
-        "index": "1",  "conditions":"true"},
-        {"name":"test","type":"varchar",
-        "index": "0",  "conditions":"true"}]"""
-        permission = """{"insert": "true",
-        "update" : "true","new_column": "true"}"""
+        dq = self.db_query
+        columns = dq.db_one_column(name="name", type="varchar", index="1", conditions="true"), \
+                  dq.db_one_column(name="test", type="varchar", index="0", conditions="true")
+        permission = dq.new_db_table_updater_permissions()
         data = {"Name": "test", "ApplicationId":1,
                 "Columns": columns,
                 "Permissions": permission}
@@ -233,13 +234,11 @@ class TestContractFunctions(unittest.TestCase):
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
         
-    def test_contract_dbUpdate(self):        
-        columns = """[{"name":"name","type":"varchar",
-        "index": "1",  "conditions":"true"},
-        {"name":"test","type":"varchar",
-        "index": "0",  "conditions":"true"}]"""
-        permission = """{"insert": "true",
-        "update" : "true","new_column": "true"}"""
+    def test_contract_dbUpdate(self):
+        dq = self.db_query
+        columns = dq.db_one_column(name="name", type="varchar", index="1", conditions="true"), \
+                  dq.db_one_column(name="test", type="varchar", index="0", conditions="true")
+        permission = dq.new_db_table_updater_permissions()
         data = {"Name": "test", "ApplicationId":1,
                 "Columns": columns,
                 "Permissions": permission}
@@ -265,12 +264,10 @@ class TestContractFunctions(unittest.TestCase):
         self.check_contract(contract["code"], contract["asert"])
         
     def test_contracts_dbUpdateExt(self):
-        columns = """[{"name":"name","type":"varchar",
-        "index": "1",  "conditions":"true"},
-        {"name":"test","type":"varchar",
-        "index": "0",  "conditions":"true"}]"""
-        permission = """{"insert": "true",
-        "update" : "true","new_column": "true"}"""
+        dq = self.db_query
+        columns = columns = dq.db_one_column(name="name", type="varchar", index="1", conditions="true"), \
+                  dq.db_one_column(name="test", type="varchar", index="0", conditions="true")
+        permission = dq.new_db_table_updater_permissions()
         data = {"Name": "test", "ApplicationId":1,
                 "Columns": columns,
                 "Permissions": permission}
