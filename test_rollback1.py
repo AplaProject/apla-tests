@@ -6,6 +6,8 @@ import time
 import funcs
 import os
 
+from model.database_queries import DatabaseQueries
+
 
 class TestRollback1(unittest.TestCase):
 
@@ -21,6 +23,7 @@ class TestRollback1(unittest.TestCase):
         waitTx = self.conf["time_wait_tx_in_block"]
         lData = utils.login(url, prKey, 0)
         token = lData["jwtToken"]
+        self.db_query = DatabaseQueries()
 
     def impApp(self, appName, url, prKey, token):
         path = os.path.join(os.getcwd(), "fixtures", "basic", appName + ".json")
@@ -124,14 +127,9 @@ class TestRollback1(unittest.TestCase):
 
     def addUserTable(self):
         # add table
-        column = """[{"name":"MyName","type":"varchar", 
-                    "index": "1", "conditions":"true"},
-                    {"name":"ver_on_null","type":"varchar",
-                    "index": "1", "conditions":"true"}]"""
-        permission = """{"read": "true",
-                        "insert": "true",
-                        "update": "true",
-                        "new_column": "true"}"""
+        column = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true"), \
+                 dq.db_one_column(name="ver_on_null", type="varchar", index="1", conditions="true")
+        permission = dq.new_db_table_updater_permissions(r="true", i="true", u="true", new_column="true")
         tableName = "rolltab_" +  utils.generate_random_name()
         data = {"Name": tableName,
                 "Columns": column, "ApplicationId": 1,
@@ -270,12 +268,9 @@ class TestRollback1(unittest.TestCase):
         res = self.call("EditBlock", dataEdit)
 
     def new_table(self):
-        column = """[{"name":"MyName","type":"varchar",
-                    "index": "1","conditions":"true"}]"""
-        permission = """{"read": "true",
-                        "insert": "false",
-                        "update" : "true",
-                        "new_column": "true"}"""
+        dq = self.db_query
+        column = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
+        permission = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
         data = {"Name": "Tab_" + utils.generate_random_name(),
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
