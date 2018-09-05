@@ -634,7 +634,8 @@ class PrototipoTestCase(unittest.TestCase):
         lastRec = funcs.get_count(url, "binaries", token)
         content = self.check_page("Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
-        self.assertEqual("/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec", content["tree"][0]["text"])
+        fileHash = "122e37a4a7737e0e8663adad6582fc355455f8d5d35bd7a08ed00c87f3e5ca05"
+        self.assertEqual("/data/1_binaries/"+lastRec+"/data/" + fileHash, content["tree"][0]["text"])
 
     def test_binary_by_id(self):
         # this test has not fixture
@@ -653,7 +654,8 @@ class PrototipoTestCase(unittest.TestCase):
         lastRec = funcs.get_count(url, "binaries", token)
         content = self.check_page("Binary().ById("+lastRec+")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
-        self.assertEqual("/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec", content["tree"][0]["text"])
+        fileHash = "122e37a4a7737e0e8663adad6582fc355455f8d5d35bd7a08ed00c87f3e5ca05"
+        self.assertEqual("/data/1_binaries/"+lastRec+"/data/" + fileHash, content["tree"][0]["text"])
 
     def test_image_binary(self):
         # this test has not fixture
@@ -673,10 +675,11 @@ class PrototipoTestCase(unittest.TestCase):
         lastRec = funcs.get_count(url, "binaries", token)
         content = self.check_page("Image(Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+"))")
         partContent = content["tree"][0]
+        fileHash = "122e37a4a7737e0e8663adad6582fc355455f8d5d35bd7a08ed00c87f3e5ca05"
         mustBe = dict(tag=partContent['tag'],
                       src=partContent['attr']["src"])
         page = dict(tag="image",
-                    src="/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec")
+                    src="/data/1_binaries/"+lastRec+"/data/" + fileHash)
         self.assertDictEqual(mustBe, page,
                              "test_image_binary has problem: " + str(content["tree"]))
 
@@ -697,10 +700,11 @@ class PrototipoTestCase(unittest.TestCase):
         lastRec = funcs.get_count(url, "binaries", token)
         content = self.check_page("Image(Binary().ById("+lastRec+"))")
         partContent = content["tree"][0]
+        fileHash = "122e37a4a7737e0e8663adad6582fc355455f8d5d35bd7a08ed00c87f3e5ca05"
         mustBe = dict(tag=partContent['tag'],
                       src=partContent['attr']["src"])
         page = dict(tag="image",
-                    src="/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec")
+                    src="/data/1_binaries/"+lastRec+"/data/" + fileHash)
         self.assertDictEqual(mustBe, page,
                              "test_image_binary_by_id has problem: " + str(content["tree"]))
         
