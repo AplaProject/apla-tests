@@ -1,13 +1,10 @@
 {
-  "test_api.py::TestApi::()": true,
-  "test_cost.py::TestCost::()::test_activated_contract": true,
-  "test_protypo.py::TestPrototipo::()::test_db_find_count": true,
-  "test_protypo.py::TestPrototipo::()::test_getHistoryContract": true,
-  "test_simvolio.py::TestSimvolio::()::test_contract_dbUpdate": true,
-  "test_simvolio.py::TestSimvolio::()::test_get_history_row_menu": true,
-  "test_simvolio.py::TestSimvolio::()::test_simple[jsonDecode-{\\n data {}\\n conditions {}\\n  action {\\n var a string \\n a = \"[{'k1':'1','k2':'2'},{'k1':'1','k2':'2'}]\" \\n $result = JSONDecode(a)\\n}\\n }-]": true,
-  "test_simvolio.py::TestSimvolio::()::test_simple[validateCondition-{\\n data {}\\n conditions {}\\n action {\\n ValidateCondition(\"ContractConditions(`MainCondition`)\", 0)\\n }\\n }-]": true,
-  "test_system_contracts.py::TestSystemContracts::()::test_contract_recursive_call_contract_conditions": true,
-  "test_system_contracts.py::TestSystemContracts::()::test_contract_recursive_call_contract_func_conditions": true,
-  "test_system_contracts.py::TestSystemContracts::()::test_new_table_joint": true
+  "scripts/run_sync_test.py": true,
+  "scripts/three_nodes_test.py": true,
+  "scripts/two_nodes_test.py": true,
+  "test_block_chain.py::TestBlockChain::()::test_block_chain": true,
+  "test_block_chain.py::TestBlockChain::()::test_block_chain_edit": true,
+  "test_block_chain.py::TestBlockChain::test_block_chain": true,
+  "test_block_chain.py::TestBlockChain::test_block_chain_edit": true,
+  "test_rollback1.py::TestRollback1::test_rollback1": true
 }

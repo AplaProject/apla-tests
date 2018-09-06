@@ -8,6 +8,8 @@ import os
 import time
 
 from model.database_queries import DatabaseQueries
+from model.help_actions import HelpActions
+from model.simple_test_data import SimpleTestData
 
 
 class TestSystemContracts(unittest.TestCase):
@@ -25,8 +27,8 @@ class TestSystemContracts(unittest.TestCase):
         self.data = utils.login(url, prKey, 0)
         token = self.data["jwtToken"]
         self.db_query = DatabaseQueries()
-
-        wallet = "0005-2070-2000-0006-0200"
+        self.simple_test_data = SimpleTestData()
+        self.help_actions = HelpActions()
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
@@ -73,14 +75,16 @@ class TestSystemContracts(unittest.TestCase):
                 break
             
     def test_create_ecosystem(self):
-        name = "Ecosys_" + utils.generate_random_name()
-        data = {"Name": name}
+        hac = self.help_actions
+        data = {"Name": hac.generate_random_name("Ecosys_")}
         res = self.call("NewEcosystem", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        
+
+    # !!!
     def test_edit_application(self):
-        name = "App" + utils.generate_random_name()
+        hac = self.help_actions
+        name = hac.generate_random_name("App")
         data = {"Name": name, "Conditions": "true"}
         res = self.call("NewApplication", data)
         self.assertGreater(res["blockid"], 0,
@@ -92,7 +96,8 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         
     def test_activate_application(self):
-        name = "App" + utils.generate_random_name()
+        hac = self.help_actions
+        name = hac.generate_random_name("App")
         data = {"Name": name, "Conditions": "true"}
         res = self.call("NewApplication", data)
         self.assertGreater(res["blockid"], 0,
@@ -108,7 +113,8 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         
     def test_export_application(self):
-        name = "App" + utils.generate_random_name()
+        hac = self.help_actions
+        name = hac.generate_random_name("App")
         data = {"Name": name, "Conditions": "true"}
         res = self.call("NewApplication", data)
         self.assertGreater(res["blockid"], 0,
@@ -118,56 +124,62 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("ExportNewApp", dataDeact)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        
+    # !!!
     def test_edit_ecosystem_name(self):
+        hac = self.help_actions
         id = 1
-        newName = "Ecosys_"+utils.generate_random_name()
-        data = {"EcosystemID": id, "NewName": newName}
+        data = {"EcosystemID": id, "NewName": hac.generate_random_name("Ecosys_")}
         resBlockId = self.call("EditEcosystemName", data)
         self.assertGreater(resBlockId["blockid"], 0,
                            "BlockId is not generated: " + str(resBlockId))
         
 
     def test_edit_ecosystem_name_incorrect_id(self):
+        hac = self.help_actions
         id = 500
-        newName = "ecosys_"+utils.generate_random_name()
-        data = {"EcosystemID": id, "NewName": newName}
+        data = {"EcosystemID": id, "NewName": hac.generate_random_name("ecosys_")}
         res = self.call("EditEcosystemName", data)
         self.assertEqual("Ecosystem "+str(id)+" does not exist", res["error"])
 
-    def test_money_transfer(self, wallet):
-        data = {"Recipient": wallet, "Amount": "2999479990390000000"}
+    def test_money_transfer(self):
+        std = self.simple_test_data
+        data = {"Recipient": std.wallet(), "Amount": "2999479990390000000"}
         res = self.call("MoneyTransfer", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_money_transfer_incorrect_wallet(self):
-        wallet = "0005-2070-2000-0006"
+        std = self.simple_test_data
+        wallet = std.wallet(wallet="0005-2070-2000-0006")
         msg = "Recipient " + wallet + " is invalid"
         data = {"Recipient": wallet, "Amount": "1000"}
         ans = self.call("MoneyTransfer", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
-    def test_money_transfer_zero_amount(self, wallet):
+    def test_money_transfer_zero_amount(self):
+        std = self.simple_test_data
         msg = "Amount must be greater then zero"
-        data = {"Recipient": wallet, "Amount": "0"}
+        data = {"Recipient": std.wallet(), "Amount": "0"}
         ans = self.call("MoneyTransfer", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
-    def test_money_transfer_negative_amount(self, wallet):
+    def test_money_transfer_negative_amount(self):
+        std = self.simple_test_data
         msg = "Amount must be greater then zero"
-        data = {"Recipient": wallet, "Amount": "-1000"}
+        data = {"Recipient": std.wallet(), "Amount": "-1000"}
         ans = self.call("MoneyTransfer", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
-    def test_money_transfer_amount_as_string(self, wallet):
+    def test_money_transfer_amount_as_string(self):
+        std = self.simple_test_data
         msg = "can't convert ttt to decimal"
-        data = {"Recipient": wallet, "Amount": "ttt"}
+        data = {"Recipient": std.wallet(), "Amount": "ttt"}
         ans = self.call("MoneyTransfer", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
-    def test_money_transfer_with_comment(self, wallet):
-        data = {"Recipient": wallet, "Amount": "1000", "Comment": "Test"}
+    def test_money_transfer_with_comment(self):
+        std = self.simple_test_data
+        data = {"Recipient": std.wallet(), "Amount": "1000", "Comment": "Test"}
         res = self.call("MoneyTransfer", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -207,7 +219,8 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual("unknown identifier condition",
                          ans["error"], "Incorrect message: " + str(ans))
 
-    def test_edit_contract_incorrect_condition(self, wallet):
+    def test_edit_contract_incorrect_condition(self):
+        std = self.simple_test_data
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
@@ -216,13 +229,14 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         data2 = {"Id": funcs.get_contract_id(url, name, token),
                  "Value": code, "Conditions": "tryam",
-                 "WalletId": wallet}
+                 "WalletId": std.wallet()}
         ans = self.call("EditContract", data2)
         self.assertEqual("unknown identifier tryam",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract_incorrect_condition1(self):
-        newWallet = "0005"
+        std = self.simple_test_data
+        wallet = std.wallet("0005")
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
@@ -231,14 +245,15 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         data2 = {"Id": funcs.get_contract_id(url, name, token),
                  "Value": code, "Conditions": "true",
-                 "WalletId": newWallet}
+                 "WalletId": wallet}
         ans = self.call("EditContract", data2)
-        msg = "New contract owner " + newWallet + " is invalid"
+        msg = "New contract owner " + wallet + " is invalid"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract(self):
+        std = self.simple_test_data
+        wallet = std.wallet(wallet="0005-2070-2000-0006-0200") # ??
         code, name = utils.generate_name_and_code("")
-        newWallet = "0005-2070-2000-0006-0200"
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -247,7 +262,7 @@ class TestSystemContracts(unittest.TestCase):
         
 
     def test_edit_name_of_contract(self):
-        newWallet = "0005-2070-2000-0006-0200"
+        std = self.simple_test_data
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
@@ -257,16 +272,17 @@ class TestSystemContracts(unittest.TestCase):
         code1, name1 = utils.generate_name_and_code("")
         data2 = {"Id": funcs.get_contract_id(url, name, token),
                  "Value": code1, "Conditions": "true",
-                 "WalletId": "0005-2070-2000-0006-0200"}
+                 "WalletId": std.wallet(wallet="0005-2070-2000-0006-0200")}
         ans = self.call("EditContract", data2)
         self.assertEqual("Contracts or functions names cannot be changed",
                          ans["error"], "Incorrect message: " + str(ans))
 
-    def test_edit_incorrect_contract(self, wallet, id_):
+    def test_edit_incorrect_contract(self):
+        std = self.simple_test_data
         code, name = utils.generate_name_and_code("")
-        id = "9999"
+        id = std.test_id()
         data2 = {"Id": id, "Value": code, "Conditions": "true",
-                 "WalletId": wallet}
+                 "WalletId": std.wallet()}
         ans = self.call("EditContract", data2)
         self.assertEqual("Item " + id + " has not been found",
                          ans["error"], "Incorrect message: " + str(ans))
@@ -284,8 +300,8 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_activate_incorrect_contract(self):
-        id = "9999"
-        data = {"Id": id}
+        std = self.simple_test_data
+        data = {"Id": std.test_id()}
         ans = self.call("ActivateContract", data)
         msg = "Contract " + id + " does not exist"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
@@ -306,22 +322,24 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_deactivate_incorrect_contract(self):
-        id = "9999"
+        std = self.simple_test_data
+        id = std.test_id()
         data = {"Id": id}
         ans = self.call("DeactivateContract", data)
         self.assertEqual("Contract " + id + " does not exist",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_parameter(self):
-        name = "Par_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "test", "ApplicationId": 1,
+        hac = self.help_actions
+        data = {"Name": hac.generate_random_name("Par_"), "Value": "test", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewParameter", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_new_parameter_exist_name(self):
-        name = "Par_" + utils.generate_random_name()
+        hac = self.help_actions
+        name = hac.generate_random_name("Par_")
         data = {"Name": name, "Value": "test", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewParameter", data)
@@ -332,32 +350,35 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_parameter_incorrect_condition(self):
-        condition = "tryam"
-        name = "Par_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "test", "ApplicationId": 1,
+        hac = self.help_actions
+        std = self.simple_test_data
+        condition = std.condition()
+        data = {"Name": hac.generate_random_name("Par_"), "Value": "test", "ApplicationId": 1,
                 "Conditions": condition}
         ans = self.call("NewParameter", data)
         self.assertEqual("unknown identifier " + condition,
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_incorrect_parameter(self):
-        id = "9999"
+        std = self.simple_test_data
+        id = std.test_id()
         data2 = {"Id": id, "Value": "test_edited", "Conditions": "true"}
         ans = self.call("EditParameter", data2)
         self.assertEqual("Item " + id + " has not been found",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_parameter_incorrect_condition(self):
-        name = "Par_" + utils.generate_random_name()
+        std = self.simple_test_data
+        hac = self.help_actions
+        name = hac.generate_random_name("Par_")
+        id = funcs.get_parameter_id(url, name, token)
         data = {"Name": name, "Value": "test", "Conditions": "true"}
         res = self.call("NewParameter", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        id = funcs.get_parameter_id(url, name, token)
-        condition = "tryam"
-        data2 = {"Id": id, "Value": "test_edited", "Conditions": condition}
+        data2 = {"Id": id, "Value": "test_edited", "Conditions": std.condition()}
         ans = self.call("EditParameter", data2)
-        self.assertEqual("unknown identifier " + condition,
+        self.assertEqual("unknown identifier " + std.condition(),
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_menu(self):
@@ -384,8 +405,9 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_menu_incorrect_condition(self):
+        std = self.simple_test_data
         name = "Menu_" + utils.generate_random_name()
-        condition = "tryam"
+        condition = std.condition()
         data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
                 "Conditions": condition}
         ans = self.call("NewMenu", data)
@@ -408,15 +430,17 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(mContent, content)
 
     def test_edit_incorrect_menu(self):
-        id = "9999"
+        std = self.simple_test_data
+        id = std.test_id()
         dataEdit = {"Id": id, "Value": "ItemEdited", "Conditions": "true"}
         ans = self.call("EditMenu", dataEdit)
         msg = "Item " + id + " has not been found"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_menu_incorrect_condition(self):
+        std = self.simple_test_data
         name = "Menu_" + utils.generate_random_name()
-        condition = "tryam"
+        condition = std.condition()
         data = {"Name": name, "Value": "Item1", "Conditions": "true"}
         res = self.call("NewMenu", data)
         self.assertGreater(res["blockid"], 0,
@@ -440,7 +464,8 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_append_incorrect_menu(self):
-        id = "999"
+        std = self.simple_test_data
+        id = std.test_id(t_id="999")
         dataEdit = {"Id": id, "Value": "AppendedItem", "Conditions": "true"}
         ans = self.call("AppendMenu", dataEdit)
         msg = "Item " + id + " has not been found"
@@ -469,8 +494,9 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_page_incorrect_condition(self):
+        std = self.simple_test_data
         name = "Page_" + utils.generate_random_name()
-        condition = "tryam"
+        condition = std.condition()
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": condition, "Menu": "default_menu"}
         ans = self.call("NewPage", data)
@@ -513,7 +539,8 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(pContent['tree'], content)
 
     def test_edit_incorrect_page(self):
-        id = "9999"
+        std = self.simple_test_data
+        id = std.test_id()
         dataEdit = {"Id": id, "Value": "Good by page!",
                     "Conditions": "true", "Menu": "default_menu"} 
         ans = self.call("EditPage", dataEdit)
@@ -521,6 +548,7 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_page_incorrect_condition(self):
+        std = self.simple_test_data
         name = "Page_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Hello page!",
                 "Conditions": "true", "Menu": "default_menu",
@@ -528,7 +556,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewPage", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        condition = "tryam"
+        condition = std.condition()
         dataEdit = {"Id": funcs.get_count(url, "pages", token),
                     "Value": "Good by page!", "Conditions": condition,
                     "Menu": "default_menu"}
@@ -555,7 +583,8 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(pContent['tree'], content)
 
     def test_append_page_incorrect_id(self):
-        id = "9999"
+        std = self.simple_test_data
+        id = std.test_id()
         dataEdit = {"Id": id, "Value": "Good by!", "Conditions": "true",
                     "Menu": "default_menu"} 
         ans = self.call("AppendPage", dataEdit)
@@ -582,8 +611,9 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_block_incorrect_condition(self):
+        std = self.simple_test_data
         name = "Block_" + utils.generate_random_name()
-        condition = "tryam"
+        condition = std.condition()
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": condition}
         ans = self.call("NewBlock", data)
@@ -591,7 +621,8 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_block_incorrect_id(self):
-        id = "9999"
+        std = self.simple_test_data
+        id = std.test_id()
         dataEdit = {"Id": id, "Value": "Good by!", "Conditions": "true"}
         ans = self.call("EditBlock", dataEdit)
         msg = "Item " + id + " has not been found"
@@ -611,6 +642,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_edit_block_incorrect_condition(self):
+        std = self.simple_test_data
         name = "Block_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Hello block!", "ApplicationId": 1,
                 "Conditions": "true"}
@@ -618,7 +650,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         count = funcs.get_count(url, "blocks", token)
-        condition = "tryam"
+        condition = std.condition()
         dataEdit = {"Id": count, "Value": "Good by!", "Conditions": condition}
         ans = self.call("EditBlock", dataEdit)
         msg = "unknown identifier " + condition

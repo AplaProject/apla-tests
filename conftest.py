@@ -3,6 +3,12 @@ import subprocess
 import pytest
 import os
 
+import utils
+import config
+
+from model.application import Application
+from model.application2 import Application2
+
 
 def pytest_addoption(parser):
     curDir = os.path.dirname(os.path.abspath(__file__))
@@ -56,3 +62,10 @@ def pytest_addoption(parser):
     parser.addoption('--name', action="store", default='')
     parser.addoption('--value', action="store", default='')
 
+@pytest.fixture(scope= "session")
+def app(request):
+    return Application()
+
+@pytest.fixture(scope= "session")
+def app2(request):
+    return Application2()
