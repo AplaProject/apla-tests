@@ -129,6 +129,7 @@
   "test_cost.py::TestCost::test_activated_contract_with_err",
   "test_cost.py::TestCost::test_deactive_contract",
   "test_cost.py::TestCost::test_deactive_contract_with_err",
+  "test_deb.py::TestDeb::()::test_bla",
   "test_limits.py::TestLimits::test_max_block_size",
   "test_limits.py::TestLimits::test_max_block_user_tx",
   "test_limits.py::TestLimits::test_max_tx_count",

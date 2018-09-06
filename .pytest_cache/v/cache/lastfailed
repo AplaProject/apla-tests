@@ -6,6 +6,5 @@
   "test_block_chain.py::TestBlockChain::()::test_block_chain_edit": true,
   "test_block_chain.py::TestBlockChain::test_block_chain": true,
   "test_block_chain.py::TestBlockChain::test_block_chain_edit": true,
-  "test_deb.py": true,
   "test_rollback1.py::TestRollback1::test_rollback1": true
 }
