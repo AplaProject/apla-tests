@@ -20,3 +20,7 @@ class SimpleTestData(object):
     @classmethod
     def condition(cls, con="tryam"):
         return cls(_data=con)
+
+    @classmethod
+    def money_transfer_error_message(cls, msg="Amount must be greater then zero"):
+        return cls(_data=msg)

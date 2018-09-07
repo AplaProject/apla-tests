@@ -43,3 +43,4 @@ class DatabaseQueries(object):
     @classmethod
     def db_one_column(cls, name="MyName", type="varchar", index="1", conditions="true"):
         return cls(_query='[{"name": "'+name+'","type":"'+type+'", "index": "'+index+'", "conditions":"'+conditions+'"}]')
+
