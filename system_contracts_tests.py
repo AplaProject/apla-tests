@@ -344,8 +344,9 @@ class SystemContractsTestCase(unittest.TestCase):
         data = {"Name": name, "Value": "test", "ApplicationId": 1,
                 "Conditions": condition}
         ans = self.call("NewParameter", data)
-        self.assertEqual("unknown identifier " + condition,
-                         ans["error"], "Incorrect message: " + str(ans))
+        print(ans)
+        msg = "Condition " + condition + " is not allowed"
+        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_incorrect_parameter(self):
         id = "9999"
@@ -481,7 +482,7 @@ class SystemContractsTestCase(unittest.TestCase):
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": condition, "Menu": "default_menu"}
         ans = self.call("NewPage", data)
-        msg = "unknown identifier " + condition
+        msg = "Condition " + condition + " is not allowed"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_page(self):
@@ -809,8 +810,8 @@ class SystemContractsTestCase(unittest.TestCase):
                 "Columns": columns, "Permissions": permissions,
                 "ApplicationId": 1}
         ans = self.call("NewTable", data)
-        self.assertEqual("unknown identifier " + condition,
-                         ans["error"], "Incorrect message: " + str(ans))
+        msg = "Condition " + condition + " is not allowed"
+        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_incorrect_condition2(self):
         columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," +\
@@ -822,8 +823,8 @@ class SystemContractsTestCase(unittest.TestCase):
                 "Columns": columns, "Permissions": permissions,
                 "ApplicationId": 1}
         ans = self.call("NewTable", data)
-        self.assertEqual("unknown identifier " + condition,
-                         ans["error"], "Incorrect message: " + str(ans))
+        msg = "Condition " + condition + " is not allowed"
+        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_incorrect_condition3(self):
         columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," +\
@@ -835,8 +836,8 @@ class SystemContractsTestCase(unittest.TestCase):
                 "Columns": columns, "Permissions": permissions,
                 "ApplicationId": 1}
         ans = self.call("NewTable", data)
-        self.assertEqual("unknown identifier " + condition,
-                         ans["error"], "Incorrect message: " + str(ans))
+        msg = "Condition " + condition + " is not allowed"
+        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_exist_name(self):
         name = "tab_" + utils.generate_random_name()
