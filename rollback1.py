@@ -67,7 +67,7 @@ class Rollback1TestCase(unittest.TestCase):
         if data == "":
             dataC = {"Wallet": '', "ApplicationId": 1,
                      "Value": code,
-                     "Conditions": "ContractConditions(`MainCondition`)"}
+                     "Conditions": "ContractConditions(\"MainCondition\")"}
         else:
             dataC = data
         res = self.call("NewContract", dataC)
@@ -90,7 +90,7 @@ class Rollback1TestCase(unittest.TestCase):
         code, name = utils.generate_name_and_code(body)
         data = {"Wallet": '', "ApplicationId": 1,
                 "Value": code,
-                "Conditions": "ContractConditions(`MainCondition`)"}
+                "Conditions": "ContractConditions(\"MainCondition\")"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res["blockid"]), 0, "BlockId is not generated: " + str(res))
         # change permission for notifications table
