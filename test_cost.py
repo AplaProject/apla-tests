@@ -5,7 +5,7 @@ import funcs
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
 
-from model.actions import Actions
+from libs.actions import Actions
 
 
 class TestCost(unittest.TestCase):

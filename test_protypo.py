@@ -4,7 +4,7 @@ import json
 import funcs
 import os
 
-from model.actions import Actions
+from libs.actions import Actions
 
 
 class TestPrototipo(unittest.TestCase):

@@ -5,8 +5,8 @@ import time
 import funcs
 import os
 
-from model.actions import Actions
-from model.database_queries import DatabaseQueries
+from libs.actions import Actions
+from libs.data_orm import DataOrm
 
 
 class TestRollback1(unittest.TestCase):
@@ -23,7 +23,7 @@ class TestRollback1(unittest.TestCase):
         waitTx = self.conf["time_wait_tx_in_block"]
         lData = Actions.login(url, prKey, 0)
         token = lData["jwtToken"]
-        self.db_query = DatabaseQueries()
+        self.data_orm = DataOrm()
 
     def impApp(self, appName, url, prKey, token):
         path = os.path.join(os.getcwd(), "fixtures", "basic", appName + ".json")
@@ -133,7 +133,7 @@ class TestRollback1(unittest.TestCase):
 
     def addUserTable(self):
         # add table
-        dq = self.db_query
+        dq = self.data_orm
         column = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true"), \
                  dq.db_one_column(name="ver_on_null", type="varchar", index="1", conditions="true")
         permission = dq.new_db_table_updater_permissions(r="true", i="true", u="true", new_column="true")
@@ -277,7 +277,7 @@ class TestRollback1(unittest.TestCase):
         res = self.call("EditBlock", dataEdit)
 
     def new_table(self):
-        dq = self.db_query
+        dq = self.data_orm
         column = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
         permission = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
         data = {"Name": "Tab_" + Actions.generate_random_name(),

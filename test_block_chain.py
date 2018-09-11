@@ -4,8 +4,7 @@ import time
 import funcs
 from builtins import sum
 
-from model.actions import Actions
-
+from libs.actions import Actions
 
 class TestBlockChain(unittest.TestCase):
 

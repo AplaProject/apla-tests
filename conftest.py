@@ -1,8 +1,6 @@
 import pytest
 import os
 
-from model.application import Application
-from model.application2 import Application2
 
 
 def pytest_addoption(parser):
@@ -57,10 +55,3 @@ def pytest_addoption(parser):
     parser.addoption('--name', action="store", default='')
     parser.addoption('--value', action="store", default='')
 
-@pytest.fixture(scope= "session")
-def app(request):
-    return Application()
-
-@pytest.fixture(scope= "session")
-def app2(request):
-    return Application2()

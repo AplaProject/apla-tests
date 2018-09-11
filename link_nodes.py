@@ -4,8 +4,7 @@ import funcs
 import os
 import json
 
-from model.actions import Actions
-
+from libs.actions import Actions
 
 def isInBlock(call, url, token):
     if "hash" in call:

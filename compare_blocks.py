@@ -3,8 +3,7 @@ import config
 import funcs
 import time
 
-from model.actions import Actions
-
+from libs.actions import Actions
 
 class CompareBlocks(unittest.TestCase):
 

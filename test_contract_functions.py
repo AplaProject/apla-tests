@@ -3,9 +3,8 @@ import config
 import json
 import time
 import funcs
-from model.actions import Actions
-
-from model.database_queries import DatabaseQueries
+from libs.actions import Actions
+from libs.data_orm import DataOrm
 
 
 class TestContractFunctions(unittest.TestCase):
@@ -21,7 +20,7 @@ class TestContractFunctions(unittest.TestCase):
         pas = self.config["1"]['pass']
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
-        self.db_query = DatabaseQueries()
+        self.data_orm = DataOrm()
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
@@ -219,7 +218,7 @@ class TestContractFunctions(unittest.TestCase):
         self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_dbInsert(self):
-        dq = self.db_query
+        dq = self.data_orm
         columns = dq.db_one_column(name="name", type="varchar", index="1", conditions="true"), \
                   dq.db_one_column(name="test", type="varchar", index="0", conditions="true")
         permission = dq.new_db_table_updater_permissions()
@@ -234,7 +233,7 @@ class TestContractFunctions(unittest.TestCase):
         self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_dbUpdate(self):
-        dq = self.db_query
+        dq = self.data_orm
         columns = dq.db_one_column(name="name", type="varchar", index="1", conditions="true"), \
                   dq.db_one_column(name="test", type="varchar", index="0", conditions="true")
         permission = dq.new_db_table_updater_permissions()
@@ -263,7 +262,7 @@ class TestContractFunctions(unittest.TestCase):
         self.check_contract(contract["code"], contract["asert"])
         
     def test_contracts_dbUpdateExt(self):
-        dq = self.db_query
+        dq = self.data_orm
         columns = columns = dq.db_one_column(name="name", type="varchar", index="1", conditions="true"), \
                   dq.db_one_column(name="test", type="varchar", index="0", conditions="true")
         permission = dq.new_db_table_updater_permissions()

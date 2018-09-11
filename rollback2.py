@@ -1,11 +1,9 @@
 import unittest
-from model import actions
 import config
 import os
 import json
 
-from model.actions import Actions
-
+from libs.actions import Actions
 
 class Rollback2(unittest.TestCase):
     

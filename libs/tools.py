@@ -1,10 +1,10 @@
 import os
 import json
 
-from model.actions import Actions
+from libs.actions import Actions
 
 
-class HelpActions(object):
+class Tools(object):
 
     def generate_random_name(self, name):
         return name + Actions.generate_random_name()

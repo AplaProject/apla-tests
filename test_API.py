@@ -6,7 +6,7 @@ import funcs
 import os
 import time
 
-from model.actions import Actions
+from libs.actions import Actions
 
 
 class TestApi(unittest.TestCase):

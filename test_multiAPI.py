@@ -1,6 +1,6 @@
 import unittest
 import config
-from model.actions import Actions
+from libs.actions import Actions
 
 
 class TestMultiApi(unittest.TestCase):

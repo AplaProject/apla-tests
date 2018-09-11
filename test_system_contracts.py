@@ -6,10 +6,10 @@ import funcs
 import os
 import time
 
-from model.database_queries import DatabaseQueries
-from model.help_actions import HelpActions
-from model.simple_test_data import SimpleTestData
-from model.actions import Actions
+from libs.data_orm import DataOrm
+from libs.simple_test_data import SimpleTestData
+from libs.tools import Tools
+from libs.actions import Actions
 
 
 class TestSystemContracts(unittest.TestCase):
@@ -26,9 +26,9 @@ class TestSystemContracts(unittest.TestCase):
         pas = self.config["1"]['pass']
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
-        self.db_query = DatabaseQueries()
+        self.data_orm = DataOrm()
         self.simple_test_data = SimpleTestData()
-        self.help_actions = HelpActions()
+        self.tools = Tools()
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
@@ -75,16 +75,16 @@ class TestSystemContracts(unittest.TestCase):
                 break
             
     def test_create_ecosystem(self):
-        hac = self.help_actions
-        data = {"Name": hac.generate_random_name("Ecosys_")}
+        t = self.tools
+        data = {"Name": t.generate_random_name("Ecosys_")}
         res = self.call("NewEcosystem", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     # !!!
     def test_edit_application(self):
-        hac = self.help_actions
-        name = hac.generate_random_name("App")
+        t = self.tools
+        name = t.generate_random_name("App")
         data = {"Name": name, "Conditions": "true"}
         res = self.call("NewApplication", data)
         self.assertGreater(res["blockid"], 0,
@@ -96,8 +96,8 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         
     def test_activate_application(self):
-        hac = self.help_actions
-        name = hac.generate_random_name("App")
+        t = self.tools
+        name = t.generate_random_name("App")
         data = {"Name": name, "Conditions": "true"}
         res = self.call("NewApplication", data)
         self.assertGreater(res["blockid"], 0,
@@ -113,8 +113,8 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         
     def test_export_application(self):
-        hac = self.help_actions
-        name = hac.generate_random_name("App")
+        t = self.tools
+        name = t.generate_random_name("App")
         data = {"Name": name, "Conditions": "true"}
         res = self.call("NewApplication", data)
         self.assertGreater(res["blockid"], 0,
@@ -126,18 +126,18 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
     # !!!
     def test_edit_ecosystem_name(self):
-        hac = self.help_actions
+        t = self.tools
         id = 1
-        data = {"EcosystemID": id, "NewName": hac.generate_random_name("Ecosys_")}
+        data = {"EcosystemID": id, "NewName": t.generate_random_name("Ecosys_")}
         resBlockId = self.call("EditEcosystemName", data)
         self.assertGreater(resBlockId["blockid"], 0,
                            "BlockId is not generated: " + str(resBlockId))
         
 
     def test_edit_ecosystem_name_incorrect_id(self):
-        hac = self.help_actions
+        t = self.tools
         id = 500
-        data = {"EcosystemID": id, "NewName": hac.generate_random_name("ecosys_")}
+        data = {"EcosystemID": id, "NewName": t.generate_random_name("ecosys_")}
         res = self.call("EditEcosystemName", data)
         self.assertEqual("Ecosystem "+str(id)+" does not exist", res["error"])
 
@@ -330,16 +330,16 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_parameter(self):
-        hac = self.help_actions
-        data = {"Name": hac.generate_random_name("Par_"), "Value": "test", "ApplicationId": 1,
+        t = self.tools
+        data = {"Name": t.generate_random_name("Par_"), "Value": "test", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewParameter", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_new_parameter_exist_name(self):
-        hac = self.help_actions
-        name = hac.generate_random_name("Par_")
+        t = self.tools
+        name = t.generate_random_name("Par_")
         data = {"Name": name, "Value": "test", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewParameter", data)
@@ -350,10 +350,10 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_parameter_incorrect_condition(self):
-        hac = self.help_actions
+        t = self.tools
         std = self.simple_test_data
         condition = std.condition()
-        data = {"Name": hac.generate_random_name("Par_"), "Value": "test", "ApplicationId": 1,
+        data = {"Name": t.generate_random_name("Par_"), "Value": "test", "ApplicationId": 1,
                 "Conditions": condition}
         ans = self.call("NewParameter", data)
         self.assertEqual("unknown identifier " + condition,
@@ -369,8 +369,8 @@ class TestSystemContracts(unittest.TestCase):
 
     def test_edit_parameter_incorrect_condition(self):
         std = self.simple_test_data
-        hac = self.help_actions
-        name = hac.generate_random_name("Par_")
+        t = self.tools
+        name = t.generate_random_name("Par_")
         id = funcs.get_parameter_id(url, name, token)
         data = {"Name": name, "Value": "test", "Conditions": "true"}
         res = self.call("NewParameter", data)
@@ -657,7 +657,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table(self):
-        dq = self.db_query
+        dq = self.data_orm
         column = """[{"name":"MyName","type":"varchar",
         "index": "1",  "conditions":"true"},{"name":"Myb","type":"json",
         "index": "0",  "conditions":"true"}, {"name":"MyD","type":"datetime",
@@ -675,7 +675,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_new_table_not_readable(self):
-        dq = self.db_query
+        dq = self.data_orm
         # create new table
         column = dq.new_db_table_2_column()
         permission = dq.new_db_table_updater_permissions(r="false", i="true", u="true", new_column="true")
@@ -699,7 +699,7 @@ class TestSystemContracts(unittest.TestCase):
 
     def test_new_table_not_readable_all_columns(self):
         # create new table
-        dq = self.db_query
+        dq = self.data_orm
         column = dq.new_db_table_2_column(u_1="true", r_1="false", u_2="true", r_2="false")
         permission = dq.new_db_table_updater_permissions(r="true", i="true", u="true", new_column="true")
         tableName = "tab_" + Actions.generate_random_name()
@@ -722,7 +722,7 @@ class TestSystemContracts(unittest.TestCase):
 
     def test_new_table_not_readable_one_column(self):
         # create new table
-        dq = self.db_query
+        dq = self.data_orm
         column = dq.new_db_table_2_column(u_1="true", r_1="false", u_2="true", r_2="true")
         permission = dq.new_db_table_updater_permissions(r="true", i="true", u="true", new_column="true")
         tableName = "tab_" + Actions.generate_random_name()
@@ -788,7 +788,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_new_table_incorrect_column_name_digit(self):
-        dq = self.db_query
+        dq = self.data_orm
         column = dq.db_one_column(name="123", type="varchar", index="1", conditions="true")
         permission = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
         data = {"Name": "Tab_" + Actions.generate_random_name(),
@@ -799,7 +799,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_incorrect_column_name_cyrillic(self):
-        dq = self.db_query
+        dq = self.data_orm
         word = "привет"
         column = dq.db_one_column(name=word, type="varchar", index="1", conditions="true")
         permission = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
@@ -811,7 +811,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_incorrect_condition1(self):
-        dq = self.db_query
+        dq = self.data_orm
         condition = "tryam"
         columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
         permission = dq.new_db_table_updater_permissions(r="true", i=condition, u="true", new_column="true")
@@ -823,7 +823,7 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_incorrect_condition2(self):
-        dq = self.db_query
+        dq = self.data_orm
         condition = "tryam"
         columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
         permission = dq.new_db_table_updater_permissions(r="true", i="true", u=condition, new_column="true")
@@ -835,7 +835,7 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_incorrect_condition3(self):
-        dq = self.db_query
+        dq = self.data_orm
         condition = "tryam"
         columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
         permission = dq.new_db_table_updater_permissions(r="true", i="true", u="true", new_column=condition)
@@ -847,7 +847,7 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_exist_name(self):
-        dq = self.db_query
+        dq = self.data_orm
         name = "tab_" + Actions.generate_random_name()
         columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
         permission = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
@@ -861,7 +861,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_incorrect_name_cyrillic(self):
-        dq = self.db_query
+        dq = self.data_orm
         name = "таблица"
         columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
         permissions = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
@@ -873,7 +873,7 @@ class TestSystemContracts(unittest.TestCase):
 
     def test_new_table_identical_columns(self):
         #TODO
-        dq = self.db_query
+        dq = self.data_orm
         name = "tab_" + Actions.generate_random_name()
         columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true"), \
                   dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
@@ -885,7 +885,7 @@ class TestSystemContracts(unittest.TestCase):
                          "Incorrect message: " + str(ans))
 
     def test_edit_table(self):
-        dq = self.db_query
+        dq = self.data_orm
         name = "Tab_" + Actions.generate_random_name()
         columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
         permissions = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
@@ -904,7 +904,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_new_column(self):
-        dq = self.db_query
+        dq = self.data_orm
         nameTab = "Tab_" + Actions.generate_random_name()
         columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
         permissions = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
@@ -981,7 +981,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_edit_column(self):
-        dq = self.db_query
+        dq = self.data_orm
         nameTab = "tab_" + Actions.generate_random_name()
         columns = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
         permissions = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
@@ -1126,7 +1126,7 @@ class TestSystemContracts(unittest.TestCase):
 
     def test_delayed_contracts(self):
         # add table for test
-        dq = self.db_query
+        dq = self.data_orm
         column = dq.db_one_column(name="id_block", type="number", index="1", conditions="true")
         permission = dq.new_db_table_updater_permissions(r="true", i="true", u="true", new_column="true")
         table_name = "tab_delayed_" + Actions.generate_random_name()
