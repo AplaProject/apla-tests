@@ -1,10 +1,5 @@
-import subprocess
-
 import pytest
 import os
-
-import utils
-import config
 
 from model.application import Application
 from model.application2 import Application2

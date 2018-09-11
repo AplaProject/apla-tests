@@ -1,11 +1,11 @@
 import unittest
-import utils
 import config
-import requests
 import json
 import funcs
 import os
 import time
+
+from model.actions import Actions
 
 
 class TestSystemParameters(unittest.TestCase):
@@ -16,7 +16,7 @@ class TestSystemParameters(unittest.TestCase):
         url = self.config["2"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
         prKey = self.config["1"]['private_key']
-        self.data = utils.login(url, prKey, 0)
+        self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
         dbHost = self.config["2"]["dbHost"]
         dbName = self.config["2"]["dbName"]
@@ -37,7 +37,7 @@ class TestSystemParameters(unittest.TestCase):
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
         hash = result['hash']
-        status = utils.txstatus(url, pause, hash, jwtToken)
+        status = Actions.txstatus(url, pause, hash, jwtToken)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return status["blockid"]
@@ -52,22 +52,22 @@ class TestSystemParameters(unittest.TestCase):
         return result
 
     def call(self, name, data):
-        resp = utils.call_contract(url, prKey, name, data, token)
+        resp = Actions.call_contract(url, prKey, name, data, token)
         resp = self.assertTxInBlock(resp, token)
         return resp
 
     def create_contract(self, url, prKey):
-        code,name = utils.generate_name_and_code("")
+        code,name = Actions.generate_name_and_code("")
         data = {'Wallet': '', 'Value': code, "ApplicationId": 1,
                 'Conditions': "ContractConditions(`MainCondition`)"}
-        resp = utils.call_contract(url, prKey, "NewContract", data, self.data1["jwtToken"])
+        resp = Actions.call_contract(url, prKey, "NewContract", data, self.data1["jwtToken"])
         return name
 
     def getCountBlocks(self):
-        return utils.getCountTable(dbHost, dbName, login, password, "block_chain")
+        return Actions.getCountTable(dbHost, dbName, login, password, "block_chain")
 
     def getSystemParameterValue(self, name):
-        return utils.getSystemParameterValue(dbHost, dbName, login, password, name)
+        return Actions.getSystemParameterValue(dbHost, dbName, login, password, name)
 
 
 
@@ -261,9 +261,9 @@ class TestSystemParameters(unittest.TestCase):
         host1 = config1["dbHost"]
         host2 = config2["dbHost"]
         host3 = config3["dbHost"]
-        self.data1 = utils.login(config1["url"], config1['private_key'], 0)
-        self.data2 = utils.login(config2["url"], config1['private_key'], 0)
-        self.data3 = utils.login(config3["url"], config3['private_key'], 0)
+        self.data1 = Actions.login(config1["url"], config1['private_key'], 0)
+        self.data2 = Actions.login(config2["url"], config1['private_key'], 0)
+        self.data3 = Actions.login(config3["url"], config3['private_key'], 0)
         minBlockId1 = funcs.get_max_block_id(config1["url"], self.data1["jwtToken"])
         minBlockId2 = funcs.get_max_block_id(config2["url"], self.data2["jwtToken"])
         minBlockId3 = funcs.get_max_block_id(config3["url"], self.data3["jwtToken"])
@@ -276,18 +276,18 @@ class TestSystemParameters(unittest.TestCase):
             i = i + 1
             time.sleep(1)
         time.sleep(120)
-        count_contracts1 = utils.getCountDBObjects(host1, db1, login1, pas1)["contracts"]
-        count_contracts2 = utils.getCountDBObjects(host2, db2, login2, pas2)["contracts"]
-        count_contracts3 = utils.getCountDBObjects(host3, db3, login3, pas3)["contracts"]
+        count_contracts1 = Actions.getCountDBObjects(host1, db1, login1, pas1)["contracts"]
+        count_contracts2 = Actions.getCountDBObjects(host2, db2, login2, pas2)["contracts"]
+        count_contracts3 = Actions.getCountDBObjects(host3, db3, login3, pas3)["contracts"]
         maxBlockId1 = funcs.get_max_block_id(config1["url"], self.data1["jwtToken"])
         maxBlockId2 = funcs.get_max_block_id(config2["url"], self.data2["jwtToken"])
         maxBlockId3 = funcs.get_max_block_id(config3["url"], self.data3["jwtToken"])
         maxBlockList = [maxBlockId1, maxBlockId2, maxBlockId3]
         maxBlock = max(maxBlockList)
-        hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
-        hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
-        hash3 = utils.get_blockchain_hash(host3, db3, login3, pas3, maxBlock)
-        missingNode = utils.check_for_missing_node(host1, db1, login1, pas1, minBlock, maxBlock)
+        hash1 = Actions.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
+        hash2 = Actions.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
+        hash3 = Actions.get_blockchain_hash(host3, db3, login3, pas3, maxBlock)
+        missingNode = Actions.check_for_missing_node(host1, db1, login1, pas1, minBlock, maxBlock)
         dict1 = dict(count_contract=count_contracts1,
                      hash=str(hash1),
                      node_pos=str(missingNode))
@@ -2465,7 +2465,7 @@ class TestSystemParameters(unittest.TestCase):
             }
         }
         """
-        code, name = utils.generate_name_and_code(value)
+        code, name = Actions.generate_name_and_code(value)
         data = {'Wallet': '', 'Value': code, "ApplicationId": 1,
                 'Conditions': "ContractConditions(`MainCondition`)"}
         res = self.call("NewContract", data)
@@ -2483,7 +2483,7 @@ class TestSystemParameters(unittest.TestCase):
             }
         }
         """
-        code, name = utils.generate_name_and_code(value)
+        code, name = Actions.generate_name_and_code(value)
         data = {'Wallet': '', 'Value': code, "ApplicationId": 1,
                 'Conditions': "ContractConditions(`MainCondition`)"}
         res = self.call("NewContract", data)
