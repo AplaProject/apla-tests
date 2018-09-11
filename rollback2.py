@@ -1,11 +1,13 @@
 import unittest
-import utils
+from model import actions
 import config
 import os
 import json
 
+from model.actions import Actions
 
-class TestRollback2(unittest.TestCase):
+
+class Rollback2(unittest.TestCase):
     
     def test_rollback1(self):
         self.conf = config.readMainConfig()
@@ -14,7 +16,7 @@ class TestRollback2(unittest.TestCase):
         login = self.conf["login"]
         pas = self.conf["pass"]
         # Get from file all tables state
-        dbInformation = utils.getCountDBObjects(host, db, login, pas)
+        dbInformation = Actions.getCountDBObjects(host, db, login, pas)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'r') as dbF:
             data = dbF.read()
@@ -29,7 +31,7 @@ class TestRollback2(unittest.TestCase):
         with open(file, 'r') as f:
             tableName = f.read()
         # Get from file user table state
-        dbUserTableInfo = utils.getUserTableState(host, db, login, pas, tableName)
+        dbUserTableInfo = Actions.getUserTableState(host, db, login, pas, tableName)
         file = os.path.join(os.getcwd(), "dbUserTableState.json")
         with open(file, 'r') as dbUserFile:
             data = dbUserFile.read()
@@ -39,3 +41,6 @@ class TestRollback2(unittest.TestCase):
             dbUser1 = dbUserTableInfo[key]
             dbUser2 = dbUserJson[key]
             self.assertEqual(dbUser1, dbUser2, "Different info about in user table " + key)
+
+if __name__ == '__main__':
+    unittest.main()

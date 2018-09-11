@@ -1,0 +1,12 @@
+{
+  "ecosysParam":{
+		"code": "{data {}\n conditions {}\n action { \n var res string\n res = EcosysParam(\"changing_menu\")\n $result=res\n }\n }",
+		"asert":"MainCondition"
+	},
+
+  "button":{
+		"code": "Button(Body: Create user, Class: btn btn-primary, Contract: NewUser)",
+		"Menu": "default_menu",
+		"content": ""
+	}
+}

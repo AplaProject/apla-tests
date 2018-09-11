@@ -1,11 +1,11 @@
 import unittest
-import utils
 import config
 import json
 import time
 import funcs
 import os
 
+from model.actions import Actions
 from model.database_queries import DatabaseQueries
 
 
@@ -21,52 +21,56 @@ class TestRollback1(unittest.TestCase):
         login = self.conf["login"]
         pas = self.conf["pass"]
         waitTx = self.conf["time_wait_tx_in_block"]
-        lData = utils.login(url, prKey, 0)
+        lData = Actions.login(url, prKey, 0)
         token = lData["jwtToken"]
         self.db_query = DatabaseQueries()
 
     def impApp(self, appName, url, prKey, token):
         path = os.path.join(os.getcwd(), "fixtures", "basic", appName + ".json")
-        resp = utils.call_contract(url, prKey, "ImportUpload",
-                                   {'input_file': {'Path': path}}, token)
-        resImportUpload = utils.txstatus(url, 30,
-                                             resp, token)
-        if int(resImportUpload["blockid"]) > 0:
-            founderID = funcs.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
-            result = funcs.call_get_api(url + "/list/buffer_data", "", token)
-            buferDataList = result['list']
-            for item in buferDataList:
-                if item['key'] == "import" and item['member_id'] == founderID:
-                    importAppData = json.loads(item['value'])['data']
-                    break
-            contractName = "Import"
-            data = [{"contract": contractName,
+        with open(path, 'r', encoding="utf8") as f:
+            file = f.read()
+        files = {'input_file': file}
+        resp = Actions.call_contract_with_files(url, prKey, "ImportUpload", {},
+                                              files, token)
+        if ("hash" in resp):
+            resImportUpload = Actions.txstatus(url, 30,
+                                             resp["hash"], token)
+            if int(resImportUpload["blockid"]) > 0:
+                founderID = funcs.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
+                result = funcs.call_get_api(url + "/list/buffer_data", "", token)
+                buferDataList = result['list']
+                for item in buferDataList:
+                    if item['key'] == "import" and item['member_id'] == founderID:
+                        importAppData = json.loads(item['value'])['data']
+                        break
+                contractName = "Import"
+                data = [{"contract": contractName,
                          "params": importAppData[i]} for i in range(len(importAppData))]
-            resp = utils.call_multi_contract(url, prKey, contractName, data, token)
-            time.sleep(30)
-            if "hashes" in resp:
-                hashes = resp['hashes']
-                result = utils.txstatus_multi(url, 30, hashes, token)
-                for status in result.values():
-                    if int(status["blockid"]) < 1:
-                        print("Import is failed")
-                        exit(1)
-                print("App '" + appName + "' successfully installed")
+                resp = Actions.call_multi_contract(url, prKey, contractName, data, token)
+                time.sleep(30)
+                if "hashes" in resp:
+                    hashes = resp['hashes']
+                    result = Actions.txstatus_multi(url, 30, hashes, token)
+                    for status in result.values():
+                        if int(status["blockid"]) < 1:
+                            print("Import is failed")
+                            exit(1)
+                    print("App '" + appName + "' successfully installed")
 
 
     def call(self, name, data):
-        resp = utils.call_contract(url, prKey, name, data, token)
-        res = utils.txstatus(url, waitTx,
-                             resp, token)
+        resp = Actions.call_contract(url, prKey, name, data, token)
+        res = Actions.txstatus(url, waitTx,
+                             resp['hash'], token)
         return res
 
     def create_contract(self, data):
-        code, name = utils.generate_name_and_code("")
+        code, name = Actions.generate_name_and_code("")
         dataC = {}
         if data == "":
             dataC = {"Wallet": '', "ApplicationId": 1,
                      "Value": code,
-                     "Conditions": "ContractConditions(\"MainCondition\")"}
+                     "Conditions": "ContractConditions(`MainCondition`)"}
         else:
             dataC = data
         res = self.call("NewContract", dataC)
@@ -86,10 +90,10 @@ class TestRollback1(unittest.TestCase):
             }
         }
         """
-        code, name = utils.generate_name_and_code(body)
+        code, name = Actions.generate_name_and_code(body)
         data = {"Wallet": '', "ApplicationId": 1,
                 "Value": code,
-                "Conditions": "ContractConditions(\"MainCondition\")"}
+                "Conditions": "ContractConditions(`MainCondition`)"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res["blockid"]), 0, "BlockId is not generated: " + str(res))
         # change permission for notifications table
@@ -112,25 +116,28 @@ class TestRollback1(unittest.TestCase):
         res = self.call("EditTable", dataEdit)
 
     def getCountTable(self,name):
-        return utils.getCountTable(host, db, login, pas, name)
+        return Actions.getCountTable(host, db, login, pas, name)
 
     def addBinary(self):
-        name = "image_" + utils.generate_random_name()
+        name = "image_" + Actions.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
-        data = {"Name": name, "ApplicationId": 1, 'Data': file}
-        resp = utils.call_contract(url, prKey, "UploadBinary", data, token)
-        res = utils.txstatus(url, waitTx,
-                             resp, token)
+        files = {'Data': file}
+        data = {"Name": name, "ApplicationId": 1}
+        resp = Actions.call_contract_with_files(url, prKey, "UploadBinary", data,
+                                              files, token)
+        res = Actions.txstatus(url, waitTx,
+                             resp['hash'], token)
         self.assertGreater(int(res['blockid']), 0, "BlockId is not generated: " + str(res))
 
     def addUserTable(self):
         # add table
+        dq = self.db_query
         column = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true"), \
                  dq.db_one_column(name="ver_on_null", type="varchar", index="1", conditions="true")
         permission = dq.new_db_table_updater_permissions(r="true", i="true", u="true", new_column="true")
-        tableName = "rolltab_" +  utils.generate_random_name()
+        tableName = "rolltab_" +  Actions.generate_random_name()
         data = {"Name": tableName,
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
@@ -148,12 +155,12 @@ class TestRollback1(unittest.TestCase):
             }
         }
         """ % tableName
-        code, name = utils.generate_name_and_code(body)
+        code, name = Actions.generate_name_and_code(body)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         # call contarct, wich added record in created table
-        res = self.call(name, {})
+        res = self.call(name, data)
 
     def updateUserTable(self, tableName):
         # create contarct, wich updated record in created table
@@ -166,21 +173,21 @@ class TestRollback1(unittest.TestCase):
             }
         }
         """ % tableName
-        code, name = utils.generate_name_and_code(body)
+        code, name = Actions.generate_name_and_code(body)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         # call contarct, wich added record in created table
-        res = self.call(name, {})
+        res = self.call(name, data)
 
     def create_ecosystem(self):
-        data = {"Name": "Ecosys" + utils.generate_random_name()}
+        data = {"Name": "Ecosys" + Actions.generate_random_name()}
         res = self.call("NewEcosystem", data)
 
-    def tokens_send(self):
-        data = {"Recipient_Account": "0005-2070-2000-0006-0200",
+    def money_transfer(self):
+        data = {"Recipient": "0005-2070-2000-0006-0200",
                 "Amount": "1000"}
-        res = self.call("TokensSend", data)
+        res = self.call("MoneyTransfer", data)
 
     def edit_contract(self, contract, code):
         data2 = {"Id": funcs.get_contract_id(url, contract, token),
@@ -198,7 +205,7 @@ class TestRollback1(unittest.TestCase):
         res = self.call("DeactivateContract", data)
 
     def new_parameter(self):
-        name = "Par_" + utils.generate_random_name()
+        name = "Par_" + Actions.generate_random_name()
         data = {"Name": name,
                 "Value": "test",
                 "Conditions": "true"}
@@ -211,7 +218,7 @@ class TestRollback1(unittest.TestCase):
         res = self.call("EditParameter", data)
 
     def new_menu(self):
-        name = "Menu_" + utils.generate_random_name()
+        name = "Menu_" + Actions.generate_random_name()
         data = {"Name": name,
                 "Value": "Item1",
                 "Title": name,
@@ -234,7 +241,7 @@ class TestRollback1(unittest.TestCase):
 
     def new_page(self):
         data = {"ApplicationId": 1,
-                "Name": "Page_" + utils.generate_random_name(),
+                "Name": "Page_" + Actions.generate_random_name(),
                 "Value": "Hello page!",
                 "Menu": "default_menu",
                 "Conditions": "true"}
@@ -250,11 +257,13 @@ class TestRollback1(unittest.TestCase):
     def append_page(self):
         count = funcs.get_count(url, "pages", token)
         dataEdit = {"Id": funcs.get_count(url, "pages", token),
-                    "Value": "Good by!"}
+                    "Value": "Good by!",
+                    "Conditions": "true",
+                    "Menu": "default_menu"}
         res = self.call("AppendPage", dataEdit)
 
     def new_block(self):
-        name = "Block_" + utils.generate_random_name()
+        name = "Block_" + Actions.generate_random_name()
         data = {"ApplicationId": 1,
                 "Name": name,
                 "Value": "Hello page!",
@@ -271,7 +280,7 @@ class TestRollback1(unittest.TestCase):
         dq = self.db_query
         column = dq.db_one_column(name="MyName", type="varchar", index="1", conditions="true")
         permission = dq.new_db_table_updater_permissions(r="true", i="false", u="true", new_column="true")
-        data = {"Name": "Tab_" + utils.generate_random_name(),
+        data = {"Name": "Tab_" + Actions.generate_random_name(),
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
         res = self.call("NewTable", data)
@@ -287,7 +296,7 @@ class TestRollback1(unittest.TestCase):
         res = self.call("EditTable", dataEdit)
 
     def new_column(self, table):
-        name = "Col_" + utils.generate_random_name()
+        name = "Col_" + Actions.generate_random_name()
         dataCol = {"TableName": table,
                    "Name": name,
                    "Type": "number",
@@ -304,8 +313,8 @@ class TestRollback1(unittest.TestCase):
         res = self.call("EditColumn", dataEdit)
 
     def new_lang(self):
-        name = "Lang_" + utils.generate_random_name()
-        data = {"Name": name,
+        name = "Lang_" + Actions.generate_random_name()
+        data = {"Name": name, "ApplicationId": 1,
                 "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("NewLang", data)
         return name
@@ -316,7 +325,7 @@ class TestRollback1(unittest.TestCase):
         res = self.call("EditLang", dataEdit)
 
     def new_sign(self):
-        name = "Sign_" + utils.generate_random_name()
+        name = "Sign_" + Actions.generate_random_name()
         value = "{ \"forsign\" :\"" + name
         value += "\" ,  \"field\" :  \"" + name
         value += "\" ,  \"title\": \"" + name
@@ -337,10 +346,10 @@ class TestRollback1(unittest.TestCase):
         res = self.call("EditSign", dataEdit)
 
     def test_rollback1(self):
-        print('Start ROLLBACK test')
         # Install apps
-        self.impApp("system", url, prKey, token)
-        self.impApp("basic", url, prKey, token)
+        self.impApp("admin", url, prKey, token)
+        self.impApp("system_parameters", url, prKey, token)
+        print("Start rollback test")
         self.addNotification()
         self.addBinary()
         tableName = self.addUserTable()
@@ -356,17 +365,17 @@ class TestRollback1(unittest.TestCase):
         with open(file, 'w') as f:
             f.write(tableNameWithPrefix)
         # Save to file user table state
-        dbUserTableInfo = utils.getUserTableState(host, db, login, pas, tableNameWithPrefix)
+        dbUserTableInfo = Actions.getUserTableState(host, db, login, pas, tableNameWithPrefix)
         file = os.path.join(os.getcwd(), "dbUserTableState.json")
         with open(file, 'w') as fconf:
             json.dump(dbUserTableInfo, fconf)
         # Save to file all tables state
-        dbInformation = utils.getCountDBObjects(host, db, login, pas)
+        dbInformation = Actions.getCountDBObjects(host, db, login, pas)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'w') as fconf:
             json.dump(dbInformation, fconf)
         self.updateUserTable(tableName)
-        self.tokens_send()
+        self.money_transfer()
         contract, code = self.create_contract("")
         self.edit_contract(contract, code)
         self.activate_contract(contract)
@@ -388,7 +397,7 @@ class TestRollback1(unittest.TestCase):
         lang = self.new_lang()
         langs = funcs.call_get_api(url + "/list/languages", {}, token)
         self.edit_lang(langs["count"], lang)
-        #sign = self.new_sign()
-        #self.edit_sign(sign)
-        self.impApp("conditions", url, prKey, token)
+        sign = self.new_sign()
+        self.edit_sign(sign)
+        self.impApp("basic", url, prKey, token)
         time.sleep(20)
