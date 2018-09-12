@@ -23,7 +23,7 @@ class TestApi(unittest.TestCase):
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
         hash = result['hash']
-        status = Actions.txstatus(url, pause, hash, jwtToken)
+        status = Actions.tx_status(url, pause, hash, jwtToken)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return status["blockid"]
@@ -348,7 +348,7 @@ class TestApi(unittest.TestCase):
         data = {"Name": pageName, "Value": pageValue, "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         resp = Actions.call_contract(url, prKey, "@1NewPage", data, token2)
-        status = Actions.txstatus(url, pause, resp["hash"], token2)
+        status = Actions.tx_status(url, pause, resp["hash"], token2)
         self.assertGreater(int(status["blockid"]), 0,"BlockId is not generated: " + str(status))
         # create menu in new ecosystem
         menuName = "Menu_" + Tools.generate_random_name()
@@ -356,7 +356,7 @@ class TestApi(unittest.TestCase):
         data = {"Name": menuName, "Value": "MenuItem(Title:\""+menuTitle+"\")", "ApplicationId": 1,
                 "Conditions": "true"}
         resp = Actions.call_contract(url, prKey, "@1NewMenu", data, token2)
-        status = Actions.txstatus(url, pause, resp["hash"], token2)
+        status = Actions.tx_status(url, pause, resp["hash"], token2)
         self.assertGreater(int(status["blockid"]), 0, "BlockId is not generated: " + str(status))
         # test
         data = ""
@@ -474,7 +474,7 @@ class TestApi(unittest.TestCase):
     def is_node_owner_true(self):
         data = {}
         resp = Actions.call_contract(url, prKey, "NodeOwnerCondition", data, token)
-        status = Actions.txstatus(url, pause, resp["hash"], token)
+        status = Actions.tx_status(url, pause, resp["hash"], token)
         self.assertGreater(int(status["blockid"]), 0,
                            "BlockId is not generated: " + str(status))
         
@@ -485,7 +485,7 @@ class TestApi(unittest.TestCase):
         token2 = data2["jwtToken"]
         data = {}
         resp = Actions.call_contract(url, prKey2, "NodeOwnerCondition", data, token2)
-        status = Actions.txstatus(url, pause, resp["hash"], token2)
+        status = Actions.tx_status(url, pause, resp["hash"], token2)
         self.assertEqual(status["errmsg"]["error"],
                          "Sorry, you do not have access to this action.",
                          "Incorrect message: " + str(status))
@@ -581,7 +581,7 @@ class TestApi(unittest.TestCase):
         asserts = ""
         data = ""
         avaURL = url + "/avatar/" + ecosystemID + "/" + founderID
-        res = funcs.call_get_api_with_full_response(avaURL, data, asserts)
+        res = Actions.call_get_api_with_full_response(avaURL, data, asserts)
         msg = "Content-Length is different!"
         self.assertIn("71926", str(res.headers["Content-Length"]),msg)
 

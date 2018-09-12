@@ -1,15 +1,13 @@
 import config
 import time
-import funcs
 import os
 import json
 
-from model.actions import Actions
-
+from libs.actions import Actions
 
 def isInBlock(call, url, token):
     if "hash" in call:
-        status = Actions.txstatus(url, 30, call["hash"], token)
+        status = Actions.tx_status(url, 30, call["hash"], token)
         if "blockid" not in status or int(status["blockid"]) < 0:
             return False 
     else:
@@ -24,11 +22,11 @@ def impApp(appName, url, prKey, token):
     resp = Actions.call_contract_with_files(url, prKey, "ImportUpload", {},
                                             files, token)
     if("hash" in resp):
-        resImportUpload = Actions.txstatus(url, 30,
-                                           resp["hash"], token)
+        resImportUpload = Actions.tx_status(url, 30,
+                                            resp["hash"], token)
         if int(resImportUpload["blockid"]) > 0:
-            founderID = funcs.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
-            result = funcs.call_get_api(url + "/list/buffer_data", "", token)
+            founderID = Actions.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
+            result = Actions.call_get_api(url + "/list/buffer_data", "", token)
             buferDataList = result['list']
             for item in buferDataList:
                 if item['key'] == "import" and item['member_id'] == founderID:
@@ -41,7 +39,7 @@ def impApp(appName, url, prKey, token):
             time.sleep(30)
             if "hashes" in resp:
                 hashes = resp['hashes']
-                result = Actions.txstatus_multi(url, 30, hashes, token)
+                result = Actions.tx_status_multi(url, 30, hashes, token)
                 for status in result.values():
                     if int(status["blockid"]) < 1:
                         print("Import is failed")
@@ -58,7 +56,7 @@ def voitingInstall(url, prKey, token):
 
     
 def editAppParam(name, val, url, prKey, token):
-    data = {"Id": funcs.get_object_id(url, name, "app_params", token),
+    data = {"Id": Actions.get_object_id(url, name, "app_params", token),
             "Name": name, "Value": val, "Conditions": "true" }
     call = Actions.call_contract(url, prKey, "EditAppParam",
                                  data, token)

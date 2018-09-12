@@ -6,7 +6,6 @@ import json
 from libs.actions import Actions
 from libs.db import Db
 
-
 class Rollback2(unittest.TestCase):
     
     def test_rollback1(self):

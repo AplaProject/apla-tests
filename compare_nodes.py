@@ -3,8 +3,6 @@ import config
 from builtins import sum
 
 from libs.actions import Actions
-from libs.db import Db
-
 
 class CompareNodes(unittest.TestCase):
     @classmethod
@@ -31,9 +29,9 @@ class CompareNodes(unittest.TestCase):
     
     def test_compare_nodes(self):
         nodes = 3
-        amounts1 = Db.getUserTokenAmounts(host1, db1, login1, pas1)
-        amounts2 = Db.getUserTokenAmounts(host2, db2, login2, pas2)
-        amounts3 = Db.getUserTokenAmounts(host3, db3, login3, pas3)
+        amounts1 = Actions.get_user_token_amounts(host1, db1, login1, pas1)
+        amounts2 = Actions.get_user_token_amounts(host2, db2, login2, pas2)
+        amounts3 = Actions.get_user_token_amounts(host3, db3, login3, pas3)
         sumAmounts = sum(amount[0] for amount in amounts1)
         self.data1 = Actions.login(config1["url"], config1['private_key'], 0)
         maxBlockId1 = Actions.get_max_block_id(config1["url"],self.data1["jwtToken"])
@@ -64,9 +62,9 @@ class CompareNodes(unittest.TestCase):
         self.assertDictEqual(dict1, dict3, msg)
         
     def test_compare_db(self):
-        dbInformation1 = Db.getCountDBObjects(host1, db1, login1, pas1)
-        dbInformation2 = Db.getCountDBObjects(host2, db2, login2, pas2)
-        dbInformation3 = Db.getCountDBObjects(host3, db3, login3, pas3)
+        dbInformation1 = Actions.get_count_DB_objects(host1, db1, login1, pas1)
+        dbInformation2 = Actions.get_count_DB_objects(host2, db2, login2, pas2)
+        dbInformation3 = Actions.get_count_DB_objects(host3, db3, login3, pas3)
         for key in dbInformation1:
             dbInf1 = dbInformation1[key]
             dbInf2 = dbInformation2[key]
