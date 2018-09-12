@@ -1,11 +1,12 @@
 import unittest
 import config
 import time
-import funcs
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
 
-from model.actions import Actions
+from libs.actions import Actions
+from libs.db import Db
+from libs.tools import Tools
 
 
 class TestCost(unittest.TestCase):
@@ -25,7 +26,7 @@ class TestCost(unittest.TestCase):
         i = 1
         nodeBalance = []
         while i < nodeCount + 1:
-            nodeBalance.append(Actions.get_balance_from_db(conf["1"]["dbHost"],
+            nodeBalance.append(Db.get_balance_from_db(conf["1"]["dbHost"],
                                                            conf["1"]["dbName"],
                                                            conf["1"]["login"],
                                                            conf["1"] ["pass"],
@@ -49,7 +50,7 @@ class TestCost(unittest.TestCase):
     def activateContract(self):
         dataCreater = Actions.login(conf["2"]["url"], conf["1"]["private_key"], 0)
         tokenCreater = dataCreater["jwtToken"]
-        id = funcs.get_contract_id(conf["2"]["url"], "CostContract", tokenCreater)
+        id = Actions.get_contract_id(conf["2"]["url"], "CostContract", tokenCreater)
         data = {"Id": id}
         result = Actions.call_contract(conf["2"]["url"], conf["1"]["private_key"],
                                      "ActivateContract", data, tokenCreater)
@@ -59,7 +60,7 @@ class TestCost(unittest.TestCase):
     def deactivateContract(self):
         dataCreater = Actions.login(conf["1"]["url"], conf["1"]["private_key"], 0)
         tokenCreater = dataCreater["jwtToken"]
-        id = funcs.get_contract_id(conf["1"]["url"], "CostContract", tokenCreater)
+        id = Actions.get_contract_id(conf["1"]["url"], "CostContract", tokenCreater)
         data = {"Id": id}
         result = Actions.call_contract(conf["1"]["url"], conf["1"]["private_key"],
                                      "DeactivateContract", data, tokenCreater)
@@ -87,12 +88,12 @@ class TestCost(unittest.TestCase):
             return False                
         
     def test_activated_contract(self):
-        if funcs.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == False:
+        if Actions.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == False:
             self.activateContract()
         time.sleep(10)
-        walletId = funcs.get_activated_wallet(conf["2"]["url"],
+        walletId = Actions.get_activated_wallet(conf["2"]["url"],
                                               "CostContract", self.token)
-        sumsBefore = Actions.getUserTokenAmounts(conf["1"]["dbHost"],
+        sumsBefore = Db.getUserTokenAmounts(conf["1"]["dbHost"],
                                                  conf["1"]["dbName"],
                                                  conf["1"]["login"],
                                                  conf["1"] ["pass"])
@@ -101,7 +102,7 @@ class TestCost(unittest.TestCase):
         tokenRunner, uid = Actions.get_uid(conf["2"]["url"])
         signature = sign(keys["key2"], uid)
         pubRunner = get_public_key(keys["key2"])
-        balanceRunnerB = Actions.get_balance_from_db_by_pub(conf["1"]["dbHost"],
+        balanceRunnerB = Db.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
                                                             conf["1"] ["pass"],
@@ -113,10 +114,10 @@ class TestCost(unittest.TestCase):
         result = Actions.txstatus(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
                                   res["hash"], tokenRunner)
         time.sleep(10)
-        node = Actions.get_block_gen_node(conf["1"]["dbHost"], conf["1"]["dbName"],
+        node = Db.get_block_gen_node(conf["1"]["dbHost"], conf["1"]["dbName"],
                                           conf["1"]["login"], conf["1"] ["pass"],
                                           result["blockid"])
-        sumsAfter = Actions.getUserTokenAmounts(conf["1"]["dbHost"],
+        sumsAfter = Db.getUserTokenAmounts(conf["1"]["dbHost"],
                                                 conf["1"]["dbName"],
                                                 conf["1"]["login"],
                                                 conf["1"] ["pass"])
@@ -124,12 +125,12 @@ class TestCost(unittest.TestCase):
         aNodeBalance = self.getNodeBalances()
         nodeCommission = 144530000000000000
         platformaCommission = 4470000000000000
-        balanceRunnerA = Actions.get_balance_from_db_by_pub(conf["1"]["dbHost"],
+        balanceRunnerA = Db.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
                                                             conf["1"] ["pass"],
                                                             pubRunner)
-        balanceContractOwnerA = Actions.get_balance_from_db(conf["1"]["dbHost"],
+        balanceContractOwnerA = Db.get_balance_from_db(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
                                                             conf["1"] ["pass"],
@@ -160,9 +161,9 @@ class TestCost(unittest.TestCase):
                              "Error in comissions run activated contract")
         
     def test_deactive_contract(self):
-        if funcs.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == True:
+        if Actions.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == True:
             self.deactivateContract()
-        walletId = funcs.get_activated_wallet(conf["2"]["url"],
+        walletId = Actions.get_activated_wallet(conf["2"]["url"],
                                               "CostContract", self.token)
         sumsBefore = Actions.getUserTokenAmounts(conf["1"]["dbHost"],
                                                  conf["1"]["dbName"],
@@ -173,7 +174,7 @@ class TestCost(unittest.TestCase):
         tokenRunner, uid = Actions.get_uid(conf["2"]["url"])
         signature = sign(keys["key2"], uid)
         pubRunner = get_public_key(keys["key2"])
-        balanceRunnerB = Actions.get_balance_from_db_by_pub(conf["1"]["dbHost"],
+        balanceRunnerB = Db.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
                                                             conf["1"] ["pass"],
@@ -185,10 +186,10 @@ class TestCost(unittest.TestCase):
         result = Actions.txstatus(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
                                   res["hash"], tokenRunner)
         time.sleep(10)
-        node = Actions.get_block_gen_node(conf["1"]["dbHost"], conf["1"]["dbName"],
+        node = Db.get_block_gen_node(conf["1"]["dbHost"], conf["1"]["dbName"],
                                           conf["1"]["login"], conf["1"] ["pass"],
                                           result["blockid"])
-        sumsAfter = Actions.getUserTokenAmounts(conf["1"]["dbHost"],
+        sumsAfter = Db.getUserTokenAmounts(conf["1"]["dbHost"],
                                                 conf["1"]["dbName"],
                                                 conf["1"]["login"],
                                                 conf["1"] ["pass"])
@@ -197,12 +198,12 @@ class TestCost(unittest.TestCase):
         nodeCommission = 144530000000000000
         platformaCommission = 4470000000000000
         commission = nodeCommission + platformaCommission
-        balanceRunnerA = Actions.get_balance_from_db_by_pub(conf["1"]["dbHost"],
+        balanceRunnerA = Db.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
                                                             conf["1"] ["pass"],
                                                             pubRunner)
-        balanceContractOwnerA = Actions.get_balance_from_db(conf["1"]["dbHost"],
+        balanceContractOwnerA = Db.get_balance_from_db(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
                                                             conf["1"] ["pass"],
@@ -233,24 +234,24 @@ class TestCost(unittest.TestCase):
                              "Error in comissions run deactivated contract")
         
     def test_activated_contract_with_err(self):
-        if funcs.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == False:
+        if Actions.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == False:
             self.activateContract()
-        walletId = funcs.get_activated_wallet(conf["2"]["url"], "CostContract", self.token)
-        balanceContractOwnerB = Actions.get_balance_from_db(conf["1"]["dbHost"],
+        walletId = Actions.get_activated_wallet(conf["2"]["url"], "CostContract", self.token)
+        balanceContractOwnerB = Db.get_balance_from_db(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
                                                             conf["1"] ["pass"],
                                                             walletId)
-        balanceNodeOwnerB = Actions.get_balance_from_db(conf["1"]["dbHost"],
+        balanceNodeOwnerB = Db.get_balance_from_db(conf["1"]["dbHost"],
                                                         conf["1"]["dbName"],
                                                         conf["1"]["login"],
                                                         conf["1"] ["pass"],
                                                         conf["2"]["keyID"])
-        commisionWallet = Actions.get_commission_wallet(conf["1"]["dbHost"],
+        commisionWallet = Db.get_commission_wallet(conf["1"]["dbHost"],
                                                         conf["1"]["dbName"],
                                                         conf["1"]["login"],
                                                         conf["1"] ["pass"], 1)
-        balanceCommisionB = Actions.get_balance_from_db(conf["1"]["dbHost"],
+        balanceCommisionB = Db.get_balance_from_db(conf["1"]["dbHost"],
                                                         conf["1"]["dbName"],
                                                         conf["1"]["login"],
                                                         conf["1"] ["pass"],
@@ -258,7 +259,7 @@ class TestCost(unittest.TestCase):
         tokenRunner, uid = Actions.get_uid(conf["2"]["url"])
         signature = sign(keys["key2"], uid)
         pubRunner = get_public_key(keys["key2"])
-        balanceRunnerB = Actions.get_balance_from_db_by_pub(conf["1"]["dbHost"],
+        balanceRunnerB = Db.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
                                                             conf["1"] ["pass"],
@@ -271,22 +272,22 @@ class TestCost(unittest.TestCase):
         result = Actions.txstatus(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
                                   hash, tokenRunner)
         time.sleep(10)
-        balanceContractOwnerA = Actions.get_balance_from_db(conf["1"]["dbHost"],
+        balanceContractOwnerA = Db.get_balance_from_db(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
                                                             conf["1"] ["pass"],
                                                             walletId)
-        balanceNodeOwnerA = Actions.get_balance_from_db(conf["1"]["dbHost"],
+        balanceNodeOwnerA = Db.get_balance_from_db(conf["1"]["dbHost"],
                                                         conf["1"]["dbName"],
                                                         conf["1"]["login"],
                                                         conf["1"] ["pass"],
                                                         conf["2"]["keyID"])
-        balanceCommisionA = Actions.get_balance_from_db(conf["1"]["dbHost"],
+        balanceCommisionA = Db.get_balance_from_db(conf["1"]["dbHost"],
                                                         conf["1"]["dbName"],
                                                         conf["1"]["login"],
                                                         conf["1"] ["pass"],
                                                         commisionWallet)
-        balanceRunnerA = Actions.get_balance_from_db_by_pub(conf["1"]["dbHost"],
+        balanceRunnerA = Db.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
                                                             conf["1"] ["pass"],
@@ -310,29 +311,29 @@ class TestCost(unittest.TestCase):
         self.assertDictEqual(dictValid, dictExpect, msg)
         
     def test_deactive_contract_with_err(self):
-        if funcs.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == True:
+        if Actions.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == True:
             self.deactivateContract()
-        walletId = funcs.get_activated_wallet(conf["2"]["url"], "CostContract", self.token)
-        balanceContractOwnerB = Actions.get_balance_from_db(conf["1"]["dbHost"],
+        walletId = Actions.get_activated_wallet(conf["2"]["url"], "CostContract", self.token)
+        balanceContractOwnerB = Db.get_balance_from_db(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
                                                             conf["1"] ["pass"],
                                                             walletId)
-        balanceNodeOwnerB = Actions.get_balance_from_db(conf["1"]["dbHost"],
+        balanceNodeOwnerB = Db.get_balance_from_db(conf["1"]["dbHost"],
                                                         conf["1"]["dbName"],
                                                         conf["1"]["login"],
                                                         conf["1"] ["pass"],
                                                         conf["2"]["keyID"])
-        commisionWallet = Actions.get_commission_wallet(conf["1"]["dbHost"],
+        commisionWallet = Db.get_commission_wallet(conf["1"]["dbHost"],
                                                         conf["1"]["dbName"],
                                                         conf["1"]["login"],
                                                         conf["1"] ["pass"], 1)
-        balanceCommisionB = Actions.get_balance_from_db(conf["1"]["dbHost"],
+        balanceCommisionB = Db.get_balance_from_db(conf["1"]["dbHost"],
                                                         conf["1"]["dbName"],
                                                         conf["1"]["login"],
                                                         conf["1"] ["pass"],
                                                         commisionWallet)
-        commission = Actions.get_system_parameter(conf["1"]["dbHost"],
+        commission = Db.get_system_parameter(conf["1"]["dbHost"],
                                                   conf["1"]["dbName"],
                                                   conf["1"]["login"],
                                                   conf["1"] ["pass"],
@@ -340,7 +341,7 @@ class TestCost(unittest.TestCase):
         tokenRunner, uid = Actions.get_uid(conf["2"]["url"])
         signature = sign(keys["key2"], uid)
         pubRunner = get_public_key(keys["key2"])
-        balanceRunnerB = Actions.get_balance_from_db_by_pub(conf["1"]["dbHost"],
+        balanceRunnerB = Db.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
                                                             conf["1"] ["pass"],
@@ -353,22 +354,22 @@ class TestCost(unittest.TestCase):
         hash = res["hash"]
         result = Actions.txstatus(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
                                   hash, tokenRunner)
-        balanceContractOwnerA = Actions.get_balance_from_db(conf["1"]["dbHost"],
+        balanceContractOwnerA = Db.get_balance_from_db(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
                                                             conf["1"] ["pass"],
                                                             walletId)
-        balanceNodeOwnerA = Actions.get_balance_from_db(conf["1"]["dbHost"],
+        balanceNodeOwnerA = Db.get_balance_from_db(conf["1"]["dbHost"],
                                                         conf["1"]["dbName"],
                                                         conf["1"]["login"],
                                                         conf["1"] ["pass"],
                                                         conf["2"]["keyID"])
-        balanceCommisionA = Actions.get_balance_from_db(conf["1"]["dbHost"],
+        balanceCommisionA = Db.get_balance_from_db(conf["1"]["dbHost"],
                                                         conf["1"]["dbName"],
                                                         conf["1"]["login"],
                                                         conf["1"] ["pass"],
                                                         commisionWallet)
-        balanceRunnerA = Actions.get_balance_from_db_by_pub(conf["1"]["dbHost"],
+        balanceRunnerA = Db.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
                                                             conf["1"] ["pass"],

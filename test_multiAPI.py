@@ -1,6 +1,8 @@
 import unittest
 import config
-from model.actions import Actions
+
+from libs.actions import Actions
+from libs.tools import Tools
 
 
 class TestMultiApi(unittest.TestCase):
@@ -29,7 +31,7 @@ class TestMultiApi(unittest.TestCase):
 
     def test_new_interface_block(self):
         contractName = "NewBlock"
-        block = "Block_" + Actions.generate_random_name()
+        block = "Block_" + Tools.generate_random_name()
         data = [{"contract": contractName,
                  "params":{"Name": block, "Value": "Hello page!", "ApplicationId": "1",
                 "Conditions": "true"}}]
@@ -38,14 +40,14 @@ class TestMultiApi(unittest.TestCase):
     def test_new_interface_block_multi(self):
         contractName = "NewBlock"
         data = [{"contract": contractName,
-                 "params": {"Name": "Block_" + Actions.generate_random_name(), "Value": "Hello page!",
+                 "params": {"Name": "Block_" + Tools.generate_random_name(), "Value": "Hello page!",
                             "ApplicationId": "1",
                             "Conditions": "true"}} for _ in range(2)]
         res = self.callMulti(contractName, data)
      
     def test_new_lang(self):
         contractName = "NewLang"
-        nameLang = "Lang_" + Actions.generate_random_name()
+        nameLang = "Lang_" + Tools.generate_random_name()
         data = [{"contract": contractName,
                  "params": {"ApplicationId": "1", "Name": nameLang,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
@@ -54,7 +56,7 @@ class TestMultiApi(unittest.TestCase):
 
     def test_new_page(self):
         contractName = "NewPage"
-        name = "Page_" + Actions.generate_random_name()
+        name = "Page_" + Tools.generate_random_name()
         data = [{"contract": contractName,
                  "params":{"Name":name, "Value":"SetVar(a,\"Hello\") \n Div(Body: #a#)", "Conditions":"true", "Menu":"default_menu", "ApplicationId": "1"}}]
         res = self.callMulti(contractName, data)
