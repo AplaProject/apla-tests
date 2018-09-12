@@ -1,6 +1,5 @@
 import unittest
 import config
-import funcs
 from builtins import sum
 
 from libs.actions import Actions
@@ -30,16 +29,16 @@ class CompareNodes(unittest.TestCase):
     
     def test_compare_nodes(self):
         nodes = 3
-        amounts1 = Actions.getUserTokenAmounts(host1, db1, login1, pas1)
-        amounts2 = Actions.getUserTokenAmounts(host2, db2, login2, pas2)
-        amounts3 = Actions.getUserTokenAmounts(host3, db3, login3, pas3)
+        amounts1 = Actions.get_user_token_amounts(host1, db1, login1, pas1)
+        amounts2 = Actions.get_user_token_amounts(host2, db2, login2, pas2)
+        amounts3 = Actions.get_user_token_amounts(host3, db3, login3, pas3)
         sumAmounts = sum(amount[0] for amount in amounts1)
         self.data1 = Actions.login(config1["url"], config1['private_key'], 0)
-        maxBlockId1 = funcs.get_max_block_id(config1["url"],self.data1["jwtToken"])
+        maxBlockId1 = Actions.get_max_block_id(config1["url"],self.data1["jwtToken"])
         self.data2 = Actions.login(config2["url"], config1['private_key'], 0)
-        maxBlockId2 = funcs.get_max_block_id(config2["url"],self.data2["jwtToken"])
+        maxBlockId2 = Actions.get_max_block_id(config2["url"],self.data2["jwtToken"])
         self.data3 = Actions.login(config3["url"], config1['private_key'], 0)
-        maxBlockId3 = funcs.get_max_block_id(config3["url"],self.data3["jwtToken"])
+        maxBlockId3 = Actions.get_max_block_id(config3["url"],self.data3["jwtToken"])
         maxBlock = max(maxBlockId2, maxBlockId1, maxBlockId3)
         hash1 = Actions.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
         hash2 = Actions.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
@@ -63,9 +62,9 @@ class CompareNodes(unittest.TestCase):
         self.assertDictEqual(dict1, dict3, msg)
         
     def test_compare_db(self):
-        dbInformation1 = Actions.getCountDBObjects(host1, db1, login1, pas1)
-        dbInformation2 = Actions.getCountDBObjects(host2, db2, login2, pas2)
-        dbInformation3 = Actions.getCountDBObjects(host3, db3, login3, pas3)
+        dbInformation1 = Actions.get_count_DB_objects(host1, db1, login1, pas1)
+        dbInformation2 = Actions.get_count_DB_objects(host2, db2, login2, pas2)
+        dbInformation3 = Actions.get_count_DB_objects(host3, db3, login3, pas3)
         for key in dbInformation1:
             dbInf1 = dbInformation1[key]
             dbInf2 = dbInformation2[key]

@@ -2,7 +2,6 @@ import unittest
 import config
 import json
 import time
-import funcs
 import os
 
 from libs.actions import Actions
@@ -33,11 +32,11 @@ class TestRollback1(unittest.TestCase):
         resp = Actions.call_contract_with_files(url, prKey, "ImportUpload", {},
                                               files, token)
         if ("hash" in resp):
-            resImportUpload = Actions.txstatus(url, 30,
-                                             resp["hash"], token)
+            resImportUpload = Actions.tx_status(url, 30,
+                                                resp["hash"], token)
             if int(resImportUpload["blockid"]) > 0:
-                founderID = funcs.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
-                result = funcs.call_get_api(url + "/list/buffer_data", "", token)
+                founderID = Actions.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
+                result = Actions.call_get_api(url + "/list/buffer_data", "", token)
                 buferDataList = result['list']
                 for item in buferDataList:
                     if item['key'] == "import" and item['member_id'] == founderID:
@@ -50,7 +49,7 @@ class TestRollback1(unittest.TestCase):
                 time.sleep(30)
                 if "hashes" in resp:
                     hashes = resp['hashes']
-                    result = Actions.txstatus_multi(url, 30, hashes, token)
+                    result = Actions.tx_status_multi(url, 30, hashes, token)
                     for status in result.values():
                         if int(status["blockid"]) < 1:
                             print("Import is failed")
@@ -60,8 +59,8 @@ class TestRollback1(unittest.TestCase):
 
     def call(self, name, data):
         resp = Actions.call_contract(url, prKey, name, data, token)
-        res = Actions.txstatus(url, waitTx,
-                             resp['hash'], token)
+        res = Actions.tx_status(url, waitTx,
+                                resp['hash'], token)
         return res
 
     def create_contract(self, data):
@@ -116,7 +115,7 @@ class TestRollback1(unittest.TestCase):
         res = self.call("EditTable", dataEdit)
 
     def getCountTable(self,name):
-        return Actions.getCountTable(host, db, login, pas, name)
+        return Actions.get_count_table(host, db, login, pas, name)
 
     def addBinary(self):
         name = "image_" + Actions.generate_random_name()
@@ -127,8 +126,8 @@ class TestRollback1(unittest.TestCase):
         data = {"Name": name, "ApplicationId": 1}
         resp = Actions.call_contract_with_files(url, prKey, "UploadBinary", data,
                                               files, token)
-        res = Actions.txstatus(url, waitTx,
-                             resp['hash'], token)
+        res = Actions.tx_status(url, waitTx,
+                                resp['hash'], token)
         self.assertGreater(int(res['blockid']), 0, "BlockId is not generated: " + str(res))
 
     def addUserTable(self):
@@ -190,18 +189,18 @@ class TestRollback1(unittest.TestCase):
         res = self.call("MoneyTransfer", data)
 
     def edit_contract(self, contract, code):
-        data2 = {"Id": funcs.get_contract_id(url, contract, token),
+        data2 = {"Id": Actions.get_contract_id(url, contract, token),
                  "Value": code,
                  "Conditions": "true",
                  "WalletId": "0005-2070-2000-0006-0200"}
         res = self.call("EditContract", data2)
 
     def activate_contract(self, name):
-        data = {"Id": funcs.get_contract_id(url, name, token)}
+        data = {"Id": Actions.get_contract_id(url, name, token)}
         res = self.call("ActivateContract", data)
 
     def deactivate_contract(self, name):
-        data = {"Id": funcs.get_contract_id(url, name, token)}
+        data = {"Id": Actions.get_contract_id(url, name, token)}
         res = self.call("DeactivateContract", data)
 
     def new_parameter(self):
@@ -213,7 +212,7 @@ class TestRollback1(unittest.TestCase):
         return name
 
     def edit_parameter(self, name):
-        data = {"Id": funcs.get_parameter_id(url, name, token),
+        data = {"Id": Actions.get_parameter_id(url, name, token),
                 "Value": "test_edited", "Conditions": "true"}
         res = self.call("EditParameter", data)
 
@@ -227,15 +226,15 @@ class TestRollback1(unittest.TestCase):
         return name
 
     def edit_menu(self):
-        dataEdit = {"Id": funcs.get_count(url, "menu", token),
+        dataEdit = {"Id": Actions.get_count(url, "menu", token),
                     "Value": "ItemEdited",
                     "Title": "TitleEdited",
                     "Conditions": "true"}
         res = self.call("EditMenu", dataEdit)
 
     def append_memu(self):
-        count = funcs.get_count(url, "menu", token)
-        dataEdit = {"Id": funcs.get_count(url, "menu", token),
+        count = Actions.get_count(url, "menu", token)
+        dataEdit = {"Id": Actions.get_count(url, "menu", token),
                     "Value": "AppendedItem"}
         res = self.call("AppendMenu", dataEdit)
 
@@ -248,15 +247,15 @@ class TestRollback1(unittest.TestCase):
         res = self.call("NewPage", data)
 
     def edit_page(self):
-        dataEdit = {"Id": funcs.get_count(url, "pages", token),
+        dataEdit = {"Id": Actions.get_count(url, "pages", token),
                     "Value": "Good by page!",
                     "Conditions": "true",
                     "Menu": "default_menu"}
         res = self.call("EditPage", dataEdit)
 
     def append_page(self):
-        count = funcs.get_count(url, "pages", token)
-        dataEdit = {"Id": funcs.get_count(url, "pages", token),
+        count = Actions.get_count(url, "pages", token)
+        dataEdit = {"Id": Actions.get_count(url, "pages", token),
                     "Value": "Good by!",
                     "Conditions": "true",
                     "Menu": "default_menu"}
@@ -271,7 +270,7 @@ class TestRollback1(unittest.TestCase):
         res = self.call("NewBlock", data)
 
     def edit_block(self):
-        count = funcs.get_count(url, "blocks", token)
+        count = Actions.get_count(url, "blocks", token)
         dataEdit = {"Id": count, "Value": "Good by!",
                     "Conditions": "true"}
         res = self.call("EditBlock", dataEdit)
@@ -335,12 +334,12 @@ class TestRollback1(unittest.TestCase):
         return name
 
     def edit_sign(self, name):
-        count = funcs.get_count(url, "signatures", token)
+        count = Actions.get_count(url, "signatures", token)
         valueE = "{ \"forsign\" :\"" + name
         valueE += "\" ,  \"field\" :  \"" + name
         valueE += "\" ,  \"title\": \"" + name
         valueE += "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
-        dataEdit = {"Id": funcs.get_count(url, "signatures", token),
+        dataEdit = {"Id": Actions.get_count(url, "signatures", token),
                     "Value": valueE,
                     "Conditions": "true"}
         res = self.call("EditSign", dataEdit)
@@ -355,7 +354,7 @@ class TestRollback1(unittest.TestCase):
         tableName = self.addUserTable()
         self.insertToUserTable(tableName)
         # Save to file block id for rollback
-        rollbackBlockId = funcs.get_max_block_id(url, token)
+        rollbackBlockId = Actions.get_max_block_id(url, token)
         file = os.path.join(os.getcwd(), "blockId.txt")
         with open(file, 'w') as f:
             f.write(str(rollbackBlockId))
@@ -365,12 +364,12 @@ class TestRollback1(unittest.TestCase):
         with open(file, 'w') as f:
             f.write(tableNameWithPrefix)
         # Save to file user table state
-        dbUserTableInfo = Actions.getUserTableState(host, db, login, pas, tableNameWithPrefix)
+        dbUserTableInfo = Actions.get_user_table_state(host, db, login, pas, tableNameWithPrefix)
         file = os.path.join(os.getcwd(), "dbUserTableState.json")
         with open(file, 'w') as fconf:
             json.dump(dbUserTableInfo, fconf)
         # Save to file all tables state
-        dbInformation = Actions.getCountDBObjects(host, db, login, pas)
+        dbInformation = Actions.get_count_DB_objects(host, db, login, pas)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'w') as fconf:
             json.dump(dbInformation, fconf)
@@ -395,7 +394,7 @@ class TestRollback1(unittest.TestCase):
         column = self.new_column(table)
         self.edit_column(table, column)
         lang = self.new_lang()
-        langs = funcs.call_get_api(url + "/list/languages", {}, token)
+        langs = Actions.call_get_api(url + "/list/languages", {}, token)
         self.edit_lang(langs["count"], lang)
         sign = self.new_sign()
         self.edit_sign(sign)

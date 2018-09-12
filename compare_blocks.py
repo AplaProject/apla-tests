@@ -1,6 +1,5 @@
 import unittest
 import config
-import funcs
 import time
 
 from libs.actions import Actions
@@ -11,7 +10,7 @@ class CompareBlocks(unittest.TestCase):
         maxTime = 12000
         sec = 1
         while sec < maxTime:
-            maxBlockId1 = funcs.get_max_block_id(url, token)
+            maxBlockId1 = Actions.get_max_block_id(url, token)
             if maxBlockId1 == maxBlock:
                 print("Time: ", sec)
                 return {"time": sec, "blocks": maxBlockId1}
@@ -23,7 +22,7 @@ class CompareBlocks(unittest.TestCase):
         conf = config.getNodeConfig()
         time.sleep(30)
         data2 = Actions.login(conf['2']['url'], conf['1']['private_key'], 0)
-        maxBlockId2 = funcs.get_max_block_id(conf["2"]["url"], data2["jwtToken"])
+        maxBlockId2 = Actions.get_max_block_id(conf["2"]["url"], data2["jwtToken"])
         data1 = Actions.login(conf['1']['url'], conf['1']['private_key'], 0)
         res = self.get_load_time(conf["1"]["url"], data1["jwtToken"], maxBlockId2)
         msg = "All " + str(maxBlockId2) +\

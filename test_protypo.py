@@ -1,7 +1,6 @@
 import unittest
 import config
 import json
-import funcs
 import os
 
 from libs.actions import Actions
@@ -24,9 +23,9 @@ class TestPrototipo(unittest.TestCase):
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
-        status = Actions.txstatus(url,
-                                  self.config["1"]["time_wait_tx_in_block"],
-                                  result['hash'], jwtToken)
+        status = Actions.tx_status(url,
+                                   self.config["1"]["time_wait_tx_in_block"],
+                                   result['hash'], jwtToken)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
@@ -49,7 +48,7 @@ class TestPrototipo(unittest.TestCase):
                 "Conditions": "true", "Menu": "default_menu"}
         resp = Actions.call_contract(url, prKey, "NewPage", data, token)
         self.assertTxInBlock(resp, token)
-        cont = funcs.get_content(url, "page", name, "", 1, token)
+        cont = Actions.get_content(url, "page", name, "", 1, token)
         return cont
 
     def findPositionElementInTree(self, contentTree, tagName):
@@ -69,14 +68,14 @@ class TestPrototipo(unittest.TestCase):
 
     def check_post_api(self, endPoint, data, keys):
         end = url + endPoint
-        result = funcs.call_post_api(end, data, token)
+        result = Actions.call_post_api(end, data, token)
         for key in keys:
             self.assertIn(key, result)
         return result
 
     def check_get_api(self, endPoint, data, keys):
         end = url + endPoint
-        result = funcs.call_get_api(end, data, token)
+        result = Actions.call_get_api(end, data, token)
         for key in keys:
             self.assertIn(key, result)
         return result
@@ -628,8 +627,8 @@ class TestPrototipo(unittest.TestCase):
         self.assertTxInBlock(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = Actions.getFounderId(dbHost, dbName, login, password)
-        lastRec = funcs.get_count(url, "binaries", token)
+        MemberID = Actions.get_founder_id(dbHost, dbName, login, password)
+        lastRec = Actions.get_count(url, "binaries", token)
         content = self.check_page("Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
         self.assertEqual("/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec", content["tree"][0]["text"])
@@ -648,7 +647,7 @@ class TestPrototipo(unittest.TestCase):
         res = self.assertTxInBlock(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        lastRec = funcs.get_count(url, "binaries", token)
+        lastRec = Actions.get_count(url, "binaries", token)
         content = self.check_page("Binary().ById("+lastRec+")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
         self.assertEqual("/data/1_binaries/"+lastRec+"/data/b40ad01eacc0312f6dd1ff2a705756ec", content["tree"][0]["text"])
@@ -667,8 +666,8 @@ class TestPrototipo(unittest.TestCase):
         self.assertTxInBlock(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = Actions.getFounderId(dbHost, dbName, login, password)
-        lastRec = funcs.get_count(url, "binaries", token)
+        MemberID = Actions.get_founder_id(dbHost, dbName, login, password)
+        lastRec = Actions.get_count(url, "binaries", token)
         content = self.check_page("Image(Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+"))")
         partContent = content["tree"][0]
         mustBe = dict(tag=partContent['tag'],
@@ -692,7 +691,7 @@ class TestPrototipo(unittest.TestCase):
         self.assertTxInBlock(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        lastRec = funcs.get_count(url, "binaries", token)
+        lastRec = Actions.get_count(url, "binaries", token)
         content = self.check_page("Image(Binary().ById("+lastRec+"))")
         partContent = content["tree"][0]
         mustBe = dict(tag=partContent['tag'],
@@ -964,7 +963,7 @@ class TestPrototipo(unittest.TestCase):
         code, name = Actions.generate_name_and_code(code)
         self.create_contract(code)
         # change contract
-        id = funcs.get_object_id(url, name, "contracts", token)
+        id = Actions.get_object_id(url, name, "contracts", token)
         newCode = code.replace(replacedString, "new_var")
         data = {"Id": id,
                 "Value": newCode}

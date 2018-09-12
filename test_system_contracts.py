@@ -2,7 +2,6 @@ import unittest
 import config
 import requests
 import json
-import funcs
 import os
 import time
 
@@ -33,7 +32,7 @@ class TestSystemContracts(unittest.TestCase):
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
         hash = result['hash']
-        status = Actions.txstatus(url, pause, hash, jwtToken)
+        status = Actions.tx_status(url, pause, hash, jwtToken)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return {"blockid": int(status["blockid"]), "error": "0"}
@@ -48,7 +47,7 @@ class TestSystemContracts(unittest.TestCase):
     def assertMultiTxInBlock(self, result, jwtToken):
         self.assertIn("hashes", result)
         hashes = result['hashes']
-        result = Actions.txstatus_multi(url, pause, hashes, jwtToken)
+        result = Actions.tx_status_multi(url, pause, hashes, jwtToken)
         for status in result.values():
             self.assertNotIn('errmsg', status)
             self.assertGreater(int(status["blockid"]), 0,
@@ -89,7 +88,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewApplication", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        id = funcs.get_application_id(url, name, token)
+        id = Actions.get_application_id(url, name, token)
         data = {"ApplicationId": id, "Conditions": "false"}
         res = self.call("EditApplication", data)
         self.assertGreater(res["blockid"], 0,
@@ -102,7 +101,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewApplication", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        id = funcs.get_application_id(url, name, token)
+        id = Actions.get_application_id(url, name, token)
         dataDeact = {"ApplicationId": id, "Value": 0}
         res = self.call("DelApplication", dataDeact)
         self.assertGreater(res["blockid"], 0,
@@ -119,7 +118,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewApplication", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        id = funcs.get_application_id(url, name, token)
+        id = Actions.get_application_id(url, name, token)
         dataDeact = {"ApplicationId": id}
         res = self.call("ExportNewApp", dataDeact)
         self.assertGreater(res["blockid"], 0,
@@ -227,7 +226,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewContract", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        data2 = {"Id": funcs.get_contract_id(url, name, token),
+        data2 = {"Id": Actions.get_contract_id(url, name, token),
                  "Value": code, "Conditions": "tryam",
                  "WalletId": std.wallet()}
         ans = self.call("EditContract", data2)
@@ -243,7 +242,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewContract", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        data2 = {"Id": funcs.get_contract_id(url, name, token),
+        data2 = {"Id": Actions.get_contract_id(url, name, token),
                  "Value": code, "Conditions": "true",
                  "WalletId": wallet}
         ans = self.call("EditContract", data2)
@@ -270,7 +269,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         code1, name1 = Actions.generate_name_and_code("")
-        data2 = {"Id": funcs.get_contract_id(url, name, token),
+        data2 = {"Id": Actions.get_contract_id(url, name, token),
                  "Value": code1, "Conditions": "true",
                  "WalletId": std.wallet(wallet="0005-2070-2000-0006-0200")}
         ans = self.call("EditContract", data2)
@@ -293,7 +292,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewContract", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        id = funcs.get_contract_id(url, name, token)
+        id = Actions.get_contract_id(url, name, token)
         data2 = {"Id": id}
         res = self.call("ActivateContract", data2)
         self.assertGreater(res["blockid"], 0,
@@ -312,7 +311,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewContract", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        id = funcs.get_contract_id(url, name, token)
+        id = Actions.get_contract_id(url, name, token)
         data2 = {"Id": id}
         res = self.call("ActivateContract", data2)
         self.assertGreater(res["blockid"], 0,
@@ -371,7 +370,7 @@ class TestSystemContracts(unittest.TestCase):
         std = self.simple_test_data
         t = self.tools
         name = t.generate_random_name("Par_")
-        id = funcs.get_parameter_id(url, name, token)
+        id = Actions.get_parameter_id(url, name, token)
         data = {"Name": name, "Value": "test", "Conditions": "true"}
         res = self.call("NewParameter", data)
         self.assertGreater(res["blockid"], 0,
@@ -382,7 +381,7 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_menu(self):
-        countMenu = Actions.getCountTable(dbHost, dbName, login, pas, "1_menu")
+        countMenu = Actions.get_count_table(dbHost, dbName, login, pas, "1_menu")
         name = "Menu_" + Actions.generate_random_name()
         data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
                 "Conditions": "true"}
@@ -390,7 +389,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         content = {'tree': [{'tag': 'text', 'text': 'Item1'}]}
-        mContent = funcs.get_content(url, "menu", name, "", 1, token)
+        mContent = Actions.get_content(url, "menu", name, "", 1, token)
         self.assertEqual(mContent, content)
 
     def test_new_menu_exist_name(self):
@@ -420,13 +419,13 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewMenu", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "menu", token)
+        count = Actions.get_count(url, "menu", token)
         dataEdit = {"Id": count, "Value": "ItemEdited", "Conditions": "true"}
         res = self.call("EditMenu", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         content = {'tree': [{'tag': 'text', 'text': 'ItemEdited'}]}
-        mContent = funcs.get_content(url, "menu", name, "", 1, token)
+        mContent = Actions.get_content(url, "menu", name, "", 1, token)
         self.assertEqual(mContent, content)
 
     def test_edit_incorrect_menu(self):
@@ -445,7 +444,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewMenu", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "menu", token)
+        count = Actions.get_count(url, "menu", token)
         dataEdit = {"Id": count, "Value": "ItemEdited", "Conditions": condition}
         ans = self.call("EditMenu", dataEdit)
         msg = "unknown identifier " + condition
@@ -457,7 +456,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewMenu", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "menu", token)
+        count = Actions.get_count(url, "menu", token)
         dataEdit = {"Id": count, "Value": "AppendedItem", "Conditions": "true"}
         res = self.call("AppendMenu", dataEdit)
         self.assertGreater(res["blockid"], 0,
@@ -479,7 +478,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         content = [{'tag': 'text', 'text': 'Hello page!'}]
-        cont = funcs.get_content(url, "page", name, "", 1, token)
+        cont = Actions.get_content(url, "page", name, "", 1, token)
         self.assertEqual(cont['tree'], content)
 
     def test_new_page_exist_name(self):
@@ -510,14 +509,14 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewPage", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataEdit = {"Id": funcs.get_count(url, "pages", token),
+        dataEdit = {"Id": Actions.get_count(url, "pages", token),
                     "Value": "Good by page!", "Conditions": "true",
                     "Menu": "default_menu"}
         res = self.call("EditPage", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         content = [{'tag': 'text', 'text': 'Good by page!'}]
-        pContent = funcs.get_content(url, "page", name, "", 1, token)
+        pContent = Actions.get_content(url, "page", name, "", 1, token)
         self.assertEqual(pContent['tree'], content)
 
     def test_edit_page_with_validate_count(self):
@@ -528,14 +527,14 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewPage", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataEdit = {"Id": funcs.get_count(url, "pages", token),
+        dataEdit = {"Id": Actions.get_count(url, "pages", token),
                     "Value": "Good by page!", "Conditions": "true",
                     "ValidateCount": 1, "Menu": "default_menu"}
         res = self.call("EditPage", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         content = [{'tag': 'text', 'text': 'Good by page!'}]
-        pContent = funcs.get_content(url, "page", name, "", 1, token)
+        pContent = Actions.get_content(url, "page", name, "", 1, token)
         self.assertEqual(pContent['tree'], content)
 
     def test_edit_incorrect_page(self):
@@ -557,7 +556,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         condition = std.condition()
-        dataEdit = {"Id": funcs.get_count(url, "pages", token),
+        dataEdit = {"Id": Actions.get_count(url, "pages", token),
                     "Value": "Good by page!", "Conditions": condition,
                     "Menu": "default_menu"}
         ans = self.call("EditPage", dataEdit)
@@ -571,15 +570,15 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewPage", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "pages", token)
-        dataEdit = {"Id": funcs.get_count(url, "pages", token),
+        count = Actions.get_count(url, "pages", token)
+        dataEdit = {"Id": Actions.get_count(url, "pages", token),
                     "Value": "Good by!", "Conditions": "true",
                     "Menu": "default_menu"}
         res = self.call("AppendPage", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         content = [{'tag': 'text', 'text': 'Hello!\r\nGood by!'}]
-        pContent = funcs.get_content(url, "page", name, "", 1, token)
+        pContent = Actions.get_content(url, "page", name, "", 1, token)
         self.assertEqual(pContent['tree'], content)
 
     def test_append_page_incorrect_id(self):
@@ -635,7 +634,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewBlock", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "blocks", token)
+        count = Actions.get_count(url, "blocks", token)
         dataEdit = {"Id": count, "Value": "Good by!", "Conditions": "true"}
         res = self.call("EditBlock", dataEdit)
         self.assertGreater(res["blockid"], 0,
@@ -649,7 +648,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewBlock", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "blocks", token)
+        count = Actions.get_count(url, "blocks", token)
         condition = std.condition()
         dataEdit = {"Id": count, "Value": "Good by!", "Conditions": condition}
         ans = self.call("EditBlock", dataEdit)
@@ -694,7 +693,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         # test
         content = [{'tag': 'text', 'text': 'Access denied'}]
-        cont = funcs.get_content(url, "page", name, "", 1, token)
+        cont = Actions.get_content(url, "page", name, "", 1, token)
         self.assertEqual(cont['tree'], content)
 
     def test_new_table_not_readable_all_columns(self):
@@ -717,7 +716,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         # test
         content = [{'tag': 'text', 'text': 'Access denied'}]
-        cont = funcs.get_content(url, "page", name, "", 1, token)
+        cont = Actions.get_content(url, "page", name, "", 1, token)
         self.assertEqual(cont['tree'], content)
 
     def test_new_table_not_readable_one_column(self):
@@ -758,7 +757,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         # test
         content = [['num1', '1']]
-        cont = funcs.get_content(url, "page", name, "", 1, token)
+        cont = Actions.get_content(url, "page", name, "", 1, token)
         self.assertEqual(cont['tree'][0]['attr']['data'], content)
 
     def test_new_table_joint(self):
@@ -1025,7 +1024,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewLangJoint", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "languages", token)
+        count = Actions.get_count(url, "languages", token)
         dataE = {"Id": count, "ValueArr": ["en", "de"],
                  "LocaleArr": ["Hi", "Hallo"]}
         res = self.call("EditLangJoint", dataE)
@@ -1039,7 +1038,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewLang", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "languages", token)
+        count = Actions.get_count(url, "languages", token)
         dataEdit = {"Id": count, "Name": name, "AppID": 1,
                     "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("EditLang", dataEdit)
@@ -1080,7 +1079,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewSignJoint", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "signatures", token)
+        count = Actions.get_count(url, "signatures", token)
         dataE = {"Id": count, "Title": "NewTitle", "Parameter": str(params),
                  "Conditions": "true"}
         resE = self.call("EditSignJoint", dataE)
@@ -1097,7 +1096,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewSign", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "signatures", token)
+        count = Actions.get_count(url, "signatures", token)
         valueE = "{\"forsign\": \"" + name + "\", \"field\": \"" +\
         name + "\", \"title\": \"" + name +\
         "\", \"params\":[{\"name\": \"test1\", \"text\": \"test2\"}]}"
@@ -1159,7 +1158,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         old_block_id = int(res["blockid"])
         # get record id of 'delayed_contracts' table for run EditDelayedContract
-        res = funcs.call_get_api(url + "/list/delayed_contracts", "", token)
+        res = Actions.call_get_api(url + "/list/delayed_contracts", "", token)
         count = len(res["list"])
         id = res["list"][0]["id"]
         i = 1
@@ -1179,7 +1178,7 @@ class TestSystemContracts(unittest.TestCase):
         # wait block_id until run CallDelayedContract
         self.waitBlockId(old_block_id, editLimit)
         # verify records count in table
-        count = funcs.get_count(url, table_name, token)
+        count = Actions.get_count(url, table_name, token)
         self.assertEqual(int(count), newLimit+editLimit)
 
     def test_upload_binary(self):
@@ -1392,8 +1391,8 @@ class TestSystemContracts(unittest.TestCase):
         appID = 1
         data = {}
         resExport = self.call("Export", data)
-        founderID = Actions.getFounderId(dbHost, dbName, login, pas)
-        exportAppData = Actions.getExportAppData(dbHost, dbName, login, pas, appID, founderID)
+        founderID = Actions.get_founder_id(dbHost, dbName, login, pas)
+        exportAppData = Actions.get_export_app_data(dbHost, dbName, login, pas, appID, founderID)
         jsonApp = str(exportAppData, encoding='utf-8')
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
         with open(path, 'w', encoding='UTF-8') as f:
@@ -1420,8 +1419,8 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(resImportUpload))
 
     def test_ei4_Import(self):
-        founderID = Actions.getFounderId(dbHost, dbName, login, pas)
-        importAppData = Actions.getImportAppData(dbHost, dbName, login, pas, founderID)
+        founderID = Actions.get_founder_id(dbHost, dbName, login, pas)
+        importAppData = Actions.get_import_app_data(dbHost, dbName, login, pas, founderID)
         importAppData = importAppData['data']
         contractName = "Import"
         data = [{"contract": contractName,

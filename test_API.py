@@ -2,7 +2,6 @@ import unittest
 import config
 import requests
 import json
-import funcs
 import os
 import time
 
@@ -22,7 +21,7 @@ class TestApi(unittest.TestCase):
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
         hash = result['hash']
-        status = Actions.txstatus(url, pause, hash, jwtToken)
+        status = Actions.tx_status(url, pause, hash, jwtToken)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return status["blockid"]
@@ -31,21 +30,21 @@ class TestApi(unittest.TestCase):
 
     def check_get_api(self, endPoint, data, keys):
         end = url + endPoint
-        result = funcs.call_get_api(end, data, token)
+        result = Actions.call_get_api(end, data, token)
         for key in keys:
             self.assertIn(key, result)
         return result
 
     def check_post_api(self, endPoint, data, keys):
         end = url + endPoint
-        result = funcs.call_post_api(end, data, token)
+        result = Actions.call_post_api(end, data, token)
         for key in keys:
             self.assertIn(key, result)
         return result
             
     def get_error_api(self, endPoint, data):
         end = url + endPoint
-        result = funcs.call_get_api(end, data, token)
+        result = Actions.call_get_api(end, data, token)
         error = result["error"]
         message = result["msg"]
         return error, message
@@ -111,13 +110,13 @@ class TestApi(unittest.TestCase):
         dictNames = {}
         dictNamesAPI = {}
         data = {}
-        tables = Actions.getEcosysTables(self.config["1"]["dbHost"],
-                                         self.config["1"]["dbName"],
-                                         self.config["1"]["login"],
-                                         self.config["1"]["pass"])
+        tables = Actions.get_ecosys_tables(self.config["1"]["dbHost"],
+                                           self.config["1"]["dbName"],
+                                           self.config["1"]["login"],
+                                           self.config["1"]["pass"])
         for table in tables:
             if "table" not in table:
-                tableInfo = funcs.call_get_api(url + "/table/" + table[2:], data, token)
+                tableInfo = Actions.call_get_api(url + "/table/" + table[2:], data, token)
                 if "name" in str(tableInfo):
                     dictNames[table[2:]] = table[2:]
                     dictNamesAPI[table[2:]] = tableInfo["name"]
@@ -139,16 +138,16 @@ class TestApi(unittest.TestCase):
         dictCount = {}
         dictCountTable = {}
         data = {}
-        tables = Actions.getEcosysTables(self.config["1"]["dbHost"],
-                                         self.config["1"]["dbName"],
-                                         self.config["1"]["login"],
-                                         self.config["1"]["pass"])
+        tables = Actions.get_ecosys_tables(self.config["1"]["dbHost"],
+                                           self.config["1"]["dbName"],
+                                           self.config["1"]["login"],
+                                           self.config["1"]["pass"])
         for table in tables:
-            tableData = funcs.call_get_api(url + "/list/" + table[2:], data, token)
-            count = Actions.getCountTable(self.config["1"]["dbHost"],
-                                          self.config["1"]["dbName"],
-                                          self.config["1"]["login"],
-                                          self.config["1"]["pass"], table)
+            tableData = Actions.call_get_api(url + "/list/" + table[2:], data, token)
+            count = Actions.get_count_table(self.config["1"]["dbHost"],
+                                            self.config["1"]["dbName"],
+                                            self.config["1"]["login"],
+                                            self.config["1"]["pass"], table)
             if count > 0:
                 if len(tableData["list"]) == count or (len(tableData["list"]) == 25 and
                                                        count > 25):
@@ -219,11 +218,11 @@ class TestApi(unittest.TestCase):
         contentDe = [{'tag': 'text', 'text': 'Hello, Welt_de'}]
         dictExp ={"default" : content, "ru": contentRu,
                   "fr": contentFr, "de": contentDe, "pe": content}
-        pContent = funcs.get_content(url, "page", namePage, "en", 1, token)     # should be: en
-        ruPContent = funcs.get_content(url, "page", namePage, "ru", 1, token)      # should be: ru
-        frPcontent = funcs.get_content(url, "page", namePage, "fr-FR", 1, token) # should be: fr-FR
-        dePcontent = funcs.get_content(url, "page", namePage, "de-DE", 1, token)   # should be: de
-        pePcontent = funcs.get_content(url, "page", namePage, "pe", 1, token)      # should be: en
+        pContent = Actions.get_content(url, "page", namePage, "en", 1, token)     # should be: en
+        ruPContent = Actions.get_content(url, "page", namePage, "ru", 1, token)      # should be: ru
+        frPcontent = Actions.get_content(url, "page", namePage, "fr-FR", 1, token) # should be: fr-FR
+        dePcontent = Actions.get_content(url, "page", namePage, "de-DE", 1, token)   # should be: de
+        pePcontent = Actions.get_content(url, "page", namePage, "pe", 1, token)      # should be: en
         dictCur = {"default" : pContent['tree'], "ru": ruPContent['tree'],
                   "fr": frPcontent['tree'], "de": dePcontent['tree'], "pe": pePcontent['tree']}
         self.assertDictEqual(dictCur, dictExp, "One of langRes is faild")
@@ -253,11 +252,11 @@ class TestApi(unittest.TestCase):
         contentDe = [{'tag': 'text', 'text': 'Hello, Welt_de_ed'}]
         dictExp ={"default" : content, "ru": contentRu,
                   "fr": contentFr, "de": contentDe, "pe": content}
-        pContent = funcs.get_content(url, "page", namePage, "en", 1, token)          # should be: en
-        ruPContent = funcs.get_content(url, "page", namePage, "ru", 1, token)      # should be: ru
-        frPcontent = funcs.get_content(url, "page", namePage, "fr-FR", 1, token) # should be: fr-FR
-        dePcontent = funcs.get_content(url, "page", namePage, "de-DE", 1, token)   # should be: de
-        pePcontent = funcs.get_content(url, "page", namePage, "pe", 1, token)      # should be: en
+        pContent = Actions.get_content(url, "page", namePage, "en", 1, token)          # should be: en
+        ruPContent = Actions.get_content(url, "page", namePage, "ru", 1, token)      # should be: ru
+        frPcontent = Actions.get_content(url, "page", namePage, "fr-FR", 1, token) # should be: fr-FR
+        dePcontent = Actions.get_content(url, "page", namePage, "de-DE", 1, token)   # should be: de
+        pePcontent = Actions.get_content(url, "page", namePage, "pe", 1, token)      # should be: en
         dictCur = {"default" : pContent['tree'], "ru": ruPContent['tree'],
                   "fr": frPcontent['tree'], "de": dePcontent['tree'], "pe": pePcontent['tree']}
         self.assertDictEqual(dictCur, dictExp, "One of langRes is faild")
@@ -336,7 +335,7 @@ class TestApi(unittest.TestCase):
         res = self.call("NewEcosystem", data)
         self.assertGreater(int(res), 0,
                            "BlockId is not generated: " + str(res))
-        ecosysNum = funcs.call_get_api(url + "/ecosystems/", "", token)["number"]
+        ecosysNum = Actions.call_get_api(url + "/ecosystems/", "", token)["number"]
         # login founder in new ecosystem
         data2 = Actions.login(url, prKey, 0, ecosysNum)
         token2 = data2["jwtToken"]
@@ -347,7 +346,7 @@ class TestApi(unittest.TestCase):
         data = {"Name": pageName, "Value": pageValue, "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         resp = Actions.call_contract(url, prKey, "@1NewPage", data, token2)
-        status = Actions.txstatus(url, pause, resp["hash"], token2)
+        status = Actions.tx_status(url, pause, resp["hash"], token2)
         self.assertGreater(int(status["blockid"]), 0,"BlockId is not generated: " + str(status))
         # create menu in new ecosystem
         menuName = "Menu_" + Actions.generate_random_name()
@@ -355,7 +354,7 @@ class TestApi(unittest.TestCase):
         data = {"Name": menuName, "Value": "MenuItem(Title:\""+menuTitle+"\")", "ApplicationId": 1,
                 "Conditions": "true"}
         resp = Actions.call_contract(url, prKey, "@1NewMenu", data, token2)
-        status = Actions.txstatus(url, pause, resp["hash"], token2)
+        status = Actions.tx_status(url, pause, resp["hash"], token2)
         self.assertGreater(int(status["blockid"]), 0, "BlockId is not generated: " + str(status))
         # test
         data = ""
@@ -473,7 +472,7 @@ class TestApi(unittest.TestCase):
     def is_node_owner_true(self):
         data = {}
         resp = Actions.call_contract(url, prKey, "NodeOwnerCondition", data, token)
-        status = Actions.txstatus(url, pause, resp["hash"], token)
+        status = Actions.tx_status(url, pause, resp["hash"], token)
         self.assertGreater(int(status["blockid"]), 0,
                            "BlockId is not generated: " + str(status))
         
@@ -484,7 +483,7 @@ class TestApi(unittest.TestCase):
         token2 = data2["jwtToken"]
         data = {}
         resp = Actions.call_contract(url, prKey2, "NodeOwnerCondition", data, token2)
-        status = Actions.txstatus(url, pause, resp["hash"], token2)
+        status = Actions.tx_status(url, pause, resp["hash"], token2)
         self.assertEqual(status["errmsg"]["error"],
                          "Sorry, you do not have access to this action.",
                          "Incorrect message: " + str(status))
@@ -580,7 +579,7 @@ class TestApi(unittest.TestCase):
         asserts = ""
         data = ""
         avaURL = url + "/avatar/" + ecosystemID + "/" + founderID
-        res = funcs.call_get_api_with_full_response(avaURL, data, asserts)
+        res = Actions.call_get_api_with_full_response(avaURL, data, asserts)
         msg = "Content-Length is different!"
         self.assertIn("71926", str(res.headers["Content-Length"]),msg)
 

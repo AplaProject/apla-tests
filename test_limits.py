@@ -1,7 +1,6 @@
 import unittest
 import config
 import json
-import funcs
 import time
 
 from libs.actions import Actions
@@ -25,7 +24,7 @@ class TestLimits(unittest.TestCase):
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
         hash = result['hash']
-        status = Actions.txstatus(conf["2"]["url"], pause, hash, token)
+        status = Actions.tx_status(conf["2"]["url"], pause, hash, token)
         print("status tx: ", status)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
@@ -95,13 +94,13 @@ class TestLimits(unittest.TestCase):
                                 "NewContract", data, token)
             i = i + 1
         time.sleep(5)
-        maxBlock = funcs.get_max_block_id(conf["2"]["url"], token)
+        maxBlock = Actions.get_max_block_id(conf["2"]["url"], token)
         print("maxBlock = ", maxBlock)
-        isOneOrTwo = Actions.isCountTxInBlock(conf["2"]["dbHost"],
-                                              conf["2"]["dbName"],
-                                              conf["2"]["login"],
-                                              conf["2"] ["pass"],
-                                              maxBlock, 1)
+        isOneOrTwo = Actions.is_count_tx_in_block(conf["2"]["dbHost"],
+                                                  conf["2"]["dbName"],
+                                                  conf["2"]["login"],
+                                                  conf["2"] ["pass"],
+                                                  maxBlock, 1)
         self.update_sys_param("max_block_user_tx ", str(max_block_user_tx ))
         time.sleep(30)
         self.assertTrue(isOneOrTwo,
@@ -125,11 +124,11 @@ class TestLimits(unittest.TestCase):
                                 "NewContract", data, token)
             i = i + 1
         time.sleep(5)
-        maxBlock = funcs.get_max_block_id(conf["2"]["url"], token)
-        self.assertTrue(Actions.isCountTxInBlock(conf["2"]["dbHost"],
-                                                 conf["2"]["dbName"],
-                                                 conf["2"]["login"],
-                                                 conf["2"] ["pass"],
-                                                 maxBlock, 2),
+        maxBlock = Actions.get_max_block_id(conf["2"]["url"], token)
+        self.assertTrue(Actions.is_count_tx_in_block(conf["2"]["dbHost"],
+                                                     conf["2"]["dbName"],
+                                                     conf["2"]["login"],
+                                                     conf["2"] ["pass"],
+                                                     maxBlock, 2),
                         "One of block contains more than 2 transaction")
         self.update_sys_param("max_tx_count ", str(max_tx_count))

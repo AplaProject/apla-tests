@@ -1,7 +1,6 @@
 import unittest
 import config
 import time
-import funcs
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
 
@@ -43,59 +42,59 @@ class TestCost(unittest.TestCase):
                 "Conditions": "true"}
         result = Actions.call_contract(conf["1"]["url"], conf["1"]["private_key"],
                                      "NewContract", data, tokenCreater)
-        status = Actions.txstatus(conf["1"]["url"], conf["1"]["time_wait_tx_in_block"],
-                                  result['hash'], tokenCreater)
+        status = Actions.tx_status(conf["1"]["url"], conf["1"]["time_wait_tx_in_block"],
+                                   result['hash'], tokenCreater)
         
     def activateContract(self):
         dataCreater = Actions.login(conf["2"]["url"], conf["1"]["private_key"], 0)
         tokenCreater = dataCreater["jwtToken"]
-        id = funcs.get_contract_id(conf["2"]["url"], "CostContract", tokenCreater)
+        id = Actions.get_contract_id(conf["2"]["url"], "CostContract", tokenCreater)
         data = {"Id": id}
         result = Actions.call_contract(conf["2"]["url"], conf["1"]["private_key"],
                                      "ActivateContract", data, tokenCreater)
-        status = Actions.txstatus(conf["2"]["url"], conf["1"]["time_wait_tx_in_block"],
-                                  result['hash'], tokenCreater)
+        status = Actions.tx_status(conf["2"]["url"], conf["1"]["time_wait_tx_in_block"],
+                                   result['hash'], tokenCreater)
         
     def deactivateContract(self):
         dataCreater = Actions.login(conf["1"]["url"], conf["1"]["private_key"], 0)
         tokenCreater = dataCreater["jwtToken"]
-        id = funcs.get_contract_id(conf["1"]["url"], "CostContract", tokenCreater)
+        id = Actions.get_contract_id(conf["1"]["url"], "CostContract", tokenCreater)
         data = {"Id": id}
         result = Actions.call_contract(conf["1"]["url"], conf["1"]["private_key"],
                                      "DeactivateContract", data, tokenCreater)
-        status = Actions.txstatus(conf["1"]["url"], conf["1"]["time_wait_tx_in_block"],
-                                  result['hash'], tokenCreater)
+        status = Actions.tx_status(conf["1"]["url"], conf["1"]["time_wait_tx_in_block"],
+                                   result['hash'], tokenCreater)
             
     def isCommissionsInHistory(self, nodeCommision, idFrom, platformaCommission, node):
-        isNodeCommission = Actions.isCommissionInHistory(conf["1"]["dbHost"],
-                                                         conf["1"]["dbName"],
-                                                         conf["1"]["login"],
-                                                         conf["1"] ["pass"],
-                                                         idFrom,
-                                                         conf[str(node+1)]["keyID"],
-                                                         nodeCommision)
-        isPlatformCommission = Actions.isCommissionInHistory(conf["1"]["dbHost"],
-                                                             conf["1"]["dbName"],
-                                                             conf["1"]["login"],
-                                                             conf["1"] ["pass"],
-                                                             idFrom,
-                                                             conf["1"]["keyID"],
-                                                             platformaCommission)
+        isNodeCommission = Actions.is_commission_in_history(conf["1"]["dbHost"],
+                                                            conf["1"]["dbName"],
+                                                            conf["1"]["login"],
+                                                            conf["1"] ["pass"],
+                                                            idFrom,
+                                                            conf[str(node+1)]["keyID"],
+                                                            nodeCommision)
+        isPlatformCommission = Actions.is_commission_in_history(conf["1"]["dbHost"],
+                                                                conf["1"]["dbName"],
+                                                                conf["1"]["login"],
+                                                                conf["1"] ["pass"],
+                                                                idFrom,
+                                                                conf["1"]["keyID"],
+                                                                platformaCommission)
         if isNodeCommission and isPlatformCommission:
             return True
         else:
             return False                
         
     def test_activated_contract(self):
-        if funcs.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == False:
+        if Actions.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == False:
             self.activateContract()
         time.sleep(10)
-        walletId = funcs.get_activated_wallet(conf["2"]["url"],
+        walletId = Actions.get_activated_wallet(conf["2"]["url"],
                                               "CostContract", self.token)
-        sumsBefore = Actions.getUserTokenAmounts(conf["1"]["dbHost"],
-                                                 conf["1"]["dbName"],
-                                                 conf["1"]["login"],
-                                                 conf["1"] ["pass"])
+        sumsBefore = Actions.get_user_token_amounts(conf["1"]["dbHost"],
+                                                    conf["1"]["dbName"],
+                                                    conf["1"]["login"],
+                                                    conf["1"] ["pass"])
         summBefore = sum(summ[0] for summ in sumsBefore)
         bNodeBalance = self.getNodeBalances()
         tokenRunner, uid = Actions.get_uid(conf["2"]["url"])
@@ -110,16 +109,16 @@ class TestCost(unittest.TestCase):
         tokenRunner = dataRunner ["jwtToken"]
         res = Actions.call_contract(conf["2"]["url"], keys["key2"],
                                   "CostContract", {"State": 1}, tokenRunner)
-        result = Actions.txstatus(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
-                                  res["hash"], tokenRunner)
+        result = Actions.tx_status(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
+                                   res["hash"], tokenRunner)
         time.sleep(10)
         node = Actions.get_block_gen_node(conf["1"]["dbHost"], conf["1"]["dbName"],
                                           conf["1"]["login"], conf["1"] ["pass"],
                                           result["blockid"])
-        sumsAfter = Actions.getUserTokenAmounts(conf["1"]["dbHost"],
-                                                conf["1"]["dbName"],
-                                                conf["1"]["login"],
-                                                conf["1"] ["pass"])
+        sumsAfter = Actions.get_user_token_amounts(conf["1"]["dbHost"],
+                                                   conf["1"]["dbName"],
+                                                   conf["1"]["login"],
+                                                   conf["1"] ["pass"])
         summAfter = sum(summ[0] for summ in sumsAfter)
         aNodeBalance = self.getNodeBalances()
         nodeCommission = 144530000000000000
@@ -160,14 +159,14 @@ class TestCost(unittest.TestCase):
                              "Error in comissions run activated contract")
         
     def test_deactive_contract(self):
-        if funcs.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == True:
+        if Actions.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == True:
             self.deactivateContract()
-        walletId = funcs.get_activated_wallet(conf["2"]["url"],
+        walletId = Actions.get_activated_wallet(conf["2"]["url"],
                                               "CostContract", self.token)
-        sumsBefore = Actions.getUserTokenAmounts(conf["1"]["dbHost"],
-                                                 conf["1"]["dbName"],
-                                                 conf["1"]["login"],
-                                                 conf["1"] ["pass"])
+        sumsBefore = Actions.get_user_token_amounts(conf["1"]["dbHost"],
+                                                    conf["1"]["dbName"],
+                                                    conf["1"]["login"],
+                                                    conf["1"] ["pass"])
         summBefore = sum(summ[0] for summ in sumsBefore)
         bNodeBalance = self.getNodeBalances()
         tokenRunner, uid = Actions.get_uid(conf["2"]["url"])
@@ -182,16 +181,16 @@ class TestCost(unittest.TestCase):
         tokenRunner = dataRunner ["jwtToken"]
         res = Actions.call_contract(conf["2"]["url"], keys["key2"],
                                   "CostContract", {"State": 1}, tokenRunner)
-        result = Actions.txstatus(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
-                                  res["hash"], tokenRunner)
+        result = Actions.tx_status(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
+                                   res["hash"], tokenRunner)
         time.sleep(10)
         node = Actions.get_block_gen_node(conf["1"]["dbHost"], conf["1"]["dbName"],
                                           conf["1"]["login"], conf["1"] ["pass"],
                                           result["blockid"])
-        sumsAfter = Actions.getUserTokenAmounts(conf["1"]["dbHost"],
-                                                conf["1"]["dbName"],
-                                                conf["1"]["login"],
-                                                conf["1"] ["pass"])
+        sumsAfter = Actions.get_user_token_amounts(conf["1"]["dbHost"],
+                                                   conf["1"]["dbName"],
+                                                   conf["1"]["login"],
+                                                   conf["1"] ["pass"])
         summAfter = sum(summ[0] for summ in sumsAfter)
         aNodeBalance = self.getNodeBalances()
         nodeCommission = 144530000000000000
@@ -233,9 +232,9 @@ class TestCost(unittest.TestCase):
                              "Error in comissions run deactivated contract")
         
     def test_activated_contract_with_err(self):
-        if funcs.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == False:
+        if Actions.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == False:
             self.activateContract()
-        walletId = funcs.get_activated_wallet(conf["2"]["url"], "CostContract", self.token)
+        walletId = Actions.get_activated_wallet(conf["2"]["url"], "CostContract", self.token)
         balanceContractOwnerB = Actions.get_balance_from_db(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
@@ -268,8 +267,8 @@ class TestCost(unittest.TestCase):
         res = Actions.call_contract(conf["2"]["url"], keys["key2"],
                                   "CostContract", {"State": 0}, tokenRunner)
         hash = res["hash"]
-        result = Actions.txstatus(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
-                                  hash, tokenRunner)
+        result = Actions.tx_status(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
+                                   hash, tokenRunner)
         time.sleep(10)
         balanceContractOwnerA = Actions.get_balance_from_db(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
@@ -310,9 +309,9 @@ class TestCost(unittest.TestCase):
         self.assertDictEqual(dictValid, dictExpect, msg)
         
     def test_deactive_contract_with_err(self):
-        if funcs.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == True:
+        if Actions.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == True:
             self.deactivateContract()
-        walletId = funcs.get_activated_wallet(conf["2"]["url"], "CostContract", self.token)
+        walletId = Actions.get_activated_wallet(conf["2"]["url"], "CostContract", self.token)
         balanceContractOwnerB = Actions.get_balance_from_db(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],
@@ -351,8 +350,8 @@ class TestCost(unittest.TestCase):
                                   "CostContract", {"State": 0}, tokenRunner)
         time.sleep(10)
         hash = res["hash"]
-        result = Actions.txstatus(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
-                                  hash, tokenRunner)
+        result = Actions.tx_status(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
+                                   hash, tokenRunner)
         balanceContractOwnerA = Actions.get_balance_from_db(conf["1"]["dbHost"],
                                                             conf["1"]["dbName"],
                                                             conf["1"]["login"],

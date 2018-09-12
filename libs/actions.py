@@ -31,7 +31,7 @@ class Actions(object):
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
         hash = result['hash']
-        status = utils.txstatus(url, pause, hash, jwtToken)
+        status = utils.tx_status(url, pause, hash, jwtToken)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return {"blockid": int(status["blockid"]), "error": "0"}
@@ -46,7 +46,7 @@ class Actions(object):
     def assertMultiTxInBlock(self, result, jwtToken):
         self.assertIn("hashes", result)
         hashes = result['hashes']
-        result = utils.txstatus_multi(url, pause, hashes, jwtToken)
+        result = utils.tx_status_multi(url, pause, hashes, jwtToken)
         for status in result.values():
             self.assertNotIn('errmsg', status)
             self.assertGreater(int(status["blockid"]), 0,
@@ -150,9 +150,9 @@ class Actions(object):
         result = resp.json()
         return result
 
-    def txstatus(url, sleepTime, hsh, jvtToken):
+    def tx_status(url, sleepTime, hsh, jvtToken):
         sec = 0
-        urlEnd = url + '/txstatus/' + hsh
+        urlEnd = url + '/tx_status/' + hsh
         while sec < sleepTime:
             time.sleep(1)
             resp = requests.get(urlEnd, headers={'Authorization': jvtToken})
@@ -163,7 +163,7 @@ class Actions(object):
                 sec = sec + 1
         return resp.json()
 
-    def txstatus_multi(url, sleepTime, hshs, jvtToken):
+    def tx_status_multi(url, sleepTime, hshs, jvtToken):
         urlEnd = url + '/txstatusMultiple/'
         allTxInBlocks = False
         sec = 0
@@ -263,7 +263,7 @@ class Actions(object):
             i = i + 1
         return True
 
-    def isCountTxInBlock(dbHost, dbName, login, password, maxBlockId, countTx):
+    def is_count_tx_in_block(dbHost, dbName, login, password, maxBlockId, countTx):
         minBlock = maxBlockId - 3
         request = "SELECT id, tx FROM block_chain WHERE id>" + str(minBlock) + " AND id<" + str(maxBlockId)
         connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
@@ -292,7 +292,7 @@ class Actions(object):
         keys = cursor.fetchall()
         return keys
 
-    def getEcosysTables(dbHost, dbName, login, password):
+    def get_ecosys_tables(dbHost, dbName, login, password):
         connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
         cursor = connect.cursor()
         cursor.execute(
@@ -305,7 +305,7 @@ class Actions(object):
             i = i + 1
         return list
 
-    def getEcosysTablesById(dbHost, dbName, login, password, ecosystemID):
+    def get_ecosys_tables_by_id(dbHost, dbName, login, password, ecosystemID):
         connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
         cursor = connect.cursor()
         cursor.execute(
@@ -319,64 +319,64 @@ class Actions(object):
             i = i + 1
         return list
 
-    def getCountTable(dbHost, dbName, login, password, table):
+    def get_count_table(dbHost, dbName, login, password, table):
         connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
         cursor = connect.cursor()
         cursor.execute("SELECT count(*) FROM \"" + table + "\"")
         return cursor.fetchall()[0][0]
 
-    def getMaxIdFromTable(dbHost, dbName, login, password, table):
+    def get_max_id_from_table(dbHost, dbName, login, password, table):
         connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
         cursor = connect.cursor()
         cursor.execute("SELECT MAX(id) FROM \"" + table + "\"")
         return cursor.fetchall()[0][0]
 
-    def executeSQL(dbHost, dbName, login, password, query):
+    def execute_SQL(dbHost, dbName, login, password, query):
         connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
         cursor = connect.cursor()
         cursor.execute(query)
         return cursor.fetchall()
 
-    def getObjectIdByName(dbHost, dbName, login, password, table, name):
+    def get_object_id_by_name(dbHost, dbName, login, password, table, name):
         connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
         cursor = connect.cursor()
         cursor.execute("SELECT id FROM \"" + table + "\" WHERE name = '" + str(name) + "'")
         print(cursor.fetchall())
         return cursor.fetchall()[0][0]
 
-    def getFounderId(dbHost, dbName, login, password):
+    def get_founder_id(dbHost, dbName, login, password):
         connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
         cursor = connect.cursor()
         cursor.execute("SELECT value FROM \"1_parameters\" WHERE name = 'founder_account'")
         return cursor.fetchall()[0][0]
 
-    def getSystemParameterValue(dbHost, dbName, login, password, name):
+    def get_system_parameter_value(dbHost, dbName, login, password, name):
         connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
         cursor = connect.cursor()
         cursor.execute("SELECT value FROM \"1_system_parameters\" WHERE name = '" + name + "'")
         return cursor.fetchall()[0][0]
 
-    def getExportAppData(dbHost, dbName, login, password, app_id, member_id):
+    def get_export_app_data(dbHost, dbName, login, password, app_id, member_id):
         connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
         cursor = connect.cursor()
         cursor.execute("SELECT data as TEXT FROM \"1_binaries\" WHERE name = 'export' AND app_id = " + str(
             app_id) + " AND member_id = " + str(member_id))
         return cursor.fetchall()[0][0]
 
-    def getImportAppData(dbHost, dbName, login, password, member_id):
+    def get_import_app_data(dbHost, dbName, login, password, member_id):
         connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
         cursor = connect.cursor()
         cursor.execute("SELECT value FROM \"1_buffer_data\" WHERE key = 'import' AND member_id = " + str(member_id))
         return cursor.fetchall()[0][0]
 
-    def getCountDBObjects(dbHost, dbName, login, password):
+    def get_count_DB_objects(dbHost, dbName, login, password):
         tablesCount = {}
-        tables = Actions.getEcosysTables(dbHost, dbName, login, password)
+        tables = Actions.get_ecosys_tables(dbHost, dbName, login, password)
         for table in tables:
-            tablesCount[table[2:]] = Actions.getCountTable(dbHost, dbName, login, password, table)
+            tablesCount[table[2:]] = Actions.get_count_table(dbHost, dbName, login, password, table)
         return tablesCount
 
-    def getTableColumnNames(dbHost, dbName, login, password, table):
+    def get_table_column_names(dbHost, dbName, login, password, table):
         connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
         cursor = connect.cursor()
         query = "SELECT pg_attribute.attname FROM pg_attribute, pg_class WHERE pg_class.relname='" + \
@@ -386,18 +386,18 @@ class Actions(object):
         col = cursor.fetchall()
         return col
 
-    def getUserTableState(dbHost, dbName, login, password, userTable):
+    def get_user_table_state(dbHost, dbName, login, password, userTable):
         connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
         cursor = connect.cursor()
         cursor.execute("SELECT * FROM \"" + userTable + "\"")
         res = cursor.fetchall()
-        col = Actions.getTableColumnNames(dbHost, dbName, login, password, userTable)
+        col = Actions.get_table_column_names(dbHost, dbName, login, password, userTable)
         table = {}
         for i in range(len(col)):
             table[col[i][0]] = res[0][i]
         return table
 
-    def getUserTokenAmounts(dbHost, dbName, login, password):
+    def get_user_token_amounts(dbHost, dbName, login, password):
         connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
         cursor = connect.cursor()
         cursor.execute("select amount from \"1_keys\" ORDER BY amount")
@@ -461,7 +461,7 @@ class Actions(object):
         nodes = cursor.fetchall()
         return nodes[0][0]
 
-    def isCommissionInHistory(dbHost, dbName, login, password, idFrom, idTo, summ):
+    def is_commission_in_history(dbHost, dbName, login, password, idFrom, idTo, summ):
         connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
         cursor = connect.cursor()
         cursor.execute("select * from \"1_history\" WHERE sender_id=" + idFrom + \
@@ -471,3 +471,87 @@ class Actions(object):
             return True
         else:
             return False
+
+    def call_get_api(url, data, token):
+        resp = requests.get(url, data=data, headers={"Authorization": token})
+        return resp.json()
+
+    def call_get_api_with_full_response(url, data, token):
+        resp = requests.get(url, data=data, headers={"Authorization": token})
+        return resp
+
+    def call_post_api(url, data, token):
+        resp = requests.post(url, data=data, headers={"Authorization": token})
+        if resp.status_code == 200:
+            return resp.json()
+        else:
+            return None
+
+    def get_count(self, url, type, token):
+        endPoint = url + "/list/" + type
+        res = self.call_get_api(endPoint, "", token)
+        return res["count"]
+
+    def get_list(self, url, type, token):
+        count = self.get_count(url, type, token)
+        endPoint = url + "/list/" + type + "?limit=" + count
+        res = self.call_get_api(endPoint, "", token)
+        return res
+
+    def get_contract_id(self, url, name, token):
+        endPoint = url + "/contract/" + name
+        res = self.call_get_api(endPoint, "", token)
+        return res["tableid"]
+
+    def get_application_id(self, url, name, token):
+        id = None
+        endPoint = url + "/list/applications"
+        res = self.call_get_api(endPoint, "", token)
+        for app in res["list"]:
+            if app["name"] == name:
+                id = app["id"]
+        return id
+
+    def get_object_id(self, url, name, object, token):
+        id = None
+        endPoint = url + "/list/" + object
+        res = self.call_get_api(endPoint, "", token)
+        for object in res["list"]:
+            if object["name"] == name:
+                id = object["id"]
+        return id
+
+    def is_contract_activated(self, url, name, token):
+        endPoint = url + "/contract/" + name
+        res = self.call_get_api(endPoint, "", token)
+        return res["active"]
+
+    def get_activated_wallet(self, url, name, token):
+        endPoint = url + "/contract/" + name
+        res = self.call_get_api(endPoint, "", token)
+        return res["walletid"]
+
+    def get_parameter_id(self, url, name, token):
+        endPoint = url + "/ecosystemparam/" + name
+        res = self.call_get_api(endPoint, "", token)
+        return res["id"]
+
+    def get_parameter_value(self, url, name, token):
+        endPoint = url + "/ecosystemparam/" + name
+        res = self.call_get_api(endPoint, "", token)
+        return res["value"]
+
+    def get_content(self, url, type, name, lang, appId, token):
+        if (lang != ""):
+            data = {"lang": lang, "app_id": appId}
+        else:
+            data = ""
+        endPoint = url + "/content/" + type + "/" + name
+        res = self.call_post_api(endPoint, data, token)
+        return res
+
+    def get_max_block_id(self, url, token):
+        data = ""
+        endPoint = url + "/maxblockid"
+        result = self.call_get_api(endPoint, data, token)
+        return result["max_block_id"]
