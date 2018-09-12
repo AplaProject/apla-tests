@@ -1,8 +1,8 @@
 import pytest
 import os
 
-from model.application import Application
-from model.application2 import Application2
+from libs.application import Application
+
 
 
 def pytest_addoption(parser):
@@ -61,6 +61,4 @@ def pytest_addoption(parser):
 def app(request):
     return Application()
 
-@pytest.fixture(scope= "session")
-def app2(request):
-    return Application2()
+
