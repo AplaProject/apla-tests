@@ -1,0 +1,20 @@
+{
+  "check_get_api":{
+    "ecosystems":[
+      {"endPoint": "/ecosystems/", "asserts": ["number"]}
+    ],
+
+    "ecosystemparams":[
+      {"endPoint": "/ecosystemparams/?ecosystem=1", "asserts": ["list"]},
+      {"endPoint": "/ecosystemparams/", "asserts": ["list"]}
+    ],
+
+    "ecosystemparam":[
+      {"endPoint": "/ecosystemparam/founder_account/", "asserts": ["id", "name", "value", "conditions"]}
+    ]
+
+
+
+
+  }
+}

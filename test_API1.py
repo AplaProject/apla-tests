@@ -16,7 +16,6 @@ def jsonToList(json_api_fixture):
             fullList.append(json_api_fixture[key][value])
     return fullList
 
-
 def readFixture():
     path = os.path.join(os.getcwd(), "fixtures/api1.json")
     with open(path, 'r') as f:
@@ -24,7 +23,21 @@ def readFixture():
         res = json.loads(data)
     return res
 
+def readFixture1():
+    path = os.path.join(os.getcwd(), "fixtures/api2.json")
+    with open(path, 'r') as f:
+        data = f.read()
+        res = json.loads(data)
+    return res
+
 input_data_list = jsonToList(readFixture())
+
+
+tree = readFixture1()['check_get_api']
+ecosystems = tree['ecosystems']
+ecosystemparams = tree['ecosystemparams']
+ecosystemparam = tree['ecosystemparam']
+
 
 class TestApi():
 
@@ -49,18 +62,17 @@ class TestApi():
 
     def check_get_api(self, endPoint, data, keys):
         end = url + endPoint
-        print(end)
         result = Actions.call_get_api(end, data, token)
-        print(result)
         for key in keys:
-            unittest.TestCase.assertNotIn(self, key, result)
+            print('key = ' + key)
+            unittest.TestCase.assertIn(self, key, result)
         return result
 
     def check_post_api(self, endPoint, data, keys):
         end = url + endPoint
         result = Actions.call_post_api(end, data, token)
         for key in keys:
-            unittest.TestCase.assertNotIn(self, key, result)
+            unittest.TestCase.assertIn(self, key, result)
         return result
             
     def get_error_api(self, endPoint, data):
@@ -80,7 +92,7 @@ class TestApi():
         ('/ecosystems/', 'true'),
         ('/ecosystemparams/?ecosystem=1', 'true'),
     ])
-    '''
+
 
     @pytest.mark.parametrize("test_input,expected", [
         (i['endPoint'], i['asserts'][0]) for i in input_data_list
@@ -96,4 +108,44 @@ class TestApi():
     def test_eval1(self):
         self.setUp()
         res = self.check_get_api('/ecosystems/', '', '')
+        res = self.check_get_api('/ecosystemparams/', '', '')
         print(res)
+
+
+    def test_eval2(self):
+        for i in ecosystems:
+            print(i)
+    
+    '''
+
+    @pytest.mark.parametrize("test_input,expected", [
+        (i['endPoint'],
+         i['asserts']) for i in ecosystems
+    ])
+    def test_ecosystems(self, test_input, expected):
+        self.setUp()
+        res = self.check_get_api(test_input, '', expected)
+        print(res)
+
+
+
+    @pytest.mark.parametrize("test_input,expected", [
+        (i['endPoint'],
+         i['asserts']) for i in ecosystemparams
+    ])
+    def test_ecosystemparams(self, test_input, expected):
+        self.setUp()
+        res = self.check_get_api(test_input, '', expected)
+        print(res)
+
+
+
+    @pytest.mark.parametrize("test_input,expected", [
+        (i['endPoint'],
+         i['asserts']) for i in ecosystemparam
+    ])
+    def test_ecosystemparam(self, test_input, expected):
+        self.setUp()
+        res = self.check_get_api(test_input, '', expected)
+        print(res)
+
