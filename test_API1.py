@@ -89,35 +89,15 @@ class TestApi():
 
     '''
     @pytest.mark.parametrize("test_input,expected", [
-        ('/ecosystems/', 'true'),
-        ('/ecosystemparams/?ecosystem=1', 'true'),
-    ])
-
-
-    @pytest.mark.parametrize("test_input,expected", [
         (i['endPoint'], i['asserts'][0]) for i in input_data_list
     ])
     def test_eval(self, test_input, expected):
         self.setUp()
-        print(test_input)
-        print(expected)
         res = self.check_get_api(test_input, '', expected)
         print(res)
-
-
-    def test_eval1(self):
-        self.setUp()
-        res = self.check_get_api('/ecosystems/', '', '')
-        res = self.check_get_api('/ecosystemparams/', '', '')
-        print(res)
-
-
-    def test_eval2(self):
-        for i in ecosystems:
-            print(i)
-    
     '''
-
+    
+    # tests ****************************************************
     @pytest.mark.parametrize("test_input,expected", [
         (i['endPoint'],
          i['asserts']) for i in ecosystems

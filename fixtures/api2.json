@@ -10,7 +10,11 @@
     ],
 
     "ecosystemparam":[
-      {"endPoint": "/ecosystemparam/founder_account/", "asserts": ["id", "name", "value", "conditions"]}
+      {"endPoint": "/ecosystemparam/stylesheet/", "asserts": ["id", "name", "value", "conditions"]},
+      {"endPoint": "/ecosystemparam/founder_account/", "asserts": ["id", "name", "value", "conditions"]},
+      {"endPoint": "/ecosystemparam/changing_menu/", "asserts": ["id", "name", "value", "conditions"]},
+      {"endPoint": "/ecosystemparam/min_page_validate_count/", "asserts": ["id", "name", "value", "conditions"]}
+
     ]
 
 
