@@ -4,8 +4,6 @@ import json
 import os
 
 from libs.actions import Actions
-from libs.tools import Tools
-from libs.db import Db
 
 
 class TestPrototipo(unittest.TestCase):
@@ -25,9 +23,9 @@ class TestPrototipo(unittest.TestCase):
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
-        status = Actions.txstatus(url,
-                                  self.config["1"]["time_wait_tx_in_block"],
-                                  result['hash'], jwtToken)
+        status = Actions.tx_status(url,
+                                   self.config["1"]["time_wait_tx_in_block"],
+                                   result['hash'], jwtToken)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
@@ -45,7 +43,7 @@ class TestPrototipo(unittest.TestCase):
         self.assertTxInBlock(result, token)
 
     def check_page(self, sourse):
-        name = "Page_" + Tools.generate_random_name()
+        name = "Page_" + Actions.generate_random_name()
         data = {"Name": name, "Value": sourse, "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         resp = Actions.call_contract(url, prKey, "NewPage", data, token)
@@ -397,13 +395,13 @@ class TestPrototipo(unittest.TestCase):
                              "span has problem: " + str(content["tree"]))
         
     def test_page_langRes(self):
-        lang = "lang_" + Tools.generate_random_name()
+        lang = "lang_" + Actions.generate_random_name()
         data = {"ApplicationId": 1,
                 "Name": lang,
                 "Trans": "{\"en\": \"Lang_en\", \"ru\" : \"Язык\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = Actions.call_contract(url, prKey, "NewLang", data, token)
         self.assertTxInBlock(res, token)
-        world = "world_" + Tools.generate_random_name()
+        world = "world_" + Actions.generate_random_name()
         data = {"ApplicationId": 1,
                 "Name": world,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
@@ -433,7 +431,7 @@ class TestPrototipo(unittest.TestCase):
                              "inputErr has problem: " + str(content["tree"]))
 
     def test_page_include(self):
-        name = "Block_" + Tools.generate_random_name()
+        name = "Block_" + Actions.generate_random_name()
         data = {"Name": name, "ApplicationId": 1,
                 "Value": "Hello page!", "Conditions": "true"}
         res = Actions.call_contract(url, prKey, "NewBlock", data, token)
@@ -617,7 +615,7 @@ class TestPrototipo(unittest.TestCase):
 
     def test_binary(self):
         # this test has not fixture
-        name = "image_" + Tools.generate_random_name()
+        name = "image_" + Actions.generate_random_name()
         appID = "1"
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
@@ -629,7 +627,7 @@ class TestPrototipo(unittest.TestCase):
         self.assertTxInBlock(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = Db.getFounderId(dbHost, dbName, login, password)
+        MemberID = Actions.get_founder_id(dbHost, dbName, login, password)
         lastRec = Actions.get_count(url, "binaries", token)
         content = self.check_page("Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
@@ -637,7 +635,7 @@ class TestPrototipo(unittest.TestCase):
 
     def test_binary_by_id(self):
         # this test has not fixture
-        name = "image_" + Tools.generate_random_name()
+        name = "image_" + Actions.generate_random_name()
         appID = "1"
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
@@ -656,7 +654,7 @@ class TestPrototipo(unittest.TestCase):
 
     def test_image_binary(self):
         # this test has not fixture
-        name = "image_" + Tools.generate_random_name()
+        name = "image_" + Actions.generate_random_name()
         appID = "1"
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
@@ -668,7 +666,7 @@ class TestPrototipo(unittest.TestCase):
         self.assertTxInBlock(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = Db.getFounderId(dbHost, dbName, login, password)
+        MemberID = Actions.get_founder_id(dbHost, dbName, login, password)
         lastRec = Actions.get_count(url, "binaries", token)
         content = self.check_page("Image(Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+"))")
         partContent = content["tree"][0]
@@ -681,7 +679,7 @@ class TestPrototipo(unittest.TestCase):
 
     def test_image_binary_by_id(self):
         # this test has not fixture
-        name = "image_" + Tools.generate_random_name()
+        name = "image_" + Actions.generate_random_name()
         appID = "1"
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
@@ -962,7 +960,7 @@ class TestPrototipo(unittest.TestCase):
                     action{ var %s int }
                 }
                 """ % replacedString
-        code, name = Tools.generate_name_and_code(code)
+        code, name = Actions.generate_name_and_code(code)
         self.create_contract(code)
         # change contract
         id = Actions.get_object_id(url, name, "contracts", token)

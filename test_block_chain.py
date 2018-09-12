@@ -4,14 +4,11 @@ import time
 from builtins import sum
 
 from libs.actions import Actions
-from libs.tools import Tools
-from libs.db import Db
-
 
 class TestBlockChain(unittest.TestCase):
 
     def create_contract(self, url, prKey):
-        code,name = Tools.generate_name_and_code("")
+        code,name = Actions.generate_name_and_code("")
         data = {'Wallet': '', 'Value': code, "ApplicationId": 1,
                 'Conditions': "ContractConditions(`MainCondition`)"}
         resp = Actions.call_contract(url, prKey, "NewContract", data, self.data1["jwtToken"])
@@ -43,7 +40,7 @@ class TestBlockChain(unittest.TestCase):
         ts_count = 30
         self.data1 = Actions.login(config1["url"], config1['private_key'], 0)
         i = 1
-        amountsB = Db.getUserTokenAmounts(host1, db1, login1, pas1)
+        amountsB = Actions.get_user_token_amounts(host1, db1, login1, pas1)
         sumAmountsBefore = sum(amount[0] for amount in amountsB)
         while i < ts_count:
             contName = self.create_contract(config1["url"],
@@ -52,18 +49,18 @@ class TestBlockChain(unittest.TestCase):
             i = i + 1
             time.sleep(1)
         time.sleep(120)
-        count_contracts1 = Db.getCountDBObjects(host1, db1, login1, pas1)["contracts"]
-        count_contracts2 = Db.getCountDBObjects(host2, db2, login2, pas2)["contracts"]
-        amounts1 = Db.getUserTokenAmounts(host1, db1, login1, pas1)
-        amounts2 = Db.getUserTokenAmounts(host2, db2, login2, pas2)
+        count_contracts1 = Actions.get_count_DB_objects(host1, db1, login1, pas1)["contracts"]
+        count_contracts2 = Actions.get_count_DB_objects(host2, db2, login2, pas2)["contracts"]
+        amounts1 = Actions.get_user_token_amounts(host1, db1, login1, pas1)
+        amounts2 = Actions.get_user_token_amounts(host2, db2, login2, pas2)
         sumAmounts = sum(amount[0] for amount in amounts1)
         maxBlockId1 = Actions.get_max_block_id(config1["url"],self.data1["jwtToken"])
         self.data2 = Actions.login(config2["url"], config1['private_key'], 0)
         maxBlockId2 = Actions.get_max_block_id(config2["url"],self.data2["jwtToken"])
         maxBlock = max(maxBlockId2, maxBlockId1)
-        hash1 = Db.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
-        hash2 = Db.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
-        node_position = Db.compare_node_positions(host1, db1, login1, pas1, maxBlock, nodes)
+        hash1 = Actions.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
+        hash2 = Actions.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
+        node_position = Actions.compare_node_positions(host1, db1, login1, pas1, maxBlock, nodes)
         dict1 = dict(count_contract = count_contracts1,
                      amounts = str(amounts1), summ = str(sumAmounts),
                      hash = str(hash1),
@@ -97,25 +94,25 @@ class TestBlockChain(unittest.TestCase):
         id = self.new_menu(config1["url"], config1['private_key'])
         time.sleep(10)
         i = 1
-        amountsB = Db.getUserTokenAmounts(host1, db1, login1, pas1)
+        amountsB = Actions.get_user_token_amounts(host1, db1, login1, pas1)
         sumAmountsBefore = sum(amount[0] for amount in amountsB)
         while i < ts_count:
             self.edit_menu(config1["url"],
                                       config1['private_key'], id)
             i = i + 1
         time.sleep(120)
-        count_contracts1 = Db.getCountDBObjects(host1, db1, login1, pas1)["contracts"]
-        count_contracts2 = Db.getCountDBObjects(host2, db2, login2, pas2)["contracts"]
-        amounts1 = Db.getUserTokenAmounts(host1, db1, login1, pas1)
-        amounts2 = Db.getUserTokenAmounts(host2, db2, login2, pas2)
+        count_contracts1 = Actions.get_count_DB_objects(host1, db1, login1, pas1)["contracts"]
+        count_contracts2 = Actions.get_count_DB_objects(host2, db2, login2, pas2)["contracts"]
+        amounts1 = Actions.get_user_token_amounts(host1, db1, login1, pas1)
+        amounts2 = Actions.get_user_token_amounts(host2, db2, login2, pas2)
         sumAmounts = sum(amount[0] for amount in amounts1)
         maxBlockId1 = Actions.get_max_block_id(config1["url"],self.data1["jwtToken"])
         self.data2 = Actions.login(config2["url"], config1['private_key'], 0)
         maxBlockId2 = Actions.get_max_block_id(config2["url"],self.data2["jwtToken"])
         maxBlock = max(maxBlockId2, maxBlockId1)
-        hash1 = Db.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
-        hash2 = Db.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
-        node_position = Db.compare_node_positions(host1, db1, login1, pas1, maxBlock, nodes)
+        hash1 = Actions.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
+        hash2 = Actions.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
+        node_position = Actions.compare_node_positions(host1, db1, login1, pas1, maxBlock, nodes)
         dict1 = dict(count_contract = count_contracts1,
                      amounts = str(amounts1), summ = str(sumAmounts),
                      hash = str(hash1),

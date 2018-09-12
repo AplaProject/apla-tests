@@ -4,8 +4,6 @@ import json
 import time
 
 from libs.actions import Actions
-from libs.tools import Tools
-from libs.db import Db
 
 
 class TestLimits(unittest.TestCase):
@@ -26,7 +24,7 @@ class TestLimits(unittest.TestCase):
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
         hash = result['hash']
-        status = Actions.txstatus(conf["2"]["url"], pause, hash, token)
+        status = Actions.tx_status(conf["2"]["url"], pause, hash, token)
         print("status tx: ", status)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
@@ -48,13 +46,13 @@ class TestLimits(unittest.TestCase):
                            res)
         
     def test_max_tx_size(self):
-        max_tx_size = Db.get_system_parameter(conf["1"]["dbHost"],
+        max_tx_size = Actions.get_system_parameter(conf["1"]["dbHost"],
                                                    conf["1"]["dbName"],
                                                    conf["1"]["login"],
                                                    conf["1"] ["pass"],
                                                     "max_tx_size")
         self.update_sys_param("max_tx_size", "500")
-        name = "cont" + Tools.generate_random_name()
+        name = "cont" + Actions.generate_random_name()
         code = "contract " + name + contract["limits"]["code"]
         data = {"Wallet": "", "Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
@@ -63,13 +61,13 @@ class TestLimits(unittest.TestCase):
         self.update_sys_param("max_tx_size", str(max_tx_size))
         
     def test_max_block_size(self):
-        max_block_size = Db.get_system_parameter(conf["1"]["dbHost"],
+        max_block_size = Actions.get_system_parameter(conf["1"]["dbHost"],
                                                       conf["1"]["dbName"],
                                                       conf["1"]["login"],
                                                       conf["1"] ["pass"],
                                                     "max_block_size")
         self.update_sys_param("max_block_size", "500")
-        name = "cont" + Tools.generate_random_name()
+        name = "cont" + Actions.generate_random_name()
         code = "contract " + name + contract["limits"]["code"]
         data = {"Wallet": "", "Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
@@ -79,7 +77,7 @@ class TestLimits(unittest.TestCase):
         time.sleep(30)
       
     def test_max_block_user_tx(self):
-        max_block_user_tx = Db.get_system_parameter(conf["1"]["dbHost"],
+        max_block_user_tx = Actions.get_system_parameter(conf["1"]["dbHost"],
                                                          conf["1"]["dbName"],
                                                          conf["1"]["login"],
                                                          conf["1"] ["pass"],
@@ -88,7 +86,7 @@ class TestLimits(unittest.TestCase):
         time.sleep(30)
         i = 1
         while i < 10: 
-            name = "cont" + Tools.generate_random_name()
+            name = "cont" + Actions.generate_random_name()
             code = "contract " + name + contract["limits"]["code"]
             data = {"Wallet": "", "Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
@@ -98,11 +96,11 @@ class TestLimits(unittest.TestCase):
         time.sleep(5)
         maxBlock = Actions.get_max_block_id(conf["2"]["url"], token)
         print("maxBlock = ", maxBlock)
-        isOneOrTwo = Db.isCountTxInBlock(conf["2"]["dbHost"],
-                                              conf["2"]["dbName"],
-                                              conf["2"]["login"],
-                                              conf["2"] ["pass"],
-                                              maxBlock, 1)
+        isOneOrTwo = Actions.is_count_tx_in_block(conf["2"]["dbHost"],
+                                                  conf["2"]["dbName"],
+                                                  conf["2"]["login"],
+                                                  conf["2"] ["pass"],
+                                                  maxBlock, 1)
         self.update_sys_param("max_block_user_tx ", str(max_block_user_tx ))
         time.sleep(30)
         self.assertTrue(isOneOrTwo,
@@ -110,7 +108,7 @@ class TestLimits(unittest.TestCase):
         
         
     def test_max_tx_count (self):
-        max_tx_count = Db.get_system_parameter(conf["1"]["dbHost"],
+        max_tx_count = Actions.get_system_parameter(conf["1"]["dbHost"],
                                                     conf["1"]["dbName"],
                                                     conf["1"]["login"],
                                                     conf["1"] ["pass"],
@@ -118,7 +116,7 @@ class TestLimits(unittest.TestCase):
         self.update_sys_param("max_tx_count", "2")
         i = 1
         while i < 10: 
-            name = "cont" + Tools.generate_random_name()
+            name = "cont" + Actions.generate_random_name()
             code = "contract " + name + contract["limits"]["code"]
             data = {"Wallet": "", "Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
@@ -127,10 +125,10 @@ class TestLimits(unittest.TestCase):
             i = i + 1
         time.sleep(5)
         maxBlock = Actions.get_max_block_id(conf["2"]["url"], token)
-        self.assertTrue(Db.isCountTxInBlock(conf["2"]["dbHost"],
-                                                 conf["2"]["dbName"],
-                                                 conf["2"]["login"],
-                                                 conf["2"] ["pass"],
-                                                 maxBlock, 2),
+        self.assertTrue(Actions.is_count_tx_in_block(conf["2"]["dbHost"],
+                                                     conf["2"]["dbName"],
+                                                     conf["2"]["login"],
+                                                     conf["2"] ["pass"],
+                                                     maxBlock, 2),
                         "One of block contains more than 2 transaction")
         self.update_sys_param("max_tx_count ", str(max_tx_count))

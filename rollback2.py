@@ -4,8 +4,6 @@ import os
 import json
 
 from libs.actions import Actions
-from libs.db import Db
-
 
 class Rollback2(unittest.TestCase):
     
@@ -16,7 +14,7 @@ class Rollback2(unittest.TestCase):
         login = self.conf["login"]
         pas = self.conf["pass"]
         # Get from file all tables state
-        dbInformation = Db.getCountDBObjects(host, db, login, pas)
+        dbInformation = Actions.get_count_DB_objects(host, db, login, pas)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'r') as dbF:
             data = dbF.read()
@@ -31,7 +29,7 @@ class Rollback2(unittest.TestCase):
         with open(file, 'r') as f:
             tableName = f.read()
         # Get from file user table state
-        dbUserTableInfo = Db.getUserTableState(host, db, login, pas, tableName)
+        dbUserTableInfo = Actions.get_user_table_state(host, db, login, pas, tableName)
         file = os.path.join(os.getcwd(), "dbUserTableState.json")
         with open(file, 'r') as dbUserFile:
             data = dbUserFile.read()
