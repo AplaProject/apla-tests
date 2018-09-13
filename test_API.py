@@ -1,21 +1,20 @@
 import unittest
-import config
 import requests
 import json
 import os
 import time
 
 from libs.actions import Actions
+from libs.db import Db
+from libs.tools import Tools
 
 
 class TestApi(unittest.TestCase):
-
-    @classmethod
-    def setup_class(self):
+    def setUp(self):
         global url, token, prKey, pause
-        self.config = config.getNodeConfig()
+        self.config = Tools.readConfig("nodes")
         url = self.config["2"]["url"]
-        pause = self.config["1"]["time_wait_tx_in_block"]
+        pause = Tools.readConfig("test")["wait_tx_status"]
         prKey = self.config["1"]['private_key']
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
@@ -112,10 +111,7 @@ class TestApi(unittest.TestCase):
         dictNames = {}
         dictNamesAPI = {}
         data = {}
-        tables = Actions.get_ecosys_tables(self.config["1"]["dbHost"],
-                                           self.config["1"]["dbName"],
-                                           self.config["1"]["login"],
-                                           self.config["1"]["pass"])
+        tables = Db.getEcosysTables(self.config["1"]["db"])
         for table in tables:
             if "table" not in table:
                 tableInfo = Actions.call_get_api(url + "/table/" + table[2:], data, token)
@@ -140,16 +136,10 @@ class TestApi(unittest.TestCase):
         dictCount = {}
         dictCountTable = {}
         data = {}
-        tables = Actions.get_ecosys_tables(self.config["1"]["dbHost"],
-                                           self.config["1"]["dbName"],
-                                           self.config["1"]["login"],
-                                           self.config["1"]["pass"])
+        tables = Db.getEcosysTables(self.config["1"]["db"])
         for table in tables:
             tableData = Actions.call_get_api(url + "/list/" + table[2:], data, token)
-            count = Actions.get_count_table(self.config["1"]["dbHost"],
-                                            self.config["1"]["dbName"],
-                                            self.config["1"]["login"],
-                                            self.config["1"]["pass"], table)
+            count = Db.getCountTable(self.config["1"]["db"], table)
             if count > 0:
                 if len(tableData["list"]) == count or (len(tableData["list"]) == 25 and
                                                        count > 25):
@@ -202,13 +192,13 @@ class TestApi(unittest.TestCase):
         msg = "There is not " + contract + " contract"
 
     def test_content_lang(self):
-        nameLang = "Lang_" + Actions.generate_random_name()
+        nameLang = "Lang_" + Tools.generate_random_name()
         data = {"ApplicationId": 1, "Name": nameLang,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
                 "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        namePage = "Page_" + Actions.generate_random_name()
+        namePage = "Page_" + Tools.generate_random_name()
         valuePage = "Hello, LangRes(" + nameLang + ")"
         dataPage = {"ApplicationId": 1, "Name": namePage, "Value": valuePage, "Conditions": "true",
                     "Menu": "default_menu"}
@@ -230,13 +220,13 @@ class TestApi(unittest.TestCase):
         self.assertDictEqual(dictCur, dictExp, "One of langRes is faild")
         
     def test_content_lang_after_edit(self):
-        nameLang = "Lang_" + Actions.generate_random_name()
+        nameLang = "Lang_" + Tools.generate_random_name()
         data = {"ApplicationId": 1, "Name": nameLang,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
                 "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        namePage = "Page_" + Actions.generate_random_name()
+        namePage = "Page_" + Tools.generate_random_name()
         valuePage = "Hello, LangRes(" + nameLang + ")"
         dataPage = {"Name": namePage, "Value": valuePage, "Conditions": "true",
                     "Menu": "default_menu", "ApplicationId": 1,}
@@ -314,7 +304,7 @@ class TestApi(unittest.TestCase):
 
     def test_get_content_with_param_from_address_string(self):
         # Create new page for test
-        name = "Page_" + Actions.generate_random_name()
+        name = "Page_" + Tools.generate_random_name()
         data = {}
         data["Name"] = name
         data["Value"] = "#test#"
@@ -332,7 +322,7 @@ class TestApi(unittest.TestCase):
 
     def test_get_content_from_another_ecosystem(self):
         # create new ecosystem
-        ecosysName = "Ecosys_" + Actions.generate_random_name()
+        ecosysName = "Ecosys_" + Tools.generate_random_name()
         data = {"Name": ecosysName}
         res = self.call("NewEcosystem", data)
         self.assertGreater(int(res), 0,
@@ -342,7 +332,7 @@ class TestApi(unittest.TestCase):
         data2 = Actions.login(url, prKey, 0, ecosysNum)
         token2 = data2["jwtToken"]
         # create page in new ecosystem
-        pageName = "Page_" + Actions.generate_random_name()
+        pageName = "Page_" + Tools.generate_random_name()
         pageText = "Page in "+str(ecosysNum)+" ecosystem"
         pageValue = "Span("+pageText+")"
         data = {"Name": pageName, "Value": pageValue, "ApplicationId": 1,
@@ -351,7 +341,7 @@ class TestApi(unittest.TestCase):
         status = Actions.tx_status(url, pause, resp["hash"], token2)
         self.assertGreater(int(status["blockid"]), 0,"BlockId is not generated: " + str(status))
         # create menu in new ecosystem
-        menuName = "Menu_" + Actions.generate_random_name()
+        menuName = "Menu_" + Tools.generate_random_name()
         menuTitle = "Test menu"
         data = {"Name": menuName, "Value": "MenuItem(Title:\""+menuTitle+"\")", "ApplicationId": 1,
                 "Conditions": "true"}
@@ -445,7 +435,7 @@ class TestApi(unittest.TestCase):
 
     def test_get_interface_block(self):
         # Add new block
-        block = "Block_" + Actions.generate_random_name()
+        block = "Block_" + Tools.generate_random_name()
         data = {"Name": block, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewBlock", data)
@@ -479,7 +469,7 @@ class TestApi(unittest.TestCase):
                            "BlockId is not generated: " + str(status))
         
     def is_node_owner_false(self):
-        keys = config.getKeys()
+        keys = Tools.readConfig("keys")
         prKey2 = keys["key1"]
         data2 = Actions.login(url, prKey2, 0)
         token2 = data2["jwtToken"]
@@ -491,35 +481,29 @@ class TestApi(unittest.TestCase):
                          "Incorrect message: " + str(status))
         
     def test_login(self):
-        keys = config.getKeys()    
+        keys = Tools.readConfig("keys")  
         data1 = Actions.login(url, keys["key5"], 0)
         time.sleep(5)
-        conf = config.getNodeConfig()
-        res = Actions.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],
-                                        conf["1"]["login"], conf["1"]["pass"],
-                                        data1["key_id"])
+        conf = Tools.readConfig("nodes")
+        res = Db.is_wallet_created(conf["1"]["db"], data1["key_id"])
         self.assertTrue(res, "Wallet for new user didn't created")
         
     def test_login2(self):
         isOne = False
-        keys = config.getKeys() 
+        keys = Tools.readConfig("keys")
         data1 = Actions.login(url, keys["key3"], 0)
         time.sleep(5)
-        conf = config.getNodeConfig()
-        res = Actions.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],
-                                        conf["1"]["login"], conf["1"]["pass"],
-                                        data1["key_id"])
+        conf = Tools.readConfig("nodes")
+        res = Db.is_wallet_created(conf["1"]["db"], data1["key_id"])
         if res == True:
             data2 = Actions.login(url, keys["key1"], 0)
             time.sleep(5)
-            isOne = Actions.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],
-                                              conf["1"]["login"], conf["1"]["pass"],
-                                              data2["key_id"])
+            isOne = Db.is_wallet_created(conf["1"]["db"], data2["key_id"])
             self.assertTrue(isOne, "Wallet for new user didn't created")
 
     def test_get_avatar_with_login(self):
         # add file in binaries
-        name = "file_" + Actions.generate_random_name()
+        name = "file_" + Tools.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
@@ -560,7 +544,7 @@ class TestApi(unittest.TestCase):
             }
         }
         """ % (founderID, lastRec)
-        code, name = Actions.generate_name_and_code(code)
+        code, name = Tools.generate_name_and_code(code)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -628,7 +612,7 @@ class TestApi(unittest.TestCase):
                    }
                }
                """ % (founderID, lastRec)
-        code, name = Actions.generate_name_and_code(code)
+        code, name = Tools.generate_name_and_code(code)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -697,7 +681,7 @@ class TestApi(unittest.TestCase):
         self.check_get_api("/ecosystemname?id=" + str(id), "", asserts)
 
     def test_get_ecosystem_name_new(self):
-        data = {"Name": "ecos_" + Actions.generate_random_name()}
+        data = {"Name": "ecos_" + Tools.generate_random_name()}
         res = self.call("NewEcosystem",data)
         id = self.check_get_api("/list/ecosystems", "", [])["count"]
         asserts = ["ecosystem_name"]

@@ -1,5 +1,4 @@
 import unittest
-import config
 import requests
 import json
 import os
@@ -8,29 +7,26 @@ import time
 from libs.actions import Actions
 from libs.tools import Tools
 from libs.db import Db
+from argparse import Action
 
 
 
 class TestSystemContracts(unittest.TestCase):
-
-    @classmethod
-    def setup_class(self, cls):
-        global url, token, prKey, pause, dbHost, dbName, login, pas
-        self.config = config.getNodeConfig()
+    
+    def setUp(self):
+        global url, token, prKey, pause, db
+        self.config = Tools.readConfig("nodes")
         url = self.config["1"]["url"]
-        pause = self.config["1"]["time_wait_tx_in_block"]
+        pause = Tools.readConfig("test")["wait_tx_status"]
         prKey = self.config["1"]['private_key']
-        dbHost = self.config["1"]["dbHost"]
-        dbName = self.config["1"]['dbName']
-        login = self.config["1"]["login"]
-        pas = self.config["1"]['pass']
+        db = self.config["1"]["db"]
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
         hash = result['hash']
-        status = Actions.tx_status(url, pause, hash, jwtToken)
+        status = Actions.txstatus(url, pause, hash, jwtToken)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return {"blockid": int(status["blockid"]), "error": "0"}
@@ -45,7 +41,7 @@ class TestSystemContracts(unittest.TestCase):
     def assertMultiTxInBlock(self, result, jwtToken):
         self.assertIn("hashes", result)
         hashes = result['hashes']
-        result = Actions.tx_status_multi(url, pause, hashes, jwtToken)
+        result = Actions.txstatus_multi(url, pause, hashes, jwtToken)
         for status in result.values():
             self.assertNotIn('errmsg', status)
             self.assertGreater(int(status["blockid"]), 0,
@@ -137,11 +133,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("MoneyTransfer", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        self.assertTrue(Db.isCommissionInHistory(self.config["1"]["dbHost"],
-                                                    self.config["1"]["dbName"],
-                                                    self.config["1"]["login"],
-                                                    self.config["1"]["pass"],
-                                                    self.config["1"]["keyID"],
+        self.assertTrue(Db.isCommissionInHistory(self.config["1"]["db"], config["1"]["keyID"],
                                                     "52070200000060200", "1000"),
                         "No moneytransfer resord in history")
 
@@ -182,7 +174,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_new_contract(self):
-        code, name = Tools.generate_name_and_code("")
+        code, name = Actions.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -190,7 +182,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_new_contract_exists_name(self):
-        code, name = Tools.generate_name_and_code("")
+        code, name = Actions.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -209,7 +201,7 @@ class TestSystemContracts(unittest.TestCase):
                       "Incorrect message: " + str(ans))
 
     def test_new_contract_incorrect_condition(self):
-        code, name = Tools.generate_name_and_code("")
+        code, name = Actions.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "condition"}
         ans = self.call("NewContract", data)
@@ -370,7 +362,7 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_menu(self):
-        countMenu = Db.getCountTable(dbHost, dbName, login, pas, "1_menu")
+        countMenu = Db.getCountTable(db, "1_menu")
         name = "Menu_" + Tools.generate_random_name()
         data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
                 "Conditions": "true"}
@@ -626,7 +618,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewBlock", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = Actions.get_count(url, "blocks", token)
+        count = funcs.get_count(url, "blocks", token)
         condition = "tryam"
         dataEdit = {"Id": count, "Value": "Good by!", "Conditions": condition}
         ans = self.call("EditBlock", dataEdit)
@@ -1415,8 +1407,8 @@ class TestSystemContracts(unittest.TestCase):
         appID = 1
         data = {}
         resExport = self.call("Export", data)
-        founderID = Db.getFounderId(dbHost, dbName, login, pas)
-        exportAppData = Db.getExportAppData(dbHost, dbName, login, pas, appID, founderID)
+        founderID = Db.getFounderId(db)
+        exportAppData = Db.getExportAppData(db, appID, founderID)
         jsonApp = str(exportAppData, encoding='utf-8')
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
         with open(path, 'w', encoding='UTF-8') as f:
@@ -1443,8 +1435,8 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(resImportUpload))
 
     def test_ei4_Import(self):
-        founderID = Db.getFounderId(dbHost, dbName, login, pas)
-        importAppData = Db.getImportAppData(dbHost, dbName, login, pas, founderID)
+        founderID = Db.getFounderId(db)
+        importAppData = Db.getImportAppData(db, founderID)
         importAppData = importAppData['data']
         contractName = "Import"
         data = [{"contract": contractName,

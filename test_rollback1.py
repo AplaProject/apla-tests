@@ -1,5 +1,4 @@
 import unittest
-import config
 import json
 import time
 import os
@@ -11,17 +10,13 @@ from libs.db import Db
 
 class TestRollback1(unittest.TestCase):
 
-    @classmethod
-    def setup_class(self):
-        global url, prKey, token, waitTx, host, db, pas, login
-        self.conf = config.readMainConfig()
+    def setUp(self):
+        global url, prKey, token, waitTx, db
+        self.conf = Tools.readConfig("main")
         url = self.conf["url"]
         prKey = self.conf['private_key']
-        host = self.conf["dbHost"]
-        db = self.conf["dbName"]
-        login = self.conf["login"]
-        pas = self.conf["pass"]
-        waitTx = self.conf["time_wait_tx_in_block"]
+        db = self.conf["db"]
+        waitTx = Tools.readConfig("test")["wait_tx_status"]
         lData = Actions.login(url, prKey, 0)
         token = lData["jwtToken"]
 
@@ -33,7 +28,7 @@ class TestRollback1(unittest.TestCase):
         resp = Actions.call_contract_with_files(url, prKey, "ImportUpload", {},
                                               files, token)
         if ("hash" in resp):
-            resImportUpload = Actions.tx_status(url, 30,
+            resImportUpload = Actions.txstatus(url, 30,
                                              resp["hash"], token)
             if int(resImportUpload["blockid"]) > 0:
                 founderID = Actions.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
@@ -50,7 +45,7 @@ class TestRollback1(unittest.TestCase):
                 time.sleep(30)
                 if "hashes" in resp:
                     hashes = resp['hashes']
-                    result = Actions.tx_status_multi(url, 30, hashes, token)
+                    result = Actions.txstatus_multi(url, 30, hashes, token)
                     for status in result.values():
                         if int(status["blockid"]) < 1:
                             print("Import is failed")
@@ -60,7 +55,7 @@ class TestRollback1(unittest.TestCase):
 
     def call(self, name, data):
         resp = Actions.call_contract(url, prKey, name, data, token)
-        res = Actions.tx_status(url, waitTx,
+        res = Actions.txstatus(url, waitTx,
                              resp['hash'], token)
         return res
 
@@ -116,7 +111,7 @@ class TestRollback1(unittest.TestCase):
         res = self.call("EditTable", dataEdit)
 
     def getCountTable(self,name):
-        return Db.getCountTable(host, db, login, pas, name)
+        return Db.getCountTable(db, name)
 
     def addBinary(self):
         name = "image_" + Actions.generate_random_name()
@@ -127,7 +122,7 @@ class TestRollback1(unittest.TestCase):
         data = {"Name": name, "ApplicationId": 1}
         resp = Actions.call_contract_with_files(url, prKey, "UploadBinary", data,
                                               files, token)
-        res = Actions.tx_status(url, waitTx,
+        res = Actions.txstatus(url, waitTx,
                              resp['hash'], token)
         self.assertGreater(int(res['blockid']), 0, "BlockId is not generated: " + str(res))
 
@@ -373,12 +368,12 @@ class TestRollback1(unittest.TestCase):
         with open(file, 'w') as f:
             f.write(tableNameWithPrefix)
         # Save to file user table state
-        dbUserTableInfo = Db.getUserTableState(host, db, login, pas, tableNameWithPrefix)
+        dbUserTableInfo = Db.getUserTableState(db, tableNameWithPrefix)
         file = os.path.join(os.getcwd(), "dbUserTableState.json")
         with open(file, 'w') as fconf:
             json.dump(dbUserTableInfo, fconf)
         # Save to file all tables state
-        dbInformation = Db.get_count_DB_objects(host, db, login, pas)
+        dbInformation = Db.getCountDBObjects(db)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'w') as fconf:
             json.dump(dbInformation, fconf)
