@@ -116,16 +116,11 @@ def voiting(id, url, prKey, token):
     
 
 if __name__ == "__main__":
-    global dbHost, dbName, login, pas
     conf = config.getNodeConfig()
     url = conf["1"]["url"]
     prKey1 = conf["1"]['private_key']
     prKey2 = conf["2"]['private_key']
     prKey3 = conf["3"]['private_key']
-    dbHost = conf["1"]['dbHost']
-    dbName = conf["1"]['dbName']
-    login = conf["1"]['login']
-    pas = conf["1"]['pass']
     data = Actions.login(url, prKey1, 0)
     token1 = data["jwtToken"]
     impApp("admin", url, prKey1, token1)

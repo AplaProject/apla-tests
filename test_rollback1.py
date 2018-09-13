@@ -12,14 +12,11 @@ from libs.db import Db
 class TestRollback1(unittest.TestCase):
 
     def setUp(self):
-        global url, prKey, token, waitTx, host, db, pas, login
+        global url, prKey, token, waitTx, db
         self.conf = config.readMainConfig()
         url = self.conf["url"]
         prKey = self.conf['private_key']
-        host = self.conf["dbHost"]
-        db = self.conf["dbName"]
-        login = self.conf["login"]
-        pas = self.conf["pass"]
+        db = self.conf["db"]
         waitTx = self.conf["time_wait_tx_in_block"]
         lData = Actions.login(url, prKey, 0)
         token = lData["jwtToken"]
@@ -115,7 +112,7 @@ class TestRollback1(unittest.TestCase):
         res = self.call("EditTable", dataEdit)
 
     def getCountTable(self,name):
-        return Db.getCountTable(host, db, login, pas, name)
+        return Db.getCountTable(db, name)
 
     def addBinary(self):
         name = "image_" + Actions.generate_random_name()
@@ -372,12 +369,12 @@ class TestRollback1(unittest.TestCase):
         with open(file, 'w') as f:
             f.write(tableNameWithPrefix)
         # Save to file user table state
-        dbUserTableInfo = Db.getUserTableState(host, db, login, pas, tableNameWithPrefix)
+        dbUserTableInfo = Db.getUserTableState(db, tableNameWithPrefix)
         file = os.path.join(os.getcwd(), "dbUserTableState.json")
         with open(file, 'w') as fconf:
             json.dump(dbUserTableInfo, fconf)
         # Save to file all tables state
-        dbInformation = Db.getCountDBObjects(host, db, login, pas)
+        dbInformation = Db.getCountDBObjects(db)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'w') as fconf:
             json.dump(dbInformation, fconf)

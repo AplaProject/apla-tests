@@ -10,7 +10,7 @@ def readMainConfig():
 
 
 def getNodeConfig():
-	path = os.path.join(os.getcwd(), "hostConfig.json")
+	path = os.path.join(os.getcwd(), "nodesConfig.json")
 	with open(path, 'r') as f:
 		data = f.read()
 	return json.loads(data)
@@ -27,6 +27,8 @@ def readFixtures(type):
 		path = os.path.join(os.getcwd(), "fixtures", "contracts.json")
 	if type == "pages":
 		path = os.path.join(os.getcwd(), "fixtures", "pages.json")
+	if type == "api":
+		path = os.path.join(os.getcwd(), "fixtures", "api.json")
 	with open(path, 'r', encoding='UTF-8') as f:
 		data = f.read()
 	return json.loads(data)

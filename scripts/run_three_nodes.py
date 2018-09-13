@@ -206,16 +206,22 @@ def test_three_nodes(request):
 
 	config = {
 		"1": {
+			"db":
+			{
+				}
 			"url": "http://localhost:" + request.config.getoption('--httpPort1') + "/api/v2",
 			"private_key": privKey1,
 			"keyID": keyID1,
 			"pubKey": nodePubKey1,
 			"tcp_address": "localhost:" + request.config.getoption('--tcpPort1'),
 			"api_address": "http://localhost:" + request.config.getoption('--httpPort1'),
-			"dbHost": request.config.getoption('--dbHost'),
-			"dbName": request.config.getoption('--dbName1'),
-			"login": request.config.getoption('--dbUser'),
-			"pass": request.config.getoption('--dbPassword'),
+			"db":
+			{
+				"dbHost": request.config.getoption('--dbHost'),
+				"dbName": request.config.getoption('--dbName1'),
+				"login": request.config.getoption('--dbUser'),
+				"pass": request.config.getoption('--dbPassword')
+				},
 			"time_wait_tx_in_block": 30
 		},
 		"2": {
@@ -225,10 +231,13 @@ def test_three_nodes(request):
 			"pubKey": nodePubKey2,
 			"tcp_address": "localhost:" + request.config.getoption('--tcpPort2'),
 			"api_address": "http://localhost:" + request.config.getoption('--httpPort2'),
-			"dbHost": request.config.getoption('--dbHost'),
-			"dbName": request.config.getoption('--dbName2'),
-			"login": request.config.getoption('--dbUser'),
-			"pass": request.config.getoption('--dbPassword'),
+			"db":
+			{
+				"dbHost": request.config.getoption('--dbHost'),
+				"dbName": request.config.getoption('--dbName2'),
+				"login": request.config.getoption('--dbUser'),
+				"pass": request.config.getoption('--dbPassword')
+				},
 			"time_wait_tx_in_block": 30
 		},
 		"3": {
@@ -238,10 +247,13 @@ def test_three_nodes(request):
 			"pubKey": nodePubKey3,
 			"tcp_address": "localhost:" + request.config.getoption('--tcpPort3'),
 			"api_address": "http://localhost:" + request.config.getoption('--httpPort3'),
-			"dbHost": request.config.getoption('--dbHost'),
-			"dbName": request.config.getoption('--dbName3'),
-			"login": request.config.getoption('--dbUser'),
-			"pass": request.config.getoption('--dbPassword'),
+			"db":
+			{
+				"dbHost": request.config.getoption('--dbHost'),
+				"dbName": request.config.getoption('--dbName3'),
+				"login": request.config.getoption('--dbUser'),
+				"pass": request.config.getoption('--dbPassword')
+			},
 			"time_wait_tx_in_block": 30
 		}}
 

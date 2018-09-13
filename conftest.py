@@ -1,8 +1,6 @@
 import pytest
 import os
 
-from libs.application import Application
-
 
 
 def pytest_addoption(parser):

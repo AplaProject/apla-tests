@@ -112,10 +112,7 @@ class TestApi(unittest.TestCase):
         dictNames = {}
         dictNamesAPI = {}
         data = {}
-        tables = Db.getEcosysTables(self.config["1"]["dbHost"],
-                                         self.config["1"]["dbName"],
-                                         self.config["1"]["login"],
-                                         self.config["1"]["pass"])
+        tables = Db.getEcosysTables(self.config["1"]["db"])
         for table in tables:
             if "table" not in table:
                 tableInfo = Actions.call_get_api(url + "/table/" + table[2:], data, token)
@@ -140,16 +137,10 @@ class TestApi(unittest.TestCase):
         dictCount = {}
         dictCountTable = {}
         data = {}
-        tables = Db.getEcosysTables(self.config["1"]["dbHost"],
-                                         self.config["1"]["dbName"],
-                                         self.config["1"]["login"],
-                                         self.config["1"]["pass"])
+        tables = Db.getEcosysTables(self.config["1"]["db"])
         for table in tables:
             tableData = Actions.call_get_api(url + "/list/" + table[2:], data, token)
-            count = Db.getCountTable(self.config["1"]["dbHost"],
-                                          self.config["1"]["dbName"],
-                                          self.config["1"]["login"],
-                                          self.config["1"]["pass"], table)
+            count = Db.getCountTable(self.config["1"]["db"], table)
             if count > 0:
                 if len(tableData["list"]) == count or (len(tableData["list"]) == 25 and
                                                        count > 25):
@@ -495,9 +486,7 @@ class TestApi(unittest.TestCase):
         data1 = Actions.login(url, keys["key5"], 0)
         time.sleep(5)
         conf = config.getNodeConfig()
-        res = Db.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],
-                                        conf["1"]["login"], conf["1"]["pass"],
-                                        data1["key_id"])
+        res = Db.is_wallet_created(conf["1"]["db"], data1["key_id"])
         self.assertTrue(res, "Wallet for new user didn't created")
         
     def test_login2(self):
@@ -506,15 +495,11 @@ class TestApi(unittest.TestCase):
         data1 = Actions.login(url, keys["key3"], 0)
         time.sleep(5)
         conf = config.getNodeConfig()
-        res = Db.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],
-                                        conf["1"]["login"], conf["1"]["pass"],
-                                        data1["key_id"])
+        res = Db.is_wallet_created(conf["1"]["db"], data1["key_id"])
         if res == True:
             data2 = Actions.login(url, keys["key1"], 0)
             time.sleep(5)
-            isOne = Db.is_wallet_created(conf["1"]["dbHost"], conf["1"]["dbName"],
-                                              conf["1"]["login"], conf["1"]["pass"],
-                                              data2["key_id"])
+            isOne = Db.is_wallet_created(conf["1"]["db"], data2["key_id"])
             self.assertTrue(isOne, "Wallet for new user didn't created")
 
     def test_get_avatar_with_login(self):

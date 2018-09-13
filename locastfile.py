@@ -1,6 +1,7 @@
 from locust import HttpLocust, TaskSet, task
 import config
 from libs.actions import Actions
+from libs.tools import Tools
 
 class WebsiteTasks(TaskSet):
     def on_start(self):
@@ -14,7 +15,7 @@ class WebsiteTasks(TaskSet):
     
     @task
     def NewContract(self):
-        code, name = Actions.generate_name_and_code("")
+        code, name = Tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
         sign = Actions.prepare_tx(url, prKey, "NewContract", token, data)
         dataContract = {"time": sign['time'], "signature": sign["signature"]}
@@ -32,7 +33,7 @@ class WebsiteTasks(TaskSet):
      
     @task   
     def NewParameter(self):
-        name = "Par_" + Actions.generate_random_name()
+        name = "Par_" + Tools.generate_random_name()
         data = {"Name": name, "Value": "test", "ApplicationId": 1,
                 "Conditions": "true"}
         sign = Actions.prepare_tx(url, prKey, "NewParameter", token, data)
@@ -42,7 +43,7 @@ class WebsiteTasks(TaskSet):
         
     @task   
     def NewMenu(self):
-        name = "Menu_" + Actions.generate_random_name()
+        name = "Menu_" + Tools.generate_random_name()
         data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
                 "Conditions": "true"}
         sign = Actions.prepare_tx(url, prKey, "NewMenu", token, data)
@@ -52,7 +53,7 @@ class WebsiteTasks(TaskSet):
         
     @task   
     def NewPage(self):
-        name = "Page_" + Actions.generate_random_name()
+        name = "Page_" + Tools.generate_random_name()
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         sign = Actions.prepare_tx(url, prKey, "NewPage", token, data)
@@ -62,7 +63,7 @@ class WebsiteTasks(TaskSet):
         
     @task   
     def NewBlock(self):
-        name = "Block_" + Actions.generate_random_name()
+        name = "Block_" + Tools.generate_random_name()
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true"}
         sign = Actions.prepare_tx(url, prKey, "NewBlock", token, data)
@@ -76,7 +77,7 @@ class WebsiteTasks(TaskSet):
         "index": "1",  "conditions":"true"}]"""
         permission = """{"insert": "false",
         "update" : "true","new_column": "true"}"""
-        data = {"Name": "Tab_" + Actions.generate_random_name(),
+        data = {"Name": "Tab_" + Tools.generate_random_name(),
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
         sign = Actions.prepare_tx(url, prKey, "NewTable", token, data)
@@ -86,7 +87,7 @@ class WebsiteTasks(TaskSet):
         
     @task   
     def NewLang(self):
-        data = {"AppID": 1, "Name": "Lang_" + Actions.generate_random_name(),
+        data = {"AppID": 1, "Name": "Lang_" + Tools.generate_random_name(),
                 "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}",
                 "ApplicationId": 1}
         sign = Actions.prepare_tx(url, prKey, "NewLang", token, data)

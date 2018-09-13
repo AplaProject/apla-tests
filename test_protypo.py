@@ -11,16 +11,13 @@ from libs.db import Db
 class TestPrototipo(unittest.TestCase):
     def setUp(self):
         self.config = config.getNodeConfig()
-        global url, prKey, token, dbHost, dbName, login, password
+        global url, prKey, token, db2
         self.pages = config.readFixtures("pages")
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
-        dbHost = self.config["2"]["dbHost"]
-        dbName = self.config["2"]["dbName"]
-        login = self.config["2"]["login"]
-        password = self.config["2"]["pass"]
+        db2 = self.config["2"]["db"]
         self.maxDiff = None
 
     def assertTxInBlock(self, result, jwtToken):
@@ -629,7 +626,7 @@ class TestPrototipo(unittest.TestCase):
         self.assertTxInBlock(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = Db.getFounderId(dbHost, dbName, login, password)
+        MemberID = Db.getFounderId(db2)
         lastRec = Actions.get_count(url, "binaries", token)
         content = self.check_page("Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
@@ -668,7 +665,7 @@ class TestPrototipo(unittest.TestCase):
         self.assertTxInBlock(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = Db.getFounderId(dbHost, dbName, login, password)
+        MemberID = Db.getFounderId(db2)
         lastRec = Actions.get_count(url, "binaries", token)
         content = self.check_page("Image(Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+"))")
         partContent = content["tree"][0]

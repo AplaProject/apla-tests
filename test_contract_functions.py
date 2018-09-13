@@ -10,14 +10,11 @@ from libs.tools import Tools
 class TestContractFunctions(unittest.TestCase):
     def setUp(self):
         self.config = config.getNodeConfig()
-        global url, prKey,token, dbHost, dbName, login, pas
+        global url, prKey,token, db1
         self.contracts = config.readFixtures("contracts")
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
-        dbHost = self.config["1"]["dbHost"]
-        dbName = self.config["1"]['dbName']
-        login = self.config["1"]["login"]
-        pas = self.config["1"]['pass']
+        db = self.config["1"]['db']
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
 
@@ -530,14 +527,14 @@ class TestContractFunctions(unittest.TestCase):
 
     def test_getHistoryRowMenu(self):
         # create menu
-        rollc_before = Actions.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
+        rollc_before = Actions.getMaxIdFromTable(db, "rollback_tx")
         name = Tools.generate_random_name()
         menu = "This is new menu"
         data = {"Name": name,
                 "Value": menu,
                 "Conditions": "true"}
         self.call_contract("NewMenu", data)
-        rollc_after = Db.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
+        rollc_after = Db.getMaxIdFromTable(db, "rollback_tx")
         # change menu
         id = Actions.get_object_id(url, name, "menu", token)
         newValueMenu = menu.replace("new menu", "new_var")
@@ -547,14 +544,14 @@ class TestContractFunctions(unittest.TestCase):
         # test
         query = """SELECT id FROM "rollback_tx" WHERE table_name = '1_menu' AND data='' AND id >= %s AND id <= %s""" % (
             rollc_before, rollc_after)
-        rollback_id = Db.executeSQL(dbHost, dbName, login, pas, query)[0][0]
+        rollback_id = Db.executeSQL(db)[0][0]
         data = {"Table": "menu", "ID": id, "rID": rollback_id}
         contract = self.contracts["getHistoryRow"]
         self.check_contract_with_data(contract["code"], data, menu)
 
     def test_getHistoryRowBlock(self):
         # create block
-        rollc_before = Db.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
+        rollc_before = Db.getMaxIdFromTable(db, "rollback_tx")
         name = Tools.generate_random_name()
         block = "Div(Body: Hello)"
         data = {"ApplicationId": "1",
@@ -562,7 +559,7 @@ class TestContractFunctions(unittest.TestCase):
                 "Value": block,
                 "Conditions": "true"}
         self.call_contract("NewBlock", data)
-        rollc_after = Db.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
+        rollc_after = Db.getMaxIdFromTable(db, "rollback_tx")
         # change block
         id = Actions.get_object_id(url, name, "blocks", token)
         newValueBlock = block.replace("Hello", "new_var")
@@ -572,7 +569,7 @@ class TestContractFunctions(unittest.TestCase):
         # test
         query = """SELECT id FROM "rollback_tx" WHERE table_name = '1_blocks' AND data='' AND id >= %s AND id <= %s""" % (
             rollc_before, rollc_after)
-        rollback_id = Db.executeSQL(dbHost, dbName, login, pas, query)[0][0]
+        rollback_id = Db.executeSQL(db, query)[0][0]
         data = {"Table": "blocks", "ID": id, "rID": rollback_id}
         contract = self.contracts["getHistoryRow"]
         self.check_contract_with_data(contract["code"], data, block)

@@ -14,24 +14,15 @@ class CompareNodes(unittest.TestCase):
         config1 = fullConfig["1"]
         config2 = fullConfig["2"]
         config3 = fullConfig["3"]
-        db1 = config1["dbName"]
-        db2 = config2["dbName"]
-        db3 = config3["dbName"]
-        login1 = config1["login"]
-        login2 = config2["login"]
-        login3 = config3["login"]
-        pas1 = config1["pass"]
-        pas2 = config2["pass"]
-        pas3 = config3["pass"]
-        host1 = config1["dbHost"]
-        host2 = config2["dbHost"]
-        host3 = config3["dbHost"]
+        db1 = config1["db"]
+        db2 = config2["db"]
+        db3 = config3["db"]
     
     def test_compare_nodes(self):
         nodes = 3
-        amounts1 = Actions.get_user_token_amounts(host1, db1, login1, pas1)
-        amounts2 = Actions.get_user_token_amounts(host2, db2, login2, pas2)
-        amounts3 = Actions.get_user_token_amounts(host3, db3, login3, pas3)
+        amounts1 = Actions.get_user_token_amounts(db1)
+        amounts2 = Actions.get_user_token_amounts(db2)
+        amounts3 = Actions.get_user_token_amounts(db3)
         sumAmounts = sum(amount[0] for amount in amounts1)
         self.data1 = Actions.login(config1["url"], config1['private_key'], 0)
         maxBlockId1 = Actions.get_max_block_id(config1["url"],self.data1["jwtToken"])
@@ -40,10 +31,10 @@ class CompareNodes(unittest.TestCase):
         self.data3 = Actions.login(config3["url"], config1['private_key'], 0)
         maxBlockId3 = Actions.get_max_block_id(config3["url"],self.data3["jwtToken"])
         maxBlock = max(maxBlockId2, maxBlockId1, maxBlockId3)
-        hash1 = Db.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
-        hash2 = Db.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
-        hash3 = Db.get_blockchain_hash(host3, db3, login3, pas3, maxBlock)
-        node_position = Db.compare_node_positions(host1, db1, login1, pas1, maxBlock, nodes)
+        hash1 = Db.get_blockchain_hash(db1, maxBlock)
+        hash2 = Db.get_blockchain_hash(db2, maxBlock)
+        hash3 = Db.get_blockchain_hash(db3, maxBlock)
+        node_position = Db.compare_node_positions(db1, maxBlock, nodes)
         dict1 = dict(amounts = str(amounts1),
                      hash = str(hash1),
                      node_pos = str(node_position))
@@ -62,9 +53,9 @@ class CompareNodes(unittest.TestCase):
         self.assertDictEqual(dict1, dict3, msg)
         
     def test_compare_db(self):
-        dbInformation1 = Actions.get_count_DB_objects(host1, db1, login1, pas1)
-        dbInformation2 = Actions.get_count_DB_objects(host2, db2, login2, pas2)
-        dbInformation3 = Actions.get_count_DB_objects(host3, db3, login3, pas3)
+        dbInformation1 = Actions.get_count_DB_objects(db1)
+        dbInformation2 = Actions.get_count_DB_objects(db2)
+        dbInformation3 = Actions.get_count_DB_objects(db3)
         for key in dbInformation1:
             dbInf1 = dbInformation1[key]
             dbInf2 = dbInformation2[key]
