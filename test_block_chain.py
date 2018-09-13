@@ -1,5 +1,4 @@
 import unittest
-import config
 import time
 from builtins import sum
 
@@ -27,7 +26,7 @@ class TestBlockChain(unittest.TestCase):
         return Actions.get_count(url, "menu", self.data1["jwtToken"])
     
     def test_block_chain(self):
-        fullConfig = config.getNodeConfig()
+        fullConfig = Tools.readConfig("nodes")
         nodes = len(fullConfig)
         config1 = fullConfig["1"]
         config2 = fullConfig["2"]
@@ -74,7 +73,7 @@ class TestBlockChain(unittest.TestCase):
         self.assertDictEqual(dict1, dict2, msg)
         
     def test_block_chain_edit(self):
-        fullConfig = config.getNodeConfig()
+        fullConfig = Tools.readConfig("nodes")
         nodes = len(fullConfig)
         config1 = fullConfig["1"]
         config2 = fullConfig["2"]

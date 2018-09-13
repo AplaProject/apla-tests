@@ -43,4 +43,29 @@ class Tools(object):
             sCode = sourceCode
         code = "contract " + contractName + sCode
         return code
+    
+    def readConfig(type):
+        if type is "main":
+            path = os.path.join(os.getcwd(), "config.json")
+        if type is "nodes":
+            path = os.path.join(os.getcwd(), "nodesConfig.json")
+        if type is "test":
+            path = os.path.join(os.getcwd(), "testConfig.json")
+        with open(path, 'r') as f:
+            data = f.read()
+        return json.loads(data)
+
+    def readFixtures(type):
+        path = ""
+        if type == "contracts":
+            path = os.path.join(os.getcwd(), "fixtures", "contracts.json")
+        if type == "pages":
+            path = os.path.join(os.getcwd(), "fixtures", "pages.json")
+        if type == "api":
+            path = os.path.join(os.getcwd(), "fixtures", "api.json")
+        if type == "keys":
+            path = os.path.join(os.getcwd(), "fixtures", "prKeys.json")
+        with open(path, 'r', encoding='UTF-8') as f:
+            data = f.read()
+        return json.loads(data)
 

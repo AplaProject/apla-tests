@@ -1,5 +1,4 @@
 import unittest
-import config
 import requests
 import json
 import os
@@ -8,7 +7,6 @@ import time
 from libs.actions import Actions
 from libs.tools import Tools
 from libs.db import Db
-import Tools
 from argparse import Action
 
 
@@ -17,9 +15,9 @@ class TestSystemContracts(unittest.TestCase):
     
     def setUp(self):
         global url, token, prKey, pause, db
-        self.config = config.getNodeConfig()
+        self.config = Tools.readConfig("nodes")
         url = self.config["1"]["url"]
-        pause = self.config["1"]["time_wait_tx_in_block"]
+        pause = Tools.readConfig("test")["wait_tx_status"]
         prKey = self.config["1"]['private_key']
         db = self.config["1"]["db"]
         self.data = Actions.login(url, prKey, 0)

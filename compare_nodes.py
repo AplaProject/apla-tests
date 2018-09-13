@@ -3,13 +3,13 @@ import config
 from builtins import sum
 
 from libs.actions import Actions
+from libs.tools import Tools
 
 class CompareNodes(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        global config1, config2, config3, db1, db2, db3, login1, login2, login3
-        global pas1, pas2, pas3, host1, host2, host3
-        fullConfig = config.getNodeConfig()
+        global config1, config2, config3, db1, db2, db3
+        fullConfig = Tools.readConfig("nodes")
         nodes = len(fullConfig)
         config1 = fullConfig["1"]
         config2 = fullConfig["2"]

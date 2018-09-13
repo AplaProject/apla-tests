@@ -1,9 +1,9 @@
-import config
 import time
 import os
 import json
 
 from libs.actions import Actions
+from libs.tools import Tools
 
 def isInBlock(call, url, token):
     if "hash" in call:
@@ -116,7 +116,7 @@ def voiting(id, url, prKey, token):
     
 
 if __name__ == "__main__":
-    conf = config.getNodeConfig()
+    conf = Tools.readConfig("nodes")
     url = conf["1"]["url"]
     prKey1 = conf["1"]['private_key']
     prKey2 = conf["2"]['private_key']

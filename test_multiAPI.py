@@ -1,5 +1,4 @@
 import unittest
-import config
 
 from libs.actions import Actions
 from libs.tools import Tools
@@ -8,9 +7,9 @@ from libs.tools import Tools
 class TestMultiApi(unittest.TestCase):
     def setUp(self):
         global url, token, prKey, pause
-        self.config = config.getNodeConfig()
+        self.config = Tools.readConfig("nodes")
         url = self.config["2"]["url"]
-        pause = self.config["1"]["time_wait_tx_in_block"]
+        pause = Tools.readConfig("test")["wait_tx_status"]
         prKey = self.config["1"]['private_key']
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]

@@ -1,5 +1,4 @@
 import unittest
-import config
 import json
 import time
 
@@ -13,12 +12,12 @@ class TestLimits(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         global conf, contract
-        conf = config.getNodeConfig()
-        contract = config.readFixtures("contracts")
+        conf = Tools.readConfig("nodes")
+        contract = Tools.readFixtures("contracts")
     
     def setUp(self):
         global pause, token
-        pause = conf["1"]["time_wait_tx_in_block"]
+        pause = Tools.readConfig("test")["wait_tx_status"]
         self.data = Actions.login(conf["2"]["url"],
                                   conf["1"]['private_key'], 0)
         token = self.data["jwtToken"]        

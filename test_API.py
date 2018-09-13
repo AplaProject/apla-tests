@@ -1,5 +1,4 @@
 import unittest
-import config
 import requests
 import json
 import os
@@ -13,9 +12,9 @@ from libs.tools import Tools
 class TestApi(unittest.TestCase):
     def setUp(self):
         global url, token, prKey, pause
-        self.config = config.getNodeConfig()
+        self.config = Tools.readConfig("nodes")
         url = self.config["2"]["url"]
-        pause = self.config["1"]["time_wait_tx_in_block"]
+        pause = Tools.readConfig("test")["wait_tx_status"]
         prKey = self.config["1"]['private_key']
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
@@ -470,7 +469,7 @@ class TestApi(unittest.TestCase):
                            "BlockId is not generated: " + str(status))
         
     def is_node_owner_false(self):
-        keys = config.getKeys()
+        keys = Tools.readConfig("keys")
         prKey2 = keys["key1"]
         data2 = Actions.login(url, prKey2, 0)
         token2 = data2["jwtToken"]
@@ -482,19 +481,19 @@ class TestApi(unittest.TestCase):
                          "Incorrect message: " + str(status))
         
     def test_login(self):
-        keys = config.getKeys()    
+        keys = Tools.readConfig("keys")  
         data1 = Actions.login(url, keys["key5"], 0)
         time.sleep(5)
-        conf = config.getNodeConfig()
+        conf = Tools.readConfig("nodes")
         res = Db.is_wallet_created(conf["1"]["db"], data1["key_id"])
         self.assertTrue(res, "Wallet for new user didn't created")
         
     def test_login2(self):
         isOne = False
-        keys = config.getKeys() 
+        keys = Tools.readConfig("keys")
         data1 = Actions.login(url, keys["key3"], 0)
         time.sleep(5)
-        conf = config.getNodeConfig()
+        conf = Tools.readConfig("nodes")
         res = Db.is_wallet_created(conf["1"]["db"], data1["key_id"])
         if res == True:
             data2 = Actions.login(url, keys["key1"], 0)

@@ -1,5 +1,4 @@
 import unittest
-import config
 import json
 import os
 
@@ -10,9 +9,9 @@ from libs.db import Db
 
 class TestPrototipo(unittest.TestCase):
     def setUp(self):
-        self.config = config.getNodeConfig()
+        self.config = Tools.readConfig("nodes")
         global url, prKey, token, db2
-        self.pages = config.readFixtures("pages")
+        self.pages = Tools.readFixtures("pages")
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
         self.data = Actions.login(url, prKey, 0)
@@ -23,7 +22,7 @@ class TestPrototipo(unittest.TestCase):
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
         status = Actions.txstatus(url,
-                                  self.config["1"]["time_wait_tx_in_block"],
+                                  Tools.readConfig("test")["wait_tx_status"],
                                   result['hash'], jwtToken)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)

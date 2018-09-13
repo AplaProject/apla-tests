@@ -1,5 +1,4 @@
 import unittest
-import config
 import json
 import time
 import os
@@ -13,11 +12,11 @@ class TestRollback1(unittest.TestCase):
 
     def setUp(self):
         global url, prKey, token, waitTx, db
-        self.conf = config.readMainConfig()
+        self.conf = Tools.readConfig("main")
         url = self.conf["url"]
         prKey = self.conf['private_key']
         db = self.conf["db"]
-        waitTx = self.conf["time_wait_tx_in_block"]
+        waitTx = Tools.readConfig("test")["wait_tx_status"]
         lData = Actions.login(url, prKey, 0)
         token = lData["jwtToken"]
 

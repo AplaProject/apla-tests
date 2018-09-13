@@ -1,15 +1,15 @@
 import unittest
-import config
 import os
 import json
 
 from libs.actions import Actions
 from libs.db import Db
+from libs.tools import Tools
 
 class Rollback2(unittest.TestCase):
     
     def test_rollback1(self):
-        self.conf = config.readMainConfig()
+        self.conf = Tools.readConfig("nodes")
         db = self.conf["db"]
         # Get from file all tables state
         dbInformation = Db.getCountDBObjects(db)

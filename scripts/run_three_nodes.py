@@ -206,9 +206,6 @@ def test_three_nodes(request):
 
 	config = {
 		"1": {
-			"db":
-			{
-				}
 			"url": "http://localhost:" + request.config.getoption('--httpPort1') + "/api/v2",
 			"private_key": privKey1,
 			"keyID": keyID1,
