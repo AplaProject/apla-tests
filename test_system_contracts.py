@@ -7,13 +7,14 @@ import time
 from libs.actions import Actions
 from libs.tools import Tools
 from libs.db import Db
-from argparse import Action
 
 
 
 class TestSystemContracts(unittest.TestCase):
-    
-    def setUp(self):
+
+
+    @classmethod
+    def setup_class(self):
         global url, token, prKey, pause, db
         self.config = Tools.readConfig("nodes")
         url = self.config["1"]["url"]
@@ -21,12 +22,13 @@ class TestSystemContracts(unittest.TestCase):
         prKey = self.config["1"]['private_key']
         db = self.config["1"]["db"]
         self.data = Actions.login(url, prKey, 0)
-        token = self.data["jwtToken"]
+
+    token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
         hash = result['hash']
-        status = Actions.txstatus(url, pause, hash, jwtToken)
+        status = Actions.tx_status(url, pause, hash, jwtToken)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return {"blockid": int(status["blockid"]), "error": "0"}
@@ -41,7 +43,7 @@ class TestSystemContracts(unittest.TestCase):
     def assertMultiTxInBlock(self, result, jwtToken):
         self.assertIn("hashes", result)
         hashes = result['hashes']
-        result = Actions.txstatus_multi(url, pause, hashes, jwtToken)
+        result = Actions.tx_status_multi(url, pause, hashes, jwtToken)
         for status in result.values():
             self.assertNotIn('errmsg', status)
             self.assertGreater(int(status["blockid"]), 0,
@@ -174,7 +176,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_new_contract(self):
-        code, name = Actions.generate_name_and_code("")
+        code, name = Tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -182,7 +184,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_new_contract_exists_name(self):
-        code, name = Actions.generate_name_and_code("")
+        code, name = Tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -201,7 +203,7 @@ class TestSystemContracts(unittest.TestCase):
                       "Incorrect message: " + str(ans))
 
     def test_new_contract_incorrect_condition(self):
-        code, name = Actions.generate_name_and_code("")
+        code, name = Tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "condition"}
         ans = self.call("NewContract", data)
@@ -302,11 +304,7 @@ class TestSystemContracts(unittest.TestCase):
         id = Actions.get_contract_id(url, name, token)
         data2 = {"Id": id}
         res = self.call("ActivateContract", data2)
-        self.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-        res = self.call("DeactivateContract", data2)
-        self.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        #self.assertGreater(res["blockid"], 0,        self.conf = self.config.readMainConfig()
 
     def test_deactivate_incorrect_contract(self):
         id = "99999"
@@ -316,7 +314,7 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_parameter(self):
-        data = {"Name": Tools.generate_random_name("Par_"), "Value": "test", "ApplicationId": 1,
+        data = {"Name": "Par_" + Tools.generate_random_name(), "Value": "test", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewParameter", data)
         self.assertGreater(res["blockid"], 0,
@@ -618,7 +616,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewBlock", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "blocks", token)
+        count = Actions.get_count(url, "blocks", token)
         condition = "tryam"
         dataEdit = {"Id": count, "Value": "Good by!", "Conditions": condition}
         ans = self.call("EditBlock", dataEdit)
@@ -1096,7 +1094,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewSignJoint", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "signatures", token)
+        count = Actions.get_count(url, "signatures", token)
         dataE = {"Id": count, "Title": "NewTitle", "Parameter": str(params),
                  "Conditions": "true"}
         resE = self.call("EditSignJoint", dataE)

@@ -19,12 +19,12 @@ class Tools(object):
             fullList.append(tup)
         return fullList
     
-    def generate_random_name(param):
+    def generate_random_name(self):
         name = []
         for _ in range(1, 30):
             sym = random.choice(string.ascii_lowercase)
             name.append(sym)
-        return param + "".join(name)
+        return "".join(name)
 
     def generate_name_and_code(self, sourceCode):
         name = "Cont_" + self.generate_random_name()

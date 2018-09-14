@@ -10,7 +10,8 @@ from libs.db import Db
 
 class TestRollback1(unittest.TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setup_class(self):
         global url, prKey, token, waitTx, db
         self.conf = Tools.readConfig("main")
         url = self.conf["url"]
@@ -28,7 +29,7 @@ class TestRollback1(unittest.TestCase):
         resp = Actions.call_contract_with_files(url, prKey, "ImportUpload", {},
                                               files, token)
         if ("hash" in resp):
-            resImportUpload = Actions.txstatus(url, 30,
+            resImportUpload = Actions.tx_status(url, 30,
                                              resp["hash"], token)
             if int(resImportUpload["blockid"]) > 0:
                 founderID = Actions.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
@@ -45,7 +46,7 @@ class TestRollback1(unittest.TestCase):
                 time.sleep(30)
                 if "hashes" in resp:
                     hashes = resp['hashes']
-                    result = Actions.txstatus_multi(url, 30, hashes, token)
+                    result = Actions.tx_status_multi(url, 30, hashes, token)
                     for status in result.values():
                         if int(status["blockid"]) < 1:
                             print("Import is failed")
@@ -55,7 +56,7 @@ class TestRollback1(unittest.TestCase):
 
     def call(self, name, data):
         resp = Actions.call_contract(url, prKey, name, data, token)
-        res = Actions.txstatus(url, waitTx,
+        res = Actions.tx_status(url, waitTx,
                              resp['hash'], token)
         return res
 
@@ -114,7 +115,7 @@ class TestRollback1(unittest.TestCase):
         return Db.getCountTable(db, name)
 
     def addBinary(self):
-        name = "image_" + Actions.generate_random_name()
+        name = "image_" + Tools.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
@@ -122,7 +123,7 @@ class TestRollback1(unittest.TestCase):
         data = {"Name": name, "ApplicationId": 1}
         resp = Actions.call_contract_with_files(url, prKey, "UploadBinary", data,
                                               files, token)
-        res = Actions.txstatus(url, waitTx,
+        res = Actions.tx_status(url, waitTx,
                              resp['hash'], token)
         self.assertGreater(int(res['blockid']), 0, "BlockId is not generated: " + str(res))
 
@@ -373,6 +374,7 @@ class TestRollback1(unittest.TestCase):
         with open(file, 'w') as fconf:
             json.dump(dbUserTableInfo, fconf)
         # Save to file all tables state
+        dbInformation = Db.get_count_DB_objects(host, db, login, pas)
         dbInformation = Db.getCountDBObjects(db)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'w') as fconf:

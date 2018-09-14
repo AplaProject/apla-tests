@@ -8,7 +8,9 @@ from libs.db import Db
 
 
 class TestPrototipo(unittest.TestCase):
-    def setUp(self):
+
+    @classmethod
+    def setup_class(self):
         self.config = Tools.readConfig("nodes")
         global url, prKey, token, db2
         self.pages = Tools.readFixtures("pages")
@@ -19,13 +21,14 @@ class TestPrototipo(unittest.TestCase):
         db2 = self.config["2"]["db"]
         self.maxDiff = None
 
-    def assertTxInBlock(self, result, jwtToken):
-        self.assertIn("hash",  result)
-        status = Actions.txstatus(url,
-                                  Tools.readConfig("test")["wait_tx_status"],
-                                  result['hash'], jwtToken)
-        self.assertNotIn(json.dumps(status), 'errmsg')
-        self.assertGreater(len(status['blockid']), 0)
+        def assertTxInBlock(self, result, jwtToken):
+            self.assertIn("hash", result)
+            status = Actions.tx_status(url,
+                                      Tools.readConfig("test")["wait_tx_status"],
+                                      result['hash'], jwtToken)
+            self.assertNotIn(json.dumps(status), 'errmsg')
+
+            self.assertGreater(len(status['blockid']), 0)
 
     def create_contract(self, code):
         data = {"Wallet": "", "ApplicationId": 1,
