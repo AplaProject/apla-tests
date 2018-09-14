@@ -523,7 +523,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.create_contract(outerCode)
         data = {"Wallet": "", "ApplicationId": 1,
                 "Value": outerCode,
-                "Conditions": "ContractConditions(`MainCondition`)"}
+                "Conditions": "ContractConditions(\"MainCondition\")"}
         res = self.call(outerName, data)
         mustBe = "[@1" + outerName + " CallContract @1" + innerName +"]"
         self.assertEqual(mustBe, res["result"], "test_sys_var_stack is failed!")

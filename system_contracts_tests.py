@@ -208,11 +208,12 @@ class SystemContractsTestCase(unittest.TestCase):
 
     def test_new_contract_incorrect_condition(self):
         code, name = utils.generate_name_and_code("")
+        condition = "condition"
         data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "condition"}
+                "Conditions": condition}
         ans = self.call("NewContract", data)
-        self.assertEqual("unknown identifier condition",
-                         ans["error"], "Incorrect message: " + str(ans))
+        msg = "Condition " + condition + " is not allowed"
+        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract_incorrect_condition(self):
         code, name = utils.generate_name_and_code("")
@@ -221,12 +222,13 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewContract", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
+        condition = "tryam"
         data2 = {"Id": funcs.get_contract_id(url, name, token),
-                 "Value": code, "Conditions": "tryam",
+                 "Value": code, "Conditions": condition,
                  "WalletId": "0005-2070-2000-0006-0200"}
         ans = self.call("EditContract", data2)
-        self.assertEqual("unknown identifier tryam",
-                         ans["error"], "Incorrect message: " + str(ans))
+        msg = "Condition " + condition + " is not allowed"
+        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract_incorrect_condition1(self):
         newWallet = "0005"
@@ -365,8 +367,8 @@ class SystemContractsTestCase(unittest.TestCase):
         condition = "tryam"
         data2 = {"Id": id, "Value": "test_edited", "Conditions": condition}
         ans = self.call("EditParameter", data2)
-        self.assertEqual("unknown identifier " + condition,
-                         ans["error"], "Incorrect message: " + str(ans))
+        msg = "Condition " + condition + " is not allowed"
+        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_menu(self):
         countMenu = utils.getCountTable(dbHost, dbName, login, pas, "1_menu")
@@ -397,8 +399,8 @@ class SystemContractsTestCase(unittest.TestCase):
         data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
                 "Conditions": condition}
         ans = self.call("NewMenu", data)
-        self.assertEqual("unknown identifier " + condition,
-                         ans["error"], "Incorrect message: " + str(ans))
+        msg = "Condition " + condition + " is not allowed"
+        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_menu(self):
         name = "Menu_" + utils.generate_random_name()
@@ -432,7 +434,7 @@ class SystemContractsTestCase(unittest.TestCase):
         count = funcs.get_count(url, "menu", token)
         dataEdit = {"Id": count, "Value": "ItemEdited", "Conditions": condition}
         ans = self.call("EditMenu", dataEdit)
-        msg = "unknown identifier " + condition
+        msg = "Condition " + condition + " is not allowed"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_append_menu(self):
@@ -541,8 +543,8 @@ class SystemContractsTestCase(unittest.TestCase):
                     "Value": "Good by page!", "Conditions": condition,
                     "Menu": "default_menu"}
         ans = self.call("EditPage", dataEdit)
-        self.assertEqual("unknown identifier " + condition,
-                         ans["error"], "Incorrect message: " + str(ans))
+        msg = "Condition " + condition + " is not allowed"
+        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_append_page(self):
         name = "Page_" + utils.generate_random_name()
@@ -595,7 +597,7 @@ class SystemContractsTestCase(unittest.TestCase):
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": condition}
         ans = self.call("NewBlock", data)
-        msg = "unknown identifier " + condition
+        msg = "Condition " + condition + " is not allowed"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_block_incorrect_id(self):
@@ -629,7 +631,7 @@ class SystemContractsTestCase(unittest.TestCase):
         condition = "tryam"
         dataEdit = {"Id": count, "Value": "Good by!", "Conditions": condition}
         ans = self.call("EditBlock", dataEdit)
-        msg = "unknown identifier " + condition
+        msg = "Condition " + condition + " is not allowed"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table(self):
