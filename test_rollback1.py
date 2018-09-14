@@ -12,13 +12,8 @@ class TestRollback1(unittest.TestCase):
 
     @classmethod
     def setup_class(self):
-        global url, prKey, token, waitTx, host, db, pas, login
-        self.conf = config.readMainConfig()
-
-    def setUp(self):
         global url, prKey, token, waitTx, db
         self.conf = Tools.readConfig("main")
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
         url = self.conf["url"]
         prKey = self.conf['private_key']
         db = self.conf["db"]
@@ -120,7 +115,7 @@ class TestRollback1(unittest.TestCase):
         return Db.getCountTable(db, name)
 
     def addBinary(self):
-        name = "image_" + Actions.generate_random_name()
+        name = "image_" + Tools.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()

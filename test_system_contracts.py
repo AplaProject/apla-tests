@@ -15,10 +15,6 @@ class TestSystemContracts(unittest.TestCase):
 
     @classmethod
     def setup_class(self):
-        global url, token, prKey, pause, dbHost, dbName, login, pas
-        self.config = self.config.getNodeConfig()
-    
-    def setUp(self):
         global url, token, prKey, pause, db
         self.config = Tools.readConfig("nodes")
         url = self.config["1"]["url"]
@@ -26,7 +22,8 @@ class TestSystemContracts(unittest.TestCase):
         prKey = self.config["1"]['private_key']
         db = self.config["1"]["db"]
         self.data = Actions.login(url, prKey, 0)
-        token = self.data["jwtToken"]
+
+    token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
@@ -307,11 +304,7 @@ class TestSystemContracts(unittest.TestCase):
         id = Actions.get_contract_id(url, name, token)
         data2 = {"Id": id}
         res = self.call("ActivateContract", data2)
-        self.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-        res = self.call("DeactivateContract", data2)
-        self.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        #self.assertGreater(res["blockid"], 0,        self.conf = self.config.readMainConfig()
 
     def test_deactivate_incorrect_contract(self):
         id = "99999"
@@ -321,7 +314,7 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_parameter(self):
-        data = {"Name": Tools.generate_random_name("Par_"), "Value": "test", "ApplicationId": 1,
+        data = {"Name": "Par_" + Tools.generate_random_name(), "Value": "test", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewParameter", data)
         self.assertGreater(res["blockid"], 0,
@@ -1101,7 +1094,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewSignJoint", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "signatures", token)
+        count = Actions.get_count(url, "signatures", token)
         dataE = {"Id": count, "Title": "NewTitle", "Parameter": str(params),
                  "Conditions": "true"}
         resE = self.call("EditSignJoint", dataE)

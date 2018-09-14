@@ -10,25 +10,15 @@ from libs.db import Db
 class TestLimits(unittest.TestCase):
 
     @classmethod
-<<<<<<< HEAD
+
     def setup_class(self):
         global conf, contract, pause, token
-        conf = config.getNodeConfig()
-        contract = config.readFixtures("contracts")
-        pause = conf["1"]["time_wait_tx_in_block"]
-=======
-    def setUpClass(self):
-        global conf, contract
         conf = Tools.readConfig("nodes")
         contract = Tools.readFixtures("contracts")
-    
-    def setUp(self):
-        global pause, token
         pause = Tools.readConfig("test")["wait_tx_status"]
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
         self.data = Actions.login(conf["2"]["url"],
                                   conf["1"]['private_key'], 0)
-        token = self.data["jwtToken"]        
+        token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)

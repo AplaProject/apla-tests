@@ -8,19 +8,12 @@ from libs.db import Db
 
 
 class TestPrototipo(unittest.TestCase):
-<<<<<<< HEAD
 
     @classmethod
     def setup_class(self):
-        self.config = config.getNodeConfig()
-        global url, prKey, token, dbHost, dbName, login, password
-        self.pages = config.readFixtures("pages")
-=======
-    def setUp(self):
         self.config = Tools.readConfig("nodes")
         global url, prKey, token, db2
         self.pages = Tools.readFixtures("pages")
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
         self.data = Actions.login(url, prKey, 0)
@@ -28,18 +21,14 @@ class TestPrototipo(unittest.TestCase):
         db2 = self.config["2"]["db"]
         self.maxDiff = None
 
-    def assertTxInBlock(self, result, jwtToken):
-        self.assertIn("hash",  result)
-<<<<<<< HEAD
-        status = Actions.tx_status(url,
-                                  self.config["1"]["time_wait_tx_in_block"],
-=======
-        status = Actions.txstatus(url,
-                                  Tools.readConfig("test")["wait_tx_status"],
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
-                                  result['hash'], jwtToken)
-        self.assertNotIn(json.dumps(status), 'errmsg')
-        self.assertGreater(len(status['blockid']), 0)
+        def assertTxInBlock(self, result, jwtToken):
+            self.assertIn("hash", result)
+            status = Actions.tx_status(url,
+                                      Tools.readConfig("test")["wait_tx_status"],
+                                      result['hash'], jwtToken)
+            self.assertNotIn(json.dumps(status), 'errmsg')
+
+            self.assertGreater(len(status['blockid']), 0)
 
     def create_contract(self, code):
         data = {"Wallet": "", "ApplicationId": 1,

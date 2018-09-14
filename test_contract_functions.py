@@ -8,35 +8,22 @@ from libs.tools import Tools
 from asyncio.tasks import wait
 
 class TestContractFunctions(unittest.TestCase):
-<<<<<<< HEAD
+
 
     @classmethod
     def setup_class(self):
-        self.config = config.getNodeConfig()
-        global url, prKey,token, dbHost, dbName, login, pas
-        self.contracts = config.readFixtures("contracts")
-=======
-    def setUp(self):
+        global url, token, prKey, pause, db
         self.config = Tools.readConfig("nodes")
-        global url, prKey,token, db1, wait
-        wait = Tools.readConfig("test")["wait_tx_status"]
-        self.contracts = Tools.readFixtures("contracts")
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
-        url = self.config["2"]["url"]
+        url = self.config["1"]["url"]
+        pause = Tools.readConfig("test")["wait_tx_status"]
         prKey = self.config["1"]['private_key']
-        db = self.config["1"]['db']
+        db = self.config["1"]["db"]
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
-        self.assertIn("hash",  result)
-<<<<<<< HEAD
-        status = Actions.tx_status(url,
-                                  self.config["1"]["time_wait_tx_in_block"],
-                                  result['hash'], jwtToken)
-=======
-        status = Actions.txstatus(url, wait, result['hash'], jwtToken)
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
+        self.assertIn("hash", result)
+        status = Actions.tx_status(url, wait, result['hash'], jwtToken)
         print(status)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
@@ -59,7 +46,6 @@ class TestContractFunctions(unittest.TestCase):
                                        data, token)
         self.assertTxInBlock(result, token)
 
-
     def check_contract(self, sourse, checkPoint):
         code, name = self.generate_name_and_code(sourse)
         self.create_contract(code)
@@ -68,11 +54,7 @@ class TestContractFunctions(unittest.TestCase):
         token = self.data["jwtToken"]
         res = Actions.call_contract(url, prKey, name, {}, token)
         hash = res["hash"]
-<<<<<<< HEAD
-        result = Actions.tx_status(url, sleep, hash, token)
-=======
-        result = Actions.txstatus(url, wait, hash, token)
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
+        result = Actions.tx_status(url, wait, hash, token)
         self.assertIn(checkPoint, result["result"], "error")
 
     def call(self, name, data):
@@ -80,15 +62,9 @@ class TestContractFunctions(unittest.TestCase):
         prKey = self.config["1"]['private_key']
         token = self.data["jwtToken"]
         result = Actions.call_contract(url, prKey, name, data, token)
-<<<<<<< HEAD
-        status = Actions.tx_status(url,
-                                  self.config["1"]["time_wait_tx_in_block"],
-                                  result['hash'], token)
-=======
-        status = Actions.txstatus(url, wait, result['hash'], token)
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
+        status = Actions.tx_status(url, wait, result['hash'], token)
         return status
-      
+
     def check_contract_with_data(self, sourse, data, checkPoint):
         code, name = self.generate_name_and_code(sourse)
         self.create_contract(code)
@@ -97,11 +73,7 @@ class TestContractFunctions(unittest.TestCase):
         token = self.data["jwtToken"]
         res = Actions.call_contract(url, prKey, name, data, token)
         hash = res["hash"]
-<<<<<<< HEAD
-        result = Actions.tx_status(url, sleep, hash, token)
-=======
-        result = Actions.txstatus(url, wait, hash, token)
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
+        result = Actions.tx_status(url, wait, hash, token)
         self.assertIn(checkPoint, result["result"], "error")
 
     def test_contract_dbfind(self):
@@ -131,11 +103,11 @@ class TestContractFunctions(unittest.TestCase):
     def test_contract_addressToId(self):
         contract = self.contracts["addressToId"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_contract_one(self):
         contract = self.contracts["one"]
         self.check_contract(contract["code"], contract["asert"])
-    
+
     def test_contract_row(self):
         contract = self.contracts["row"]
         self.check_contract(contract["code"], contract["asert"])
@@ -175,7 +147,7 @@ class TestContractFunctions(unittest.TestCase):
     def test_contract_size(self):
         contract = self.contracts["size"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_contract_blockTime(self):
         contract = self.contracts["blockTime"]
         self.check_contract(contract["code"], contract["asert"])
@@ -187,11 +159,11 @@ class TestContractFunctions(unittest.TestCase):
     def test_contract_Sprintf(self):
         contract = self.contracts["sprintf"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_contract_elseif(self):
         contract = self.contracts["elseif"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_contract_toUpper(self):
         contract = self.contracts["toUpper"]
         self.check_contract(contract["code"], contract["asert"])
@@ -227,20 +199,16 @@ class TestContractFunctions(unittest.TestCase):
     def test_contract_random(self):
         contract = self.contracts["random"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_contract_langRes(self):
-        data = {"ApplicationId":1,
+        data = {"ApplicationId": 1,
                 "Name": "test",
                 "Trans": "{\"en\": \"test_en\", \"de\" : \"test_de\"}"}
         result = Actions.call_contract(url, prKey, "NewLang", data, token)
-<<<<<<< HEAD
-        tx = Actions.tx_status(url, self.config["1"]["time_wait_tx_in_block"], result['hash'], token)
-=======
-        tx = Actions.txstatus(url, wait, result['hash'], token)
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
+        tx = Actions.tx_status(url, wait, result['hash'], token)
         contract = self.contracts["langRes"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_contract_dbInsert(self):
         columns = """[{"name":"name","type":"varchar",
         "index": "1",  "conditions":"true"},
@@ -248,20 +216,14 @@ class TestContractFunctions(unittest.TestCase):
         "index": "0",  "conditions":"true"}]"""
         permission = """{"insert": "true",
         "update" : "true","new_column": "true"}"""
-        data = {"Name": "test", "ApplicationId":1,
+        data = {"Name": "test", "ApplicationId": 1,
                 "Columns": columns,
                 "Permissions": permission}
         result = Actions.call_contract(url, prKey, "NewTable", data, token)
-<<<<<<< HEAD
-        tx = Actions.tx_status(url,
-                                self.config["1"]["time_wait_tx_in_block"],
-                                result['hash'], token)
-=======
-        tx = Actions.txstatus(url, wait, result['hash'], token)
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
+        tx = Actions.tx_status(url, wait, result['hash'], token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_contract_dbUpdate(self):
         columns = """[{"name":"name","type":"varchar",
         "index": "1",  "conditions":"true"},
@@ -269,34 +231,28 @@ class TestContractFunctions(unittest.TestCase):
         "index": "0",  "conditions":"true"}]"""
         permission = """{"insert": "true",
         "update" : "true","new_column": "true"}"""
-        data = {"Name": "test", "ApplicationId":1,
+        data = {"Name": "test", "ApplicationId": 1,
                 "Columns": columns,
                 "Permissions": permission}
         result = Actions.call_contract(url, prKey, "NewTable", data, token)
-<<<<<<< HEAD
-        tx = Actions.tx_status(url,
-                                self.config["1"]["time_wait_tx_in_block"],
-                                result['hash'], token)
-=======
-        tx = Actions.txstatus(url, wait, result['hash'], token)
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
+        tx = Actions.tx_status(url, wait, result['hash'], token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
         contract = self.contracts["dbUpdate"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_contract_idToAddress(self):
         contract = self.contracts["idToAddress"]
-        self.check_contract(contract["code"], contract["asert"])    
-        
+        self.check_contract(contract["code"], contract["asert"])
+
     def test_contract_join(self):
         contract = self.contracts["join"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_contract_split(self):
         contract = self.contracts["split"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_contracts_dbUpdateExt(self):
         columns = """[{"name":"name","type":"varchar",
         "index": "1",  "conditions":"true"},
@@ -304,22 +260,16 @@ class TestContractFunctions(unittest.TestCase):
         "index": "0",  "conditions":"true"}]"""
         permission = """{"insert": "true",
         "update" : "true","new_column": "true"}"""
-        data = {"Name": "test", "ApplicationId":1,
+        data = {"Name": "test", "ApplicationId": 1,
                 "Columns": columns,
                 "Permissions": permission}
         result = Actions.call_contract(url, prKey, "NewTable", data, token)
-<<<<<<< HEAD
-        tx = Actions.tx_status(url,
-                                self.config["1"]["time_wait_tx_in_block"],
-                                result['hash'], token)
-=======
-        tx = Actions.txstatus(url, wait, result['hash'], token)
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
+        tx = Actions.tx_status(url, wait, result['hash'], token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
         contract = self.contracts["dbUpdateExt"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_contract_callContract(self):
         contract = self.contracts["myContract"]
         code = "contract MyContract" + contract["code"]
@@ -328,7 +278,7 @@ class TestContractFunctions(unittest.TestCase):
         time.sleep(10)
         contract = self.contracts["callContract"]
         self.check_contract(contract["code"], contract["asert"])
-    
+
     def test_type_bool(self):
         contract = self.contracts["type_bool"]
         self.check_contract(contract["code"], contract["asert"])
@@ -364,16 +314,15 @@ class TestContractFunctions(unittest.TestCase):
     def test_type_string(self):
         contract = self.contracts["type_string"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_getBlock(self):
         contract = self.contracts["getBlock"]
         self.check_contract(contract["code"], contract["asert"])
 
-
     def test_getColumnType(self):
         contract = self.contracts["getColumnType"]
         self.check_contract(contract["code"], contract["asert"])
-      
+
     def test_decodeBase64(self):
         contract = self.contracts["decodeBase64"]
         self.check_contract(contract["code"], contract["asert"])
@@ -381,11 +330,11 @@ class TestContractFunctions(unittest.TestCase):
     def test_encodeBase64(self):
         contract = self.contracts["encodeBase64"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_jsonEncode(self):
         contract = self.contracts["jsonEncode"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_jsonDecode(self):
         contract = self.contracts["jsonDecode"]
         self.check_contract(contract["code"], contract["asert"])
@@ -397,18 +346,12 @@ class TestContractFunctions(unittest.TestCase):
     def test_sys_var_role_id_readonly(self):
         sysVarName = "$role_id"
         contracName = Tools.generate_random_name()
-        value = "contract con_" + contracName + " { data{ } conditions{ } action{ "+ sysVarName + " = 5 } }"
+        value = "contract con_" + contracName + " { data{ } conditions{ } action{ " + sysVarName + " = 5 } }"
         data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
         result = Actions.call_contract(url, prKey, "NewContract", data, token)
-<<<<<<< HEAD
-        tx = Actions.tx_status(url,
-                              self.config["1"]["time_wait_tx_in_block"],
-                              result['hash'], token)
-=======
-        tx = Actions.txstatus(url, wait, result['hash'], token)
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
-        expResult = "system variable "+sysVarName+" cannot be changed"
-        msg = "system variable "+sysVarName+" was been changed!"
+        tx = Actions.tx_status(url, wait, result['hash'], token)
+        expResult = "system variable " + sysVarName + " cannot be changed"
+        msg = "system variable " + sysVarName + " was been changed!"
         self.assertEqual(tx["errmsg"]["error"], expResult, msg)
 
     def test_bytesToString(self):
@@ -438,13 +381,7 @@ class TestContractFunctions(unittest.TestCase):
                 value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
                 data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
                 result = Actions.call_contract(url, prKey, "NewContract", data, token)
-<<<<<<< HEAD
-                tx = Actions.tx_status(url,
-                                      self.config["1"]["time_wait_tx_in_block"],
-                                      result['hash'], token)
-=======
-                tx = Actions.txstatus(url, wait, result['hash'], token)
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
+                tx = Actions.tx_status(url, wait, result['hash'], token)
                 current_block_id = int(tx["blockid"])
                 self.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
                 old_block_id = current_block_id
@@ -454,13 +391,7 @@ class TestContractFunctions(unittest.TestCase):
         value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
         data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
         result = Actions.call_contract(url, prKey, "NewContract", data, token)
-<<<<<<< HEAD
-        tx = Actions.tx_status(url,
-                              self.config["1"]["time_wait_tx_in_block"],
-                              result['hash'], token)
-=======
-        tx = Actions.txstatus(url, wait, result['hash'], token)
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
+        tx = Actions.tx_status(url, wait, result['hash'], token)
         current_block_id = int(tx["blockid"])
         self.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
         # wait until generated 100 blocks
@@ -483,10 +414,10 @@ class TestContractFunctions(unittest.TestCase):
 
     def test_z3_dbSelectMetricsAvg(self):
         # Run test after test_z1_dbSelectMetricsMin
-        ecosystem_pages = self.getMetrics(1,"ecosystem_pages")
+        ecosystem_pages = self.getMetrics(1, "ecosystem_pages")
         contract = self.contracts["dbSelectMetricsAvg"]
         self.check_contract(contract["code"], str(ecosystem_pages))
-        
+
     def test_getMapKeys(self):
         contract = self.contracts["getMapKeys"]
         self.check_contract(contract["code"], contract["asert"])
@@ -494,7 +425,7 @@ class TestContractFunctions(unittest.TestCase):
     def test_sortedKeys(self):
         contract = self.contracts["sortedKeys"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_getHistoryContract(self):
         # create contract
         replacedString = "old_var"
@@ -504,7 +435,7 @@ class TestContractFunctions(unittest.TestCase):
             conditions{}
             action{ var %s int }
         }
-        """ %replacedString
+        """ % replacedString
         code, name = self.generate_name_and_code(code)
         self.create_contract(code)
         # change contract
@@ -520,7 +451,7 @@ class TestContractFunctions(unittest.TestCase):
 
     def test_getHistoryPage(self):
         # create page
-        name = Actions.generate_random_name()
+        name = Tools.generate_random_name()
         page = "Div(Body: Hello)"
         data = {"ApplicationId": "1",
                 "Name": name,
@@ -574,16 +505,12 @@ class TestContractFunctions(unittest.TestCase):
                 "Value": outerCode,
                 "Conditions": "ContractConditions(`MainCondition`)"}
         res = self.call(outerName, data)
-        mustBe = "[@1" + outerName + " CallContract @1" + innerName +"]"
+        mustBe = "[@1" + outerName + " CallContract @1" + innerName + "]"
         self.assertEqual(mustBe, res["result"], "test_sys_var_stack is failed!")
 
     def test_getHistoryRowMenu(self):
         # create menu
-<<<<<<< HEAD
-        rollc_before = Db.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
-=======
         rollc_before = Actions.getMaxIdFromTable(db, "rollback_tx")
->>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
         name = Tools.generate_random_name()
         menu = "This is new menu"
         data = {"Name": name,
@@ -629,4 +556,3 @@ class TestContractFunctions(unittest.TestCase):
         data = {"Table": "blocks", "ID": id, "rID": rollback_id}
         contract = self.contracts["getHistoryRow"]
         self.check_contract_with_data(contract["code"], data, block)
-
