@@ -9,15 +9,14 @@ from asyncio.tasks import wait
 
 class TestContractFunctions(unittest.TestCase):
 
-
-    @classmethod
-    def setup_class(self):
-        global url, token, prKey, pause, db
+    def setUp(self):
         self.config = Tools.readConfig("nodes")
-        url = self.config["1"]["url"]
-        pause = Tools.readConfig("test")["wait_tx_status"]
+        global url, prKey, token, db1, wait
+        wait = Tools.readConfig("test")["wait_tx_status"]
+        self.contracts = Tools.readFixtures("contracts")
+        url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
-        db = self.config["1"]["db"]
+        db = self.config["1"]['db']
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
 
