@@ -6,7 +6,9 @@ from libs.tools import Tools
 
 
 class TestMultiApi(unittest.TestCase):
-    def setUp(self):
+
+    @classmethod
+    def setup_class(self):
         global url, token, prKey, pause
         self.config = config.getNodeConfig()
         url = self.config["2"]["url"]
@@ -18,7 +20,7 @@ class TestMultiApi(unittest.TestCase):
     def assertMultiTxInBlock(self, result, jwtToken):
         self.assertIn("hashes", result)
         hashes = result['hashes']
-        result = Actions.txstatus_multi(url, pause, hashes, jwtToken)
+        result = Actions.tx_status_multi(url, pause, hashes, jwtToken)
         for status in result.values():
             self.assertNotIn('errmsg', status)
             self.assertGreater(int(status["blockid"]), 0, "BlockID not generated")

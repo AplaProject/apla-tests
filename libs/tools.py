@@ -1,17 +1,12 @@
 import os
 import json
+import random
+import string
 
 from libs.actions import Actions
 
 
 class Tools(object):
-
-
-    def readExample(self):
-        path = os.path.join(os.getcwd(), "fixtures", "example.json")
-        with open(path, 'r', encoding='UTF-8') as f:
-            data = f.read()
-        return json.loads(data)
     
     def jsonToList(self, js):
         fullList = []
@@ -24,12 +19,12 @@ class Tools(object):
             fullList.append(tup)
         return fullList
     
-    def generate_random_name(self):
+    def generate_random_name(param):
         name = []
         for _ in range(1, 30):
             sym = random.choice(string.ascii_lowercase)
             name.append(sym)
-        return "".join(name)
+        return param + "".join(name)
 
     def generate_name_and_code(self, sourceCode):
         name = "Cont_" + self.generate_random_name()

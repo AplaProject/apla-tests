@@ -8,7 +8,9 @@ from libs.db import Db
 from libs.tools import Tools
 
 class TestContractFunctions(unittest.TestCase):
-    def setUp(self):
+
+    @classmethod
+    def setup_class(self):
         self.config = config.getNodeConfig()
         global url, prKey,token, dbHost, dbName, login, pas
         self.contracts = config.readFixtures("contracts")
@@ -23,7 +25,7 @@ class TestContractFunctions(unittest.TestCase):
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
-        status = Actions.txstatus(url,
+        status = Actions.tx_status(url,
                                   self.config["1"]["time_wait_tx_in_block"],
                                   result['hash'], jwtToken)
         print(status)
@@ -58,7 +60,7 @@ class TestContractFunctions(unittest.TestCase):
         sleep = self.config["1"]["time_wait_tx_in_block"]
         res = Actions.call_contract(url, prKey, name, {}, token)
         hash = res["hash"]
-        result = Actions.txstatus(url, sleep, hash, token)
+        result = Actions.tx_status(url, sleep, hash, token)
         self.assertIn(checkPoint, result["result"], "error")
 
     def call(self, name, data):
@@ -66,7 +68,7 @@ class TestContractFunctions(unittest.TestCase):
         prKey = self.config["1"]['private_key']
         token = self.data["jwtToken"]
         result = Actions.call_contract(url, prKey, name, data, token)
-        status = Actions.txstatus(url,
+        status = Actions.tx_status(url,
                                   self.config["1"]["time_wait_tx_in_block"],
                                   result['hash'], token)
         return status
@@ -80,7 +82,7 @@ class TestContractFunctions(unittest.TestCase):
         sleep = self.config["1"]["time_wait_tx_in_block"]
         res = Actions.call_contract(url, prKey, name, data, token)
         hash = res["hash"]
-        result = Actions.txstatus(url, sleep, hash, token)
+        result = Actions.tx_status(url, sleep, hash, token)
         self.assertIn(checkPoint, result["result"], "error")
 
     def test_contract_dbfind(self):
@@ -212,7 +214,7 @@ class TestContractFunctions(unittest.TestCase):
                 "Name": "test",
                 "Trans": "{\"en\": \"test_en\", \"de\" : \"test_de\"}"}
         result = Actions.call_contract(url, prKey, "NewLang", data, token)
-        tx = Actions.txstatus(url, self.config["1"]["time_wait_tx_in_block"], result['hash'], token)
+        tx = Actions.tx_status(url, self.config["1"]["time_wait_tx_in_block"], result['hash'], token)
         contract = self.contracts["langRes"]
         self.check_contract(contract["code"], contract["asert"])
         
@@ -227,7 +229,7 @@ class TestContractFunctions(unittest.TestCase):
                 "Columns": columns,
                 "Permissions": permission}
         result = Actions.call_contract(url, prKey, "NewTable", data, token)
-        tx = Actions.txstatus(url,
+        tx = Actions.tx_status(url,
                                 self.config["1"]["time_wait_tx_in_block"],
                                 result['hash'], token)
         contract = self.contracts["dbInsert"]
@@ -244,7 +246,7 @@ class TestContractFunctions(unittest.TestCase):
                 "Columns": columns,
                 "Permissions": permission}
         result = Actions.call_contract(url, prKey, "NewTable", data, token)
-        tx = Actions.txstatus(url,
+        tx = Actions.tx_status(url,
                                 self.config["1"]["time_wait_tx_in_block"],
                                 result['hash'], token)
         contract = self.contracts["dbInsert"]
@@ -275,7 +277,7 @@ class TestContractFunctions(unittest.TestCase):
                 "Columns": columns,
                 "Permissions": permission}
         result = Actions.call_contract(url, prKey, "NewTable", data, token)
-        tx = Actions.txstatus(url,
+        tx = Actions.tx_status(url,
                                 self.config["1"]["time_wait_tx_in_block"],
                                 result['hash'], token)
         contract = self.contracts["dbInsert"]
@@ -363,7 +365,7 @@ class TestContractFunctions(unittest.TestCase):
         value = "contract con_" + contracName + " { data{ } conditions{ } action{ "+ sysVarName + " = 5 } }"
         data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
         result = Actions.call_contract(url, prKey, "NewContract", data, token)
-        tx = Actions.txstatus(url,
+        tx = Actions.tx_status(url,
                               self.config["1"]["time_wait_tx_in_block"],
                               result['hash'], token)
         expResult = "system variable "+sysVarName+" cannot be changed"
@@ -397,7 +399,7 @@ class TestContractFunctions(unittest.TestCase):
                 value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
                 data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
                 result = Actions.call_contract(url, prKey, "NewContract", data, token)
-                tx = Actions.txstatus(url,
+                tx = Actions.tx_status(url,
                                       self.config["1"]["time_wait_tx_in_block"],
                                       result['hash'], token)
                 current_block_id = int(tx["blockid"])
@@ -409,7 +411,7 @@ class TestContractFunctions(unittest.TestCase):
         value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
         data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
         result = Actions.call_contract(url, prKey, "NewContract", data, token)
-        tx = Actions.txstatus(url,
+        tx = Actions.tx_status(url,
                               self.config["1"]["time_wait_tx_in_block"],
                               result['hash'], token)
         current_block_id = int(tx["blockid"])
@@ -530,7 +532,7 @@ class TestContractFunctions(unittest.TestCase):
 
     def test_getHistoryRowMenu(self):
         # create menu
-        rollc_before = Actions.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
+        rollc_before = Db.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         name = Tools.generate_random_name()
         menu = "This is new menu"
         data = {"Name": name,

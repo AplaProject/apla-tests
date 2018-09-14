@@ -15,7 +15,7 @@ class Rollback2(unittest.TestCase):
         login = self.conf["login"]
         pas = self.conf["pass"]
         # Get from file all tables state
-        dbInformation = Db.getCountDBObjects(host, db, login, pas)
+        dbInformation = Db.get_count_DB_objects(host, db, login, pas)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'r') as dbF:
             data = dbF.read()

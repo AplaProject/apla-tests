@@ -9,15 +9,12 @@ from libs.db import Db
 
 
 class TestLimits(unittest.TestCase):
-    
+
     @classmethod
-    def setUpClass(self):
-        global conf, contract
+    def setup_class(self):
+        global conf, contract, pause, token
         conf = config.getNodeConfig()
         contract = config.readFixtures("contracts")
-    
-    def setUp(self):
-        global pause, token
         pause = conf["1"]["time_wait_tx_in_block"]
         self.data = Actions.login(conf["2"]["url"],
                                   conf["1"]['private_key'], 0)
@@ -26,7 +23,7 @@ class TestLimits(unittest.TestCase):
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
         hash = result['hash']
-        status = Actions.txstatus(conf["2"]["url"], pause, hash, token)
+        status = Actions.tx_status(conf["2"]["url"], pause, hash, token)
         print("status tx: ", status)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')

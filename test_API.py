@@ -11,7 +11,9 @@ from libs.tools import Tools
 
 
 class TestApi(unittest.TestCase):
-    def setUp(self):
+
+    @classmethod
+    def setup_class(self):
         global url, token, prKey, pause
         self.config = config.getNodeConfig()
         url = self.config["2"]["url"]

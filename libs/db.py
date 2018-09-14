@@ -146,7 +146,7 @@ class Db(object):
         result = self.submit_query(request, dbHost, dbName, login, password)
         return cursor.fetchall()[0][0]
 
-    def getCountDBObjects(self, dbHost, dbName, login, password):
+    def get_count_DB_objects(self, dbHost, dbName, login, password):
         tablesCount = {}
         tables = self.getEcosysTables(dbHost, dbName, login, password)
         for table in tables:
@@ -169,7 +169,7 @@ class Db(object):
             table[col[i][0]] = res[0][i]
         return table
 
-    def getUserTokenAmounts(self, dbHost, dbName, login, password):
+    def get_user_token_amounts(self, dbHost, dbName, login, password):
         request = "select amount from \"1_keys\" ORDER BY amount"
         return self.submit_query(request, dbHost, dbName, login, password)
 

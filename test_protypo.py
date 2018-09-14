@@ -9,7 +9,9 @@ from libs.db import Db
 
 
 class TestPrototipo(unittest.TestCase):
-    def setUp(self):
+
+    @classmethod
+    def setup_class(self):
         self.config = config.getNodeConfig()
         global url, prKey, token, dbHost, dbName, login, password
         self.pages = config.readFixtures("pages")
@@ -25,7 +27,7 @@ class TestPrototipo(unittest.TestCase):
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
-        status = Actions.txstatus(url,
+        status = Actions.tx_status(url,
                                   self.config["1"]["time_wait_tx_in_block"],
                                   result['hash'], jwtToken)
         self.assertNotIn(json.dumps(status), 'errmsg')

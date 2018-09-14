@@ -1,8 +1,7 @@
 import pytest
 import os
 
-from libs.application import Application
-
+import config
 
 
 def pytest_addoption(parser):
@@ -56,9 +55,4 @@ def pytest_addoption(parser):
     parser.addoption('--privKey', action="store", default='')
     parser.addoption('--name', action="store", default='')
     parser.addoption('--value', action="store", default='')
-
-@pytest.fixture(scope= "session")
-def app(request):
-    return Application()
-
 
