@@ -1,5 +1,4 @@
 import unittest
-import config
 import requests
 import json
 import os
@@ -13,17 +12,19 @@ from libs.db import Db
 
 class TestSystemContracts(unittest.TestCase):
 
+
     @classmethod
-    def setup_class(self, cls):
+    def setup_class(self):
         global url, token, prKey, pause, dbHost, dbName, login, pas
-        self.config = config.getNodeConfig()
+        self.config = self.config.getNodeConfig()
+    
+    def setUp(self):
+        global url, token, prKey, pause, db
+        self.config = Tools.readConfig("nodes")
         url = self.config["1"]["url"]
-        pause = self.config["1"]["time_wait_tx_in_block"]
+        pause = Tools.readConfig("test")["wait_tx_status"]
         prKey = self.config["1"]['private_key']
-        dbHost = self.config["1"]["dbHost"]
-        dbName = self.config["1"]['dbName']
-        login = self.config["1"]["login"]
-        pas = self.config["1"]['pass']
+        db = self.config["1"]["db"]
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
 
@@ -137,11 +138,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("MoneyTransfer", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        self.assertTrue(Db.isCommissionInHistory(self.config["1"]["dbHost"],
-                                                    self.config["1"]["dbName"],
-                                                    self.config["1"]["login"],
-                                                    self.config["1"]["pass"],
-                                                    self.config["1"]["keyID"],
+        self.assertTrue(Db.isCommissionInHistory(self.config["1"]["db"], config["1"]["keyID"],
                                                     "52070200000060200", "1000"),
                         "No moneytransfer resord in history")
 
@@ -370,7 +367,7 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_menu(self):
-        countMenu = Db.getCountTable(dbHost, dbName, login, pas, "1_menu")
+        countMenu = Db.getCountTable(db, "1_menu")
         name = "Menu_" + Tools.generate_random_name()
         data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
                 "Conditions": "true"}
@@ -1415,8 +1412,8 @@ class TestSystemContracts(unittest.TestCase):
         appID = 1
         data = {}
         resExport = self.call("Export", data)
-        founderID = Db.getFounderId(dbHost, dbName, login, pas)
-        exportAppData = Db.getExportAppData(dbHost, dbName, login, pas, appID, founderID)
+        founderID = Db.getFounderId(db)
+        exportAppData = Db.getExportAppData(db, appID, founderID)
         jsonApp = str(exportAppData, encoding='utf-8')
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
         with open(path, 'w', encoding='UTF-8') as f:
@@ -1443,8 +1440,8 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(resImportUpload))
 
     def test_ei4_Import(self):
-        founderID = Db.getFounderId(dbHost, dbName, login, pas)
-        importAppData = Db.getImportAppData(dbHost, dbName, login, pas, founderID)
+        founderID = Db.getFounderId(db)
+        importAppData = Db.getImportAppData(db, founderID)
         importAppData = importAppData['data']
         contractName = "Import"
         data = [{"contract": contractName,

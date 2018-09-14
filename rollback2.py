@@ -1,21 +1,22 @@
 import unittest
-import config
 import os
 import json
 
 from libs.actions import Actions
 from libs.db import Db
+from libs.tools import Tools
 
 class Rollback2(unittest.TestCase):
     
     def test_rollback1(self):
-        self.conf = config.readMainConfig()
-        host = self.conf["dbHost"]
-        db = self.conf["dbName"]
-        login = self.conf["login"]
-        pas = self.conf["pass"]
+        self.conf = Tools.readConfig("nodes")
+        db = self.conf["db"]
         # Get from file all tables state
+<<<<<<< HEAD
         dbInformation = Db.get_count_DB_objects(host, db, login, pas)
+=======
+        dbInformation = Db.getCountDBObjects(db)
+>>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'r') as dbF:
             data = dbF.read()
@@ -30,7 +31,7 @@ class Rollback2(unittest.TestCase):
         with open(file, 'r') as f:
             tableName = f.read()
         # Get from file user table state
-        dbUserTableInfo = Db.getUserTableState(host, db, login, pas, tableName)
+        dbUserTableInfo = Db.getUserTableState(db, tableName)
         file = os.path.join(os.getcwd(), "dbUserTableState.json")
         with open(file, 'r') as dbUserFile:
             data = dbUserFile.read()
