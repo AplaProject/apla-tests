@@ -12,7 +12,7 @@ class TestContractFunctions(unittest.TestCase):
         self.config = Tools.readConfig("nodes")
         global url, prKey,token, db1, wait
         wait = Tools.readConfig("test")["wait_tx_status"]
-        self.contracts = Tools.readFixtures("contracts")
+        self.contracts = Tools.readFixtures("simvolio")
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
         db = self.config["1"]['db']

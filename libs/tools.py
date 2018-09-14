@@ -65,6 +65,8 @@ class Tools(object):
             path = os.path.join(os.getcwd(), "fixtures", "api.json")
         if type == "keys":
             path = os.path.join(os.getcwd(), "fixtures", "prKeys.json")
+        if type == "simvolio":
+            path = os.path.join(os.getcwd(), "fixtures", "simvolio.json")
         with open(path, 'r', encoding='UTF-8') as f:
             data = f.read()
         return json.loads(data)
