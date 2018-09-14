@@ -7,15 +7,12 @@ from libs.actions import Actions
 
 
 class TestLimits(unittest.TestCase):
-    
+
     @classmethod
-    def setUpClass(self):
-        global conf, contract
+    def setup_class(self):
+        global conf, contract, pause, token
         conf = config.getNodeConfig()
         contract = config.readFixtures("contracts")
-    
-    def setUp(self):
-        global pause, token
         pause = conf["1"]["time_wait_tx_in_block"]
         self.data = Actions.login(conf["2"]["url"],
                                   conf["1"]['private_key'], 0)

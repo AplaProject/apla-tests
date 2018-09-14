@@ -2,12 +2,15 @@ import unittest
 import config
 import json
 import time
-from libs.actions import Actions
-from libs.data_orm import DataOrm
 
+from libs.actions import Actions
+from libs.db import Db
+from libs.tools import Tools
 
 class TestContractFunctions(unittest.TestCase):
-    def setUp(self):
+
+    @classmethod
+    def setup_class(self):
         self.config = config.getNodeConfig()
         global url, prKey,token, dbHost, dbName, login, pas
         self.contracts = config.readFixtures("contracts")
@@ -19,19 +22,18 @@ class TestContractFunctions(unittest.TestCase):
         pas = self.config["1"]['pass']
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
-        self.data_orm = DataOrm()
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash",  result)
         status = Actions.tx_status(url,
-                                   self.config["1"]["time_wait_tx_in_block"],
-                                   result['hash'], jwtToken)
+                                  self.config["1"]["time_wait_tx_in_block"],
+                                  result['hash'], jwtToken)
         print(status)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
     def generate_name_and_code(self, sourseCode):
-        name = Actions.generate_random_name()
+        name = Tools.generate_random_name()
         code = "contract " + name + sourseCode
         return code, name
 
@@ -67,8 +69,8 @@ class TestContractFunctions(unittest.TestCase):
         token = self.data["jwtToken"]
         result = Actions.call_contract(url, prKey, name, data, token)
         status = Actions.tx_status(url,
-                                   self.config["1"]["time_wait_tx_in_block"],
-                                   result['hash'], token)
+                                  self.config["1"]["time_wait_tx_in_block"],
+                                  result['hash'], token)
         return status
       
     def check_contract_with_data(self, sourse, data, checkPoint):
@@ -217,32 +219,36 @@ class TestContractFunctions(unittest.TestCase):
         self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_dbInsert(self):
-        dq = self.data_orm
-        columns = dq.db_one_column(name="name", type="varchar", index="1", conditions="true"), \
-                  dq.db_one_column(name="test", type="varchar", index="0", conditions="true")
-        permission = dq.new_db_table_updater_permissions()
+        columns = """[{"name":"name","type":"varchar",
+        "index": "1",  "conditions":"true"},
+        {"name":"test","type":"varchar",
+        "index": "0",  "conditions":"true"}]"""
+        permission = """{"insert": "true",
+        "update" : "true","new_column": "true"}"""
         data = {"Name": "test", "ApplicationId":1,
                 "Columns": columns,
                 "Permissions": permission}
         result = Actions.call_contract(url, prKey, "NewTable", data, token)
         tx = Actions.tx_status(url,
-                               self.config["1"]["time_wait_tx_in_block"],
-                               result['hash'], token)
+                                self.config["1"]["time_wait_tx_in_block"],
+                                result['hash'], token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
         
     def test_contract_dbUpdate(self):
-        dq = self.data_orm
-        columns = dq.db_one_column(name="name", type="varchar", index="1", conditions="true"), \
-                  dq.db_one_column(name="test", type="varchar", index="0", conditions="true")
-        permission = dq.new_db_table_updater_permissions()
+        columns = """[{"name":"name","type":"varchar",
+        "index": "1",  "conditions":"true"},
+        {"name":"test","type":"varchar",
+        "index": "0",  "conditions":"true"}]"""
+        permission = """{"insert": "true",
+        "update" : "true","new_column": "true"}"""
         data = {"Name": "test", "ApplicationId":1,
                 "Columns": columns,
                 "Permissions": permission}
         result = Actions.call_contract(url, prKey, "NewTable", data, token)
         tx = Actions.tx_status(url,
-                               self.config["1"]["time_wait_tx_in_block"],
-                               result['hash'], token)
+                                self.config["1"]["time_wait_tx_in_block"],
+                                result['hash'], token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
         contract = self.contracts["dbUpdate"]
@@ -261,17 +267,19 @@ class TestContractFunctions(unittest.TestCase):
         self.check_contract(contract["code"], contract["asert"])
         
     def test_contracts_dbUpdateExt(self):
-        dq = self.data_orm
-        columns = columns = dq.db_one_column(name="name", type="varchar", index="1", conditions="true"), \
-                  dq.db_one_column(name="test", type="varchar", index="0", conditions="true")
-        permission = dq.new_db_table_updater_permissions()
+        columns = """[{"name":"name","type":"varchar",
+        "index": "1",  "conditions":"true"},
+        {"name":"test","type":"varchar",
+        "index": "0",  "conditions":"true"}]"""
+        permission = """{"insert": "true",
+        "update" : "true","new_column": "true"}"""
         data = {"Name": "test", "ApplicationId":1,
                 "Columns": columns,
                 "Permissions": permission}
         result = Actions.call_contract(url, prKey, "NewTable", data, token)
         tx = Actions.tx_status(url,
-                               self.config["1"]["time_wait_tx_in_block"],
-                               result['hash'], token)
+                                self.config["1"]["time_wait_tx_in_block"],
+                                result['hash'], token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
         contract = self.contracts["dbUpdateExt"]
@@ -353,13 +361,13 @@ class TestContractFunctions(unittest.TestCase):
 
     def test_sys_var_role_id_readonly(self):
         sysVarName = "$role_id"
-        contracName = Actions.generate_random_name()
+        contracName = Tools.generate_random_name()
         value = "contract con_" + contracName + " { data{ } conditions{ } action{ "+ sysVarName + " = 5 } }"
         data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
         result = Actions.call_contract(url, prKey, "NewContract", data, token)
         tx = Actions.tx_status(url,
-                               self.config["1"]["time_wait_tx_in_block"],
-                               result['hash'], token)
+                              self.config["1"]["time_wait_tx_in_block"],
+                              result['hash'], token)
         expResult = "system variable "+sysVarName+" cannot be changed"
         msg = "system variable "+sysVarName+" was been changed!"
         self.assertEqual(tx["errmsg"]["error"], expResult, msg)
@@ -387,25 +395,25 @@ class TestContractFunctions(unittest.TestCase):
             while True:
                 if old_block_id == limit:
                     break
-                contracName = Actions.generate_random_name()
+                contracName = Tools.generate_random_name()
                 value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
                 data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
                 result = Actions.call_contract(url, prKey, "NewContract", data, token)
                 tx = Actions.tx_status(url,
-                                       self.config["1"]["time_wait_tx_in_block"],
-                                       result['hash'], token)
+                                      self.config["1"]["time_wait_tx_in_block"],
+                                      result['hash'], token)
                 current_block_id = int(tx["blockid"])
                 self.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
                 old_block_id = current_block_id
 
         # generate contract which return count blocks in blockchain
-        contracName = Actions.generate_random_name()
+        contracName = Tools.generate_random_name()
         value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
         data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
         result = Actions.call_contract(url, prKey, "NewContract", data, token)
         tx = Actions.tx_status(url,
-                               self.config["1"]["time_wait_tx_in_block"],
-                               result['hash'], token)
+                              self.config["1"]["time_wait_tx_in_block"],
+                              result['hash'], token)
         current_block_id = int(tx["blockid"])
         self.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
         # wait until generated 100 blocks
@@ -453,7 +461,7 @@ class TestContractFunctions(unittest.TestCase):
         code, name = self.generate_name_and_code(code)
         self.create_contract(code)
         # change contract
-        id = Actions.get_object_id(url, name, "contracts", token)
+        id = funcs.get_object_id(url, name, "contracts", token)
         newCode = code.replace(replacedString, "new_var")
         data = {"Id": id,
                 "Value": newCode}
@@ -474,7 +482,7 @@ class TestContractFunctions(unittest.TestCase):
                 "Conditions": "true"}
         self.call_contract("NewPage", data)
         # change page
-        id = Actions.get_object_id(url, name, "pages", token)
+        id = funcs.get_object_id(url, name, "pages", token)
         newValuePage = page.replace("Hello", "new_var")
         data = {"Id": id,
                 "Value": newValuePage}
@@ -524,14 +532,14 @@ class TestContractFunctions(unittest.TestCase):
 
     def test_getHistoryRowMenu(self):
         # create menu
-        rollc_before = Actions.get_max_id_from_table(dbHost, dbName, login, pas, "rollback_tx")
-        name = Actions.generate_random_name()
+        rollc_before = Db.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
+        name = Tools.generate_random_name()
         menu = "This is new menu"
         data = {"Name": name,
                 "Value": menu,
                 "Conditions": "true"}
         self.call_contract("NewMenu", data)
-        rollc_after = Actions.get_max_id_from_table(dbHost, dbName, login, pas, "rollback_tx")
+        rollc_after = Db.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         # change menu
         id = Actions.get_object_id(url, name, "menu", token)
         newValueMenu = menu.replace("new menu", "new_var")
@@ -541,22 +549,22 @@ class TestContractFunctions(unittest.TestCase):
         # test
         query = """SELECT id FROM "rollback_tx" WHERE table_name = '1_menu' AND data='' AND id >= %s AND id <= %s""" % (
             rollc_before, rollc_after)
-        rollback_id = Actions.execute_SQL(dbHost, dbName, login, pas, query)[0][0]
+        rollback_id = Db.executeSQL(dbHost, dbName, login, pas, query)[0][0]
         data = {"Table": "menu", "ID": id, "rID": rollback_id}
         contract = self.contracts["getHistoryRow"]
         self.check_contract_with_data(contract["code"], data, menu)
 
     def test_getHistoryRowBlock(self):
         # create block
-        rollc_before = Actions.get_max_id_from_table(dbHost, dbName, login, pas, "rollback_tx")
-        name = Actions.generate_random_name()
+        rollc_before = Db.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
+        name = Tools.generate_random_name()
         block = "Div(Body: Hello)"
         data = {"ApplicationId": "1",
                 "Name": name,
                 "Value": block,
                 "Conditions": "true"}
         self.call_contract("NewBlock", data)
-        rollc_after = Actions.get_max_id_from_table(dbHost, dbName, login, pas, "rollback_tx")
+        rollc_after = Db.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         # change block
         id = Actions.get_object_id(url, name, "blocks", token)
         newValueBlock = block.replace("Hello", "new_var")
@@ -566,7 +574,7 @@ class TestContractFunctions(unittest.TestCase):
         # test
         query = """SELECT id FROM "rollback_tx" WHERE table_name = '1_blocks' AND data='' AND id >= %s AND id <= %s""" % (
             rollc_before, rollc_after)
-        rollback_id = Actions.execute_SQL(dbHost, dbName, login, pas, query)[0][0]
+        rollback_id = Db.executeSQL(dbHost, dbName, login, pas, query)[0][0]
         data = {"Table": "blocks", "ID": id, "rID": rollback_id}
         contract = self.contracts["getHistoryRow"]
         self.check_contract_with_data(contract["code"], data, block)
