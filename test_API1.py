@@ -1,5 +1,4 @@
 import unittest
-import config
 import requests
 import json
 import os
@@ -7,6 +6,7 @@ import time
 import pytest
 
 from libs.actions import Actions
+from libs.tools import Tools
 
 
 def jsonToList(json_api_fixture):
@@ -43,7 +43,7 @@ class TestApi():
 
     def setUp(self):
         global url, token, prKey, pause
-        self.config = config.getNodeConfig()
+        self.config = Tools.readConfig("nodes")
         url = self.config["2"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
         prKey = self.config["1"]['private_key']

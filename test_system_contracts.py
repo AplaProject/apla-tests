@@ -23,7 +23,7 @@ class TestSystemContracts(unittest.TestCase):
         db = self.config["1"]["db"]
         self.data = Actions.login(url, prKey, 0)
 
-    token = self.data["jwtToken"]
+        token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
         self.assertIn("hash", result)
