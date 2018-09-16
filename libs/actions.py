@@ -143,64 +143,64 @@ class Actions(object):
         else:
             return None
 
-    def get_count(self, url, type, token):
+    def get_count(url, type, token):
         endPoint = url + "/list/" + type
-        res = self.call_get_api(endPoint, "", token)
+        res = Actions.call_get_api(endPoint, "", token)
         return res["count"]
 
-    def get_list(self, url, type, token):
-        count = self.get_count(url, type, token)
+    def get_list(url, type, token):
+        count = Actions.get_count(url, type, token)
         endPoint = url + "/list/" + type + "?limit=" + count
         res = self.call_get_api(endPoint, "", token)
         return res
 
-    def get_contract_id(self, url, name, token):
+    def get_contract_id(url, name, token):
         endPoint = url + "/contract/" + name
-        res = self.call_get_api(endPoint, "", token)
+        res = Actions.call_get_api(endPoint, "", token)
         return res["tableid"]
 
 
-    def get_object_id(self, url, name, object, token):
+    def get_object_id(url, name, object, token):
         id = None
         endPoint = url + "/list/" + object
-        res = self.call_get_api(endPoint, "", token)
+        res = Actions.call_get_api(endPoint, "", token)
         for object in res["list"]:
             if object["name"] == name:
                 id = object["id"]
         return id
     
 
-    def is_contract_activated(self, url, name, token):
+    def is_contract_activated(url, name, token):
         endPoint = url + "/contract/" + name
-        res = self.call_get_api(endPoint, "", token)
+        res = Actions.call_get_api(endPoint, "", token)
         return res["active"]
 
-    def get_activated_wallet(self, url, name, token):
+    def get_activated_wallet(url, name, token):
         endPoint = url + "/contract/" + name
-        res = self.call_get_api(endPoint, "", token)
+        res = Actions.call_get_api(endPoint, "", token)
         return res["walletid"]
 
-    def get_parameter_id(self, url, name, token):
+    def get_parameter_id(url, name, token):
         endPoint = url + "/ecosystemparam/" + name
-        res = self.call_get_api(endPoint, "", token)
+        res = Actions.call_get_api(endPoint, "", token)
         return res["id"]
 
-    def get_parameter_value(self, url, name, token):
+    def get_parameter_value(url, name, token):
         endPoint = url + "/ecosystemparam/" + name
-        res = self.call_get_api(endPoint, "", token)
+        res = Actions.call_get_api(endPoint, "", token)
         return res["value"]
 
-    def get_content(self, url, type, name, lang, appId, token):
+    def get_content(url, type, name, lang, appId, token):
         if(lang != ""):
             data = {"lang": lang, "app_id": appId}
         else:
             data = ""
         endPoint = url + "/content/" + type + "/" + name
-        res = self.call_post_api(endPoint, data, token)
+        res = Actions.call_post_api(endPoint, data, token)
         return res
 
-    def get_max_block_id(self, url, token):
+    def get_max_block_id(url, token):
         data = ""
         endPoint = url + "/maxblockid"
-        result = self.call_get_api(endPoint, data, token)
+        result = Actions.call_get_api(endPoint, data, token)
         return result["max_block_id"]

@@ -35,7 +35,7 @@ class TestBlockChain(unittest.TestCase):
         ts_count = 30
         self.data1 = Actions.login(config1["url"], config1['private_key'], 0)
         i = 1
-        amountsB = Db.getUserTokenAmounts(db1)
+        amountsB = Db.get_user_token_amounts(db1)
         sumAmountsBefore = sum(amount[0] for amount in amountsB)
         while i < ts_count:
             contName = self.create_contract(config1["url"],
@@ -84,7 +84,7 @@ class TestBlockChain(unittest.TestCase):
         id = self.new_menu(config1["url"], config1['private_key'])
         time.sleep(10)
         i = 1
-        amountsB = Db.getUserTokenAmounts(db1)
+        amountsB = Db.get_user_token_amounts(db1)
         sumAmountsBefore = sum(amount[0] for amount in amountsB)
         while i < ts_count:
             self.edit_menu(config1["url"],
@@ -93,8 +93,8 @@ class TestBlockChain(unittest.TestCase):
         time.sleep(120)
         count_contracts1 = Db.getCountDBObjects(db1)["contracts"]
         count_contracts2 = Db.getCountDBObjects(db2)["contracts"]
-        amounts1 = Db.getUserTokenAmounts(db1)
-        amounts2 = Db.getUserTokenAmounts(db2)
+        amounts1 = Db.get_user_token_amounts(db1)
+        amounts2 = Db.get_user_token_amounts(db2)
         sumAmounts = sum(amount[0] for amount in amounts1)
         maxBlockId1 = Actions.get_max_block_id(config1["url"],self.data1["jwtToken"])
         self.data2 = Actions.login(config2["url"], config1['private_key'], 0)
