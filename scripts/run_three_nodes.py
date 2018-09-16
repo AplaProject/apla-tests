@@ -246,7 +246,7 @@ def test_three_nodes(request):
 		}}
 
 	# Update config for tests
-	confPath = os.path.join(curDir+ '/../', 'hostConfig.json')
+	confPath = os.path.join(curDir+ '/../', 'nodesConfig.json')
 
 	with open(confPath, 'w') as fconf:
 		fconf.write(json.dumps(config))
