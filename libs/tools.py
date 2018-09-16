@@ -40,11 +40,12 @@ class Tools(object):
         return code
     
     def readConfig(type):
-        if type is "main":
+        path = ""
+        if type == "main":
             path = os.path.join(os.getcwd(), "config.json")
-        if type is "nodes":
+        if type == "nodes":
             path = os.path.join(os.getcwd(), "nodesConfig.json")
-        if type is "test":
+        if type == "test":
             path = os.path.join(os.getcwd(), "testConfig.json")
         with open(path, 'r') as f:
             data = f.read()

@@ -16,7 +16,7 @@ class TestCost(unittest.TestCase):
         global conf, keys, wait
         wait = Tools.readConfig("test")["wait_tx_status"]
         conf = Tools.readConfig("nodes")
-        keys = Tools.readConfig("keys")
+        keys = Tools.readFixtures("keys")
         self.createContracts(self)
         
     def getNodeBalances(self):
