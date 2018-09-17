@@ -1281,13 +1281,13 @@ class SystemContractsTestCase(unittest.TestCase):
         contractName = "recur_" + utils.generate_random_name()
         body = """
         {
-        data { }
-        conditions {
-         Println("hello1")
-            var par map
-            CallContract("%s", par)
+            data { }
+            conditions { }
+            action {
+                Println("hello1")
+                var par map
+                CallContract("%s", par)
             }
-        action { }
         }
         """ % contractName
         code = utils.generate_code(contractName, body)
@@ -1302,15 +1302,15 @@ class SystemContractsTestCase(unittest.TestCase):
         contractName = "recur_" + utils.generate_random_name()
         body = """
         {
-        func runContract() int {
-            var par map
-            CallContract("%s", par)
+            func runContract() int {
+                var par map
+                CallContract("%s", par)
             }
-        data { }
-        conditions {
-            runContract()
+            data { }
+            conditions { }
+            action {
+                runContract()
             }
-        action { }
         }
         """ % contractName
         code = utils.generate_code(contractName, body)
