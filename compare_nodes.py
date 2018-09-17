@@ -3,13 +3,24 @@ import config
 from builtins import sum
 
 from libs.actions import Actions
+<<<<<<< HEAD
+from libs.db import Db
+=======
 from libs.tools import Tools
+>>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
 
 class CompareNodes(unittest.TestCase):
+
     @classmethod
+<<<<<<< HEAD
+    def setup_class(self):
+        global config1, config2, config3, db1, db2, db3, login1, login2, login3, pas1, pas2, pas3, host1, host2, host3
+        fullConfig = config.getNodeConfig()
+=======
     def setUpClass(self):
         global config1, config2, config3, db1, db2, db3
-        fullConfig = Tools.readConfig("nodes")
+        fullConfig = Tools.read_config("nodes")
+>>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
         nodes = len(fullConfig)
         config1 = fullConfig["1"]
         config2 = fullConfig["2"]
@@ -20,9 +31,15 @@ class CompareNodes(unittest.TestCase):
     
     def test_compare_nodes(self):
         nodes = 3
+<<<<<<< HEAD
+        amounts1 = Db.get_user_token_amounts(host1, db1, login1, pas1)
+        amounts2 = Db.get_user_token_amounts(host2, db2, login2, pas2)
+        amounts3 = Db.get_user_token_amounts(host3, db3, login3, pas3)
+=======
         amounts1 = Actions.get_user_token_amounts(db1)
         amounts2 = Actions.get_user_token_amounts(db2)
         amounts3 = Actions.get_user_token_amounts(db3)
+>>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
         sumAmounts = sum(amount[0] for amount in amounts1)
         self.data1 = Actions.login(config1["url"], config1['private_key'], 0)
         maxBlockId1 = Actions.get_max_block_id(config1["url"],self.data1["jwtToken"])
@@ -53,9 +70,15 @@ class CompareNodes(unittest.TestCase):
         self.assertDictEqual(dict1, dict3, msg)
         
     def test_compare_db(self):
+<<<<<<< HEAD
+        dbInformation1 = Db.get_count_DB_objects(host1, db1, login1, pas1)
+        dbInformation2 = Db.get_count_DB_objects(host2, db2, login2, pas2)
+        dbInformation3 = Db.get_count_DB_objects(host3, db3, login3, pas3)
+=======
         dbInformation1 = Actions.get_count_DB_objects(db1)
         dbInformation2 = Actions.get_count_DB_objects(db2)
         dbInformation3 = Actions.get_count_DB_objects(db3)
+>>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
         for key in dbInformation1:
             dbInf1 = dbInformation1[key]
             dbInf2 = dbInformation2[key]

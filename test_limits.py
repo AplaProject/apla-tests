@@ -13,9 +13,9 @@ class TestLimits(unittest.TestCase):
 
     def setup_class(self):
         global conf, contract, pause, token
-        conf = Tools.readConfig("nodes")
-        contract = Tools.readFixtures("contracts")
-        pause = Tools.readConfig("test")["wait_tx_status"]
+        conf = Tools.read_config("nodes")
+        contract = Tools.read_fixtures("contracts")
+        pause = Tools.read_config("test")["wait_tx_status"]
         self.data = Actions.login(conf["2"]["url"],
                                   conf["1"]['private_key'], 0)
         token = self.data["jwtToken"]
@@ -83,7 +83,7 @@ class TestLimits(unittest.TestCase):
         time.sleep(5)
         maxBlock = Actions.get_max_block_id(conf["2"]["url"], token)
         print("maxBlock = ", maxBlock)
-        isOneOrTwo = Db.isCountTxInBlock(conf["2"]["db"], maxBlock, 1)
+        isOneOrTwo = Db.is_count_tx_in_block(conf["2"]["db"], maxBlock, 1)
         self.update_sys_param("max_block_user_tx ", str(max_block_user_tx ))
         time.sleep(30)
         self.assertTrue(isOneOrTwo,
@@ -104,6 +104,6 @@ class TestLimits(unittest.TestCase):
             i = i + 1
         time.sleep(5)
         maxBlock = Actions.get_max_block_id(conf["2"]["url"], token)
-        self.assertTrue(Db.isCountTxInBlock(conf["2"]["db"], maxBlock, 2),
+        self.assertTrue(Db.is_count_tx_in_block(conf["2"]["db"], maxBlock, 2),
                         "One of block contains more than 2 transaction")
         self.update_sys_param("max_tx_count ", str(max_tx_count))

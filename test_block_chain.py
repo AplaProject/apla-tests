@@ -26,7 +26,7 @@ class TestBlockChain():
         return Actions.get_count(url, "menu", self.data1["jwtToken"])
     
     def test_block_chain(self):
-        fullConfig = Tools.readConfig("nodes")
+        fullConfig = Tools.read_config("nodes")
         nodes = len(fullConfig)
         config1 = fullConfig["1"]
         config2 = fullConfig["2"]
@@ -73,7 +73,7 @@ class TestBlockChain():
         self.assertDictEqual(dict1, dict2, msg)
         
     def test_block_chain_edit(self):
-        fullConfig = Tools.readConfig("nodes")
+        fullConfig = Tools.read_config("nodes")
         nodes = len(fullConfig)
         config1 = fullConfig["1"]
         config2 = fullConfig["2"]

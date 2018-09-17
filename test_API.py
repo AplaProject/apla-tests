@@ -12,14 +12,14 @@ from libs.tools import Tools
 class TestApi(unittest.TestCase):
     def setUp(self):
         global url, token, prKey, pause
-        self.config = Tools.readConfig("nodes")
+        self.config = Tools.read_config("nodes")
         url = self.config["2"]["url"]
-        pause = Tools.readConfig("test")["wait_tx_status"]
+        pause = Tools.read_config("test")["wait_tx_status"]
         prKey = self.config["1"]['private_key']
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
 
-    def assertTxInBlock(self, result, jwtToken):
+    def assert_tx_in_block(self, result, jwtToken):
         self.assertIn("hash", result)
         hash = result['hash']
         status = Actions.tx_status(url, pause, hash, jwtToken)
@@ -52,7 +52,7 @@ class TestApi(unittest.TestCase):
 
     def call(self, name, data):
         resp = Actions.call_contract(url, prKey, name, data, token)
-        resp = self.assertTxInBlock(resp, token)
+        resp = self.assert_tx_in_block(resp, token)
         return resp
 
     def test_balance(self):
@@ -65,7 +65,7 @@ class TestApi(unittest.TestCase):
         error, message = self.get_error_api('/balance/' + wallet, "")
         self.assertEqual(error, "E_INVALIDWALLET", "Incorrect error")
 
-    def test_getEcosystem(self):
+    def test_get_ecosystem(self):
         asserts = ["number"]
         self.check_get_api("/ecosystems/", "", asserts)
 
@@ -111,7 +111,7 @@ class TestApi(unittest.TestCase):
         dictNames = {}
         dictNamesAPI = {}
         data = {}
-        tables = Db.getEcosysTables(self.config["1"]["db"])
+        tables = Db.get_ecosys_tables(self.config["1"]["db"])
         for table in tables:
             if "table" not in table:
                 tableInfo = Actions.call_get_api(url + "/table/" + table[2:], data, token)
@@ -136,10 +136,10 @@ class TestApi(unittest.TestCase):
         dictCount = {}
         dictCountTable = {}
         data = {}
-        tables = Db.getEcosysTables(self.config["1"]["db"])
+        tables = Db.get_ecosys_tables(self.config["1"]["db"])
         for table in tables:
             tableData = Actions.call_get_api(url + "/list/" + table[2:], data, token)
-            count = Db.getCountTable(self.config["1"]["db"], table)
+            count = Db.get_count_table(self.config["1"]["db"], table)
             if count > 0:
                 if len(tableData["list"]) == count or (len(tableData["list"]) == 25 and
                                                        count > 25):
@@ -469,7 +469,7 @@ class TestApi(unittest.TestCase):
                            "BlockId is not generated: " + str(status))
         
     def is_node_owner_false(self):
-        keys = Tools.readConfig("keys")
+        keys = Tools.read_config("keys")
         prKey2 = keys["key1"]
         data2 = Actions.login(url, prKey2, 0)
         token2 = data2["jwtToken"]
@@ -481,19 +481,19 @@ class TestApi(unittest.TestCase):
                          "Incorrect message: " + str(status))
         
     def test_login(self):
-        keys = Tools.readConfig("keys")  
+        keys = Tools.read_config("keys")
         data1 = Actions.login(url, keys["key5"], 0)
         time.sleep(5)
-        conf = Tools.readConfig("nodes")
+        conf = Tools.read_config("nodes")
         res = Db.is_wallet_created(conf["1"]["db"], data1["key_id"])
         self.assertTrue(res, "Wallet for new user didn't created")
         
     def test_login2(self):
         isOne = False
-        keys = Tools.readConfig("keys")
+        keys = Tools.read_config("keys")
         data1 = Actions.login(url, keys["key3"], 0)
         time.sleep(5)
-        conf = Tools.readConfig("nodes")
+        conf = Tools.read_config("nodes")
         res = Db.is_wallet_created(conf["1"]["db"], data1["key_id"])
         if res == True:
             data2 = Actions.login(url, keys["key1"], 0)
@@ -511,7 +511,7 @@ class TestApi(unittest.TestCase):
         data = {"Name": name, "ApplicationId": 1, "DataMimeType":"image/jpeg"}
         resp = Actions.call_contract_with_files(url, prKey, "UploadBinary", data,
                                                 files, token)
-        res = self.assertTxInBlock(resp, token)
+        res = self.assert_tx_in_block(resp, token)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # find last added file
         asserts = ["count"]
@@ -551,7 +551,7 @@ class TestApi(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         data = {}
         resp = Actions.call_contract(url, prKey, name, data, token)
-        res = self.assertTxInBlock(resp, token)
+        res = self.assert_tx_in_block(resp, token)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # rollback changes column permissions
         data = {"TableName": "members",
@@ -579,7 +579,7 @@ class TestApi(unittest.TestCase):
         data = {"Name": name, "ApplicationId": 1, "DataMimeType":"image/jpeg"}
         resp = Actions.call_contract_with_files(url, prKey, "UploadBinary", data,
                                                 files, token)
-        res = self.assertTxInBlock(resp, token)
+        res = self.assert_tx_in_block(resp, token)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # find last added file
         asserts = ["count"]
@@ -619,7 +619,7 @@ class TestApi(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         data = {}
         resp = Actions.call_contract(url, prKey, name, data, token)
-        res = self.assertTxInBlock(resp, token)
+        res = self.assert_tx_in_block(resp, token)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # rollback changes column permissions
         data = {"TableName": "members",

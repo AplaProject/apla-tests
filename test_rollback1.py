@@ -13,11 +13,11 @@ class TestRollback1(unittest.TestCase):
     @classmethod
     def setup_class(self):
         global url, prKey, token, waitTx, db
-        self.conf = Tools.readConfig("main")
+        self.conf = Tools.read_config("main")
         url = self.conf["url"]
         prKey = self.conf['private_key']
         db = self.conf["db"]
-        waitTx = Tools.readConfig("test")["wait_tx_status"]
+        waitTx = Tools.read_config("test")["wait_tx_status"]
         lData = Actions.login(url, prKey, 0)
         token = lData["jwtToken"]
 
@@ -112,7 +112,7 @@ class TestRollback1(unittest.TestCase):
         res = self.call("EditTable", dataEdit)
 
     def getCountTable(self,name):
-        return Db.getCountTable(db, name)
+        return Db.get_count_table(db, name)
 
     def addBinary(self):
         name = "image_" + Tools.generate_random_name()
@@ -369,7 +369,7 @@ class TestRollback1(unittest.TestCase):
         with open(file, 'w') as f:
             f.write(tableNameWithPrefix)
         # Save to file user table state
-        dbUserTableInfo = Db.getUserTableState(db, tableNameWithPrefix)
+        dbUserTableInfo = Db.get_user_table_state(db, tableNameWithPrefix)
         file = os.path.join(os.getcwd(), "dbUserTableState.json")
         with open(file, 'w') as fconf:
             json.dump(dbUserTableInfo, fconf)
