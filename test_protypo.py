@@ -11,9 +11,9 @@ class TestPrototipo(unittest.TestCase):
 
     @classmethod
     def setup_class(self):
-        self.config = Tools.readConfig("nodes")
+        self.config = Tools.read_config("nodes")
         global url, prKey, token, db2
-        self.pages = Tools.readFixtures("pages")
+        self.pages = Tools.read_fixtures("pages")
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
         self.data = Actions.login(url, prKey, 0)
@@ -24,8 +24,8 @@ class TestPrototipo(unittest.TestCase):
         def assertTxInBlock(self, result, jwtToken):
             self.assertIn("hash", result)
             status = Actions.tx_status(url,
-                                      Tools.readConfig("test")["wait_tx_status"],
-                                      result['hash'], jwtToken)
+                                       Tools.read_config("test")["wait_tx_status"],
+                                       result['hash'], jwtToken)
             self.assertNotIn(json.dumps(status), 'errmsg')
 
             self.assertGreater(len(status['blockid']), 0)
@@ -628,7 +628,7 @@ class TestPrototipo(unittest.TestCase):
         self.assertTxInBlock(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = Db.getFounderId(db2)
+        MemberID = Db.get_founder_id(db2)
         lastRec = Actions.get_count(url, "binaries", token)
         content = self.check_page("Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
@@ -667,7 +667,7 @@ class TestPrototipo(unittest.TestCase):
         self.assertTxInBlock(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = Db.getFounderId(db2)
+        MemberID = Db.get_founder_id(db2)
         lastRec = Actions.get_count(url, "binaries", token)
         content = self.check_page("Image(Binary(Name: "+name+", AppID: "+appID+", MemberID: "+MemberID+"))")
         partContent = content["tree"][0]

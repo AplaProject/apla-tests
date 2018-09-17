@@ -14,9 +14,9 @@ class TestCost(unittest.TestCase):
     @classmethod
     def setup_class(self):
         global conf, keys, wait
-        wait = Tools.readConfig("test")["wait_tx_status"]
-        conf = Tools.readConfig("nodes")
-        keys = Tools.readFixtures("keys")
+        wait = Tools.read_config("test")["wait_tx_status"]
+        conf = Tools.read_config("nodes")
+        keys = Tools.read_fixtures("keys")
         self.createContracts(self)
         
     def getNodeBalances(self):
@@ -32,7 +32,7 @@ class TestCost(unittest.TestCase):
         global dataCreater
         dataCreater = Actions.login(conf["1"]["url"], conf["1"]["private_key"], 0)
         tokenCreater = dataCreater["jwtToken"]
-        contract = Tools.readFixtures("contracts")
+        contract = Tools.read_fixtures("contracts")
         code = "contract CostContract" + contract["for_cost"]["code"]
         data = {"Wallet": "", "Value": code, "ApplicationId": 1,
                 "Conditions": "true"}

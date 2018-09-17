@@ -116,7 +116,7 @@ def voiting(id, url, prKey, token):
     
 
 if __name__ == "__main__":
-    conf = Tools.readConfig("nodes")
+    conf = Tools.read_config("nodes")
     url = conf["1"]["url"]
     prKey1 = conf["1"]['private_key']
     prKey2 = conf["2"]['private_key']

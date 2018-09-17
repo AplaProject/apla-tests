@@ -10,10 +10,10 @@ from asyncio.tasks import wait
 class TestContractFunctions(unittest.TestCase):
 
     def setUp(self):
-        self.config = Tools.readConfig("nodes")
+        self.config = Tools.read_config("nodes")
         global url, prKey, token, db1, wait
-        wait = Tools.readConfig("test")["wait_tx_status"]
-        self.contracts = Tools.readFixtures("contracts")
+        wait = Tools.read_config("test")["wait_tx_status"]
+        self.contracts = Tools.read_fixtures("contracts")
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
         db = self.config["1"]['db']
@@ -516,7 +516,7 @@ class TestContractFunctions(unittest.TestCase):
                 "Value": menu,
                 "Conditions": "true"}
         self.call_contract("NewMenu", data)
-        rollc_after = Db.getMaxIdFromTable(db, "rollback_tx")
+        rollc_after = Db.get_max_id_from_table(db, "rollback_tx")
         # change menu
         id = Actions.get_object_id(url, name, "menu", token)
         newValueMenu = menu.replace("new menu", "new_var")
@@ -526,14 +526,14 @@ class TestContractFunctions(unittest.TestCase):
         # test
         query = """SELECT id FROM "rollback_tx" WHERE table_name = '1_menu' AND data='' AND id >= %s AND id <= %s""" % (
             rollc_before, rollc_after)
-        rollback_id = Db.executeSQL(db)[0][0]
+        rollback_id = Db.execute_sql(db)[0][0]
         data = {"Table": "menu", "ID": id, "rID": rollback_id}
         contract = self.contracts["getHistoryRow"]
         self.check_contract_with_data(contract["code"], data, menu)
 
     def test_getHistoryRowBlock(self):
         # create block
-        rollc_before = Db.getMaxIdFromTable(db, "rollback_tx")
+        rollc_before = Db.get_max_id_from_table(db, "rollback_tx")
         name = Tools.generate_random_name()
         block = "Div(Body: Hello)"
         data = {"ApplicationId": "1",
@@ -541,7 +541,7 @@ class TestContractFunctions(unittest.TestCase):
                 "Value": block,
                 "Conditions": "true"}
         self.call_contract("NewBlock", data)
-        rollc_after = Db.getMaxIdFromTable(db, "rollback_tx")
+        rollc_after = Db.get_max_id_from_table(db, "rollback_tx")
         # change block
         id = Actions.get_object_id(url, name, "blocks", token)
         newValueBlock = block.replace("Hello", "new_var")
@@ -551,7 +551,7 @@ class TestContractFunctions(unittest.TestCase):
         # test
         query = """SELECT id FROM "rollback_tx" WHERE table_name = '1_blocks' AND data='' AND id >= %s AND id <= %s""" % (
             rollc_before, rollc_after)
-        rollback_id = Db.executeSQL(db, query)[0][0]
+        rollback_id = Db.execute_sql(db, query)[0][0]
         data = {"Table": "blocks", "ID": id, "rID": rollback_id}
         contract = self.contracts["getHistoryRow"]
         self.check_contract_with_data(contract["code"], data, block)
