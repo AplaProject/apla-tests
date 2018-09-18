@@ -9,9 +9,9 @@ class TestMultiApi(unittest.TestCase):
     @classmethod
     def setup_class(self):
         global url, token, prKey, pause
-        self.config = Tools.readConfig("nodes")
+        self.config = Tools.read_config("nodes")
         url = self.config["2"]["url"]
-        pause = Tools.readConfig("test")["wait_tx_status"]
+        pause = Tools.read_config("test")["wait_tx_status"]
         prKey = self.config["1"]['private_key']
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]

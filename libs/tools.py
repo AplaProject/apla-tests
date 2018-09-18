@@ -8,7 +8,7 @@ from libs.actions import Actions
 
 class Tools(object):
     
-    def jsonToList(js):
+    def json_to_list(js):
         fullList = []
         list = []
         tup = ()
@@ -39,7 +39,7 @@ class Tools(object):
         code = "contract " + contractName + sCode
         return code
     
-    def readConfig(type):
+    def read_config(type):
         path = ""
         if type == "main":
             path = os.path.join(os.getcwd(), "config.json")
@@ -51,7 +51,7 @@ class Tools(object):
             data = f.read()
         return json.loads(data)
 
-    def readFixtures(type):
+    def read_fixtures(type):
         path = ""
         if type == "contracts":
             path = os.path.join(os.getcwd(), "fixtures", "contracts.json")

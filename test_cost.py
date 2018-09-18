@@ -41,7 +41,7 @@ class TestCost():
         global dataCreater
         dataCreater = Actions.login(conf["1"]["url"], conf["1"]["private_key"], 0)
         tokenCreater = dataCreater["jwtToken"]
-        contract = Tools.readFixtures("contracts")
+        contract = Tools.read_fixtures("contracts")
         code = "contract CostContract" + contract["for_cost"]["code"]
         data = {"Wallet": "", "Value": code, "ApplicationId": 1,
                 "Conditions": "true"}

@@ -67,7 +67,7 @@ class Db(object):
             i = i + 1
         return True
 
-    def isCountTxInBlock(db, maxBlockId, countTx):
+    def is_count_tx_in_block(db, maxBlockId, countTx):
         minBlock = maxBlockId - 3
         request = "SELECT id, tx FROM block_chain WHERE id>" + str(minBlock) + " AND id<" + str(maxBlockId)
         tx = Db.submit_query(request, db)
@@ -88,7 +88,7 @@ class Db(object):
         request = "SELECT * FROM block_chain Order by id DESC LIMIT 10"
         return Db.submit_query(request, db)
 
-    def getEcosysTables(db):
+    def get_ecosys_tables(db):
         request = "select table_name from INFORMATION_SCHEMA.TABLES WHERE table_schema='public' AND table_name LIKE '1_%'"
         tables = Db.submit_query(request, db)
         list = []
@@ -98,7 +98,7 @@ class Db(object):
             i = i + 1
         return list
 
-    def getEcosysTablesById(db, ecosystemID):
+    def get_ecosys_tables_by_id(db, ecosystemID):
         request = "select table_name from INFORMATION_SCHEMA.TABLES WHERE table_schema='public' AND table_name LIKE '" +\
             str(ecosystemID) + "_%'"
         tables = Db.submit_query(request, db)
@@ -109,40 +109,40 @@ class Db(object):
             i = i + 1
         return list
 
-    def getCountTable(db, table):
+    def get_count_table(db, table):
         request = "SELECT count(*) FROM \"" + table + "\""
         return Db.submit_query(request, db)
 
-    def getMaxIdFromTable(db, table):
+    def get_max_id_from_table(db, table):
         request = "SELECT MAX(id) FROM \"" + table + "\""
         result = Db.submit_query(request, db)
         return result[0][0]
 
-    def executeSQL(db, query):
+    def execute_sql(db, query):
         return Db.submit_query(query, db)
 
-    def getObjectIdByName(db, table, name):
+    def get_object_id_by_name(db, table, name):
         request = "SELECT id FROM \"" + table + "\" WHERE name = '" + str(name) + "'"
         result = Db.submit_query(request, db)
         return result[0][0]
 
-    def getFounderId(db):
+    def get_founder_id(db):
         request = "SELECT value FROM \"1_parameters\" WHERE name = 'founder_account'"
         result = Db.submit_query(request, db)
         return result[0][0]
 
-    def getSystemParameterValue(db, name):
+    def get_system_parameter_value(db, name):
         request = "SELECT value FROM \"1_system_parameters\" WHERE name = '" + name + "'"
         result = Db.submit_query(request, db)
         return result[0][0]
 
-    def getExportAppData(db, app_id, member_id):
+    def get_export_app_data(db, app_id, member_id):
         request = "SELECT data as TEXT FROM \"1_binaries\" WHERE name = 'export' AND app_id = " + str(
             app_id) + " AND member_id = " + str(member_id)
         result = Db.submit_query(request, db)
         return result[0][0]
 
-    def getImportAppData(db, member_id):
+    def get_import_app_data(db, member_id):
         request = "SELECT value FROM \"1_buffer_data\" WHERE key = 'import' AND member_id = " + str(member_id)
         result = Db.submit_query(request, db)
         return cursor.fetchall()[0][0]
@@ -150,22 +150,22 @@ class Db(object):
 
     def get_count_DB_objects(db):
         tablesCount = {}
-        tables = Db.getEcosysTables(db)
+        tables = Db.get_ecosys_tables(db)
         for table in tables:
-            tablesCount[table[2:]] = Db.getCountTable(db, table)
+            tablesCount[table[2:]] = Db.get_count_table(db, table)
         return tablesCount
 
-    def getTableColumnNames(db, table):
+    def get_table_column_names(db, table):
         query = "SELECT pg_attribute.attname FROM pg_attribute, pg_class WHERE pg_class.relname='" + \
                 table + "' AND pg_class.relfilenode=pg_attribute.attrelid AND pg_attribute.attnum>0"
         col = {}
         col = Db.submit_query(query, db)
         return col
 
-    def getUserTableState(db, userTable):
+    def get_user_table_state(db, userTable):
         request = "SELECT * FROM \"" + userTable + "\""
         res = Db.submit_query(request, db)
-        col = Db.getTableColumnNames(db, userTable)
+        col = Db.get_table_column_names(db, userTable)
         table = {}
         for i in range(len(col)):
             table[col[i][0]] = res[0][i]
@@ -215,7 +215,7 @@ class Db(object):
         nodes = Db.submit_query(request, db)
         return nodes[0][0]
 
-    def isCommissionInHistory(db, idFrom, idTo, summ):
+    def is_commission_in_history(db, idFrom, idTo, summ):
         request = "select * from \"1_history\" WHERE sender_id=" + idFrom + \
                        " AND recipient_id=" + str(idTo) + " AND amount=" + str(summ)
         rec = Db.submit_query(request, db)

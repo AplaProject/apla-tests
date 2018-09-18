@@ -43,7 +43,7 @@ class TestApi():
 
     def setUp(self):
         global url, token, prKey, pause
-        self.config = Tools.readConfig("nodes")
+        self.config = Tools.read_config("nodes")
         url = self.config["2"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
         prKey = self.config["1"]['private_key']

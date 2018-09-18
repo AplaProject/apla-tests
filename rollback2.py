@@ -9,7 +9,7 @@ from libs.tools import Tools
 class Rollback2(unittest.TestCase):
     
     def test_rollback1(self):
-        self.conf = Tools.readConfig("nodes")
+        self.conf = Tools.read_config("nodes")
         db = self.conf["db"]
         # Get from file all tables state
 <<<<<<< HEAD
@@ -31,7 +31,7 @@ class Rollback2(unittest.TestCase):
         with open(file, 'r') as f:
             tableName = f.read()
         # Get from file user table state
-        dbUserTableInfo = Db.getUserTableState(db, tableName)
+        dbUserTableInfo = Db.get_user_table_state(db, tableName)
         file = os.path.join(os.getcwd(), "dbUserTableState.json")
         with open(file, 'r') as dbUserFile:
             data = dbUserFile.read()

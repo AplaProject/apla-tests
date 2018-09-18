@@ -19,7 +19,7 @@ class CompareNodes(unittest.TestCase):
 =======
     def setUpClass(self):
         global config1, config2, config3, db1, db2, db3
-        fullConfig = Tools.readConfig("nodes")
+        fullConfig = Tools.read_config("nodes")
 >>>>>>> 696a609e1b1d6a8b247a1ec6e4185df4f6321d8b
         nodes = len(fullConfig)
         config1 = fullConfig["1"]

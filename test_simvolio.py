@@ -9,16 +9,14 @@ from libs.tools import Tools
 from libs.db import Db
 
 
-
 class TestSystemContracts(unittest.TestCase):
-
 
     @classmethod
     def setup_class(self):
         global url, token, prKey, pause, db
-        self.config = Tools.readConfig("nodes")
+        self.config = Tools.read_config("nodes")
         url = self.config["1"]["url"]
-        pause = Tools.readConfig("test")["wait_tx_status"]
+        pause = Tools.read_config("test")["wait_tx_status"]
         prKey = self.config["1"]['private_key']
         db = self.config["1"]["db"]
         self.data = Actions.login(url, prKey, 0)
@@ -54,7 +52,7 @@ class TestSystemContracts(unittest.TestCase):
         time.sleep(sleep)
         resp = self.assertMultiTxInBlock(resp, token)
         return resp
-    
+
     def waitBlockId(self, old_block_id, limit):
         while True:
             # add contract, which get block_id
@@ -65,10 +63,10 @@ class TestSystemContracts(unittest.TestCase):
             res = self.call("NewContract", data)
             self.assertGreater(res["blockid"], 0, "BlockId is not generated: " + str(res))
             currrent_block_id = res["blockid"]
-            expected_block_id = old_block_id + limit + 1 # +1 spare block
+            expected_block_id = old_block_id + limit + 1  # +1 spare block
             if currrent_block_id == expected_block_id:
                 break
-            
+
     def test_create_ecosystem(self):
         data = {"Name": Tools.generate_random_name("Ecosys_")}
         res = self.call("NewEcosystem", data)
@@ -87,7 +85,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("EditApplication", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        
+
     def test_activate_application(self):
         name = Tools.generate_random_name("App")
         data = {"Name": name, "Conditions": "true"}
@@ -103,7 +101,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("DelApplication", dataAct)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        
+
     def test_export_application(self):
         name = Tools.generate_random_name("App")
         data = {"Name": name, "Conditions": "true"}
@@ -115,6 +113,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("ExportNewApp", dataDeact)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
+
     # !!!
     def test_edit_ecosystem_name(self):
         id = 1
@@ -122,23 +121,21 @@ class TestSystemContracts(unittest.TestCase):
         resBlockId = self.call("EditEcosystemName", data)
         self.assertGreater(resBlockId["blockid"], 0,
                            "BlockId is not generated: " + str(resBlockId))
-        
 
     def test_edit_ecosystem_name_incorrect_id(self):
         id = 500
         data = {"EcosystemID": id, "NewName": Tools.generate_random_name("ecosys_")}
         res = self.call("EditEcosystemName", data)
-        self.assertEqual("Ecosystem "+str(id)+" does not exist", res["error"])
+        self.assertEqual("Ecosystem " + str(id) + " does not exist", res["error"])
 
     def test_money_transfer(self):
         data = {"Recipient": "0005-2070-2000-0006-0200", "Amount": "1000"}
         res = self.call("MoneyTransfer", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        self.assertTrue(Db.isCommissionInHistory(self.config["1"]["db"], config["1"]["keyID"],
-                                                    "52070200000060200", "1000"),
+        self.assertTrue(Db.is_commission_in_history(self.config["1"]["db"], config["1"]["keyID"],
+                                                 "52070200000060200", "1000"),
                         "No moneytransfer resord in history")
-
 
     def test_money_transfer_incorrect_wallet(self):
         wallet = "0005-2070-2000-0006"
@@ -242,14 +239,13 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract(self):
-        wallet = "0005-2070-2000-0006-0200" # ??
+        wallet = "0005-2070-2000-0006-0200"  # ??
         code, name = Tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        
 
     def test_edit_name_of_contract(self):
         code, name = Tools.generate_name_and_code("")
@@ -304,7 +300,7 @@ class TestSystemContracts(unittest.TestCase):
         id = Actions.get_contract_id(url, name, token)
         data2 = {"Id": id}
         res = self.call("ActivateContract", data2)
-        #self.assertGreater(res["blockid"], 0,        self.conf = self.config.readMainConfig()
+        # self.assertGreater(res["blockid"], 0,        self.conf = self.config.readMainConfig()
 
     def test_deactivate_incorrect_contract(self):
         id = "99999"
@@ -360,7 +356,7 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_menu(self):
-        countMenu = Db.getCountTable(db, "1_menu")
+        countMenu = Db.get_count_table(db, "1_menu")
         name = "Menu_" + Tools.generate_random_name()
         data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
                 "Conditions": "true"}
@@ -514,7 +510,7 @@ class TestSystemContracts(unittest.TestCase):
     def test_edit_incorrect_page(self):
         id = "99999"
         dataEdit = {"Id": id, "Value": "Good by page!",
-                    "Conditions": "true", "Menu": "default_menu"} 
+                    "Conditions": "true", "Menu": "default_menu"}
         ans = self.call("EditPage", dataEdit)
         self.assertEqual("Item " + id + " has not been found",
                          ans["error"], "Incorrect message: " + str(ans))
@@ -556,7 +552,7 @@ class TestSystemContracts(unittest.TestCase):
     def test_append_page_incorrect_id(self):
         id = "9999"
         dataEdit = {"Id": id, "Value": "Good by!", "Conditions": "true",
-                    "Menu": "default_menu"} 
+                    "Menu": "default_menu"}
         ans = self.call("AppendPage", dataEdit)
         msg = "Item " + id + " has not been found"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
@@ -640,7 +636,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertGreater(int(res["blockid"]), 0, "BlockId is not generated: " + str(res))
         # create new page
         name = "Page_" + Tools.generate_random_name()
-        data = {"Name": name, "Value": "DBFind("+tableName+",src)", "ApplicationId": 1,
+        data = {"Name": name, "Value": "DBFind(" + tableName + ",src)", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         res = self.call("NewPage", data)
         self.assertGreater(res["blockid"], 0,
@@ -651,7 +647,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(cont['tree'], content)
 
     def test_new_table_not_readable(self):
-                # create new table
+        # create new table
         column = """[
         {"name":"Text","type":"varchar", "index": "1",  "conditions": {"update":"true", "read": "false"}},
         {"name":"num","type":"varchar", "index": "0",  "conditions":{"update":"true", "read": "true"}}
@@ -672,7 +668,7 @@ class TestSystemContracts(unittest.TestCase):
         action {
             DBInsert("%s", {text: "text1", num: "num1"})    
         }
-        }""" %tableName
+        }""" % tableName
         code, name = Tools.generate_name_and_code(code)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
@@ -685,7 +681,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         # create new page
         name = "Page_" + Tools.generate_random_name()
-        data = {"Name": name, "Value": "DBFind("+tableName+",src)", "ApplicationId": 1,
+        data = {"Name": name, "Value": "DBFind(" + tableName + ",src)", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         res = self.call("NewPage", data)
         self.assertGreater(res["blockid"], 0,
@@ -712,7 +708,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertGreater(int(res["blockid"]), 0, "BlockId is not generated: " + str(res))
         # create new page
         name = "Page_" + Tools.generate_random_name()
-        data = {"Name": name, "Value": "DBFind("+tableName+",src)", "ApplicationId": 1,
+        data = {"Name": name, "Value": "DBFind(" + tableName + ",src)", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         res = self.call("NewPage", data)
         self.assertGreater(res["blockid"], 0,
@@ -744,7 +740,7 @@ class TestSystemContracts(unittest.TestCase):
         action {
             DBInsert("%s", {text: "text1", num: "num1"})    
         }
-        }""" %tableName
+        }""" % tableName
         code, name = Tools.generate_name_and_code(code)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
@@ -757,7 +753,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         # create new page
         name = "Page_" + Tools.generate_random_name()
-        data = {"Name": name, "Value": "DBFind("+tableName+",src)", "ApplicationId": 1,
+        data = {"Name": name, "Value": "DBFind(" + tableName + ",src)", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         res = self.call("NewPage", data)
         self.assertGreater(res["blockid"], 0,
@@ -780,7 +776,7 @@ class TestSystemContracts(unittest.TestCase):
                     "TypesArr[5]": types[5], "TypesArr[6]": types[6]}
         permission = """{"insert": "false", "update" : "true","new_column": "true"}"""
         data = {"ApplicationId": 1,
-                "Name" :"Tab_" + Tools.generate_random_name(),
+                "Name": "Tab_" + Tools.generate_random_name(),
                 "ColumnsArr": dicColumns,
                 "TypesArr": dicTypes,
                 "InsertPerm": "true",
@@ -815,15 +811,15 @@ class TestSystemContracts(unittest.TestCase):
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
         ans = self.call("NewTable", data)
-        msg = "Name "+ word +" must only contain latin, digit and '_', '-' characters"
+        msg = "Name " + word + " must only contain latin, digit and '_', '-' characters"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_incorrect_condition1(self):
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," +\
-        "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
+                  "\"index\": \"1\",  \"conditions\":\"true\"}]"
         condition = "tryam"
-        permissions = "{\"insert\": \"" + condition +\
-        "\", \"update\" : \"true\", \"new_column\": \"true\"}"
+        permissions = "{\"insert\": \"" + condition + \
+                      "\", \"update\" : \"true\", \"new_column\": \"true\"}"
         data = {"Name": "Tab_" + Tools.generate_random_name(),
                 "Columns": columns, "Permissions": permissions,
                 "ApplicationId": 1}
@@ -832,11 +828,11 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_incorrect_condition2(self):
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," +\
-        "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
+                  "\"index\": \"1\",  \"conditions\":\"true\"}]"
         condition = "tryam"
-        permissions = "{\"insert\": \"true\", \"update\" : \"" +\
-        condition + "\", \"new_column\": \"true\"}"
+        permissions = "{\"insert\": \"true\", \"update\" : \"" + \
+                      condition + "\", \"new_column\": \"true\"}"
         data = {"Name": "Tab_" + Tools.generate_random_name(),
                 "Columns": columns, "Permissions": permissions,
                 "ApplicationId": 1}
@@ -845,11 +841,11 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_incorrect_condition3(self):
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," +\
-        "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
+                  "\"index\": \"1\",  \"conditions\":\"true\"}]"
         condition = "tryam"
-        permissions = "{\"insert\": \"true\", \"update\" : \"true\"," +\
-        " \"new_column\": \"" + condition + "\"}"
+        permissions = "{\"insert\": \"true\", \"update\" : \"true\"," + \
+                      " \"new_column\": \"" + condition + "\"}"
         data = {"Name": "Tab_" + Tools.generate_random_name(),
                 "Columns": columns, "Permissions": permissions,
                 "ApplicationId": 1}
@@ -859,10 +855,10 @@ class TestSystemContracts(unittest.TestCase):
 
     def test_new_table_exist_name(self):
         name = "tab_" + Tools.generate_random_name()
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," +\
-        "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        permissions = "{\"insert\": \"false\", \"update\" : \"true\"," +\
-        " \"new_column\": \"true\"}"
+        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
+                  "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        permissions = "{\"insert\": \"false\", \"update\" : \"true\"," + \
+                      " \"new_column\": \"true\"}"
         data = {"Name": name, "Columns": columns,
                 "Permissions": permissions, "ApplicationId": 1}
         res = self.call("NewTable", data)
@@ -881,17 +877,17 @@ class TestSystemContracts(unittest.TestCase):
         data = {"Name": name, "Columns": columns,
                 "Permissions": permissions, "ApplicationId": 1}
         ans = self.call("NewTable", data)
-        msg = "Name "+name+" must only contain latin, digit and '_', '-' characters"
+        msg = "Name " + name + " must only contain latin, digit and '_', '-' characters"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table_identical_columns(self):
         name = "tab_" + Tools.generate_random_name()
         columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
-        "\"index\": \"1\",  \"conditions\":\"true\"}," +\
-        "{\"name\":\"MyName\",\"type\":\"varchar\"," +\
-        "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        permissions = "{\"insert\": \"false\", \"update\": \"true\"," +\
-        " \"new_column\": \"true\"}"
+                  "\"index\": \"1\",  \"conditions\":\"true\"}," + \
+                  "{\"name\":\"MyName\",\"type\":\"varchar\"," + \
+                  "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        permissions = "{\"insert\": \"false\", \"update\": \"true\"," + \
+                      " \"new_column\": \"true\"}"
         data = {"Name": name, "Columns": columns,
                 "Permissions": permissions, "ApplicationId": 1}
         ans = self.call("NewTable", data)
@@ -994,10 +990,10 @@ class TestSystemContracts(unittest.TestCase):
 
     def test_edit_column(self):
         nameTab = "tab_" + utils.generate_random_name()
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," +\
-        "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        permissions = "{\"insert\": \"false\", \"update\": \"true\"," +\
-        " \"new_column\": \"true\"}"
+        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
+                  "\"index\": \"1\",  \"conditions\":\"true\"}]"
+        permissions = "{\"insert\": \"false\", \"update\": \"true\"," + \
+                      " \"new_column\": \"true\"}"
         data = {"Name": nameTab, "Columns": columns,
                 "Permissions": permissions, "ApplicationId": 1}
         res = self.call("NewTable", data)
@@ -1010,12 +1006,11 @@ class TestSystemContracts(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         dataEdit = {"TableName": nameTab, "Name": name, "Type": "number",
-                   "UpdatePerm": "false", "ReadPerm": "false"}
+                    "UpdatePerm": "false", "ReadPerm": "false"}
         res = self.call("EditColumn", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
- 
     def test_new_lang(self):
         data = {"AppID": 1, "Name": "Lang_" + Tools.generate_random_name(),
                 "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}",
@@ -1023,7 +1018,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewLang", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        
+
     def test_new_lang_joint(self):
         data = {"ApplicationId": 1,
                 "Name": "Lang_" + Tools.generate_random_name(),
@@ -1031,7 +1026,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewLangJoint", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        
+
     def test_edit_lang_joint(self):
         data = {"ApplicationId": 1,
                 "Name": "Lang_" + Tools.generate_random_name(),
@@ -1063,9 +1058,9 @@ class TestSystemContracts(unittest.TestCase):
     # off
     def _new_sign(self):
         name = "Sign_" + Tools.generate_random_name()
-        value = "{\"forsign\":\"" + name +\
-        "\", \"field\": \"" + name + "\", \"title\": \"" + name +\
-        "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
+        value = "{\"forsign\":\"" + name + \
+                "\", \"field\": \"" + name + "\", \"title\": \"" + name + \
+                "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
         data = {"Name": name, "Value": value, "Conditions": "true"}
         res = self.call("NewSign", data)
         self.assertGreater(res["blockid"], 0,
@@ -1100,40 +1095,40 @@ class TestSystemContracts(unittest.TestCase):
         resE = self.call("EditSignJoint", dataE)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        
+
     # off
     def _edit_sign(self):
         name = "Sign_" + Tools.generate_random_name()
-        value = "{\"forsign\":\"" + name +\
-        "\", \"field\": \"" + name + "\", \"title\": \"" + name +\
-        "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
+        value = "{\"forsign\":\"" + name + \
+                "\", \"field\": \"" + name + "\", \"title\": \"" + name + \
+                "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
         data = {"Name": name, "Value": value, "Conditions": "true"}
         res = self.call("NewSign", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         count = Actions.get_count(url, "signatures", token)
-        valueE = "{\"forsign\": \"" + name + "\", \"field\": \"" +\
-        name + "\", \"title\": \"" + name +\
-        "\", \"params\":[{\"name\": \"test1\", \"text\": \"test2\"}]}"
+        valueE = "{\"forsign\": \"" + name + "\", \"field\": \"" + \
+                 name + "\", \"title\": \"" + name + \
+                 "\", \"params\":[{\"name\": \"test1\", \"text\": \"test2\"}]}"
         dataEdit = {"Id": count, "Value": valueE, "Conditions": "true"}
         res = self.call("EditSign", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_new_app_param(self):
-        name = "param_"+Tools.generate_random_name()
-        data = {"ApplicationId": 1, "Name": name, "Value": "myParam", "Conditions": "true" }
+        name = "param_" + Tools.generate_random_name()
+        data = {"ApplicationId": 1, "Name": name, "Value": "myParam", "Conditions": "true"}
         res = self.call("NewAppParam", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_edit_app_param(self):
-        name = "param_"+Tools.generate_random_name()
-        data = {"ApplicationId": 1, "Name": name, "Value": "myParam", "Conditions": "true" }
+        name = "param_" + Tools.generate_random_name()
+        data = {"ApplicationId": 1, "Name": name, "Value": "myParam", "Conditions": "true"}
         res = self.call("NewAppParam", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        data2 = {"Id": 1, "Name": name, "Value": "myParamEdited", "Conditions": "true" }
+        data2 = {"Id": 1, "Name": name, "Value": "myParamEdited", "Conditions": "true"}
         res = self.call("EditAppParam", data2)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -1166,7 +1161,7 @@ class TestSystemContracts(unittest.TestCase):
         # NewDelayedContract
         newLimit = 3
         data = {"Contract": contract_name, "EveryBlock": "1",
-                "Conditions": "true", "Limit":newLimit}
+                "Conditions": "true", "Limit": newLimit}
         res = self.call("NewDelayedContract", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -1184,7 +1179,7 @@ class TestSystemContracts(unittest.TestCase):
         self.waitBlockId(old_block_id, newLimit)
         # EditDelayedContract
         editLimit = 2
-        data = {"Id":id, "Contract": contract_name, "EveryBlock": "1", "Conditions": "true", "Limit":editLimit}
+        data = {"Id": id, "Contract": contract_name, "EveryBlock": "1", "Conditions": "true", "Limit": editLimit}
         res = self.call("EditDelayedContract", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -1193,23 +1188,23 @@ class TestSystemContracts(unittest.TestCase):
         self.waitBlockId(old_block_id, editLimit)
         # verify records count in table
         count = Actions.get_count(url, table_name, token)
-        self.assertEqual(int(count), newLimit+editLimit)
+        self.assertEqual(int(count), newLimit + editLimit)
 
     def test_upload_binary(self):
-        name = "image_"+Tools.generate_random_name()
+        name = "image_" + Tools.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
         data = {"Name": name, "ApplicationId": 1}
         resp = Actions.call_contract_with_files(url, prKey, "UploadBinary",
-                                              data, files, token)
+                                                data, files, token)
         res = self.assertTxInBlock(resp, token)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_update_system_parameters(self):
-        data = {"Name": "max_block_user_tx", "Value" : "2"}
+        data = {"Name": "max_block_user_tx", "Value": "2"}
         res = self.call("UpdateSysParam", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -1337,7 +1332,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call(contractName, "")
         msg = "There is loop in @1" + contractName + " contract"
         self.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
-        
+
     def test_contract_memory_limit(self):
         # add contract with memory limit
         body = """
@@ -1405,8 +1400,8 @@ class TestSystemContracts(unittest.TestCase):
         appID = 1
         data = {}
         resExport = self.call("Export", data)
-        founderID = Db.getFounderId(db)
-        exportAppData = Db.getExportAppData(db, appID, founderID)
+        founderID = Db.get_founder_id(db)
+        exportAppData = Db.get_export_app_data(db, appID, founderID)
         jsonApp = str(exportAppData, encoding='utf-8')
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
         with open(path, 'w', encoding='UTF-8') as f:
@@ -1417,7 +1412,7 @@ class TestSystemContracts(unittest.TestCase):
             fileExist = False
         mustBe = dict(resultExport=True,
                       resultFile=True)
-        actual = dict(resultExport=int(resExport["blockid"])>0,
+        actual = dict(resultExport=int(resExport["blockid"]) > 0,
                       resultFile=fileExist)
         self.assertDictEqual(mustBe, actual, "test_Export is failed!")
 
@@ -1427,14 +1422,14 @@ class TestSystemContracts(unittest.TestCase):
             file = f.read()
         files = {'input_file': file}
         resp = Actions.call_contract_with_files(url, prKey, "ImportUpload", {},
-                                              files, token)
+                                                files, token)
         resImportUpload = self.assertTxInBlock(resp, token)
         self.assertGreater(resImportUpload["blockid"], 0,
                            "BlockId is not generated: " + str(resImportUpload))
 
     def test_ei4_Import(self):
-        founderID = Db.getFounderId(db)
-        importAppData = Db.getImportAppData(db, founderID)
+        founderID = Db.get_founder_id(db)
+        importAppData = Db.get_import_app_data(db, founderID)
         importAppData = importAppData['data']
         contractName = "Import"
         data = [{"contract": contractName,
