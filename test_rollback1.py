@@ -21,7 +21,7 @@ class TestRollback1(unittest.TestCase):
         lData = Actions.login(url, prKey, 0)
         token = lData["jwtToken"]
 
-    def impApp(self, appName, url, prKey, token):
+    def imp_app(self, appName, url, prKey, token):
         path = os.path.join(os.getcwd(), "fixtures", "basic", appName + ".json")
         with open(path, 'r', encoding="utf8") as f:
             file = f.read()
@@ -72,7 +72,7 @@ class TestRollback1(unittest.TestCase):
         res = self.call("NewContract", dataC)
         return name, code
 
-    def addNotification(self):
+    def add_notification(self):
         # create contract, wich added record in notifications table
         body = """
         {
@@ -111,10 +111,10 @@ class TestRollback1(unittest.TestCase):
         dataEdit["NewColumnPerm"] = "ContractConditions(\"MainCondition\")"
         res = self.call("EditTable", dataEdit)
 
-    def getCountTable(self,name):
+    def get_count_table(self, name):
         return Db.get_count_table(db, name)
 
-    def addBinary(self):
+    def add_binary(self):
         name = "image_" + Tools.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
@@ -127,7 +127,7 @@ class TestRollback1(unittest.TestCase):
                              resp['hash'], token)
         self.assertGreater(int(res['blockid']), 0, "BlockId is not generated: " + str(res))
 
-    def addUserTable(self):
+    def add_user_table(self):
         # add table
         column = """[{"name":"MyName","type":"varchar", 
                     "index": "1", "conditions":"true"},
@@ -144,7 +144,7 @@ class TestRollback1(unittest.TestCase):
         res = self.call("NewTable", data)
         return tableName
 
-    def insertToUserTable(self, tableName):
+    def insert_to_user_table(self, tableName):
         # create contarct, wich added record in created table
         body = """
         {
@@ -162,7 +162,7 @@ class TestRollback1(unittest.TestCase):
         # call contarct, wich added record in created table
         res = self.call(name, data)
 
-    def updateUserTable(self, tableName):
+    def update_user_table(self, tableName):
         # create contarct, wich updated record in created table
         body = """
         {
@@ -351,13 +351,13 @@ class TestRollback1(unittest.TestCase):
 
     def test_rollback1(self):
         # Install apps
-        self.impApp("admin", url, prKey, token)
-        self.impApp("system_parameters", url, prKey, token)
+        self.imp_app("admin", url, prKey, token)
+        self.imp_app("system_parameters", url, prKey, token)
         print("Start rollback test")
-        self.addNotification()
-        self.addBinary()
-        tableName = self.addUserTable()
-        self.insertToUserTable(tableName)
+        self.add_notification()
+        self.add_binary()
+        tableName = self.add_user_table()
+        self.insert_to_user_table(tableName)
         # Save to file block id for rollback
         rollbackBlockId = Actions.get_max_block_id(url, token)
         file = os.path.join(os.getcwd(), "blockId.txt")
@@ -374,12 +374,12 @@ class TestRollback1(unittest.TestCase):
         with open(file, 'w') as fconf:
             json.dump(dbUserTableInfo, fconf)
         # Save to file all tables state
-        dbInformation = Db.get_count_DB_objects(host, db, login, pas)
-        dbInformation = Db.getCountDBObjects(db)
+        dbInformation = Db.get_count_DB_objects(db)
+        dbInformation = Db.get_count_DB_objects(db)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'w') as fconf:
             json.dump(dbInformation, fconf)
-        self.updateUserTable(tableName)
+        self.update_user_table(tableName)
         self.money_transfer()
         contract, code = self.create_contract("")
         self.edit_contract(contract, code)
@@ -404,5 +404,5 @@ class TestRollback1(unittest.TestCase):
         self.edit_lang(langs["count"], lang)
         sign = self.new_sign()
         self.edit_sign(sign)
-        self.impApp("basic", url, prKey, token)
+        self.imp_app("basic", url, prKey, token)
         time.sleep(20)

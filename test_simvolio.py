@@ -23,7 +23,7 @@ class TestSystemContracts(unittest.TestCase):
 
         token = self.data["jwtToken"]
 
-    def assertTxInBlock(self, result, jwtToken):
+    def assert_tx_in_block(self, result, jwtToken):
         self.assertIn("hash", result)
         hash = result['hash']
         status = Actions.tx_status(url, pause, hash, jwtToken)
@@ -35,10 +35,10 @@ class TestSystemContracts(unittest.TestCase):
 
     def call(self, name, data):
         resp = Actions.call_contract(url, prKey, name, data, token)
-        resp = self.assertTxInBlock(resp, token)
+        resp = self.assert_tx_in_block(resp, token)
         return resp
 
-    def assertMultiTxInBlock(self, result, jwtToken):
+    def assert_multi_tx_in_block(self, result, jwtToken):
         self.assertIn("hashes", result)
         hashes = result['hashes']
         result = Actions.tx_status_multi(url, pause, hashes, jwtToken)
@@ -50,10 +50,10 @@ class TestSystemContracts(unittest.TestCase):
     def callMulti(self, name, data, sleep=0):
         resp = Actions.call_multi_contract(url, prKey, name, data, token)
         time.sleep(sleep)
-        resp = self.assertMultiTxInBlock(resp, token)
+        resp = self.assert_multi_tx_in_block(resp, token)
         return resp
 
-    def waitBlockId(self, old_block_id, limit):
+    def wait_block_id(self, old_block_id, limit):
         while True:
             # add contract, which get block_id
             body = "{\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
@@ -1176,7 +1176,7 @@ class TestSystemContracts(unittest.TestCase):
                 id = res["list"][i]["id"]
             i = i + 1
         # wait block_id until run CallDelayedContract
-        self.waitBlockId(old_block_id, newLimit)
+        self.wait_block_id(old_block_id, newLimit)
         # EditDelayedContract
         editLimit = 2
         data = {"Id": id, "Contract": contract_name, "EveryBlock": "1", "Conditions": "true", "Limit": editLimit}
@@ -1185,7 +1185,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         old_block_id = res["blockid"]
         # wait block_id until run CallDelayedContract
-        self.waitBlockId(old_block_id, editLimit)
+        self.wait_block_id(old_block_id, editLimit)
         # verify records count in table
         count = Actions.get_count(url, table_name, token)
         self.assertEqual(int(count), newLimit + editLimit)
@@ -1199,7 +1199,7 @@ class TestSystemContracts(unittest.TestCase):
         data = {"Name": name, "ApplicationId": 1}
         resp = Actions.call_contract_with_files(url, prKey, "UploadBinary",
                                                 data, files, token)
-        res = self.assertTxInBlock(resp, token)
+        res = self.assert_tx_in_block(resp, token)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
@@ -1423,7 +1423,7 @@ class TestSystemContracts(unittest.TestCase):
         files = {'input_file': file}
         resp = Actions.call_contract_with_files(url, prKey, "ImportUpload", {},
                                                 files, token)
-        resImportUpload = self.assertTxInBlock(resp, token)
+        resImportUpload = self.assert_tx_in_block(resp, token)
         self.assertGreater(resImportUpload["blockid"], 0,
                            "BlockId is not generated: " + str(resImportUpload))
 

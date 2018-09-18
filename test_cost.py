@@ -20,13 +20,12 @@ class TestCost():
         keys = Tools.readFixtures("keys")
         print("setup_class finished")
         TestCost.createContracts()
-        
+
     def setup(self):
         print("setup")
-        self.data = Actions.login(conf["2"]["url"],keys["key2"], 0)
+        self.data = Actions.login(conf["2"]["url"], keys["key2"], 0)
         self.token = self.data["jwtToken"]
 
-        
     def getNodeBalances(self):
         nodeCount = len(conf)
         i = 1
@@ -35,8 +34,8 @@ class TestCost():
             nodeBalance.append(Db.get_balance_from_db(conf["1"]["db"], conf[str(i)]["keyID"]))
             i = i + 1
         return nodeBalance
-    
-    @staticmethod 
+
+    @staticmethod
     def createContracts():
         global dataCreater
         dataCreater = Actions.login(conf["1"]["url"], conf["1"]["private_key"], 0)
@@ -47,37 +46,37 @@ class TestCost():
                 "Conditions": "true"}
         print("wait: ", wait)
         result = Actions.call_contract(conf["1"]["url"], conf["1"]["private_key"],
-                                     "NewContract", data, tokenCreater)
+                                       "NewContract", data, tokenCreater)
         status = Actions.tx_status(conf["1"]["url"], wait,
-                                  result['hash'], tokenCreater)
-        
+                                   result['hash'], tokenCreater)
+
     def activateContract(self):
         dataCreater = Actions.login(conf["2"]["url"], conf["1"]["private_key"], 0)
         tokenCreater = dataCreater["jwtToken"]
         id = Actions.get_contract_id(conf["2"]["url"], "CostContract", tokenCreater)
         data = {"Id": id}
         result = Actions.call_contract(conf["2"]["url"], conf["1"]["private_key"],
-                                     "ActivateContract", data, tokenCreater)
+                                       "ActivateContract", data, tokenCreater)
 
         status = Actions.tx_status(conf["2"]["url"], wait,
-                                  result['hash'], tokenCreater)
-        
+                                   result['hash'], tokenCreater)
+
     def deactivateContract(self):
         dataCreater = Actions.login(conf["1"]["url"], conf["1"]["private_key"], 0)
         tokenCreater = dataCreater["jwtToken"]
         id = Actions.get_contract_id(conf["1"]["url"], "CostContract", tokenCreater)
         data = {"Id": id}
         result = Actions.call_contract(conf["1"]["url"], conf["1"]["private_key"],
-                                     "DeactivateContract", data, tokenCreater)
+                                       "DeactivateContract", data, tokenCreater)
         status = Actions.tx_status(conf["1"]["url"], wait, result['hash'], tokenCreater)
 
     def isCommissionsInHistory(self, nodeCommision, idFrom, platformaCommission, node):
         isNodeCommission = Actions.isCommissionInHistory(conf["1"]["db"], idFrom,
-                                                             conf[str(node + 1)]["keyID"],
-                                                             nodeCommision)
+                                                         conf[str(node + 1)]["keyID"],
+                                                         nodeCommision)
         isPlatformCommission = Actions.isCommissionInHistory(conf["1"]["db"], idFrom,
-                                                                 conf["1"]["keyID"],
-                                                                 platformaCommission)
+                                                             conf["1"]["keyID"],
+                                                             platformaCommission)
         if isNodeCommission and isPlatformCommission:
             return True
         else:
@@ -133,5 +132,4 @@ class TestCost():
                               summ=summAfter,
                               history=True)
         unittest.TestCase.assertDictEqual(dictValid, dictExpect,
-                             "Error in comissions run activated contract")
-
+                                          "Error in comissions run activated contract")
