@@ -6,7 +6,7 @@ from libs.actions import Actions
 from libs.tools import Tools
 from libs.db import Db
 
-class TestBlockChain(unittest.TestCase):
+class TestBlockChain():
 
     def create_contract(self, url, prKey):
         code,name = Tools.generate_name_and_code("")

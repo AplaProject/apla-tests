@@ -96,15 +96,25 @@ class Actions(object):
             time.sleep(1)
             resp = requests.get(urlEnd, headers={'Authorization': jvtToken})
             jresp = resp.json()
+            print(jresp)
+            status = {}
             if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
-                status = resp.json()
+                print("if")
+                break
             else:
-                sec = sec + 1        
-        if 'errmsg' not in status and int(status['blockid']) > 0:
-            return {"blockid": int(status['blockid']), "result": status['result'],
+                print("else")
+                sec = sec + 1
+                print(sec)   
+        print("status", jresp)
+        print("blockid", jresp['blockid'])
+        if 'errmsg' not in jresp and jresp['blockid'] == '':
+            return {"blockid": None, "result": None,
+                "error": None}     
+        if 'errmsg' not in jresp and int(jresp['blockid']) > 0:
+            return {"blockid": int(jresp['blockid']), "result": jresp['result'],
                 "error": None}
         else:
-            return {"blockid": 0, "error": status['errmsg']['error'], "result": None}
+            return {"blockid": 0, "error": jresp['errmsg']['error'], "result": None}
 
 
     def tx_status_multi(url, sleepTime, hshs, jvtToken):
