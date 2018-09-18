@@ -16,7 +16,7 @@ class TestMultiApi(unittest.TestCase):
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
 
-    def assertMultiTxInBlock(self, result, jwtToken):
+    def assert_multi_tx_in_block(self, result, jwtToken):
         self.assertIn("hashes", result)
         hashes = result['hashes']
         result = Actions.tx_status_multi(url, pause, hashes, jwtToken)
@@ -24,9 +24,9 @@ class TestMultiApi(unittest.TestCase):
             self.assertNotIn('errmsg', status)
             self.assertGreater(int(status["blockid"]), 0, "BlockID not generated")
 
-    def callMulti(self, name, data):
+    def call_multi(self, name, data):
         resp = Actions.call_multi_contract(url, prKey, name, data, token)
-        resp = self.assertMultiTxInBlock(resp, token)
+        resp = self.assert_multi_tx_in_block(resp, token)
         return resp
 
 
@@ -36,7 +36,7 @@ class TestMultiApi(unittest.TestCase):
         data = [{"contract": contractName,
                  "params":{"Name": block, "Value": "Hello page!", "ApplicationId": "1",
                 "Conditions": "true"}}]
-        res = self.callMulti(contractName, data)
+        res = self.call_multi(contractName, data)
 
     def test_new_interface_block_multi(self):
         contractName = "NewBlock"
@@ -44,7 +44,7 @@ class TestMultiApi(unittest.TestCase):
                  "params": {"Name": "Block_" + Tools.generate_random_name(), "Value": "Hello page!",
                             "ApplicationId": "1",
                             "Conditions": "true"}} for _ in range(2)]
-        res = self.callMulti(contractName, data)
+        res = self.call_multi(contractName, data)
      
     def test_new_lang(self):
         contractName = "NewLang"
@@ -53,11 +53,11 @@ class TestMultiApi(unittest.TestCase):
                  "params": {"ApplicationId": "1", "Name": nameLang,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
                 "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}}]
-        res = self.callMulti(contractName, data)
+        res = self.call_multi(contractName, data)
 
     def test_new_page(self):
         contractName = "NewPage"
         name = "Page_" + Tools.generate_random_name()
         data = [{"contract": contractName,
                  "params":{"Name":name, "Value":"SetVar(a,\"Hello\") \n Div(Body: #a#)", "Conditions":"true", "Menu":"default_menu", "ApplicationId": "1"}}]
-        res = self.callMulti(contractName, data)
+        res = self.call_multi(contractName, data)
