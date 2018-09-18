@@ -762,5 +762,47 @@ class SystemContractsTestCase(unittest.TestCase):
         print(res)
         self.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
 
+
+    def test_32(self):
+        body = """
+        {
+            data { }
+            conditions {
+                DelColumn($r,$r)
+            }
+            action { }
+        }
+        """
+        code = utils.generate_name_and_code(body)
+        data = {
+            "Value": code,
+            "ApplicationId": 1,
+            "Conditions": "true"
+        }
+        res = self.call("NewContract", data)
+        print(res)
+        self.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
+
+
+    def test_33(self):
+        body = """
+        {
+            data { }
+            conditions {
+                DelTable($r)
+            }
+            action { }
+        }
+        """
+        code = utils.generate_name_and_code(body)
+        data = {
+            "Value": code,
+            "ApplicationId": 1,
+            "Conditions": "true"
+        }
+        res = self.call("NewContract", data)
+        print(res)
+        self.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
+
 if __name__ == '__main__':
     unittest.main()
