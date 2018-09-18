@@ -10,6 +10,7 @@ class TestBlockChain():
 
     def setup_class(self):
         self.t = Tools()
+        self.uni = unittest.TestCase()
 
     def create_contract(self, url, prKey):
         code, name = self.t.generate_name_and_code("")
@@ -73,7 +74,7 @@ class TestBlockChain():
         msg += str(count_contracts1) + str(amounts1) + str(hash1) + str(node_position) + "\n"
         msg += str(count_contracts2) + str(amounts1) + str(hash1) + str(node_position) + "\n"
         msg += "Amounts summ: " + str(sumAmounts)
-        self.assertDictEqual(dict1, dict2, msg)
+        self.uni.assertDictEqual(dict1, dict2, msg)
         
     def test_block_chain_edit(self):
         fullConfig = Tools.read_config("nodes")
@@ -119,5 +120,5 @@ class TestBlockChain():
         msg += str(count_contracts1) + str(amounts1) + str(hash1) + str(node_position) + "\n"
         msg += str(count_contracts2) + str(amounts1) + str(hash1) + str(node_position) + "\n"
         msg += "Amounts summ: " + str(sumAmounts)
-        self.assertDictEqual(dict1, dict2, msg)
+        self.uni.assertDictEqual(dict1, dict2, msg)
     
