@@ -4,6 +4,8 @@ import time
 from libs.actions import Actions
 from libs.tools import Tools
 
+#TODO bugs
+
 class CompareBlocks(unittest.TestCase):
 
     def get_load_time(self, url, token, maxBlock):

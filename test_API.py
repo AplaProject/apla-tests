@@ -19,6 +19,7 @@ class TestApi(unittest.TestCase):
         pause = Tools.read_config("test")["wait_tx_status"]
         prKey = self.config["1"]['private_key']
         self.data = Actions.login(url, prKey, 0)
+        self.t = Tools()
         token = self.data["jwtToken"]
 
     def assert_tx_in_block(self, result, jwtToken):
@@ -546,7 +547,7 @@ class TestApi(unittest.TestCase):
             }
         }
         """ % (founderID, lastRec)
-        code, name = Tools.generate_name_and_code(code)
+        code, name = self.t.generate_name_and_code(code)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -614,7 +615,7 @@ class TestApi(unittest.TestCase):
                    }
                }
                """ % (founderID, lastRec)
-        code, name = Tools.generate_name_and_code(code)
+        code, name = self.t.generate_name_and_code(code)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)

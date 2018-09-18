@@ -20,6 +20,7 @@ class TestRollback1(unittest.TestCase):
         waitTx = Tools.read_config("test")["wait_tx_status"]
         lData = Actions.login(url, prKey, 0)
         token = lData["jwtToken"]
+        self.t = Tools()
 
     def imp_app(self, appName, url, prKey, token):
         path = os.path.join(os.getcwd(), "fixtures", "basic", appName + ".json")
@@ -61,7 +62,7 @@ class TestRollback1(unittest.TestCase):
         return res
 
     def create_contract(self, data):
-        code, name = Tools.generate_name_and_code("")
+        code, name = self.t.generate_name_and_code("")
         dataC = {}
         if data == "":
             dataC = {"Wallet": '', "ApplicationId": 1,
@@ -86,7 +87,7 @@ class TestRollback1(unittest.TestCase):
             }
         }
         """
-        code, name = Tools.generate_name_and_code(body)
+        code, name = self.t.generate_name_and_code(body)
         data = {"Wallet": '', "ApplicationId": 1,
                 "Value": code,
                 "Conditions": "ContractConditions(`MainCondition`)"}
@@ -155,7 +156,7 @@ class TestRollback1(unittest.TestCase):
             }
         }
         """ % tableName
-        code, name = Tools.generate_name_and_code(body)
+        code, name = self.t.generate_name_and_code(body)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -173,7 +174,7 @@ class TestRollback1(unittest.TestCase):
             }
         }
         """ % tableName
-        code, name = Tools.generate_name_and_code(body)
+        code, name = self.t.generate_name_and_code(body)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)

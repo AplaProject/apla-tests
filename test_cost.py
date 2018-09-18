@@ -9,6 +9,7 @@ from libs.db import Db
 from libs.tools import Tools
 
 
+
 class TestCost():
 
     def setup_class(cls):
@@ -130,5 +131,5 @@ class TestCost():
                               nodeBalance=bNodeBalance[node] + nodeCommission,
                               summ=summAfter,
                               history=True)
-        unittest.TestCase.assertDictEqual(dictValid, dictExpect,
+        unittest.TestCase().assertDictEqual(dictValid, dictExpect,
                                           "Error in comissions run activated contract")

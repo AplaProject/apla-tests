@@ -1,5 +1,4 @@
 from locust import HttpLocust, TaskSet, task
-import config
 from libs.actions import Actions
 from libs.tools import Tools
 
@@ -11,11 +10,12 @@ class WebsiteTasks(TaskSet):
         pause = Tools.read_config("test")["wait_tx_status"]
         prKey = self.config["1"]['private_key']
         self.data = Actions.login(url, prKey, 0)
+        self.t = Tools()
         token = self.data["jwtToken"]
     
     @task
     def NewContract(self):
-        code, name = Tools.generate_name_and_code("")
+        code, name = self.t.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
         sign = Actions.prepare_tx(url, prKey, "NewContract", token, data)
         dataContract = {"time": sign['time'], "signature": sign["signature"]}

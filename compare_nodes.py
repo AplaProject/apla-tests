@@ -1,5 +1,4 @@
 import unittest
-import config
 from builtins import sum
 
 from libs.actions import Actions

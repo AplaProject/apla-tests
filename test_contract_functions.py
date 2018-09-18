@@ -438,7 +438,7 @@ class TestContractFunctions(unittest.TestCase):
         code, name = self.generate_name_and_code(code)
         self.create_contract(code)
         # change contract
-        id = funcs.get_object_id(url, name, "contracts", token)
+        id = Actions.get_object_id(url, name, "contracts", token)
         newCode = code.replace(replacedString, "new_var")
         data = {"Id": id,
                 "Value": newCode}
@@ -459,7 +459,7 @@ class TestContractFunctions(unittest.TestCase):
                 "Conditions": "true"}
         self.call_contract("NewPage", data)
         # change page
-        id = funcs.get_object_id(url, name, "pages", token)
+        id = Actions.get_object_id(url, name, "pages", token)
         newValuePage = page.replace("Hello", "new_var")
         data = {"Id": id,
                 "Value": newValuePage}
@@ -507,6 +507,7 @@ class TestContractFunctions(unittest.TestCase):
         mustBe = "[@1" + outerName + " CallContract @1" + innerName + "]"
         self.assertEqual(mustBe, res["result"], "test_sys_var_stack is failed!")
 
+    #TODO db
     def test_getHistoryRowMenu(self):
         # create menu
         rollc_before = Db.get_max_id_from_table(db, "rollback_tx")
