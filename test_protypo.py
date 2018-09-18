@@ -21,7 +21,7 @@ class TestPrototipo():
         db2 = self.config["2"]["db"]
         self.maxDiff = None
 
-    def assertTxInBlock(self, result, jwtToken):
+    def assert_tx_in_block(self, result, jwtToken):
         self.assertIn("hash", result)
         status = Actions.tx_status(url,
                                    Tools.read_config("test")["wait_tx_status"],
@@ -35,19 +35,19 @@ class TestPrototipo():
                 "Conditions": "ContractConditions(`MainCondition`)"}
         result = Actions.call_contract(url, prKey, "NewContract",
                                        data, token)
-        self.assertTxInBlock(result, token)
+        self.assert_tx_in_block(result, token)
 
     def call_contract(self, name, data):
         result = Actions.call_contract(url, prKey, name,
                                        data, token)
-        self.assertTxInBlock(result, token)
+        self.assert_tx_in_block(result, token)
 
     def check_page(self, sourse):
         name = "Page_" + Tools.generate_random_name()
         data = {"Name": name, "Value": sourse, "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         resp = Actions.call_contract(url, prKey, "NewPage", data, token)
-        self.assertTxInBlock(resp, token)
+        self.assert_tx_in_block(resp, token)
         cont = Actions.get_content(url, "page", name, "", 1, token)
         return cont
 
@@ -401,13 +401,13 @@ class TestPrototipo():
                 "Name": lang,
                 "Trans": "{\"en\": \"Lang_en\", \"ru\" : \"Язык\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = Actions.call_contract(url, prKey, "NewLang", data, token)
-        self.assertTxInBlock(res, token)
+        self.assert_tx_in_block(res, token)
         world = "world_" + Tools.generate_random_name()
         data = {"ApplicationId": 1,
                 "Name": world,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = Actions.call_contract(url, prKey, "NewLang", data, token)
-        self.assertTxInBlock(res, token)
+        self.assert_tx_in_block(res, token)
         contract = self.pages["langRes"]
         content = self.check_page("LangRes(" + lang + ") LangRes(" + world + ", ru)")
 
@@ -435,7 +435,7 @@ class TestPrototipo():
         data = {"Name": name, "ApplicationId": 1,
                 "Value": "Hello page!", "Conditions": "true"}
         res = Actions.call_contract(url, prKey, "NewBlock", data, token)
-        self.assertTxInBlock(res, token)
+        self.assert_tx_in_block(res, token)
         contract = self.pages["include"]
         content = self.check_page("Include(" + name + ")")
         unittest.TestCase.assertEqual(content["tree"][0]["text"], contract["content"][0]["text"],
@@ -629,7 +629,7 @@ class TestPrototipo():
         data = {"Name": name, "ApplicationId": appID}
         resp = Actions.call_contract_with_files(url, prKey, "UploadBinary", data,
                                                 files, token)
-        self.assertTxInBlock(resp, token)
+        self.assert_tx_in_block(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
         MemberID = Db.get_founder_id(db2)
@@ -650,7 +650,7 @@ class TestPrototipo():
         data = {"Name": name, "ApplicationId": appID}
         resp = Actions.call_contract_with_files(url, prKey, "UploadBinary", data,
                                                 files, token)
-        res = self.assertTxInBlock(resp, token)
+        res = self.assert_tx_in_block(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
         lastRec = Actions.get_count(url, "binaries", token)
@@ -670,7 +670,7 @@ class TestPrototipo():
         data = {"Name": name, "ApplicationId": appID}
         resp = Actions.call_contract_with_files(url, prKey, "UploadBinary", data,
                                                 files, token)
-        self.assertTxInBlock(resp, token)
+        self.assert_tx_in_block(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
         MemberID = Db.get_founder_id(db2)
@@ -695,7 +695,7 @@ class TestPrototipo():
         data = {"Name": name, "ApplicationId": appID}
         resp = Actions.call_contract_with_files(url, prKey, "UploadBinary", data,
                                                 files, token)
-        self.assertTxInBlock(resp, token)
+        self.assert_tx_in_block(resp, token)
         self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
         lastRec = Actions.get_count(url, "binaries", token)

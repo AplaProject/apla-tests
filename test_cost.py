@@ -7,7 +7,6 @@ from genesis_blockchain_tools.crypto import get_public_key
 from libs.actions import Actions
 from libs.db import Db
 from libs.tools import Tools
-from asyncio.tasks import wait
 
 
 class TestCost():
@@ -15,9 +14,9 @@ class TestCost():
     def setup_class(cls):
         print("setup_class")
         global conf, keys, wait
-        wait = Tools.readConfig("test")["wait_tx_status"]
-        conf = Tools.readConfig("nodes")
-        keys = Tools.readFixtures("keys")
+        wait = Tools.read_config("test")["wait_tx_status"]
+        conf = Tools.read_config("nodes")
+        keys = Tools.read_fixtures("keys")
         print("setup_class finished")
         TestCost.createContracts()
 
@@ -71,10 +70,10 @@ class TestCost():
         status = Actions.tx_status(conf["1"]["url"], wait, result['hash'], tokenCreater)
 
     def isCommissionsInHistory(self, nodeCommision, idFrom, platformaCommission, node):
-        isNodeCommission = Actions.isCommissionInHistory(conf["1"]["db"], idFrom,
+        isNodeCommission = Db.is_commission_in_history(conf["1"]["db"], idFrom,
                                                          conf[str(node + 1)]["keyID"],
                                                          nodeCommision)
-        isPlatformCommission = Actions.isCommissionInHistory(conf["1"]["db"], idFrom,
+        isPlatformCommission = Db.is_commission_in_history(conf["1"]["db"], idFrom,
                                                              conf["1"]["keyID"],
                                                              platformaCommission)
         if isNodeCommission and isPlatformCommission:
