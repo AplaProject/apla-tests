@@ -287,7 +287,7 @@ class TestApi(unittest.TestCase):
 
     def test_get_content_source(self):
         # Create new page for test
-        name = "Page_" + Actions.generate_random_name()
+        name = "Page_" + Tools.generate_random_name()
         data = {}
         data["Name"] = name
         data["Value"] = "SetVar(a,\"Hello\") \n Div(Body: #a#)"
@@ -571,7 +571,7 @@ class TestApi(unittest.TestCase):
 
     def test_get_avatar_without_login(self):
         # add file in binaries
-        name = "file_" + Actions.generate_random_name()
+        name = "file_" + Tools.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
@@ -649,13 +649,13 @@ class TestApi(unittest.TestCase):
         # 1. test with login
         # 2. test without login
         # 3. negative test without login
-        def isHashNotEmpty(hash):
+        def is_hash_not_empty(hash):
             hash = str(hash)
             if hash.find("{'hash':") != -1:
                 return True
             else:
                 return False
-        name = "Page_" + Actions.generate_random_name()
+        name = "Page_" + Tools.generate_random_name()
         data = {"Name": name, "Value": "Div(,Hello page!)", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         res = self.call("NewPage", data)
@@ -670,8 +670,8 @@ class TestApi(unittest.TestCase):
         mustBe = dict(authRes=True,
                       notAuthRes=True,
                       msg="Page not found")
-        actual = dict(authRes=isHashNotEmpty(authRes),
-                      notAuthRes=isHashNotEmpty(notAuthRes),
+        actual = dict(authRes=is_hash_not_empty(authRes),
+                      notAuthRes=is_hash_not_empty(notAuthRes),
                       msg=notAuthResNotExist["msg"])
         self.assertDictEqual(mustBe, actual, "Not all assertions passed in test_content_hash")
 

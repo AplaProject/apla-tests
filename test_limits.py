@@ -20,7 +20,7 @@ class TestLimits(unittest.TestCase):
                                   conf["1"]['private_key'], 0)
         token = self.data["jwtToken"]
 
-    def assertTxInBlock(self, result, jwtToken):
+    def assert_tx_in_block(self, result, jwtToken):
         self.assertIn("hash", result)
         hash = result['hash']
         status = Actions.tx_status(conf["2"]["url"], pause, hash, token)
@@ -34,7 +34,7 @@ class TestLimits(unittest.TestCase):
     def call(self, name, data):
         resp = Actions.call_contract(conf["2"]["url"], conf["1"]['private_key'],
                                      name, data, token)
-        res = self.assertTxInBlock(resp, token)
+        res = self.assert_tx_in_block(resp, token)
         return res
         
     def update_sys_param(self, param, value):

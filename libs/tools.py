@@ -7,7 +7,8 @@ from libs.actions import Actions
 
 
 class Tools(object):
-    
+
+    @staticmethod
     def json_to_list(js):
         fullList = []
         list = []
@@ -18,7 +19,8 @@ class Tools(object):
             tup = tuple(list)
             fullList.append(tup)
         return fullList
-    
+
+    @staticmethod
     def generate_random_name():
         name = []
         for _ in range(1, 30):
@@ -26,9 +28,9 @@ class Tools(object):
             name.append(sym)
         return "".join(name)
 
-    def generate_name_and_code(sourceCode):
-        name = "Cont_" + Tools.generate_random_name()
-        code = Tools.generate_code(sourceCode)
+    def generate_name_and_code(self, sourceCode):
+        name = "Cont_" + self.generate_random_name()
+        code = self.generate_code(sourceCode)
         return code, name
 
     def generate_code(contractName, sourceCode):
@@ -38,7 +40,8 @@ class Tools(object):
             sCode = sourceCode
         code = "contract " + contractName + sCode
         return code
-    
+
+    @staticmethod
     def read_config(type):
         path = ""
         if type == "main":
@@ -51,6 +54,7 @@ class Tools(object):
             data = f.read()
         return json.loads(data)
 
+    @staticmethod
     def read_fixtures(type):
         path = ""
         if type == "contracts":

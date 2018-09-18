@@ -12,7 +12,7 @@ class Rollback2(unittest.TestCase):
         self.conf = Tools.read_config("nodes")
         db = self.conf["db"]
         # Get from file all tables state
-        dbInformation = Db.getCountDBObjects(db)
+        dbInformation = Db.get_count_DB_objects(db)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'r') as dbF:
             data = dbF.read()

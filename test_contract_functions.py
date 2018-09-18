@@ -20,7 +20,7 @@ class TestContractFunctions(unittest.TestCase):
         self.data = Actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
 
-    def assertTxInBlock(self, result, jwtToken):
+    def assert_tx_in_block(self, result, jwtToken):
         self.assertIn("hash", result)
         status = Actions.tx_status(url, wait, result['hash'], jwtToken)
         print(status)
@@ -38,12 +38,12 @@ class TestContractFunctions(unittest.TestCase):
                 "Conditions": "ContractConditions(`MainCondition`)"}
         result = Actions.call_contract(url, prKey, "NewContract",
                                        data, token)
-        self.assertTxInBlock(result, token)
+        self.assert_tx_in_block(result, token)
 
     def call_contract(self, name, data):
         result = Actions.call_contract(url, prKey, name,
                                        data, token)
-        self.assertTxInBlock(result, token)
+        self.assert_tx_in_block(result, token)
 
     def check_contract(self, sourse, checkPoint):
         code, name = self.generate_name_and_code(sourse)
@@ -75,27 +75,27 @@ class TestContractFunctions(unittest.TestCase):
         result = Actions.tx_status(url, wait, hash, token)
         self.assertIn(checkPoint, result["result"], "error")
 
-    def test_contract_dbfind(self):
+    def test_contract_db_find(self):
         contract = self.contracts["dbFind"]
         self.check_contract(contract["code"], contract["asert"])
 
-    def test_contract_ecosysParam(self):
+    def test_contract_ecosys_param(self):
         contract = self.contracts["ecosysParam"]
         self.check_contract(contract["code"], contract["asert"])
 
-    def test_contract_dbRow(self):
+    def test_contract_db_row(self):
         contract = self.contracts["dbRow"]
         self.check_contract(contract["code"], contract["asert"])
 
-    def test_contract_ifMap(self):
+    def test_contract_if_map(self):
         contract = self.contracts["ifMap"]
         self.check_contract(contract["code"], contract["asert"])
 
-    def test_contract_evalCondition(self):
+    def test_contract_eval_condition(self):
         contract = self.contracts["evalCondition"]
         self.check_contract(contract["code"], contract["asert"])
 
-    def test_contract_validateCondition(self):
+    def test_contract_validate_condition(self):
         contract = self.contracts["validateCondition"]
         self.check_contract(contract["code"], contract["asert"])
 
@@ -509,7 +509,7 @@ class TestContractFunctions(unittest.TestCase):
 
     def test_getHistoryRowMenu(self):
         # create menu
-        rollc_before = Actions.getMaxIdFromTable(db, "rollback_tx")
+        rollc_before = Db.get_max_id_from_table(db, "rollback_tx")
         name = Tools.generate_random_name()
         menu = "This is new menu"
         data = {"Name": name,
