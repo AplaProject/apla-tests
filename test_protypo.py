@@ -2,31 +2,30 @@ import unittest
 import json
 import os
 
-from libs.actions import Actions
-from libs.tools import Tools
-from libs.db import Db
+from libs import actions
+from libs import tools
+from libs import db
 
 
 class TestPrototipo():
 
     @classmethod
     def setup_class(self):
-        self.config = Tools.read_config("nodes")
+        self.config = tools.read_config("nodes")
         global url, prKey, token, db2
-        self.pages = Tools.read_fixtures("pages")
+        self.pages = tools.read_fixtures("pages")
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
-        self.data = Actions.login(url, prKey, 0)
+        self.data = actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
         db2 = self.config["2"]["db"]
         self.maxDiff = None
         self.uni = unittest.TestCase()
-        self.t = Tools()
 
     def assert_tx_in_block(self, result, jwtToken):
         self.uni.assertIn("hash", result)
-        status = Actions.tx_status(url,
-                                   Tools.read_config("test")["wait_tx_status"],
+        status = actions.tx_status(url,
+                                   tools.read_config("test")["wait_tx_status"],
                                    result['hash'], jwtToken)
         self.uni.assertNotIn(json.dumps(status), 'errmsg')
         self.uni.assertGreater(len(status['blockid']), 0)
@@ -35,22 +34,22 @@ class TestPrototipo():
         data = {"Wallet": "", "ApplicationId": 1,
                 "Value": code,
                 "Conditions": "ContractConditions(`MainCondition`)"}
-        result = Actions.call_contract(url, prKey, "NewContract",
+        result = actions.call_contract(url, prKey, "NewContract",
                                        data, token)
         self.assert_tx_in_block(result, token)
 
     def call_contract(self, name, data):
-        result = Actions.call_contract(url, prKey, name,
+        result = actions.call_contract(url, prKey, name,
                                        data, token)
         self.assert_tx_in_block(result, token)
 
     def check_page(self, sourse):
-        name = "Page_" + Tools.generate_random_name()
+        name = "Page_" + tools.generate_random_name()
         data = {"Name": name, "Value": sourse, "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
-        resp = Actions.call_contract(url, prKey, "NewPage", data, token)
+        resp = actions.call_contract(url, prKey, "NewPage", data, token)
         self.assert_tx_in_block(resp, token)
-        cont = Actions.get_content(url, "page", name, "", 1, token)
+        cont = actions.get_content(url, "page", name, "", 1, token)
         return cont
 
     def findPositionElementInTree(self, contentTree, tagName):
@@ -70,14 +69,14 @@ class TestPrototipo():
 
     def check_post_api(self, endPoint, data, keys):
         end = url + endPoint
-        result = Actions.call_post_api(end, data, token)
+        result = actions.call_post_api(end, data, token)
         for key in keys:
             self.uni.assertIn(key, result)
         return result
 
     def check_get_api(self, endPoint, data, keys):
         end = url + endPoint
-        result = Actions.call_get_api(end, data, token)
+        result = actions.call_get_api(end, data, token)
         for key in keys:
             self.uni.assertIn(key, result)
         return result
@@ -398,17 +397,17 @@ class TestPrototipo():
                                           "span has problem: " + str(content["tree"]))
 
     def test_page_langRes(self):
-        lang = "lang_" + Tools.generate_random_name()
+        lang = "lang_" + tools.generate_random_name()
         data = {"ApplicationId": 1,
                 "Name": lang,
                 "Trans": "{\"en\": \"Lang_en\", \"ru\" : \"Язык\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
-        res = Actions.call_contract(url, prKey, "NewLang", data, token)
+        res = actions.call_contract(url, prKey, "NewLang", data, token)
         self.assert_tx_in_block(res, token)
-        world = "world_" + Tools.generate_random_name()
+        world = "world_" + tools.generate_random_name()
         data = {"ApplicationId": 1,
                 "Name": world,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
-        res = Actions.call_contract(url, prKey, "NewLang", data, token)
+        res = actions.call_contract(url, prKey, "NewLang", data, token)
         self.assert_tx_in_block(res, token)
         contract = self.pages["langRes"]
         content = self.check_page("LangRes(" + lang + ") LangRes(" + world + ", ru)")
@@ -433,10 +432,10 @@ class TestPrototipo():
                                           "inputErr has problem: " + str(content["tree"]))
 
     def test_page_include(self):
-        name = "Block_" + Tools.generate_random_name()
+        name = "Block_" + tools.generate_random_name()
         data = {"Name": name, "ApplicationId": 1,
                 "Value": "Hello page!", "Conditions": "true"}
-        res = Actions.call_contract(url, prKey, "NewBlock", data, token)
+        res = actions.call_contract(url, prKey, "NewBlock", data, token)
         self.assert_tx_in_block(res, token)
         contract = self.pages["include"]
         content = self.check_page("Include(" + name + ")")
@@ -622,20 +621,20 @@ class TestPrototipo():
 
     def test_binary(self):
         # this test has not fixture
-        name = "image_" + Tools.generate_random_name()
+        name = "image_" + tools.generate_random_name()
         appID = "1"
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
         data = {"Name": name, "ApplicationId": appID}
-        resp = Actions.call_contract_with_files(url, prKey, "UploadBinary", data,
+        resp = actions.call_contract_with_files(url, prKey, "UploadBinary", data,
                                                 files, token)
         self.assert_tx_in_block(resp, token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = Db.get_founder_id(db2)
-        lastRec = Actions.get_count(url, "binaries", token)
+        MemberID = db.get_founder_id(db2)
+        lastRec = actions.get_count(url, "binaries", token)
         content = self.check_page("Binary(Name: " + name + ", AppID: " + appID + ", MemberID: " + MemberID + ")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
         self.uni.assertEqual("/data/1_binaries/" + lastRec + "/data/b40ad01eacc0312f6dd1ff2a705756ec",
@@ -643,19 +642,19 @@ class TestPrototipo():
 
     def test_binary_by_id(self):
         # this test has not fixture
-        name = "image_" + Tools.generate_random_name()
+        name = "image_" + tools.generate_random_name()
         appID = "1"
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
         data = {"Name": name, "ApplicationId": appID}
-        resp = Actions.call_contract_with_files(url, prKey, "UploadBinary", data,
+        resp = actions.call_contract_with_files(url, prKey, "UploadBinary", data,
                                                 files, token)
         res = self.assert_tx_in_block(resp, token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        lastRec = Actions.get_count(url, "binaries", token)
+        lastRec = actions.get_count(url, "binaries", token)
         content = self.check_page("Binary().ById(" + lastRec + ")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
         self.uni.assertEqual("/data/1_binaries/" + lastRec + "/data/b40ad01eacc0312f6dd1ff2a705756ec",
@@ -663,20 +662,20 @@ class TestPrototipo():
 
     def test_image_binary(self):
         # this test has not fixture
-        name = "image_" + Tools.generate_random_name()
+        name = "image_" + tools.generate_random_name()
         appID = "1"
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
         data = {"Name": name, "ApplicationId": appID}
-        resp = Actions.call_contract_with_files(url, prKey, "UploadBinary", data,
+        resp = actions.call_contract_with_files(url, prKey, "UploadBinary", data,
                                                 files, token)
         self.assert_tx_in_block(resp, token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = Db.get_founder_id(db2)
-        lastRec = Actions.get_count(url, "binaries", token)
+        MemberID = db.get_founder_id(db2)
+        lastRec = actions.get_count(url, "binaries", token)
         content = self.check_page("Image(Binary(Name: " + name + ", AppID: " + appID + ", MemberID: " + MemberID + "))")
         partContent = content["tree"][0]
         mustBe = dict(tag=partContent['tag'],
@@ -688,19 +687,19 @@ class TestPrototipo():
 
     def test_image_binary_by_id(self):
         # this test has not fixture
-        name = "image_" + Tools.generate_random_name()
+        name = "image_" + tools.generate_random_name()
         appID = "1"
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
         data = {"Name": name, "ApplicationId": appID}
-        resp = Actions.call_contract_with_files(url, prKey, "UploadBinary", data,
+        resp = actions.call_contract_with_files(url, prKey, "UploadBinary", data,
                                                 files, token)
         self.assert_tx_in_block(resp, token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        lastRec = Actions.get_count(url, "binaries", token)
+        lastRec = actions.get_count(url, "binaries", token)
         content = self.check_page("Image(Binary().ById(" + lastRec + "))")
         partContent = content["tree"][0]
         mustBe = dict(tag=partContent['tag'],
@@ -970,10 +969,10 @@ class TestPrototipo():
                     action{ var %s int }
                 }
                 """ % replacedString
-        code, name = self.t.generate_name_and_code(code)
+        code, name = tools.generate_name_and_code(code)
         self.create_contract(code)
         # change contract
-        id = Actions.get_object_id(url, name, "contracts", token)
+        id = actions.get_object_id(url, name, "contracts", token)
         newCode = code.replace(replacedString, "new_var")
         data = {"Id": id,
                 "Value": newCode}
