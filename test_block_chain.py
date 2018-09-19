@@ -9,17 +9,17 @@ from libs.db import Db
 class TestBlockChain():
 
     def setup_class(self):
-        self.t = Tools()
         self.uni = unittest.TestCase()
 
     def create_contract(self, url, prKey):
-        code, name = self.t.generate_name_and_code("")
+        code, name = Tools.generate_name_and_code("")
         data = {'Wallet': '', 'Value': code, "ApplicationId": 1,
                 'Conditions': "ContractConditions(`MainCondition`)"}
         resp = Actions.call_contract(url, prKey, "NewContract", data, self.data1["jwtToken"])
         return name
     
     def edit_menu(self, url, prKey, id):
+        print("edit_menu started")
         dataEdit = {"Id": id, "Value": "tryam", "Conditions": "true"}
         res = Actions.call_contract(url, prKey, "EditMenu", dataEdit, self.data1["jwtToken"])
         
@@ -30,6 +30,7 @@ class TestBlockChain():
         return Actions.get_count(url, "menu", self.data1["jwtToken"])
     
     def test_block_chain(self):
+        print("test_block_chain started")
         fullConfig = Tools.read_config("nodes")
         nodes = len(fullConfig)
         config1 = fullConfig["1"]
@@ -43,8 +44,7 @@ class TestBlockChain():
         sumAmountsBefore = sum(amount[0] for amount in amountsB)
         while i < ts_count:
             contName = self.create_contract(config1["url"],
-                                            config1['private_key'],
-                                            )
+                                            config1['private_key'])
             i = i + 1
             time.sleep(1)
         time.sleep(120)
@@ -77,6 +77,7 @@ class TestBlockChain():
         self.uni.assertDictEqual(dict1, dict2, msg)
         
     def test_block_chain_edit(self):
+        print("test_block_chain_edit started")
         fullConfig = Tools.read_config("nodes")
         nodes = len(fullConfig)
         config1 = fullConfig["1"]
@@ -91,9 +92,9 @@ class TestBlockChain():
         amountsB = Db.get_user_token_amounts(db1)
         sumAmountsBefore = sum(amount[0] for amount in amountsB)
         while i < ts_count:
-            self.edit_menu(config1["url"],
-                                      config1['private_key'], id)
+            self.edit_menu(config1["url"], config1['private_key'], id)
             i = i + 1
+            print("i - ", i)
         time.sleep(120)
         count_contracts1 = Db.get_count_DB_objects(db1)["contracts"]
         count_contracts2 = Db.get_count_DB_objects(db2)["contracts"]
