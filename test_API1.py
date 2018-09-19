@@ -51,7 +51,7 @@ class TestApi():
         token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
-        self.assertIn("hash", result)
+        unittest.TestCase.assertIn(self, "hash", result)
         hash = result['hash']
         status = Actions.tx_status(url, pause, hash, jwtToken)
         if len(status['blockid']) > 0:

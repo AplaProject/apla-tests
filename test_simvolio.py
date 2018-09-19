@@ -20,7 +20,7 @@ class TestSystemContracts(unittest.TestCase):
         prKey = self.config["1"]['private_key']
         db = self.config["1"]["db"]
         self.data = Actions.login(url, prKey, 0)
-
+        self.t = Tools()
         token = self.data["jwtToken"]
 
     def assert_tx_in_block(self, result, jwtToken):
@@ -57,7 +57,7 @@ class TestSystemContracts(unittest.TestCase):
         while True:
             # add contract, which get block_id
             body = "{\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
-            code, name = Tools.generate_name_and_code(body)
+            code, name = self.t.generate_name_and_code(body)
             data = {"Value": code, "ApplicationId": 1,
                     "Conditions": "true"}
             res = self.call("NewContract", data)
@@ -68,14 +68,14 @@ class TestSystemContracts(unittest.TestCase):
                 break
 
     def test_create_ecosystem(self):
-        data = {"Name": Tools.generate_random_name("Ecosys_")}
+        data = {"Name": "Ecosys_" + Tools.generate_random_name()}
         res = self.call("NewEcosystem", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     # !!!
     def test_edit_application(self):
-        name = Tools.generate_random_name("App")
+        name = "App" + Tools.generate_random_name()
         data = {"Name": name, "Conditions": "true"}
         res = self.call("NewApplication", data)
         self.assertGreater(res["blockid"], 0,
@@ -87,7 +87,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_activate_application(self):
-        name = Tools.generate_random_name("App")
+        name = "App" + Tools.generate_random_name()
         data = {"Name": name, "Conditions": "true"}
         res = self.call("NewApplication", data)
         self.assertGreater(res["blockid"], 0,
@@ -103,7 +103,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_export_application(self):
-        name = Tools.generate_random_name("App")
+        name = "App" + Tools.generate_random_name()
         data = {"Name": name, "Conditions": "true"}
         res = self.call("NewApplication", data)
         self.assertGreater(res["blockid"], 0,
@@ -117,14 +117,14 @@ class TestSystemContracts(unittest.TestCase):
     # !!!
     def test_edit_ecosystem_name(self):
         id = 1
-        data = {"EcosystemID": id, "NewName": Tools.generate_random_name("Ecosys_")}
+        data = {"EcosystemID": id, "NewName": "Ecosys_" + Tools.generate_random_name()}
         resBlockId = self.call("EditEcosystemName", data)
         self.assertGreater(resBlockId["blockid"], 0,
                            "BlockId is not generated: " + str(resBlockId))
 
     def test_edit_ecosystem_name_incorrect_id(self):
         id = 500
-        data = {"EcosystemID": id, "NewName": Tools.generate_random_name("ecosys_")}
+        data = {"EcosystemID": id, "NewName": "ecosys_" + Tools.generate_random_name()}
         res = self.call("EditEcosystemName", data)
         self.assertEqual("Ecosystem " + str(id) + " does not exist", res["error"])
 
@@ -133,6 +133,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("MoneyTransfer", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
+        #TODO
         self.assertTrue(Db.is_commission_in_history(self.config["1"]["db"], config["1"]["keyID"],
                                                  "52070200000060200", "1000"),
                         "No moneytransfer resord in history")
@@ -173,7 +174,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_new_contract(self):
-        code, name = Tools.generate_name_and_code("")
+        code, name = self.t.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -181,7 +182,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_new_contract_exists_name(self):
-        code, name = Tools.generate_name_and_code("")
+        code, name = self.t.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -200,7 +201,7 @@ class TestSystemContracts(unittest.TestCase):
                       "Incorrect message: " + str(ans))
 
     def test_new_contract_incorrect_condition(self):
-        code, name = Tools.generate_name_and_code("")
+        code, name = self.t.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "condition"}
         ans = self.call("NewContract", data)
@@ -209,7 +210,7 @@ class TestSystemContracts(unittest.TestCase):
 
     def test_edit_contract_incorrect_condition(self):
         std = self.simple_test_data
-        code, name = Tools.generate_name_and_code("")
+        code, name = self.t.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -225,7 +226,7 @@ class TestSystemContracts(unittest.TestCase):
     def test_edit_contract_incorrect_condition1(self):
         std = self.simple_test_data
         wallet = std.wallet("0005")
-        code, name = Tools.generate_name_and_code("")
+        code, name = self.t.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -240,7 +241,7 @@ class TestSystemContracts(unittest.TestCase):
 
     def test_edit_contract(self):
         wallet = "0005-2070-2000-0006-0200"  # ??
-        code, name = Tools.generate_name_and_code("")
+        code, name = self.t.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -248,13 +249,13 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_edit_name_of_contract(self):
-        code, name = Tools.generate_name_and_code("")
+        code, name = self.t.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        code1, name1 = Tools.generate_name_and_code("")
+        code1, name1 = self.t.generate_name_and_code("")
         data2 = {"Id": Actions.get_contract_id(url, name, token),
                  "Value": code1, "Conditions": "true",
                  "WalletId": "0005-2070-2000-0006-0200"}
@@ -264,7 +265,7 @@ class TestSystemContracts(unittest.TestCase):
 
     def test_edit_incorrect_contract(self):
         std = self.simple_test_data
-        code, name = Tools.generate_name_and_code("")
+        code, name = self.t.generate_name_and_code("")
         id = std.test_id()
         data2 = {"Id": id, "Value": code, "Conditions": "true",
                  "WalletId": std.wallet()}
@@ -273,7 +274,7 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_activate_contract(self):
-        code, name = Tools.generate_name_and_code("")
+        code, name = self.t.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(res["blockid"], 0,
@@ -292,7 +293,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_deactivate_contract(self):
-        code, name = Tools.generate_name_and_code("")
+        code, name = self.t.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(res["blockid"], 0,
@@ -317,7 +318,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_new_parameter_exist_name(self):
-        name = Tools.generate_random_name("Par_")
+        name = "Par_" + Tools.generate_random_name()
         data = {"Name": name, "Value": "test", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewParameter", data)
@@ -329,7 +330,7 @@ class TestSystemContracts(unittest.TestCase):
 
     def test_new_parameter_incorrect_condition(self):
         condition = "tryam"
-        data = {"Name": Tools.generate_random_name("Par_"), "Value": "test", "ApplicationId": 1,
+        data = {"Name": "Par_" + Tools.generate_random_name(), "Value": "test", "ApplicationId": 1,
                 "Conditions": condition}
         ans = self.call("NewParameter", data)
         self.assertEqual("unknown identifier " + condition,
@@ -343,7 +344,7 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_parameter_incorrect_condition(self):
-        name = Tools.generate_random_name("Par_")
+        name = "Par_" + Tools.generate_random_name()
         condition = "tryam"
         id = Actions.get_parameter_id(url, name, token)
         data = {"Name": name, "Value": "test", "Conditions": "true"}
@@ -416,7 +417,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewMenu", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "menu", token)
+        count = Actions.get_count(url, "menu", token)
         dataEdit = {"Id": count, "Value": "ItemEdited", "Conditions": condition}
         ans = self.call("EditMenu", dataEdit)
         msg = "unknown identifier " + condition
@@ -523,7 +524,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewPage", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        condition = std.condition()
+        condition = "Tryam"
         dataEdit = {"Id": Actions.get_count(url, "pages", token),
                     "Value": "Good by page!", "Conditions": condition,
                     "Menu": "default_menu"}
@@ -539,7 +540,7 @@ class TestSystemContracts(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         count = Actions.get_count(url, "pages", token)
-        dataEdit = {"Id": funcs.get_count(url, "pages", token),
+        dataEdit = {"Id": Actions.get_count(url, "pages", token),
                     "Value": "Good by!", "Conditions": "true",
                     "Menu": "default_menu"}
         res = self.call("AppendPage", dataEdit)
@@ -669,7 +670,7 @@ class TestSystemContracts(unittest.TestCase):
             DBInsert("%s", {text: "text1", num: "num1"})    
         }
         }""" % tableName
-        code, name = Tools.generate_name_and_code(code)
+        code, name = self.t.generate_name_and_code(code)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -741,7 +742,7 @@ class TestSystemContracts(unittest.TestCase):
             DBInsert("%s", {text: "text1", num: "num1"})    
         }
         }""" % tableName
-        code, name = Tools.generate_name_and_code(code)
+        code, name = self.t.generate_name_and_code(code)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -989,7 +990,7 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_edit_column(self):
-        nameTab = "tab_" + utils.generate_random_name()
+        nameTab = "tab_" + Tools.generate_random_name()
         columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
                   "\"index\": \"1\",  \"conditions\":\"true\"}]"
         permissions = "{\"insert\": \"false\", \"update\": \"true\"," + \
@@ -999,7 +1000,7 @@ class TestSystemContracts(unittest.TestCase):
         res = self.call("NewTable", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        name = "Col_" + utils.generate_random_name()
+        name = "Col_" + Tools.generate_random_name()
         dataCol = {"TableName": nameTab, "Name": name, "Type": "number",
                    "UpdatePerm": "true", "ReadPerm": "true"}
         res = self.call("NewColumn", dataCol)
@@ -1153,7 +1154,7 @@ class TestSystemContracts(unittest.TestCase):
             }
         }
         """ % table_name
-        code, contract_name = Tools.generate_name_and_code(body)
+        code, contract_name = self.t.generate_name_and_code(body)
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(res["blockid"], 0,
@@ -1349,7 +1350,7 @@ class TestSystemContracts(unittest.TestCase):
             }
         }
         """
-        code, contract_name = Tools.generate_name_and_code(body)
+        code, contract_name = self.t.generate_name_and_code(body)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -1377,7 +1378,7 @@ class TestSystemContracts(unittest.TestCase):
             }
         }
         """
-        code, contract_name = Tools.generate_name_and_code(body)
+        code, contract_name = self.t.generate_name_and_code(body)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
