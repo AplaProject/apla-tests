@@ -1216,7 +1216,8 @@ class SystemContractsTestCase(unittest.TestCase):
         msg = "The contract can't call itself recursively"
         self.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
 
-    def test_contract_recursive_call_by_name_conditions(self):
+    #off
+    def contract_recursive_call_by_name_conditions(self):
         contractName = "recur_" + utils.generate_random_name()
         body = """
         {
@@ -1277,7 +1278,8 @@ class SystemContractsTestCase(unittest.TestCase):
         msg = "There is loop in @1" + contractName + " contract"
         self.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
 
-    def test_contract_recursive_call_contract_conditions(self):
+    #off
+    def contract_recursive_call_contract_conditions(self):
         contractName = "recur_" + utils.generate_random_name()
         body = """
         {
@@ -1298,7 +1300,8 @@ class SystemContractsTestCase(unittest.TestCase):
         msg = "There is loop in @1" + contractName + " contract"
         self.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
 
-    def test_contract_recursive_call_contract_func_conditions(self):
+    #off
+    def contract_recursive_call_contract_func_conditions(self):
         contractName = "recur_" + utils.generate_random_name()
         body = """
         {
