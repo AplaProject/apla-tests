@@ -2,31 +2,33 @@ import time
 import os
 import json
 
-from libs.actions import Actions
-from libs.tools import Tools
+from libs import actions
+from libs import tools
 
-def is_in_block(call, url, token):
+def isInBlock(call, url, token):
     if "hash" in call:
-        status = Actions.tx_status(url, 30, call["hash"], token)
+        status = actions.tx_status(url, 30, call["hash"], token)
+        print(status)
         if "blockid" not in status or int(status["blockid"]) < 0:
+            print(status)
             return False 
     else:
         return False
     return True
         
-def imp_app(appName, url, prKey, token):
+def impApp(appName, url, prKey, token):
     path = os.path.join(os.getcwd(), "fixtures", "basic", appName + ".json")
     with open(path, 'r', encoding = "utf8") as f:
         file = f.read()
     files = {'input_file': file}
-    resp = Actions.call_contract_with_files(url, prKey, "ImportUpload", {},
-                                            files, token)
+    resp = actions.call_contract_with_files(url, prKey, "ImportUpload", {},
+                                          files, token)
     if("hash" in resp):
-        resImportUpload = Actions.tx_status(url, 30,
-                                            resp["hash"], token)
+        resImportUpload = actions.tx_status(url, 30,
+                                         resp["hash"], token)
         if int(resImportUpload["blockid"]) > 0:
-            founderID = Actions.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
-            result = Actions.call_get_api(url + "/list/buffer_data", "", token)
+            founderID = actions.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
+            result = actions.call_get_api(url + "/list/buffer_data", "", token)
             buferDataList = result['list']
             for item in buferDataList:
                 if item['key'] == "import" and item['member_id'] == founderID:
@@ -35,80 +37,95 @@ def imp_app(appName, url, prKey, token):
             contractName = "Import"
             data = [{"contract": contractName,
                      "params": importAppData[i]} for i in range(len(importAppData))]
-            resp = Actions.call_multi_contract(url, prKey, contractName, data, token)
+            resp = actions.call_multi_contract(url, prKey, contractName, data, token)
             time.sleep(30)
             if "hashes" in resp:
                 hashes = resp['hashes']
-                result = Actions.tx_status_multi(url, 30, hashes, token)
+                result = actions.tx_status_multi(url, 30, hashes, token)
                 for status in result.values():
+                    print(status)
                     if int(status["blockid"]) < 1:
                         print("Import is failed")
                         exit(1)
                 print("App '" + appName + "' successfully installed")
-        
-def voiting_install(url, prKey, token):
+                
+def rolesInsatll(url, prKey, token):
     data = {}
-    call = Actions.call_contract(url, prKey, "VotingTemplatesInstall",
-                                 data, token)
-    if not is_in_block(call, url, token):
+    print("RolesInstall started")
+    call = actions.call_contract(url, prKey, "RolesInstall",
+                               data, token)
+    if not isInBlock(call, url, token):
+        print("RolesInstall is failed")
+        exit(1)
+        
+def voitingInstall(url, prKey, token):
+    data = {}
+    print("voitingInstall started")
+    call = actions.call_contract(url, prKey, "VotingTemplatesInstall",
+                               data, token)
+    if not isInBlock(call, url, token):
         print("VoitingInstall is failed")
         exit(1)
 
     
-def edit_app_param(name, val, url, prKey, token):
-    data = {"Id": Actions.get_object_id(url, name, "app_params", token),
+def editAppParam(name, val, url, prKey, token):
+    id = actions.get_object_id(url, name, "app_params", token)
+    print("id", id)
+    data = {"Id": id,
             "Name": name, "Value": val, "Conditions": "true" }
-    call = Actions.call_contract(url, prKey, "EditAppParam",
-                                 data, token)
-    if not is_in_block(call, url, token):
+    call = actions.call_contract(url, prKey, "EditAppParam",
+                               data, token)
+    if not isInBlock(call, url, token):
         print("EditAppParam " + name + " is failed")
         exit(1)
     
-def update_profile(name, url, prKey, token):
+def updateProfile(name, url, prKey, token):
     time.sleep(5)
     path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
     with open(path, 'rb') as f:
         file = f.read()
     files = {'member_image': file}
     data = {"member_name": name}
-    resp = Actions.call_contract_with_files(url, prKey, "ProfileEdit",
-                                            data, files, token)
-    if not is_in_block(resp, url, token):
+    resp = actions.call_contract_with_files(url, prKey, "ProfileEdit",
+                                          data, files, token)
+    if not isInBlock(resp, url, token):
         print("UpdateProfile " + name + " is failed")
         exit(1)
         
-def set_apla_consensus(id, url, prKey, token):
+def setAplaConsensus(id, url, prKey, token):
     data = {"member_id": id, "rid": 3}
-    call = Actions.call_contract(url, prKey, "RolesAssign",
-                                 data, token)
-    if not is_in_block(call, url, token):
+    call = actions.call_contract(url, prKey, "RolesAssign",
+                               data, token)
+    print("--------------------------------------------------------------------------")
+    print("setAplaconsensus block: ", call)
+    if not isInBlock(call, url, token):
         print("RolesAssign " + id + " is failed")
         exit(1)
         
-def create_voiting(tcpAdress, apiAddress, keyId, pubKey, url, prKey, token):
+def createVoiting(tcpAdress, apiAddress, keyId, pubKey, url, prKey, token):
     data = {"TcpAddress": tcpAdress, "ApiAddress": apiAddress,
             "KeyId": keyId, "PubKey": pubKey, "Duration": 1}
     print(str(data))
-    call = Actions.call_contract(url, prKey, "VotingNodeAdd",
-                                 data, token)
-    if not is_in_block(call, url, token):
+    call = actions.call_contract(url, prKey, "VotingNodeAdd",
+                               data, token)
+    if not isInBlock(call, url, token):
         print("VotingNodeAdd  is failed")
         exit(1)
 
-def voiting_status_update(url, prKey, token):
+def voitingStatusUpdate(url, prKey, token):
     data = {}
-    call = Actions.call_contract(url, prKey, "VotingStatusUpdate",
-                                 data, token)
-    if not is_in_block(call, url, token):
+    call = actions.call_contract(url, prKey, "VotingStatusUpdate",
+                               data, token)
+    if not isInBlock(call, url, token):
         print("VoitingStatusUpdate is failed")
         exit(1)
         
 def voiting(id, url, prKey, token):
     data = {"votingID": id}
-    call = Actions.call_contract(url, prKey, "VotingDecisionAccept",
-                                 data, token)
+    call = actions.call_contract(url, prKey, "VotingDecisionAccept",
+                               data, token)
 
-    if not is_in_block(call, url, token):
+    if not isInBlock(call, url, token):
         print("VotingDecisionAccept " + id + " is failed")
         exit(1)
         return False
@@ -116,74 +133,77 @@ def voiting(id, url, prKey, token):
     
 
 if __name__ == "__main__":
-    conf = Tools.read_config("nodes")
+    conf = tools.read_config("nodes")
     url = conf["1"]["url"]
     prKey1 = conf["1"]['private_key']
     prKey2 = conf["2"]['private_key']
     prKey3 = conf["3"]['private_key']
-    data = Actions.login(url, prKey1, 0)
+    data = actions.login(url, prKey1, 0)
     token1 = data["jwtToken"]
-    imp_app("admin", url, prKey1, token1)
-    imp_app("system_parameters", url, prKey1, token1)
-    imp_app("basic", url, prKey1, token1)
-    imp_app("platform_ecosystem", url, prKey1, token1)
-    imp_app("language_resources", url, prKey1, token1)
-
+    impApp("admin", url, prKey1, token1)
+    impApp("system_parameters", url, prKey1, token1)
+    impApp("basic", url, prKey1, token1)
+    impApp("platform_ecosystem", url, prKey1, token1)
+    impApp("language_resources", url, prKey1, token1)
     
-    voiting_install(url, prKey1, token1)
-    edit_app_param("voting_sysparams_template_id", 2, url, prKey1, token1)
+    rolesInsatll(url,prKey1, token1)
+    
+    voitingInstall(url, prKey1, token1)
+    editAppParam("voting_sysparams_template_id", 2, url, prKey1, token1)
     node1 = json.dumps({"tcp_address": conf["1"]["tcp_address"],
                       "api_address": conf["1"]["api_address"],
                       "key_id": conf["1"]["keyID"],
                       "public_key": conf["1"]["pubKey"]})
-    edit_app_param("first_node", node1, url, prKey1, token1)
+    editAppParam("first_node", node1, url, prKey1, token1)
     
-    data2 = Actions.login(url, prKey2, 0)
+    data2 = actions.login(url, prKey2, 0)
     token2 = data2["jwtToken"]
-    update_profile("nodeowner1", url, prKey2, token2)
-    data3 = Actions.login(url, prKey3, 0)
+    updateProfile("nodeowner1", url, prKey2, token2)
+    data3 = actions.login(url, prKey3, 0)
     token3 = data3["jwtToken"]
-    update_profile("nodeowner2", url, prKey3, token3)
+    updateProfile("nodeowner2", url, prKey3, token3)
     
-    data = Actions.login(url, prKey1, 1)
+    data = actions.login(url, prKey1, 1)
     token1 = data["jwtToken"]
     
-    set_apla_consensus(conf["2"]['keyID'], url, prKey1, token1)
-    set_apla_consensus(conf["3"]['keyID'], url, prKey1, token1)
-    set_apla_consensus(conf["1"]['keyID'], url, prKey1, token1)
-    print("Start create voting 1")
-    data = Actions.login(url, prKey2, 3)
-    token2 = data["jwtToken"]
-    create_voiting(conf["2"]["tcp_address"], conf["2"]["api_address"],
-                   conf["2"]["keyID"], conf["2"]["pubKey"],
-                   url, prKey2, token2)
-    voiting_status_update(url, prKey1, token1)
+    setAplaConsensus(conf["2"]['keyID'], url, prKey1, token1)
+    setAplaConsensus(conf["3"]['keyID'], url, prKey1, token1)
+    setAplaConsensus(conf["1"]['keyID'], url, prKey1, token1)
     
-    data = Actions.login(url, prKey3, 3)
+    print("Start create voting 1")
+    
+    data = actions.login(url, prKey2, 3)
+    token2 = data["jwtToken"]
+    createVoiting(conf["2"]["tcp_address"], conf["2"]["api_address"],
+                 conf["2"]["keyID"], conf["2"]["pubKey"],
+                 url, prKey2, token2)
+    voitingStatusUpdate(url, prKey1, token1)
+
+    data = actions.login(url, prKey3, 3)
     token3 = data["jwtToken"]
     voiting(1, url, prKey3, token3)
-    data = Actions.login(url, prKey1, 3)
+    data = actions.login(url, prKey1, 3)
     token1 = data["jwtToken"]
     voiting(1, url, prKey1, token1)
-    data = Actions.login(url, prKey2, 3)
+    data = actions.login(url, prKey2, 3)
     token2 = data["jwtToken"]
     voiting(1, url, prKey2, token2)
     
     print("Start create voting 2")
-    data = Actions.login(url, prKey3, 3)
+    data = actions.login(url, prKey3, 3)
     token3 = data["jwtToken"]
-    create_voiting(conf["3"]["tcp_address"], conf["3"]["api_address"],
-                   conf["3"]["keyID"], conf["3"]["pubKey"],
-                   url, prKey3, token3)
-    voiting_status_update(url, prKey1, token1)
+    createVoiting(conf["3"]["tcp_address"], conf["3"]["api_address"],
+                 conf["3"]["keyID"], conf["3"]["pubKey"],
+                 url, prKey3, token3)
+    voitingStatusUpdate(url, prKey1, token1)
     
-    data = Actions.login(url, prKey3, 3)
+    data = actions.login(url, prKey3, 3)
     token3 = data["jwtToken"]
     voiting(2, url, prKey3, token3)
-    data = Actions.login(url, prKey1, 3)
+    data = actions.login(url, prKey1, 3)
     token1 = data["jwtToken"]
     voiting(2, url, prKey1, token1)
-    data = Actions.login(url, prKey2, 3)
+    data = actions.login(url, prKey2, 3)
     token2 = data["jwtToken"]
     if voiting(2, url, prKey2, token2) == True:
         print("Nodes successfully linked")
