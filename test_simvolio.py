@@ -1,12 +1,10 @@
 import unittest
-import requests
 import json
 import os
 import time
 
 from libs import actions
 from libs import tools
-from libs import db
 
 
 class TestSystemContracts(unittest.TestCase):
@@ -208,7 +206,6 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract_incorrect_condition(self):
-        std = self.simple_test_data
         code, name = tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
@@ -217,14 +214,13 @@ class TestSystemContracts(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         data2 = {"Id": actions.get_contract_id(url, name, token),
                  "Value": code, "Conditions": "tryam",
-                 "WalletId": std.wallet()}
+                 "WalletId": "0005-2070-2000-0006-0200"}
         ans = self.call("EditContract", data2)
         self.assertEqual("unknown identifier tryam",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract_incorrect_condition1(self):
-        std = self.simple_test_data
-        wallet = std.wallet("0005")
+        wallet = "0005"
         code, name = tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
@@ -263,11 +259,10 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_incorrect_contract(self):
-        std = self.simple_test_data
         code, name = tools.generate_name_and_code("")
-        id = std.test_id()
+        id = "9999"
         data2 = {"Id": id, "Value": code, "Conditions": "true",
-                 "WalletId": std.wallet()}
+                 "WalletId": "0005-2070-2000-0006-0200"}
         ans = self.call("EditContract", data2)
         self.assertEqual("Item " + id + " has not been found",
                          ans["error"], "Incorrect message: " + str(ans))
