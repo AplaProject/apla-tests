@@ -211,7 +211,7 @@ class Db(object):
             return False
 
     def get_block_gen_node(db, block):
-        request = "select node_position from \"block_chain\" WHERE id=" + block
+        request = "select node_position from \"block_chain\" WHERE id=" + str(block)
         nodes = Db.submit_query(request, db)
         return nodes[0][0]
 
