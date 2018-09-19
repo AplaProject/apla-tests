@@ -172,7 +172,7 @@ class Actions(object):
 
     def get_object_id(url, name, object, token):
         id = None
-        endPoint = url + "/list/" + object
+        endPoint = url + "/list/" + object + "?limit=1000"
         res = Actions.call_get_api(endPoint, "", token)
         for object in res["list"]:
             if object["name"] == name:
