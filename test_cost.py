@@ -4,26 +4,26 @@ import pytest
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
 
-from libs.actions import Actions
-from libs.db import Db
-from libs.tools import Tools
-
+from libs import actions
+from libs import db
+from libs import tools
 
 
 class TestCost():
 
-    def setup_class(cls):
+    def setup_class(self):
         print("setup_class")
+        self.u = unittest.TestCase()
         global conf, keys, wait
-        wait = Tools.read_config("test")["wait_tx_status"]
-        conf = Tools.read_config("nodes")
-        keys = Tools.read_fixtures("keys")
+        wait = tools.read_config("test")["wait_tx_status"]
+        conf = tools.read_config("nodes")
+        keys = tools.read_fixtures("keys")
         print("setup_class finished")
         TestCost.createContracts()
 
     def setup(self):
         print("setup")
-        self.data = Actions.login(conf["2"]["url"], keys["key2"], 0)
+        self.data = actions.login(conf["2"]["url"], keys["key2"], 0)
         self.token = self.data["jwtToken"]
 
     def getNodeBalances(self):
@@ -31,50 +31,50 @@ class TestCost():
         i = 1
         nodeBalance = []
         while i < nodeCount + 1:
-            nodeBalance.append(Db.get_balance_from_db(conf["1"]["db"], conf[str(i)]["keyID"]))
+            nodeBalance.append(db.get_balance_from_db(conf["1"]["db"], conf[str(i)]["keyID"]))
             i = i + 1
         return nodeBalance
 
     @staticmethod
     def createContracts():
         global dataCreater
-        dataCreater = Actions.login(conf["1"]["url"], conf["1"]["private_key"], 0)
+        dataCreater = actions.login(conf["1"]["url"], conf["1"]["private_key"], 0)
         tokenCreater = dataCreater["jwtToken"]
-        contract = Tools.read_fixtures("contracts")
+        contract = tools.read_fixtures("contracts")
         code = "contract CostContract" + contract["for_cost"]["code"]
         data = {"Wallet": "", "Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         print("wait: ", wait)
-        result = Actions.call_contract(conf["1"]["url"], conf["1"]["private_key"],
+        result = actions.call_contract(conf["1"]["url"], conf["1"]["private_key"],
                                        "NewContract", data, tokenCreater)
-        status = Actions.tx_status(conf["1"]["url"], wait,
+        status = actions.tx_status(conf["1"]["url"], wait,
                                    result['hash'], tokenCreater)
 
     def activateContract(self):
-        dataCreater = Actions.login(conf["2"]["url"], conf["1"]["private_key"], 0)
+        dataCreater = actions.login(conf["2"]["url"], conf["1"]["private_key"], 0)
         tokenCreater = dataCreater["jwtToken"]
-        id = Actions.get_contract_id(conf["2"]["url"], "CostContract", tokenCreater)
+        id = actions.get_contract_id(conf["2"]["url"], "CostContract", tokenCreater)
         data = {"Id": id}
-        result = Actions.call_contract(conf["2"]["url"], conf["1"]["private_key"],
+        result = actions.call_contract(conf["2"]["url"], conf["1"]["private_key"],
                                        "ActivateContract", data, tokenCreater)
 
-        status = Actions.tx_status(conf["2"]["url"], wait,
+        status = actions.tx_status(conf["2"]["url"], wait,
                                    result['hash'], tokenCreater)
 
     def deactivateContract(self):
-        dataCreater = Actions.login(conf["1"]["url"], conf["1"]["private_key"], 0)
+        dataCreater = actions.login(conf["1"]["url"], conf["1"]["private_key"], 0)
         tokenCreater = dataCreater["jwtToken"]
-        id = Actions.get_contract_id(conf["1"]["url"], "CostContract", tokenCreater)
+        id = actions.get_contract_id(conf["1"]["url"], "CostContract", tokenCreater)
         data = {"Id": id}
-        result = Actions.call_contract(conf["1"]["url"], conf["1"]["private_key"],
+        result = actions.call_contract(conf["1"]["url"], conf["1"]["private_key"],
                                        "DeactivateContract", data, tokenCreater)
-        status = Actions.tx_status(conf["1"]["url"], wait, result['hash'], tokenCreater)
+        status = actions.tx_status(conf["1"]["url"], wait, result['hash'], tokenCreater)
 
     def isCommissionsInHistory(self, nodeCommision, idFrom, platformaCommission, node):
-        isNodeCommission = Db.is_commission_in_history(conf["1"]["db"], idFrom,
+        isNodeCommission = db.is_commission_in_history(conf["1"]["db"], idFrom,
                                                          conf[str(node + 1)]["keyID"],
                                                          nodeCommision)
-        isPlatformCommission = Db.is_commission_in_history(conf["1"]["db"], idFrom,
+        isPlatformCommission = db.is_commission_in_history(conf["1"]["db"], idFrom,
                                                              conf["1"]["keyID"],
                                                              platformaCommission)
         if isNodeCommission and isPlatformCommission:
@@ -83,32 +83,32 @@ class TestCost():
             return False
 
     def test_activated_contract(self):
-        if Actions.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == False:
+        if actions.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == False:
             self.activateContract()
         time.sleep(10)
-        walletId = Actions.get_activated_wallet(conf["2"]["url"],
+        walletId = actions.get_activated_wallet(conf["2"]["url"],
                                                 "CostContract", self.token)
-        sumsBefore = Db.get_user_token_amounts(conf["1"]["db"])
+        sumsBefore = db.get_user_token_amounts(conf["1"]["db"])
         summBefore = sum(summ[0] for summ in sumsBefore)
         bNodeBalance = self.getNodeBalances()
-        tokenRunner, uid = Actions.get_uid(conf["2"]["url"])
+        tokenRunner, uid = actions.get_uid(conf["2"]["url"])
         signature = sign(keys["key2"], uid)
         pubRunner = get_public_key(keys["key2"])
-        balanceRunnerB = Db.get_balance_from_db_by_pub(conf["1"]["db"], pubRunner)
-        dataRunner = Actions.login(conf["2"]["url"], keys["key2"], 0)
+        balanceRunnerB = db.get_balance_from_db_by_pub(conf["1"]["db"], pubRunner)
+        dataRunner = actions.login(conf["2"]["url"], keys["key2"], 0)
         tokenRunner = dataRunner["jwtToken"]
-        res = Actions.call_contract(conf["2"]["url"], keys["key2"],
+        res = actions.call_contract(conf["2"]["url"], keys["key2"],
                                     "CostContract", {"State": 1}, tokenRunner)
-        result = Actions.tx_status(conf["2"]["url"], wait, res["hash"], tokenRunner)
+        result = actions.tx_status(conf["2"]["url"], wait, res["hash"], tokenRunner)
         time.sleep(10)
-        node = Db.get_block_gen_node(conf["1"]["db"], result["blockid"])
-        sumsAfter = Db.get_user_token_amounts(conf["1"]["db"])
+        node = db.get_block_gen_node(conf["1"]["db"], result["blockid"])
+        sumsAfter = db.get_user_token_amounts(conf["1"]["db"])
         summAfter = sum(summ[0] for summ in sumsAfter)
         aNodeBalance = self.getNodeBalances()
-        nodeCommission = 144530000000000000
-        platformaCommission = 4470000000000000
-        balanceRunnerA = Db.get_balance_from_db_by_pub(conf["1"]["db"], pubRunner)
-        balanceContractOwnerA = Db.get_balance_from_db(conf["1"]["db"], walletId)
+        nodeCommission = 141620000000000000
+        platformaCommission = 4380000000000000
+        balanceRunnerA = db.get_balance_from_db_by_pub(conf["1"]["db"], pubRunner)
+        balanceContractOwnerA = db.get_balance_from_db(conf["1"]["db"], walletId)
         inHistory = self.isCommissionsInHistory(nodeCommission, conf["1"]["keyID"],
                                                 platformaCommission, node)
         if node == 0:
@@ -131,5 +131,141 @@ class TestCost():
                               nodeBalance=bNodeBalance[node] + nodeCommission,
                               summ=summAfter,
                               history=True)
-        unittest.TestCase().assertDictEqual(dictValid, dictExpect,
+        self.u.assertDictEqual(dictValid, dictExpect,
                                           "Error in comissions run activated contract")
+
+
+    def test_deactive_contract(self):
+        if actions.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == True:
+            self.deactivateContract()
+        walletId = actions.get_activated_wallet(conf["2"]["url"],
+                                                "CostContract", self.token)
+        sumsBefore = db.get_user_token_amounts(conf["1"]["db"])
+        summBefore = sum(summ[0] for summ in sumsBefore)
+        bNodeBalance = self.getNodeBalances()
+        tokenRunner, uid = actions.get_uid(conf["2"]["url"])
+        signature = sign(keys["key2"], uid)
+        pubRunner = get_public_key(keys["key2"])
+        balanceRunnerB = db.get_balance_from_db_by_pub(conf["1"]["db"], pubRunner)
+        dataRunner = actions.login(conf["2"]["url"], keys["key2"], 0)
+        tokenRunner = dataRunner["jwtToken"]
+        res = actions.call_contract(conf["2"]["url"], keys["key2"],
+                                    "CostContract", {"State": 1}, tokenRunner)
+        result = actions.tx_status(conf["2"]["url"], wait, res["hash"], tokenRunner)
+        time.sleep(10)
+        node = db.get_block_gen_node(conf["1"]["db"], result["blockid"])
+        sumsAfter = db.get_user_token_amounts(conf["1"]["db"])
+        summAfter = sum(summ[0] for summ in sumsAfter)
+        aNodeBalance = self.getNodeBalances()
+        nodeCommission = 141620000000000000
+        platformaCommission = 4380000000000000
+        commission = nodeCommission + platformaCommission
+        balanceRunnerA = db.get_balance_from_db_by_pub(conf["1"]["db"], pubRunner)
+        balanceContractOwnerA = db.get_balance_from_db(conf["1"]["db"], walletId)
+        inHistory = self.isCommissionsInHistory(nodeCommission, dataRunner["key_id"],
+                                                platformaCommission, node)
+        if node == 0:
+            dictValid = dict(balanceRunner=balanceRunnerA,
+                             platformBalance=aNodeBalance[0],
+                             summ=summBefore,
+                             history=inHistory)
+            dictExpect = dict(balanceRunner=balanceRunnerB - commission,
+                              platformBalance=bNodeBalance[0] + commission,
+                              summ=summAfter,
+                              history=True)
+        else:
+            dictValid = dict(balanceRunner=balanceRunnerA,
+                             platformBalance=aNodeBalance[0],
+                             nodeBalance=aNodeBalance[node],
+                             summ=summBefore,
+                             history=inHistory)
+            dictExpect = dict(balanceRunner=balanceRunnerB - commission,
+                              platformBalance=bNodeBalance[0] + platformaCommission,
+                              nodeBalance=bNodeBalance[node] + nodeCommission,
+                              summ=summAfter,
+                              history=True)
+        self.u.assertDictEqual(dictValid, dictExpect,
+                             "Error in comissions run deactivated contract")
+
+    def test_activated_contract_with_err(self):
+        if actions.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == False:
+            self.activateContract()
+        walletId = actions.get_activated_wallet(conf["2"]["url"], "CostContract", self.token)
+        balanceContractOwnerB = db.get_balance_from_db(conf["1"]["db"], walletId)
+        balanceNodeOwnerB = db.get_balance_from_db(conf["1"]["db"], conf["2"]["keyID"])
+        commisionWallet = db.get_commission_wallet(conf["1"]["db"], 1)
+        balanceCommisionB = db.get_balance_from_db(conf["1"]["db"], commisionWallet)
+        tokenRunner, uid = actions.get_uid(conf["2"]["url"])
+        signature = sign(keys["key2"], uid)
+        pubRunner = get_public_key(keys["key2"])
+        balanceRunnerB = db.get_balance_from_db_by_pub(conf["1"]["db"], pubRunner)
+        dataRunner = actions.login(conf["2"]["url"], keys["key2"], 0)
+        tokenRunner = dataRunner["jwtToken"]
+        res = actions.call_contract(conf["2"]["url"], keys["key2"],
+                                    "CostContract", {"State": 0}, tokenRunner)
+        hash = res["hash"]
+        result = actions.tx_status(conf["2"]["url"], wait, hash, tokenRunner)
+        time.sleep(10)
+        balanceContractOwnerA = db.get_balance_from_db(conf["1"]["db"], walletId)
+        balanceNodeOwnerA = db.get_balance_from_db(conf["1"]["db"], conf["2"]["keyID"])
+        balanceCommisionA = db.get_balance_from_db(conf["1"]["db"], commisionWallet)
+        balanceRunnerA = db.get_balance_from_db_by_pub(conf["1"]["db"], pubRunner)
+        dictValid = dict(balanceContractOwner=balanceContractOwnerA,
+                         balanceNodeOwner=balanceNodeOwnerA,
+                         balanceCommision=balanceCommisionA,
+                         balanceRunner=balanceRunnerA)
+        dictExpect = dict(balanceContractOwner=balanceContractOwnerB,
+                          balanceNodeOwner=balanceNodeOwnerB,
+                          balanceCommision=balanceCommisionB,
+                          balanceRunner=balanceRunnerB)
+        msg = "balanceContractOwnerA:" + str(balanceContractOwnerA) + "\n" + \
+              "balanceContractOwnerE:" + str(balanceContractOwnerB) + "\n" + \
+              "balanceNodeOwnerA:" + str(balanceNodeOwnerA) + "\n" + \
+              "balanceNodeOwnerE:" + str(balanceNodeOwnerB) + "\n" + \
+              "balanceCommisionA:" + str(balanceCommisionA) + "\n" + \
+              "balanceCommisionE:" + str(balanceCommisionB) + "\n" + \
+              "balanceRunnerA:" + str(balanceRunnerA) + "\n" + \
+              "balanceRunnerE:" + str(balanceRunnerB) + "\n"
+        self.u.assertDictEqual(dictValid, dictExpect, msg)
+
+    def test_deactive_contract_with_err(self):
+        if actions.is_contract_activated(conf["2"]["url"], "CostContract", self.token) == True:
+            self.deactivateContract()
+        walletId = actions.get_activated_wallet(conf["2"]["url"], "CostContract", self.token)
+        balanceContractOwnerB = db.get_balance_from_db(conf["1"]["db"], walletId)
+        balanceNodeOwnerB = db.get_balance_from_db(conf["1"]["db"], conf["2"]["keyID"])
+        commisionWallet = db.get_commission_wallet(conf["1"]["db"], 1)
+        balanceCommisionB = db.get_balance_from_db(conf["1"]["db"], commisionWallet)
+        commission = db.get_system_parameter(conf["1"]["db"], "commission_size")
+        tokenRunner, uid = actions.get_uid(conf["2"]["url"])
+        signature = sign(keys["key2"], uid)
+        pubRunner = get_public_key(keys["key2"])
+        balanceRunnerB = db.get_balance_from_db_by_pub(conf["1"]["db"], pubRunner)
+        dataRunner = actions.login(conf["2"]["url"], keys["key2"], 0)
+        tokenRunner = dataRunner["jwtToken"]
+        res = actions.call_contract(conf["2"]["url"], keys["key2"],
+                                    "CostContract", {"State": 0}, tokenRunner)
+        time.sleep(10)
+        hash = res["hash"]
+        result = actions.tx_status(conf["2"]["url"], wait, hash, tokenRunner)
+        balanceContractOwnerA = db.get_balance_from_db(conf["1"]["db"], walletId)
+        balanceNodeOwnerA = db.get_balance_from_db(conf["1"]["db"], conf["2"]["keyID"])
+        balanceCommisionA = db.get_balance_from_db(conf["1"]["db"], commisionWallet)
+        balanceRunnerA = db.get_balance_from_db_by_pub(conf["1"]["db"], pubRunner)
+        dictValid = dict(balanceContractOwner = balanceContractOwnerA,
+                         balanceNodeOwner = balanceNodeOwnerA,
+                         balanceCommision = balanceCommisionA,
+                         balanceRunner = balanceRunnerA)
+        dictExpect = dict(balanceContractOwner = balanceContractOwnerB,
+                          balanceNodeOwner = balanceNodeOwnerB,
+                          balanceCommision = balanceCommisionB,
+                          balanceRunner = balanceRunnerB)
+        msg = "balanceContractOwnerA:" + str(balanceContractOwnerA) + "\n" +\
+        "balanceContractOwnerE:" + str(balanceContractOwnerB) + "\n" +\
+        "balanceNodeOwnerA:" + str(balanceNodeOwnerA) + "\n" +\
+        "balanceNodeOwnerE:" + str(balanceNodeOwnerB) + "\n" +\
+        "balanceCommisionA:" + str(balanceCommisionA) + "\n" +\
+        "balanceCommisionE:" + str(balanceCommisionB) + "\n" +\
+        "balanceRunnerA:" + str(balanceRunnerA) + "\n" +\
+        "balanceRunnerE:" + str(balanceRunnerB) + "\n"
+        self.u.assertDictEqual(dictValid, dictExpect, msg)
