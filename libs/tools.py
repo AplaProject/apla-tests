@@ -26,7 +26,7 @@ def generate_random_name():
 
 def generate_name_and_code(sourceCode):
     name = "Cont_" + generate_random_name()
-    code = generate_code(sourceCode)
+    code = generate_code(name, sourceCode)
     return code, name
 
 def generate_code(contractName, sourceCode):
