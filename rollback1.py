@@ -350,9 +350,10 @@ class Rollback1TestCase(unittest.TestCase):
         res = self.call("EditSign", dataEdit)
 
     def test_rollback1(self):
+        print('Start ROLLBACK test')
         # Install apps
-        self.impApp("admin", url, prKey, token)
-        self.impApp("system_parameters", url, prKey, token)
+        self.impApp("system", url, prKey, token)
+        self.impApp("basic", url, prKey, token)
         print("Start rollback test")
         self.addNotification()
         self.addBinary()
@@ -401,9 +402,9 @@ class Rollback1TestCase(unittest.TestCase):
         lang = self.new_lang()
         langs = funcs.call_get_api(url + "/list/languages", {}, token)
         self.edit_lang(langs["count"], lang)
-        sign = self.new_sign()
-        self.edit_sign(sign)
-        self.impApp("basic", url, prKey, token)
+        #sign = self.new_sign()
+        #self.edit_sign(sign)
+        #self.impApp("basic", url, prKey, token)
         time.sleep(20)
 
 
