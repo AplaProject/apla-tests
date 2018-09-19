@@ -146,8 +146,11 @@ if __name__ == "__main__":
     pas = conf["1"]['pass']
     data = utils.login(url, prKey1, 0)
     token1 = data["jwtToken"]
-    impApp("system", url, prKey1, token1)
+    impApp("admin", url, prKey1, token1)
+    impApp("system_parameters", url, prKey1, token1)
     impApp("basic", url, prKey1, token1)
+    impApp("platform_ecosystem", url, prKey1, token1)
+    impApp("language_resources", url, prKey1, token1)
     
     rolesInsatll(url,prKey1, token1)
     
