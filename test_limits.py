@@ -2,37 +2,36 @@ import unittest
 import json
 import time
 
-from libs.actions import Actions
-from libs.tools import Tools
-from libs.db import Db
+from libs import actions
+from libs import tools
+from libs import db
 
 
-class TestLimits(unittest.TestCase):
-
-    @classmethod
+class TestLimits():
 
     def setup_class(self):
         global conf, contract, pause, token
-        conf = Tools.read_config("nodes")
-        contract = Tools.read_fixtures("contracts")
-        pause = Tools.read_config("test")["wait_tx_status"]
-        self.data = Actions.login(conf["2"]["url"],
+        conf = tools.read_config("nodes")
+        contract = tools.read_fixtures("contracts")
+        pause = tools.read_config("test")["wait_tx_status"]
+        self.data = actions.login(conf["2"]["url"],
                                   conf["1"]['private_key'], 0)
         token = self.data["jwtToken"]
+        self.unit = unittest.TestCase()
 
     def assert_tx_in_block(self, result, jwtToken):
-        self.assertIn("hash", result)
+        self.unit.assertIn("hash", result)
         hash = result['hash']
-        status = Actions.tx_status(conf["2"]["url"], pause, hash, token)
+        status = actions.tx_status(conf["2"]["url"], pause, hash, token)
         print("status tx: ", status)
-        if len(status['blockid']) > 0:
-            self.assertNotIn(json.dumps(status), 'errmsg')
+        if int(status['blockid']) > 0:
+            self.unit.assertNotIn(json.dumps(status), 'errmsg')
             return status["blockid"]
         else:
-            return status["errmsg"]["error"]
+            return status["error"]
         
     def call(self, name, data):
-        resp = Actions.call_contract(conf["2"]["url"], conf["1"]['private_key'],
+        resp = actions.call_contract(conf["2"]["url"], conf["1"]['private_key'],
                                      name, data, token)
         res = self.assert_tx_in_block(resp, token)
         return res
@@ -40,70 +39,70 @@ class TestLimits(unittest.TestCase):
     def update_sys_param(self, param, value):
         data = {"Name": param, "Value" : value}
         res = self.call("UpdateSysParam", data)
-        self.assertGreater(int(res), 0,
+        self.unit.assertGreater(int(res), 0,
                            "Block is not generated for updating sysparam: " +\
-                           res)
+                           str(res))
         
     def test_max_tx_size(self):
-        max_tx_size = Db.get_system_parameter(conf["1"]["db"], "max_tx_size")
+        max_tx_size = db.get_system_parameter(conf["1"]["db"], "max_tx_size")
         self.update_sys_param("max_tx_size", "500")
-        name = "cont" + Tools.generate_random_name()
+        name = "cont" + tools.generate_random_name()
         code = "contract " + name + contract["limits"]["code"]
         data = {"Wallet": "", "Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         error = self.call("NewContract", data)
-        self.assertEqual(error, "Max size of tx", "Incorrect error: " + error)
+        self.unit.assertEqual(error, "Max size of tx", "Incorrect error: " + error)
         self.update_sys_param("max_tx_size", str(max_tx_size))
         
     def test_max_block_size(self):
-        max_block_size = Db.get_system_parameter(conf["1"]["db"], "max_block_size")
+        max_block_size = db.get_system_parameter(conf["1"]["db"], "max_block_size")
         self.update_sys_param("max_block_size", "500")
-        name = "cont" + Tools.generate_random_name()
+        name = "cont" + tools.generate_random_name()
         code = "contract " + name + contract["limits"]["code"]
         data = {"Wallet": "", "Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         error = self.call("NewContract", data)
-        self.assertEqual(error, "stop generating block", "Incorrect error: " + error)
+        self.unit.assertEqual(error, "Max size of tx", "Incorrect error: " + error)
         self.update_sys_param("max_block_size", str(max_block_size))
         time.sleep(30)
       
     def test_max_block_user_tx(self):
-        max_block_user_tx = Db.get_system_parameter(conf["1"]["db"], "max_block_user_tx")
+        max_block_user_tx = db.get_system_parameter(conf["1"]["db"], "max_block_user_tx")
         self.update_sys_param("max_block_user_tx", "1")
         time.sleep(30)
         i = 1
         while i < 10: 
-            name = "cont" + Tools.generate_random_name()
+            name = "cont" + tools.generate_random_name()
             code = "contract " + name + contract["limits"]["code"]
             data = {"Wallet": "", "Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
-            Actions.call_contract(conf["2"]["url"], conf["1"]['private_key'],
+            actions.call_contract(conf["2"]["url"], conf["1"]['private_key'],
                                 "NewContract", data, token)
             i = i + 1
         time.sleep(5)
-        maxBlock = Actions.get_max_block_id(conf["2"]["url"], token)
+        maxBlock = actions.get_max_block_id(conf["2"]["url"], token)
         print("maxBlock = ", maxBlock)
-        isOneOrTwo = Db.is_count_tx_in_block(conf["2"]["db"], maxBlock, 1)
+        isOneOrTwo = db.is_count_tx_in_block(conf["2"]["db"], maxBlock, 1)
         self.update_sys_param("max_block_user_tx ", str(max_block_user_tx ))
         time.sleep(30)
-        self.assertTrue(isOneOrTwo,
+        self.unit.assertTrue(isOneOrTwo,
                         "One of block contains more than 2 transaction")
         
         
     def test_max_tx_count (self):
-        max_tx_count = Db.get_system_parameter(conf["1"]["db"], "max_tx_count")
+        max_tx_count = db.get_system_parameter(conf["1"]["db"], "max_tx_count")
         self.update_sys_param("max_tx_count", "2")
         i = 1
         while i < 10: 
-            name = "cont" + Tools.generate_random_name()
+            name = "cont" + tools.generate_random_name()
             code = "contract " + name + contract["limits"]["code"]
             data = {"Wallet": "", "Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
-            Actions.call_contract(conf["2"]["url"], conf["1"]['private_key'],
+            actions.call_contract(conf["2"]["url"], conf["1"]['private_key'],
                                 "NewContract", data, token)
             i = i + 1
         time.sleep(5)
-        maxBlock = Actions.get_max_block_id(conf["2"]["url"], token)
-        self.assertTrue(Db.is_count_tx_in_block(conf["2"]["db"], maxBlock, 2),
+        maxBlock = actions.get_max_block_id(conf["2"]["url"], token)
+        self.unit.assertTrue(db.is_count_tx_in_block(conf["2"]["db"], maxBlock, 2),
                         "One of block contains more than 2 transaction")
         self.update_sys_param("max_tx_count ", str(max_tx_count))
