@@ -42,8 +42,9 @@ def prepare_tx(url, prKey, entity, jvtToken, data):
 def prepare_tx_with_files(url, prKey, entity, jvtToken, data, files):
     heads = {'Authorization': jvtToken}
     resp = requests.post(url + '/prepare/' + entity,
-                         data=data, headers=heads, files=files)
+                        data=data, headers=heads, files=files)
     result = resp.json()
+    print("result", result)
     signature = sign(prKey, result['forsign'])
     return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
