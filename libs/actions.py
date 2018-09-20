@@ -132,7 +132,7 @@ def tx_status_multi(url, sleepTime, hshs, jvtToken):
 
         
 def call_get_api(url, data, token):
-    resp = requests.get(url, data=data,  headers={"Authorization": token})
+    resp = requests.get(url, params=data,  headers={"Authorization": token})
     return resp.json()
 
 def call_get_api_with_full_response(url, data, token):
