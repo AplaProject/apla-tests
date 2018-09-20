@@ -1,6 +1,8 @@
 import pytest
 import os
 
+from libs import tools, actions, db
+
 
 def pytest_addoption(parser):
     curDir = os.path.dirname(os.path.abspath(__file__))
@@ -54,3 +56,22 @@ def pytest_addoption(parser):
     parser.addoption('--name', action="store", default='')
     parser.addoption('--value', action="store", default='')
 
+@pytest.fixture(scope="class")
+def setup_vars():
+    wait = tools.read_config("test")["wait_tx_status"]
+    conf = tools.read_config("nodes")
+    keys = tools.read_fixtures("keys")
+    vars = {"wait": wait, "conf": conf, "keys": keys}
+    return vars
+
+
+@pytest.fixture(scope="class")
+def getNodeBalances(self, setup_vars):
+    nodeCount = len(setup_vars["conf"])
+    i = 1
+    nodeBalance = []
+    while i < nodeCount + 1:
+        nodeBalance.append(db.get_balance_from_db(setup_vars["conf"]["1"]["db"],
+                                                  setup_vars["conf"][str(i)]["keyID"]))
+        i = i + 1
+    return nodeBalance
