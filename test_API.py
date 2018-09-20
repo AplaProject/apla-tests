@@ -10,7 +10,7 @@ from libs import db
 
 
 
-class TestApi(unittest.TestCase):
+class TestApi():
 
     @classmethod
     def setup_class(self):
