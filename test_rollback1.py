@@ -115,7 +115,7 @@ class TestRollback1():
         return db.get_count_table(dbNode, name)
 
     def add_binary(self):
-        name = "image_" + Tools.generate_random_name()
+        name = "image_" + tools.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
@@ -137,7 +137,7 @@ class TestRollback1():
                         "insert": "true",
                         "update": "true",
                         "new_column": "true"}"""
-        tableName = "rolltab_" +  Tools.generate_random_name()
+        tableName = "rolltab_" +  tools.generate_random_name()
         data = {"Name": tableName,
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
@@ -300,7 +300,7 @@ class TestRollback1():
         res = self.call("EditTable", dataEdit)
 
     def new_column(self, table):
-        name = "Col_" + Tools.generate_random_name()
+        name = "Col_" + tools.generate_random_name()
         dataCol = {"TableName": table,
                    "Name": name,
                    "Type": "number",
