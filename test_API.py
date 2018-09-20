@@ -21,13 +21,14 @@ class TestApi():
         prKey = self.config["1"]['private_key']
         self.data = actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
+        self.unit = unittest.TestCase()
 
     def assert_tx_in_block(self, result, jwtToken):
-        self.assertIn("hash", result)
+        self.unit.assertIn("hash", result)
         hash = result['hash']
         status = actions.tx_status(url, pause, hash, jwtToken)
-        if len(status['blockid']) > 0:
-            self.assertNotIn(json.dumps(status), 'errmsg')
+        if status['blockid'] > 0:
+            self.unit.assertNotIn(json.dumps(status), 'errmsg')
             return status["blockid"]
         else:
             return status["errmsg"]["error"]
@@ -36,14 +37,14 @@ class TestApi():
         end = url + endPoint
         result = actions.call_get_api(end, data, token)
         for key in keys:
-            self.assertIn(key, result)
+            self.unit.assertIn(key, result)
         return result
 
     def check_post_api(self, endPoint, data, keys):
         end = url + endPoint
         result = actions.call_post_api(end, data, token)
         for key in keys:
-            self.assertIn(key, result)
+            self.unit.assertIn(key, result)
         return result
             
     def get_error_api(self, endPoint, data):
@@ -66,7 +67,7 @@ class TestApi():
         wallet = "0000-0990-3244-5453-2310"
         msg = "Wallet " + wallet + " is not valid"
         error, message = self.get_error_api('/balance/' + wallet, "")
-        self.assertEqual(error, "E_INVALIDWALLET", "Incorrect error")
+        self.unit.assertEqual(error, "E_INVALIDWALLET", "Incorrect error")
 
     def test_get_ecosystem(self):
         asserts = ["number"]
@@ -93,7 +94,7 @@ class TestApi():
                       par1=res["list"][0]["name"],
                       par2=res["list"][1]["name"],
                       par3=res["list"][2]["name"])
-        self.assertDictEqual(actual, mustBe, "test_get_params_ecosystem_with_names is failed!")
+        self.unit.assertDictEqual(actual, mustBe, "test_get_params_ecosystem_with_names is failed!")
 
     def test_get_parametr_of_current_ecosystem(self):
         asserts = ["id", "name", "value", "conditions"]
@@ -103,7 +104,7 @@ class TestApi():
     def test_get_incorrect_ecosys_parametr(self):
         asserts = ""
         error, message = self.get_error_api("/ecosystemparam/incorrectParam/", asserts)
-        self.assertEqual(error, "E_PARAMNOTFOUND", "Incorrect error: " + error + message)
+        self.unit.assertEqual(error, "E_PARAMNOTFOUND", "Incorrect error: " + error + message)
 
     def test_get_tables_of_current_ecosystem(self):
         asserts = ["list", "count"]
@@ -122,8 +123,8 @@ class TestApi():
                     dictNames[table[2:]] = table[2:]
                     dictNamesAPI[table[2:]] = tableInfo["name"]
                 else:
-                    self.fail("Answer from API /table/" + table + " is: " + str(tableInfo))
-        self.assertDictEqual(dictNamesAPI, dictNames,
+                    self.unit.fail("Answer from API /table/" + table + " is: " + str(tableInfo))
+        self.unit.assertDictEqual(dictNamesAPI, dictNames,
                              "Any of API tableInfo gives incorrect data")
         
     def test_get_incorrect_table_information(self):
@@ -132,8 +133,8 @@ class TestApi():
         error, message = self.get_error_api("/table/" + table, data)
         err = "E_TABLENOTFOUND"
         msg = "Table " + table + " has not been found"
-        self.assertEqual(err, error, "Incorrect error")
-        self.assertEqual(message, msg, "Incorrect error massege")
+        self.unit.assertEqual(err, error, "Incorrect error")
+        self.unit.assertEqual(message, msg, "Incorrect error massege")
 
     def test_get_table_data(self):
         dictCount = {}
@@ -156,7 +157,7 @@ class TestApi():
             else:
                 dictCount[table] = 0
                 dictCountTable[table] = int(tableData["count"])
-        self.assertDictEqual(dictCount, dictCountTable,
+        self.unit.assertDictEqual(dictCount, dictCountTable,
                              "Any of count not equels real count")  
         
     def test_get_incorrect_table_data(self):
@@ -165,8 +166,8 @@ class TestApi():
         error, message = self.get_error_api("/list/" + table, data)
         err = "E_TABLENOTFOUND"
         msg = "Table " + table + " has not been found"
-        self.assertEqual(err, error, "Incorrect error")
-        self.assertEqual(message, msg, "Incorrect error massege")
+        self.unit.assertEqual(err, error, "Incorrect error")
+        self.unit.assertEqual(message, msg, "Incorrect error massege")
 
     def test_get_table_data_row(self):
         asserts = ["value"]
@@ -179,8 +180,8 @@ class TestApi():
         error, message = self.get_error_api("/row/" + table + "/2", data)
         err = "E_QUERY"
         msg = "DB query is wrong"
-        self.assertEqual(err, error, "Incorrect errror")
-        self.assertEqual(msg, message, "Incorrect error message")
+        self.unit.assertEqual(err, error, "Incorrect errror")
+        self.unit.assertEqual(msg, message, "Incorrect error message")
 
     def test_get_contract_information(self):
         asserts = ["name"]
@@ -200,13 +201,13 @@ class TestApi():
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
                 "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = self.call("NewLang", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         namePage = "Page_" + tools.generate_random_name()
         valuePage = "Hello, LangRes(" + nameLang + ")"
         dataPage = {"ApplicationId": 1, "Name": namePage, "Value": valuePage, "Conditions": "true",
                     "Menu": "default_menu"}
         res = self.call("NewPage", dataPage)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = [{'tag': 'text', 'text': 'Hello, World_en'}]
         contentRu = [{'tag': 'text', 'text': 'Hello, Мир_ru'}]
         contentFr = [{'tag': 'text', 'text': 'Hello, Monde_fr-FR'}]
@@ -220,7 +221,7 @@ class TestApi():
         pePcontent = actions.get_content(url, "page", namePage, "pe", 1, token)      # should be: en
         dictCur = {"default" : pContent['tree'], "ru": ruPContent['tree'],
                   "fr": frPcontent['tree'], "de": dePcontent['tree'], "pe": pePcontent['tree']}
-        self.assertDictEqual(dictCur, dictExp, "One of langRes is faild")
+        self.unit.assertDictEqual(dictCur, dictExp, "One of langRes is faild")
         
     def test_content_lang_after_edit(self):
         nameLang = "Lang_" + tools.generate_random_name()
@@ -228,19 +229,19 @@ class TestApi():
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
                 "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = self.call("NewLang", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + str(res))
         namePage = "Page_" + tools.generate_random_name()
         valuePage = "Hello, LangRes(" + nameLang + ")"
         dataPage = {"Name": namePage, "Value": valuePage, "Conditions": "true",
                     "Menu": "default_menu", "ApplicationId": 1,}
         res = self.call("NewPage", dataPage)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         count = self.check_get_api("/list/languages", "", [])["count"]
         dataEdit = {"Id": count, "AppID": 1, "Name": nameLang,
                 "Trans": "{\"en\": \"World_en_ed\", \"ru\" : \"Мир_ru_ed\"," +\
                 "\"fr-FR\": \"Monde_fr-FR_ed\", \"de\": \"Welt_de_ed\"}"}
         res = self.call("EditLang", dataEdit)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = [{'tag': 'text', 'text': 'Hello, World_en_ed'}]
         contentRu = [{'tag': 'text', 'text': 'Hello, Мир_ru_ed'}]
         contentFr = [{'tag': 'text', 'text': 'Hello, Monde_fr-FR_ed'}]
@@ -254,7 +255,7 @@ class TestApi():
         pePcontent = actions.get_content(url, "page", namePage, "pe", 1, token)      # should be: en
         dictCur = {"default" : pContent['tree'], "ru": ruPContent['tree'],
                   "fr": frPcontent['tree'], "de": dePcontent['tree'], "pe": pePcontent['tree']}
-        self.assertDictEqual(dictCur, dictExp, "One of langRes is faild")
+        self.unit.assertDictEqual(dictCur, dictExp, "One of langRes is faild")
 
     def test_get_content_from_template(self):
         data = {}
@@ -262,14 +263,14 @@ class TestApi():
         asserts = ["tree"]
         res = self.check_post_api("/content", data, asserts)
         answerTree = {'tree': [{'tag': 'div', 'children': [{'tag': 'text', 'text': '100'}]}]}
-        self.assertEqual(answerTree, res)
+        self.unit.assertEqual(answerTree, res)
 
     def test_get_content_from_template_empty(self):
         data = {}
         data["template"] = ""
         asserts = []
         res = self.check_post_api("/content", data, asserts)
-        self.assertEqual(None, res)
+        self.unit.assertEqual(None, res)
 
     def test_get_content_from_template_source(self):
         data = {}
@@ -278,7 +279,7 @@ class TestApi():
         asserts = ["tree"]
         res = self.check_post_api("/content", data, asserts)
         answerTree = {'tree': [{'tag': 'setvar', 'attr': {'name': 'mytest', 'value': '100'}}, {'tag': 'div', 'children': [{'tag': 'text', 'text': '#mytest#'}]}]}
-        self.assertEqual(answerTree, res)
+        self.unit.assertEqual(answerTree, res)
 
     def test_get_content_from_template_source_empty(self):
         data = {}
@@ -286,7 +287,7 @@ class TestApi():
         data["source"] = "true"
         asserts = []
         res = self.check_post_api("/content", data, asserts)
-        self.assertEqual(None, res)
+        self.unit.assertEqual(None, res)
 
     def test_get_content_source(self):
         # Create new page for test
@@ -298,12 +299,12 @@ class TestApi():
         data["Menu"] = "default_menu"
         data["ApplicationId"] = 1
         res = self.call("NewPage", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + str(res))
         # Test
         asserts = ["tree"]
         res = self.check_post_api("/content/source/"+name, "", asserts)
         childrenText = res["tree"][1]["children"][0]["text"]
-        self.assertEqual("#a#", childrenText)
+        self.unit.assertEqual("#a#", childrenText)
 
     def test_get_content_with_param_from_address_string(self):
         # Create new page for test
@@ -315,20 +316,20 @@ class TestApi():
         data["Menu"] = "default_menu"
         data["ApplicationId"] = 1
         res = self.call("NewPage", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + str(res))
         # Test
         param = "?test="
         value = "hello123"
         asserts = ["tree"]
         res = self.check_post_api("/content/page/" + name + param + value, "", asserts)
-        self.assertEqual(value, res["tree"][0]["text"])
+        self.unit.assertEqual(value, res["tree"][0]["text"])
 
     def test_get_content_from_another_ecosystem(self):
         # create new ecosystem
         ecosysName = "Ecosys_" + tools.generate_random_name()
         data = {"Name": ecosysName}
         res = self.call("NewEcosystem", data)
-        self.assertGreater(int(res), 0,
+        self.unit.assertGreater(int(res), 0,
                            "BlockId is not generated: " + str(res))
         ecosysNum = actions.call_get_api(url + "/ecosystems/", "", token)["number"]
         # login founder in new ecosystem
@@ -342,7 +343,7 @@ class TestApi():
                 "Conditions": "true", "Menu": "default_menu"}
         resp = actions.call_contract(url, prKey, "@1NewPage", data, token2)
         status = actions.tx_status(url, pause, resp["hash"], token2)
-        self.assertGreater(int(status["blockid"]), 0,"BlockId is not generated: " + str(status))
+        self.unit.assertGreater(int(status["blockid"]), 0,"BlockId is not generated: " + str(status))
         # create menu in new ecosystem
         menuName = "Menu_" + tools.generate_random_name()
         menuTitle = "Test menu"
@@ -350,7 +351,7 @@ class TestApi():
                 "Conditions": "true"}
         resp = actions.call_contract(url, prKey, "@1NewMenu", data, token2)
         status = actions.tx_status(url, pause, resp["hash"], token2)
-        self.assertGreater(int(status["blockid"]), 0, "BlockId is not generated: " + str(status))
+        self.unit.assertGreater(int(status["blockid"]), 0, "BlockId is not generated: " + str(status))
         # test
         data = ""
         asserts = ["tree"]
@@ -360,7 +361,7 @@ class TestApi():
                       menu=menuTitle)
         expectedValue = dict(pageText=resPage["tree"][0]["children"][0]["text"],
                       menu=resMenu["tree"][0]["attr"]["title"])
-        self.assertEqual(mustBe, expectedValue, "Dictionaries are different!")
+        self.unit.assertEqual(mustBe, expectedValue, "Dictionaries are different!")
 
     def test_get_back_api_version(self):
         asserts = ["."]
@@ -370,32 +371,32 @@ class TestApi():
     def test_get_systemparams_all_params(self):
         asserts = ["list"]
         res = self.check_get_api("/systemparams", "", asserts)
-        self.assertGreater(len(res["list"]), 0, "Count of systemparams not Greater 0: " + str(len(res["list"])))
+        self.unit.assertGreater(len(res["list"]), 0, "Count of systemparams not Greater 0: " + str(len(res["list"])))
 
     def test_get_systemparams_some_param(self):
         asserts = ["list"]
         param = "gap_between_blocks"
         res = self.check_get_api("/systemparams/?names=" + param, "", asserts)
-        self.assertEqual(1, len(res["list"]))
-        self.assertEqual(param, res["list"][0]["name"])
+        self.unit.assertEqual(1, len(res["list"]))
+        self.unit.assertEqual(param, res["list"][0]["name"])
 
     def test_get_systemparams_incorrect_param(self):
         asserts = ["list"]
         param = "not_exist_parameter"
         res = self.check_get_api("/systemparams/?names="+param, "", asserts)
-        self.assertEqual(0, len(res["list"]))
+        self.unit.assertEqual(0, len(res["list"]))
 
     def test_get_contracts(self):
         limit = 25 # Default value without parameters
         asserts = ["list"]
         res = self.check_get_api("/contracts", "", asserts)
-        self.assertEqual(limit, len(res["list"]))
+        self.unit.assertEqual(limit, len(res["list"]))
 
     def test_get_contracts_limit(self):
         limit = 3
         asserts = ["list"]
         res = self.check_get_api("/contracts/?limit="+str(limit), "", asserts)
-        self.assertEqual(limit, len(res["list"]))
+        self.unit.assertEqual(limit, len(res["list"]))
 
     def test_get_contracts_offset(self):
         asserts = ["list"]
@@ -403,38 +404,38 @@ class TestApi():
         count = res["count"]
         offset = count
         res = self.check_get_api("/contracts/?offset=" + str(offset), "", asserts)
-        self.assertEqual(None, res["list"])
+        self.unit.assertEqual(None, res["list"])
 
     def test_get_contracts_empty(self):
         limit = 1000
         offset = 1000
         asserts = ["list"]
         res = self.check_get_api("/contracts/?limit="+str(limit)+"&offset="+str(offset), "", asserts)
-        self.assertEqual(None, res["list"])
+        self.unit.assertEqual(None, res["list"])
 
     def test_get_interface_page(self):
         asserts = ["id"]
         page = "default_page"
         res = self.check_get_api("/interface/page/"+page, "", asserts)
-        self.assertEqual("default_page", res["name"])
+        self.unit.assertEqual("default_page", res["name"])
 
     def test_get_interface_page_incorrect(self):
         asserts = ["error"]
         page = "not_exist_page_xxxxxxxxxxx"
         res = self.check_get_api("/interface/page/"+page, "", asserts)
-        self.assertEqual("Page not found", res["msg"])
+        self.unit.assertEqual("Page not found", res["msg"])
 
     def test_get_interface_menu(self):
         asserts = ["id"]
         menu = "default_menu"
         res = self.check_get_api("/interface/menu/"+menu, "", asserts)
-        self.assertEqual("default_menu", res["name"])
+        self.unit.assertEqual("default_menu", res["name"])
 
     def test_get_interface_menu_incorrect(self):
         asserts = ["error"]
         menu = "not_exist_menu_xxxxxxxxxxx"
         res = self.check_get_api("/interface/menu/"+menu, "", asserts)
-        self.assertEqual("Page not found", res["msg"])
+        self.unit.assertEqual("Page not found", res["msg"])
 
     def test_get_interface_block(self):
         # Add new block
@@ -442,17 +443,17 @@ class TestApi():
         data = {"Name": block, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewBlock", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + str(res))
         # Test
         asserts = ["id"]
         res = self.check_get_api("/interface/block/"+block, "", asserts)
-        self.assertEqual(block, res["name"])
+        self.unit.assertEqual(block, res["name"])
 
     def test_get_interface_block_incorrect(self):
         asserts = ["error"]
         block = "not_exist_block_xxxxxxxxxxx"
         res = self.check_get_api("/interface/block/"+block, "", asserts)
-        self.assertEqual("Page not found", res["msg"])
+        self.unit.assertEqual("Page not found", res["msg"])
 
     def test_get_table_vde(self):
         asserts = ["name"]
@@ -468,7 +469,7 @@ class TestApi():
         data = {}
         resp = actions.call_contract(url, prKey, "NodeOwnerCondition", data, token)
         status = actions.tx_status(url, pause, resp["hash"], token)
-        self.assertGreater(int(status["blockid"]), 0,
+        self.unit.assertGreater(int(status["blockid"]), 0,
                            "BlockId is not generated: " + str(status))
         
     def is_node_owner_false(self):
@@ -479,21 +480,21 @@ class TestApi():
         data = {}
         resp = actions.call_contract(url, prKey2, "NodeOwnerCondition", data, token2)
         status = actions.tx_status(url, pause, resp["hash"], token2)
-        self.assertEqual(status["errmsg"]["error"],
+        self.unit.assertEqual(status["errmsg"]["error"],
                          "Sorry, you do not have access to this action.",
                          "Incorrect message: " + str(status))
         
     def test_login(self):
-        keys = tools.read_config("keys")
+        keys = tools.read_fixtures("keys")
         data1 = actions.login(url, keys["key5"], 0)
         time.sleep(5)
         conf = tools.read_config("nodes")
         res = db.is_wallet_created(conf["1"]["db"], data1["key_id"])
-        self.assertTrue(res, "Wallet for new user didn't created")
+        self.unit.assertTrue(res, "Wallet for new user didn't created")
         
     def test_login2(self):
         isOne = False
-        keys = tools.read_config("keys")
+        keys = tools.read_fixtures("keys")
         data1 = actions.login(url, keys["key3"], 0)
         time.sleep(5)
         conf = tools.read_config("nodes")
@@ -502,7 +503,7 @@ class TestApi():
             data2 = actions.login(url, keys["key1"], 0)
             time.sleep(5)
             isOne = db.is_wallet_created(conf["1"]["db"], data2["key_id"])
-            self.assertTrue(isOne, "Wallet for new user didn't created")
+            self.unit.assertTrue(isOne, "Wallet for new user didn't created")
 
     def test_get_avatar_with_login(self):
         # add file in binaries
@@ -515,7 +516,7 @@ class TestApi():
         resp = actions.call_contract_with_files(url, prKey, "UploadBinary", data,
                                                 files, token)
         res = self.assert_tx_in_block(resp, token)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # find last added file
         asserts = ["count"]
         res = self.check_get_api("/list/binaries", "", asserts)
@@ -536,7 +537,7 @@ class TestApi():
                 "UpdatePerm": "true",
                 "ReadPerm": "true"}
         res = self.call("EditColumn", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # update members table
         code = """
         {
@@ -551,18 +552,18 @@ class TestApi():
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         data = {}
         resp = actions.call_contract(url, prKey, name, data, token)
         res = self.assert_tx_in_block(resp, token)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # rollback changes column permissions
         data = {"TableName": "members",
                 "Name":"image_id",
                 "UpdatePerm": "ContractAccess(\"Profile_Edit\")",
                 "ReadPerm": "true"}
         res = self.call("EditColumn", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # test
         ecosystemID = "1"
         asserts = ""
@@ -570,7 +571,7 @@ class TestApi():
         avaURL = url + "/avatar/" + ecosystemID + "/" + founderID
         res = actions.call_get_api_with_full_response(avaURL, data, asserts)
         msg = "Content-Length is different!"
-        self.assertIn("71926", str(res.headers["Content-Length"]),msg)
+        self.unit.assertIn("71926", str(res.headers["Content-Length"]),msg)
 
     def test_get_avatar_without_login(self):
         # add file in binaries
@@ -583,7 +584,7 @@ class TestApi():
         resp = actions.call_contract_with_files(url, prKey, "UploadBinary", data,
                                                 files, token)
         res = self.assert_tx_in_block(resp, token)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + str(res))
         # find last added file
         asserts = ["count"]
         res = self.check_get_api("/list/binaries", "", asserts)
@@ -604,7 +605,7 @@ class TestApi():
                 "UpdatePerm": "true",
                 "ReadPerm": "true"}
         res = self.call("EditColumn", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # update members table
         code = """
                {
@@ -623,25 +624,25 @@ class TestApi():
         data = {}
         resp = actions.call_contract(url, prKey, name, data, token)
         res = self.assert_tx_in_block(resp, token)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # rollback changes column permissions
         data = {"TableName": "members",
                 "Name":"image_id",
                 "UpdatePerm": "ContractAccess(\"Profile_Edit\")",
                 "ReadPerm": "true"}
         res = self.call("EditColumn", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # test
         ecosystemID = "1"
         avaURL = url + "/avatar/" + ecosystemID + "/" + founderID
         resp = requests.get(avaURL)
         msg = "Content-Length is different!"
-        self.assertIn("71926", str(resp.headers["Content-Length"]), msg)
+        self.unit.assertIn("71926", str(resp.headers["Content-Length"]), msg)
 
     def test_get_centrifugo_address_without_login(self):
         resp = requests.get(url + '/config/centrifugo')
         res = resp.json()
-        self.assertIn("ws://", res, "Centrifugo is not connection to node!")
+        self.unit.assertIn("ws://", res, "Centrifugo is not connection to node!")
 
     def test_get_centrifugo_address_with_login(self):
         asserts = ["ws://"]
@@ -662,7 +663,7 @@ class TestApi():
         data = {"Name": name, "Value": "Div(,Hello page!)", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         res = self.call("NewPage", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + str(res))
         asserts = ["hash"]
         authRes = self.check_post_api("/content/hash/" + name, "", asserts)
         notAuthRes = requests.post(url + "/content/hash/" + name)
@@ -676,7 +677,7 @@ class TestApi():
         actual = dict(authRes=is_hash_not_empty(authRes),
                       notAuthRes=is_hash_not_empty(notAuthRes),
                       msg=notAuthResNotExist["msg"])
-        self.assertDictEqual(mustBe, actual, "Not all assertions passed in test_content_hash")
+        self.unit.assertDictEqual(mustBe, actual, "Not all assertions passed in test_content_hash")
 
     def test_get_ecosystem_name(self):
         id = 1
