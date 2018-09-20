@@ -48,7 +48,7 @@ class TestRollback1():
                     hashes = resp['hashes']
                     result = actions.tx_status_multi(url, 30, hashes, token)
                     for status in result.values():
-                        if int(status["blockid"]) < 1:
+                        if status["blockid"] < 1:
                             print("Import is failed")
                             exit(1)
                     print("App '" + appName + "' successfully installed")

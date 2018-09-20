@@ -10,8 +10,10 @@ from libs import db
 
 
 
-class TestApi(unittest.TestCase):
-    def setUp(self):
+class TestApi():
+
+    @classmethod
+    def setup_class(self):
         global url, token, prKey, pause
         self.config = tools.read_config("nodes")
         url = self.config["2"]["url"]
