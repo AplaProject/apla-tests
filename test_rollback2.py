@@ -8,6 +8,7 @@ from libs import tools
 class Rollback2():
     
     def test_rollback1(self):
+        self.unit = unittest.TestCase()
         self.conf = tools.read_config("main")
         print(self.conf)
         dbConf = self.conf["db"]
@@ -21,7 +22,7 @@ class Rollback2():
         for key in dbJson:
             db1 = dbInformation[key]
             db2 = dbJson[key]
-            self.assertEqual(db1, db2,"Different info about " + key)
+            self.unit.assertEqual(db1, db2,"Different info about " + key)
         # Get from file user table name
         file = os.path.join(os.getcwd(), "userTableName.txt")
         with open(file, 'r') as f:
@@ -36,5 +37,5 @@ class Rollback2():
         for key in dbUserJson:
             dbUser1 = dbUserTableInfo[key]
             dbUser2 = dbUserJson[key]
-            self.assertEqual(dbUser1, dbUser2, "Different info about in user table " + key)
+            self.unit.assertEqual(dbUser1, dbUser2, "Different info about in user table " + key)
 
