@@ -5,7 +5,6 @@ import time
 from libs import actions
 from libs import db
 from libs import tools
-from asyncio.tasks import wait
 
 class TestSimvolio():
 
@@ -52,7 +51,7 @@ class TestSimvolio():
         url = self.config["2"]["url"]
         prKey = self.config["1"]['private_key']
         token = self.data["jwtToken"]
-        res = Actions.call_contract(url, prKey, name, {}, token)
+        res = actions.call_contract(url, prKey, name, {}, token)
         hash = res["hash"]
         result = actions.tx_status(url, wait, hash, token)
         self.unit.assertIn(checkPoint, result["result"], "error")
@@ -74,7 +73,7 @@ class TestSimvolio():
         res = actions.call_contract(url, prKey, name, data, token)
         hash = res["hash"]
         result = actions.tx_status(url, wait, hash, token)
-        self.assertIn(checkPoint, result["result"], "error")
+        self.unit.assertIn(checkPoint, result["result"], "error")
 
     def test_contract_db_find(self):
         contract = self.contracts["dbFind"]
@@ -204,8 +203,8 @@ class TestSimvolio():
         data = {"ApplicationId": 1,
                 "Name": "test",
                 "Trans": "{\"en\": \"test_en\", \"de\" : \"test_de\"}"}
-        result = Actions.call_contract(url, prKey, "NewLang", data, token)
-        tx = Actions.tx_status(url, wait, result['hash'], token)
+        result = actions.call_contract(url, prKey, "NewLang", data, token)
+        tx = actions.tx_status(url, wait, result['hash'], token)
         contract = self.contracts["langRes"]
         self.check_contract(contract["code"], contract["asert"])
 
@@ -219,8 +218,8 @@ class TestSimvolio():
         data = {"Name": "test", "ApplicationId": 1,
                 "Columns": columns,
                 "Permissions": permission}
-        result = Actions.call_contract(url, prKey, "NewTable", data, token)
-        tx = Actions.tx_status(url, wait, result['hash'], token)
+        result = actions.call_contract(url, prKey, "NewTable", data, token)
+        tx = actions.tx_status(url, wait, result['hash'], token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
 
@@ -234,7 +233,7 @@ class TestSimvolio():
         data = {"Name": "test", "ApplicationId": 1,
                 "Columns": columns,
                 "Permissions": permission}
-        result = Actions.call_contract(url, prKey, "NewTable", data, token)
+        result = actions.call_contract(url, prKey, "NewTable", data, token)
         tx = actions.tx_status(url, wait, result['hash'], token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
@@ -345,14 +344,14 @@ class TestSimvolio():
 
     def test_sys_var_role_id_readonly(self):
         sysVarName = "$role_id"
-        contracName = Tools.generate_random_name()
+        contracName = tools.generate_random_name()
         value = "contract con_" + contracName + " { data{ } conditions{ } action{ " + sysVarName + " = 5 } }"
         data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
         result = actions.call_contract(url, prKey, "NewContract", data, token)
         tx = actions.tx_status(url, wait, result['hash'], token)
         expResult = "system variable " + sysVarName + " cannot be changed"
         msg = "system variable " + sysVarName + " was been changed!"
-        self.assertEqual(tx["errmsg"]["error"], expResult, msg)
+        self.unit.assertEqual(tx["errmsg"]["error"], expResult, msg)
 
     def test_bytesToString(self):
         contract = self.contracts["bytesToString"]
@@ -377,13 +376,13 @@ class TestSimvolio():
             while True:
                 if old_block_id == limit:
                     break
-                contracName = Tools.generate_random_name()
+                contracName = tools.generate_random_name()
                 value = "contract con_" + contracName + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
                 data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
                 result = actions.call_contract(url, prKey, "NewContract", data, token)
                 tx = actions.tx_status(url, wait, result['hash'], token)
                 current_block_id = int(tx["blockid"])
-                self.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
+                self.unit.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
                 old_block_id = current_block_id
 
         # generate contract which return count blocks in blockchain
@@ -451,7 +450,7 @@ class TestSimvolio():
 
     def test_getHistoryPage(self):
         # create page
-        name = Tools.generate_random_name()
+        name = tools.generate_random_name()
         page = "Div(Body: Hello)"
         data = {"ApplicationId": "1",
                 "Name": name,
@@ -506,7 +505,7 @@ class TestSimvolio():
                 "Conditions": "ContractConditions(`MainCondition`)"}
         res = self.call(outerName, data)
         mustBe = "[@1" + outerName + " CallContract @1" + innerName + "]"
-        self.assertEqual(mustBe, res["result"], "test_sys_var_stack is failed!")
+        self.unit.assertEqual(mustBe, res["result"], "test_sys_var_stack is failed!")
 
     #TODO db
     def test_getHistoryRowMenu(self):
