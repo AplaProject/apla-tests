@@ -4,51 +4,50 @@ import json
 import os
 import time
 
-from libs.actions import Actions
-from libs.tools import Tools
-from libs.db import Db
+from libs import actions
+from libs import tools
+from libs import db
 
 
 class TestSystemContracts(unittest.TestCase):
 
-    @classmethod
     def setup_class(self):
-        global url, token, prKey, pause, db
-        self.config = Tools.read_config("nodes")
+        global url, token, prKey, pause, db1
+        self.config = tools.read_config("nodes")
         url = self.config["1"]["url"]
-        pause = Tools.read_config("test")["wait_tx_status"]
+        pause = tools.read_config("test")["wait_tx_status"]
         prKey = self.config["1"]['private_key']
-        db = self.config["1"]["db"]
-        self.data = Actions.login(url, prKey, 0)
-        self.t = Tools()
+        db1 = self.config["1"]["db"]
+        self.data = actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
+        self.unit = unittest.TestCase()
 
     def assert_tx_in_block(self, result, jwtToken):
-        self.assertIn("hash", result)
+        self.unit.assertIn("hash", result)
         hash = result['hash']
-        status = Actions.tx_status(url, pause, hash, jwtToken)
+        status = actions.tx_status(url, pause, hash, jwtToken)
         if len(status['blockid']) > 0:
-            self.assertNotIn(json.dumps(status), 'errmsg')
+            self.unit.assertNotIn(json.dumps(status), 'errmsg')
             return {"blockid": int(status["blockid"]), "error": "0"}
         else:
             return {"blockid": 0, "error": status["errmsg"]["error"]}
 
     def call(self, name, data):
-        resp = Actions.call_contract(url, prKey, name, data, token)
+        resp = actions.call_contract(url, prKey, name, data, token)
         resp = self.assert_tx_in_block(resp, token)
         return resp
 
     def assert_multi_tx_in_block(self, result, jwtToken):
-        self.assertIn("hashes", result)
+        self.unit.assertIn("hashes", result)
         hashes = result['hashes']
-        result = Actions.tx_status_multi(url, pause, hashes, jwtToken)
+        result = actions.tx_status_multi(url, pause, hashes, jwtToken)
         for status in result.values():
-            self.assertNotIn('errmsg', status)
-            self.assertGreater(int(status["blockid"]), 0,
+            self.unit.assertNotIn('errmsg', status)
+            self.unit.assertGreater(int(status["blockid"]), 0,
                                "BlockID not generated")
 
     def callMulti(self, name, data, sleep=0):
-        resp = Actions.call_multi_contract(url, prKey, name, data, token)
+        resp = actions.call_multi_contract(url, prKey, name, data, token)
         time.sleep(sleep)
         resp = self.assert_multi_tx_in_block(resp, token)
         return resp
@@ -57,61 +56,61 @@ class TestSystemContracts(unittest.TestCase):
         while True:
             # add contract, which get block_id
             body = "{\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
-            code, name = self.t.generate_name_and_code(body)
+            code, name = tools.generate_name_and_code(body)
             data = {"Value": code, "ApplicationId": 1,
                     "Conditions": "true"}
             res = self.call("NewContract", data)
-            self.assertGreater(res["blockid"], 0, "BlockId is not generated: " + str(res))
+            self.unit.assertGreater(res["blockid"], 0, "BlockId is not generated: " + str(res))
             currrent_block_id = res["blockid"]
             expected_block_id = old_block_id + limit + 1  # +1 spare block
             if currrent_block_id == expected_block_id:
                 break
 
     def test_create_ecosystem(self):
-        data = {"Name": "Ecosys_" + Tools.generate_random_name()}
+        data = {"Name": "Ecosys_" + tools.generate_random_name()}
         res = self.call("NewEcosystem", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     # !!!
     def test_edit_application(self):
-        name = "App" + Tools.generate_random_name()
+        name = "App" + tools.generate_random_name()
         data = {"Name": name, "Conditions": "true"}
         res = self.call("NewApplication", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        id = Actions.get_object_id(url, name, "applications", token)
+        id = actions.get_object_id(url, name, "applications", token)
         data = {"ApplicationId": id, "Conditions": "false"}
         res = self.call("EditApplication", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_activate_application(self):
-        name = "App" + Tools.generate_random_name()
+        name = "App" + tools.generate_random_name()
         data = {"Name": name, "Conditions": "true"}
         res = self.call("NewApplication", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        id = Actions.get_object_id(url, name, "applications", token)
+        id = actions.get_object_id(url, name, "applications", token)
         dataDeact = {"ApplicationId": id, "Value": 0}
         res = self.call("DelApplication", dataDeact)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         dataAct = {"ApplicationId": id, "Value": 1}
         res = self.call("DelApplication", dataAct)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_export_application(self):
-        name = "App" + Tools.generate_random_name()
+        name = "App" + tools.generate_random_name()
         data = {"Name": name, "Conditions": "true"}
         res = self.call("NewApplication", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        id = Actions.get_object_id(url, name, "applications", token)
+        id = actions.get_object_id(url, name, "applications", token)
         dataDeact = {"ApplicationId": id}
         res = self.call("ExportNewApp", dataDeact)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     # !!!
@@ -119,22 +118,22 @@ class TestSystemContracts(unittest.TestCase):
         id = 1
         data = {"EcosystemID": id, "NewName": "Ecosys_" + Tools.generate_random_name()}
         resBlockId = self.call("EditEcosystemName", data)
-        self.assertGreater(resBlockId["blockid"], 0,
+        self.unit.assertGreater(resBlockId["blockid"], 0,
                            "BlockId is not generated: " + str(resBlockId))
 
     def test_edit_ecosystem_name_incorrect_id(self):
         id = 500
         data = {"EcosystemID": id, "NewName": "ecosys_" + Tools.generate_random_name()}
         res = self.call("EditEcosystemName", data)
-        self.assertEqual("Ecosystem " + str(id) + " does not exist", res["error"])
+        self.unit.assertEqual("Ecosystem " + str(id) + " does not exist", res["error"])
 
     def test_money_transfer(self):
         data = {"Recipient": "0005-2070-2000-0006-0200", "Amount": "1000"}
         res = self.call("MoneyTransfer", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         #TODO
-        self.assertTrue(Db.is_commission_in_history(self.config["1"]["db"], config["1"]["keyID"],
+        self.unit.assertTrue(db.is_commission_in_history(self.config["1"]["db"], config["1"]["keyID"],
                                                  "52070200000060200", "1000"),
                         "No moneytransfer resord in history")
 
@@ -143,146 +142,143 @@ class TestSystemContracts(unittest.TestCase):
         msg = "Recipient " + wallet + " is invalid"
         data = {"Recipient": wallet, "Amount": "1000"}
         ans = self.call("MoneyTransfer", data)
-        self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
+        self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
     def test_money_transfer_zero_amount(self):
         wallet = "0005-2070-2000-0006-0200"
         msg = "Amount must be greater then zero"
         data = {"Recipient": wallet, "Amount": "0"}
         ans = self.call("MoneyTransfer", data)
-        self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
+        self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
     def test_money_transfer_negative_amount(self):
         wallet = "0005-2070-2000-0006-0200"
         msg = "Amount must be greater then zero"
         data = {"Recipient": wallet, "Amount": "-1000"}
         ans = self.call("MoneyTransfer", data)
-        self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
+        self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
     def test_money_transfer_amount_as_string(self):
         wallet = "0005-2070-2000-0006-0200"
         msg = "can't convert ttt to decimal"
         data = {"Recipient": wallet, "Amount": "ttt"}
         ans = self.call("MoneyTransfer", data)
-        self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
+        self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
     def test_money_transfer_with_comment(self):
         wallet = "0005-2070-2000-0006-0200"
         data = {"Recipient": wallet, "Amount": "1000", "Comment": "Test"}
         res = self.call("MoneyTransfer", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_new_contract(self):
-        code, name = self.t.generate_name_and_code("")
+        code, name = tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_new_contract_exists_name(self):
-        code, name = self.t.generate_name_and_code("")
+        code, name = tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         ans = self.call("NewContract", data)
         msg = "Contract " + name + " already exists"
-        self.assertEqual(ans["error"], msg, "Incorrect message: " + str(ans))
+        self.unit.assertEqual(ans["error"], msg, "Incorrect message: " + str(ans))
 
     def test_new_contract_without_name(self):
         code = "contract {data { }    conditions {    }    action {    }    }"
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         ans = self.call("NewContract", data)
-        self.assertIn("must be the name", ans["error"],
+        self.unit.assertIn("must be the name", ans["error"],
                       "Incorrect message: " + str(ans))
 
     def test_new_contract_incorrect_condition(self):
-        code, name = self.t.generate_name_and_code("")
+        code, name = tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "condition"}
         ans = self.call("NewContract", data)
-        self.assertEqual("unknown identifier condition",
+        self.unit.assertEqual("unknown identifier condition",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract_incorrect_condition(self):
-        std = self.simple_test_data
-        code, name = self.t.generate_name_and_code("")
+        code, name = tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        data2 = {"Id": Actions.get_contract_id(url, name, token),
+        data2 = {"Id": actions.get_contract_id(url, name, token),
                  "Value": code, "Conditions": "tryam",
                  "WalletId": std.wallet()}
         ans = self.call("EditContract", data2)
-        self.assertEqual("unknown identifier tryam",
+        self.unit.assertEqual("unknown identifier tryam",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract_incorrect_condition1(self):
-        std = self.simple_test_data
         wallet = std.wallet("0005")
-        code, name = self.t.generate_name_and_code("")
+        code, name = tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        data2 = {"Id": Actions.get_contract_id(url, name, token),
+        data2 = {"Id": actions.get_contract_id(url, name, token),
                  "Value": code, "Conditions": "true",
                  "WalletId": wallet}
         ans = self.call("EditContract", data2)
         msg = "New contract owner " + wallet + " is invalid"
-        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract(self):
         wallet = "0005-2070-2000-0006-0200"  # ??
-        code, name = self.t.generate_name_and_code("")
+        code, name = tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_edit_name_of_contract(self):
-        code, name = self.t.generate_name_and_code("")
+        code, name = tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        code1, name1 = self.t.generate_name_and_code("")
+        code1, name1 = tools.generate_name_and_code("")
         data2 = {"Id": Actions.get_contract_id(url, name, token),
                  "Value": code1, "Conditions": "true",
                  "WalletId": "0005-2070-2000-0006-0200"}
         ans = self.call("EditContract", data2)
-        self.assertEqual("Contracts or functions names cannot be changed",
+        self.unit.assertEqual("Contracts or functions names cannot be changed",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_incorrect_contract(self):
-        std = self.simple_test_data
-        code, name = self.t.generate_name_and_code("")
-        id = std.test_id()
+        code, name = tools.generate_name_and_code("")
+        id = "99999"
         data2 = {"Id": id, "Value": code, "Conditions": "true",
                  "WalletId": std.wallet()}
         ans = self.call("EditContract", data2)
-        self.assertEqual("Item " + id + " has not been found",
+        self.unit.assertEqual("Item " + id + " has not been found",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_activate_contract(self):
-        code, name = self.t.generate_name_and_code("")
+        code, name = tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
         res = self.call("NewContract", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        id = Actions.get_contract_id(url, name, token)
+        id = actions.get_contract_id(url, name, token)
         data2 = {"Id": id}
         res = self.call("ActivateContract", data2)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_activate_incorrect_contract(self):
@@ -290,18 +286,18 @@ class TestSystemContracts(unittest.TestCase):
         data = {"Id": id}
         ans = self.call("ActivateContract", data)
         msg = "Contract " + id + " does not exist"
-        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_deactivate_contract(self):
-        code, name = self.t.generate_name_and_code("")
+        code, name = tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
         res = self.call("NewContract", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        id = Actions.get_contract_id(url, name, token)
+        id = actions.get_contract_id(url, name, token)
         data2 = {"Id": id}
         res = self.call("ActivateContract", data2)
-        # self.assertGreater(res["blockid"], 0,        self.conf = self.config.readMainConfig()
+        self.assertGreater(res["blockid"], 0, "Error in Deactivated contract")
 
     def test_deactivate_incorrect_contract(self):
         id = "99999"
@@ -311,54 +307,54 @@ class TestSystemContracts(unittest.TestCase):
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_parameter(self):
-        data = {"Name": "Par_" + Tools.generate_random_name(), "Value": "test", "ApplicationId": 1,
+        data = {"Name": "Par_" + tools.generate_random_name(), "Value": "test", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewParameter", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_new_parameter_exist_name(self):
-        name = "Par_" + Tools.generate_random_name()
+        name = "Par_" + tools.generate_random_name()
         data = {"Name": name, "Value": "test", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewParameter", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         msg = "Parameter " + name + " already exists"
         ans = self.call("NewParameter", data)
-        self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_parameter_incorrect_condition(self):
         condition = "tryam"
-        data = {"Name": "Par_" + Tools.generate_random_name(), "Value": "test", "ApplicationId": 1,
+        data = {"Name": "Par_" + tools.generate_random_name(), "Value": "test", "ApplicationId": 1,
                 "Conditions": condition}
         ans = self.call("NewParameter", data)
-        self.assertEqual("unknown identifier " + condition,
+        self.unit.assertEqual("unknown identifier " + condition,
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_incorrect_parameter(self):
         id = "99999"
         data2 = {"Id": id, "Value": "test_edited", "Conditions": "true"}
         ans = self.call("EditParameter", data2)
-        self.assertEqual("Item " + id + " has not been found",
+        self.unit.assertEqual("Item " + id + " has not been found",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_parameter_incorrect_condition(self):
-        name = "Par_" + Tools.generate_random_name()
+        name = "Par_" + tools.generate_random_name()
         condition = "tryam"
-        id = Actions.get_parameter_id(url, name, token)
+        id = actions.get_parameter_id(url, name, token)
         data = {"Name": name, "Value": "test", "Conditions": "true"}
         res = self.call("NewParameter", data)
-        self.assertGreater(res["blockid"], 0,
+        self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         data2 = {"Id": id, "Value": "test_edited", "Conditions": condition}
         ans = self.call("EditParameter", data2)
-        self.assertEqual("unknown identifier " + condition,
+        self.unit.assertEqual("unknown identifier " + condition,
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_menu(self):
-        countMenu = Db.get_count_table(db, "1_menu")
-        name = "Menu_" + Tools.generate_random_name()
+        countMenu = db.get_count_table(db, "1_menu")
+        name = "Menu_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewMenu", data)
