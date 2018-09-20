@@ -6,6 +6,7 @@ import ctypes
 import json
 import argparse
 import shutil
+import sys
 
 curDir = os.path.dirname(os.path.abspath(__file__))
 
@@ -62,11 +63,15 @@ with open(cenConfig, 'w') as fconf:
 	
 # Run centrifugo
 cenPath = os.path.join(args.centrifugo, "centrifugo")
+if sys.platform == 'win32':
+	insecure_param = '--insecure_admin'
+else:
+	insecure_param = '--admin_insecure'
 centrifugo = subprocess.Popen([
 	cenPath,
 	'--config=config.json',
 	'--admin',
-	'--insecure_admin',
+	insecure_param,
 	'--web'
 ])
 time.sleep(3)
