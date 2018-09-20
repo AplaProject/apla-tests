@@ -5,9 +5,8 @@ import os
 import time
 import pytest
 
-from libs.actions import Actions
-from libs.tools import Tools
-
+from libs import actions
+from libs import tools
 
 def jsonToList(json_api_fixture):
     fullList = []
@@ -43,17 +42,17 @@ class TestApi():
 
     def setUp(self):
         global url, token, prKey, pause
-        self.config = Tools.read_config("nodes")
+        self.config = tools.read_config("nodes")
         url = self.config["2"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
         prKey = self.config["1"]['private_key']
-        self.data = Actions.login(url, prKey, 0)
+        self.data = actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
         unittest.TestCase.assertIn(self, "hash", result)
         hash = result['hash']
-        status = Actions.tx_status(url, pause, hash, jwtToken)
+        status = actions.tx_status(url, pause, hash, jwtToken)
         if len(status['blockid']) > 0:
             unittest.TestCase.assertNotIn(json.dumps(status), 'errmsg')
             return status["blockid"]
@@ -62,7 +61,7 @@ class TestApi():
 
     def check_get_api(self, endPoint, data, keys):
         end = url + endPoint
-        result = Actions.call_get_api(end, data, token)
+        result = actions.call_get_api(end, data, token)
         for key in keys:
             print('key = ' + key)
             unittest.TestCase.assertIn(self, key, result)
@@ -70,20 +69,20 @@ class TestApi():
 
     def check_post_api(self, endPoint, data, keys):
         end = url + endPoint
-        result = Actions.call_post_api(end, data, token)
+        result = actions.call_post_api(end, data, token)
         for key in keys:
             unittest.TestCase.assertIn(self, key, result)
         return result
             
     def get_error_api(self, endPoint, data):
         end = url + endPoint
-        result = Actions.call_get_api(end, data, token)
+        result = actions.call_get_api(end, data, token)
         error = result["error"]
         message = result["msg"]
         return error, message
 
     def call(self, name, data):
-        resp = Actions.call_contract(url, prKey, name, data, token)
+        resp = actions.call_contract(url, prKey, name, data, token)
         resp = self.assertTxInBlock(resp, token)
         return resp
 
