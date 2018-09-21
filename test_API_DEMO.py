@@ -62,6 +62,22 @@ class TestApi():
 
 
     # Call from new API func
+    def test_getuid(self):
+        token, uid = api.getuid(url)
+        print(token)
+        print(uid)
+
+    def test_login(self):
+        private_key = '72c1e198c990f790747e0aa19807a234c7f4417fa4118e621e0e018dbabf0306'
+        res = api.login(url, private_key, role_id=0)
+        print(res)
+
+    def test_refresh(self):
+        private_key = '72c1e198c990f790747e0aa19807a234c7f4417fa4118e621e0e018dbabf0306'
+        res_login = api.login(url, private_key, role_id=1)
+        res = api.refresh(url, res_login['timeToken'])
+        print(res)
+
     def test_ecosystemname(self):
         res = api.ecosystemname(url, token, id=1)
         print(res)
@@ -104,4 +120,65 @@ class TestApi():
 
     def test_history(self):
         res = api.history(url, token, name='contracts', id=2)
+        print(res)
+
+    def test_interface(self):
+        res = api.interface(url, token, entity='page', name='default_page')
+        print(res)
+        res = api.interface(url, token, entity='menu', name='default')
+        print(res)
+        res = api.interface(url, token, entity='block', name='block1')
+        print(res)
+        print(api.interface.__doc__)
+
+    def test_contracts(self):
+        res = api.contracts(url, token, limit=2, offset=2)
+        print(res)
+
+    def test_contract(self):
+        res = api.contract(url, token, name='MainCondition')
+        print(res)
+
+    def test_content(self):
+        res = api.content(url, token, entity='page', name='default_page')
+        print(res)
+        res = api.content(url, token, entity='menu', name='default')
+        print(res)
+        print(api.content.__doc__)
+
+    def test_content_source(self):
+        res = api.content_source(url, token, name='default_page')
+        print(res)
+
+    def test_content_hash(self):
+        res = api.content_hash(url, token, name='default_page')
+        print(res)
+
+    def test_content_template(self):
+        templ = 'SetVar(mytest, 100) Div(Body: #mytest#)'
+        res = api.content_template(url, token, template=templ, source=1)
+        print(res)
+        res = api.content_template(url, token, template=templ, source=0)
+        print(res)
+
+    def test_maxblockid(self):
+        res = api.maxblockid(url, token)
+        print(res)
+
+    def test_block(self):
+        res = api.block(url, token, 1)
+        print(res)
+        res = api.block(url, token, 5)
+        print(res)
+
+    def test_avatar(self):
+        res = api.avatar(url, token, 1)
+        print(res)
+        for el in res.headers:
+            print('{}  -  {}'.format(el, res.headers[el]))
+        for el in res:
+            print(el)
+
+    def test_config_centrifugo(self):
+        res = api.config_centrifugo(url, token)
         print(res)
