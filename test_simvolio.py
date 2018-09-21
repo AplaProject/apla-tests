@@ -527,7 +527,7 @@ class TestSimvolio():
         # test
         query = """SELECT id FROM "rollback_tx" WHERE table_name = '1_menu' AND data='' AND id >= %s AND id <= %s""" % (
             rollc_before, rollc_after)
-        rollback_id = db.execute_sql(db1)[0][0]
+        rollback_id = db.submit_query(db1, query)[0][0]
         data = {"Table": "menu", "ID": id, "rID": rollback_id}
         contract = self.contracts["getHistoryRow"]
         self.check_contract_with_data(contract["code"], data, menu)
@@ -552,7 +552,7 @@ class TestSimvolio():
         # test
         query = """SELECT id FROM "rollback_tx" WHERE table_name = '1_blocks' AND data='' AND id >= %s AND id <= %s""" % (
             rollc_before, rollc_after)
-        rollback_id = db.execute_sql(db1, query)[0][0]
+        rollback_id = db.submit_query(db1, query)[0][0]
         data = {"Table": "blocks", "ID": id, "rID": rollback_id}
         contract = self.contracts["getHistoryRow"]
         self.check_contract_with_data(contract["code"], data, block)
