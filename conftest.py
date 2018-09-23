@@ -61,7 +61,16 @@ def setup_vars():
     wait = tools.read_config("test")["wait_tx_status"]
     conf = tools.read_config("nodes")
     keys = tools.read_fixtures("keys")
-    vars = {"wait": wait, "conf": conf, "keys": keys}
+    url = conf["2"]["url"]
+    url1 = conf["1"]["url"]
+    prKey = conf["1"]['private_key']
+    data = actions.login(url, prKey, 0)
+    token = data["jwtToken"]
+    db1 = conf["1"]["db"]
+    db2 = conf["2"]["db"]
+    contract = tools.read_fixtures("contracts")
+    vars = {"wait": wait, "conf": conf, "keys": keys, "url": url, "url1": url1, "contract": contract, "data": data,
+            "token": token, "private_key": prKey, "db1": db1, "db2": db2}
     return vars
 
 
