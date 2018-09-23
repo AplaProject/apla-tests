@@ -3,30 +3,30 @@ import unittest
 from libs import actions
 from libs import tools
 
+from conftest import setup_vars
+
 
 class TestMultiApi(unittest.TestCase):
 
     @classmethod
     def setup_class(self):
-        global url, token, prKey, pause
+        global token, prKey
         self.config = tools.read_config("nodes")
-        url = self.config["2"]["url"]
-        pause = tools.read_config("test")["wait_tx_status"]
         prKey = self.config["1"]['private_key']
         self.data = actions.login(url, prKey, 0)
         token = self.data["jwtToken"]
 
-    def assert_multi_tx_in_block(self, result, jwtToken):
+    def assert_multi_tx_in_block(self, setup_vars, result, jwtToken):
         self.assertIn("hashes", result)
         hashes = result['hashes']
-        result = actions.tx_status_multi(url, pause, hashes, jwtToken)
+        result = actions.tx_status_multi(setup_vars["url"], setup_vars["wait"], hashes, jwtToken)
         for status in result.values():
             self.assertNotIn('errmsg', status)
             self.assertGreater(int(status["blockid"]), 0, "BlockID not generated")
 
     def call_multi(self, name, data):
-        resp = actions.call_multi_contract(url, prKey, name, data, token)
-        resp = self.assert_multi_tx_in_block(resp, token)
+        resp = actions.call_multi_contract(setup_vars["url"], prKey, name, data, token)
+        resp = self.assert_multi_tx_in_block(setup_vars(), resp, token)
         return resp
 
 
