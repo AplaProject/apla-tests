@@ -1,238 +1,282 @@
 {
 	"simple":
+	[
 	{
-    "updSysParam":{
-		"code": "{\n data {}\n conditions {}\n action {\n var par map\n par[\"Name\"] = \"number_of_nodes\"\n par[\"Value\"] = \"13\"\n CallContract(\"UpdateSysParam\", \"\")\n }\n }",
-		"asert":""
-	},
-	"dbFind":{
+		"name": "dbFind",
 		"code": "{ \n data {}\n conditions {}\n action { \n var res array\n var val map\n res = DBFind(\"pages\").Columns(\"name\").Where({id: \"1\"}).Order(\"id\")\n val = res[0]\n $result = val[\"name\"]\n }\n }",
-		"asert": "default"
+		"result": "default"
 	},
-	"toUpper":{
+	{
+		"name": "toUpper",
 		"code": "{ \n data {}\n conditions {}\n action { \n $result = ToUpper(\"Hello My Friends!\")\n }}",
-		"asert": "HELLO MY FRIENDS!"
+		"result": "HELLO MY FRIENDS!"
 	},
-	"elseif":{
+	{
+		"name": "elseif",
 		"code": "{ \n data {}\n conditions {}\n action { \n var val int \n val = 8 \n if val > 10 {$result = \"val>10\"}\n elif val>8 {$result = \"val>8\"} \n elif val>5{ \n $result = \"val>5\"}\n else{$result=\"val<5\"}\n }}",
-		"asert": "val>5"
+		"result": "val>5"
 	},
-		"blockTime":{
+	{
+		"name": "blockTime",
 		"code": "{ \n data {}\n conditions {}\n action { \n $result = BlockTime()\n }}",
-		"asert": ""
+		"result": ""
 	},
-		"ecosysParam":{
+	{
+		"name": "ecosysParam",
 		"code": "{ \n data {}\n conditions {}\n action { \n var res string\n res = EcosysParam(\"changing_menu\")\n $result=res\n }\n }",
-		"asert":"MainCondition"
+		"result":"MainCondition"
 	},
-	    "ifMap":{
+	{
+	    "name": "ifMap",
 		"code":"{\n data {}\n conditions {}\n action {\n var my map\n my[\"test\"] = 1\n if my {\n $result=\"true\"\n }\n else {\n $result=\"false\"\n }\n }\n }",
-		"asert":"true",
-		"information":"needs to add record to history table"
+		"result":"true"
 	},
-	    "dbRow":{
+	{
+	    "name": "dbRow",
 		"code":"{\n data {}\n conditions {}\n action {\n var vals map\n vals = DBRow(\"pages\").Columns(\"name, menu\").Where({id: \"1\"})\n $result = vals[\"name\"]\n }\n }",
-		"asert": "default_page"
+		"result": "default_page"
 	},
-	 "evalCondition": {
-		"code": "{\n data {}\n conditions {\n }\n action {\n EvalCondition(\"pages\", \"default_page\", `conditions`)\n }\n }",
-		"asert": ""
+	{
+	 	"name": "evalCondition",
+		"code": "{\n data {}\n conditions {\n }\n action {\n EvalCondition(\"pages\", \"default_page\", 'conditions')\n }\n }",
+		"result": ""
 	},
-	    "validateCondition": {
-		"code": "{\n data {}\n conditions {}\n action {\n ValidateCondition(\"ContractConditions(`MainCondition`)\", 0)\n }\n }",
-		"asert": ""
+	{
+	    "name": "validateCondition",
+		"code": "{\n data {}\n conditions {}\n action {\n ValidateCondition(\"ContractCondition('MainCondition')\", 1)\n }\n }",
+		"result": ""
 	},
-	    "addressToId": {
+	{
+	    "name": "addressToId",
 		"code": "{\n data {}\n conditions {}\n action {\n $result = AddressToId(\"0005-2070-2000-0006-0200\")\n }\n }",
-		"asert": "52070200000060200"
+		"result": "52070200000060200"
 	},
-		"idToAddress": {
+	{
+		"name": "idToAddress",
 		"code": "{\n data {}\n conditions {}\n action {\n $result = IdToAddress(52070200000060200)\n }\n }",
-		"asert": "0005-2070-2000-0006-0200"
+		"result": "0005-2070-2000-0006-0200"
 	},
-		"one": {
+	{
+		"name": "one",
 		"code": "{\n data {}\n conditions {}\n action {\n $result = DBFind(\"pages\").Columns(\"id,name\").WhereId(1).One(\"name\")\n } \n }",
-		"asert": "default_page"
+		"result": "default_page"
 	},
-		"row": {
+	{
+		"name": "row",
 		"code": "{\n data {}\n conditions {}\n action {\n var ret map\n ret = DBFind(\"pages\").Columns(\"id,name\").WhereId(1).Row()\n $result = ret[\"name\"]\n } \n }",
-		"asert": "default_page"
+		"result": "default_page"
 	},
-	    "contains": {
+	{
+	    "name": "contains",
 		"code": "{\n data {}\n conditions {}\n action {\n if Contains(\"Hello world\", `Hello`) {\n $result = \"Hello world\"\n }\n }\n }",
-		"asert": "Hello world"
+		"result": "Hello world"
 	},
-	    "float": {
+	{
+	    "name": "float",
 		"code": "{\n data {}\n conditions {}\n action {\n var val int\n val = Float(\"567\") + Float(232)\n $result = Str(val)\n }\n }",
-		"asert": "799.000000"
+		"result": "799.000000"
 	},
-	    "hasPrefix": {
+	{
+	    "name": "hasPrefix",
 		"code": "{\n data {}\n conditions {}\n action {\n if HasPrefix(\"myString\", `my`) {\n $result = \"Prefix\"\n }\n }\n }",
-		"asert": "Prefix"
+		"result": "Prefix"
 	},
-	    "hexToBytes": {
+	{
+	    "name": "hexToBytes",
 		"code": "{\n data {}\n conditions {}\n action {\n $result = Str(HexToBytes(\"34fe4501a4d80094\"))\n }\n }",
-		"asert": "[52 254 69 1 164 216 0 148]"
+		"result": "[52 254 69 1 164 216 0 148]"
 	},
-	    "int": {
+	{
+	    "name": "int",
 		"code": "{\n data {}\n conditions {}\n action {\n var val int\n val = Int(\"105\") + Int(\"45\")\n $result = Str(val)\n }\n }",
-		"asert": "150"
+		"result": "150"
 	},
-		"join": {
+	{
+		"name": "join",
 		"code": "{\n data {}\n conditions {}\n action {\n var val string\n var myarr array\n myarr[0] = \"first\"\n myarr[1] = \"second\"\n $result = Join(myarr, \",\")\n }\n }",
-		"asert": "first,second"
+		"result": "first,second"
 	},
-	    "split": {
+	{
+	    "name": "split",
 		"code": "{\n data {}\n conditions {}\n action {\n var myarr array\n myarr = Split(\"first,second,third\", \",\")\n $result = myarr[1]\n }\n }",
-		"asert": "second"
+		"result": "second"
 	},
-	    "len": {
+	{
+	    "name": "len",
 		"code": "{\n data {}\n conditions {}\n action {\n var arr array\n arr[0] = \"1\"\n arr[1] = \"2\"\n arr[2] = \"3\"\n $result = Len(arr)\n }\n }",
-		"asert": "3"
+		"result": "3"
 	},
-	    "pubToID": {
+	{
+	    "name": "pubToID",
 		"code": "{\n data {}\n conditions {}\n action {\n $result = PubToID(\"05f1521f6a7e769ebbde2ab3df01f4740d1408e7e7150745cac9fb953d8ad366\")\n }\n }",
-		"asert": "-6799051354910978041"
-	},	
-	    "replace": {
+		"result": "-6799051354910978041"
+	},
+	{	
+	    "name": "replace",
 		"code": "{\n data {}\n conditions {}\n action {\n $result = Replace(\"this is my decision, this is my gole, this is my life\", `this is my`, `your`)\n }\n }",
-		"asert": "your decision, your gole, your life"
-	},	
-	    "size": {
+		"result": "your decision, your gole, your life"
+	},
+	{	
+	    "name": "size",
 		"code": "{\n data {}\n conditions {}\n action {\n $result = Size(\"hello\") }\n }",
-		"asert": "5"
+		"result": "5"
 	},
-	    "sha256": {
+	{
+	    "name": "sha256",
 		"code": "{\n data {}\n conditions {\n }\n action {\n $result = Sha256(\"Test\")\n }\n }",
-		"asert": "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25"
+		"result": "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25"
 	},
-	    "sprintf": {
+	{
+	    "name": "sprintf",
 		"code": "{\n data {}\n conditions {}\n action {\n $result = Sprintf(\"%s is %d\", \"Five\", 5)\n }\n }",
-		"asert": "Five is 5"
+		"result": "Five is 5"
 	},
-	    "str": {
+	{
+	    "name": "str",
 		"code": "{\n data {}\n conditions {}\n action {\n $result = Str(5.678)\n }\n }",
-		"asert": "5.678"
+		"result": "5.678"
 	},
-	    "substr": {
+	{
+	    "name": "substr",
 		"code": "{\n data {}\n conditions {}\n action {\n $result = Substr(\"ecosystema\", 2, 5)\n }\n }",
-		"asert": "osyst"
+		"result": "osyst"
 	},
-	    "sysParamString": {
+	{
+	    "name": "sysParamString",
 		"code": "{\n data {}\n conditions {}\n action {\n $result = SysParamString(\"blockchain_url\")\n }\n }",
-		"asert": ""
+		"result": ""
 	},
-	    "sysParamInt": {
+	{
+	    "name": "sysParamInt",
 		"code": "{\n data {}\n conditions {}\n action {\n $result = Str(SysParamInt(\"max_columns\"))\n }\n }",
-		"asert": "50"
+		"result": "50"
 	},
-		"getContractById": {
+	{
+		"name": "getContractById",
 		"code": "{\n data {}\n conditions {}\n action {$result = GetContractById(1)}\n }",
-		"asert": "MainCondition"
+		"result": "MainCondition"
 	},
-		"getContractByName": {
+	{
+		"name": "getContractByName",
 		"code": "{\n data {}\n conditions {}\n action {$result = Str(GetContractByName(\"MainCondition\"))}\n }",
-		"asert": "1"
+		"result": "1"
 	},
-		"random": {
+	{
+		"name": "random",
 		"code": "{\n data {}\n conditions {}\n action {$result = Str(Random(5,6))}\n }",
-		"asert": "5"
+		"result": "5"
 	},
-		"getBlock": {
+	{
+		"name": "getBlock",
 		"code": "{\n data {}\n conditions {}\n action { var m map \n m = GetBlock(1) \n $result = m[\"id\"]}\n }",
-		"asert": "1"
-  },
-  	"type_bool": {
+		"result": "1"
+  	},
+  	{
+  		"name": "type_bool",
 		"code": "{\n data {}\n conditions {}\n action {var i, j, k bool \n i = true \n j = false \n k = !j \n $result = (i && j) || k }\n }",
-		"asert": "true"
+		"result": "true"
 	},
-		"type_bytes": {
+	{
+		"name": "type_bytes",
 		"code": "{\n data {}\n conditions {}\n action {var b bytes \n b = 255 \n $result = b}\n }",
-		"asert": "255"
+		"result": "255"
 	},
-		"type_int": {
+	{
+		"name": "type_int",
 		"code": "{\n data {}\n conditions {}\n action {var i, j int \n i = 43 \n j = -100 \n $result = i + j}\n }",
-		"asert": "-57"
+		"result": "-57"
 	},
-		"type_address": {
+	{
+		"name": "type_address",
 		"code": "{\n data {}\n conditions {}\n action {var a address \n a = 1 + 1000000 \n $result = a}\n }",
-		"asert": "1000001"
+		"result": "1000001"
 	},
-		"type_array": {
+	{
+		"name": "type_array",
 		"code": "{\n data {}\n conditions {}\n action {var a,b,c array \n a[0] = 2500 \n a[1] = \"hello\" \n a[2] = 2.12 \n b = a \n $result = Str(b) + a[1]}\n }",
-		"asert": "[2500 hello 2.12]hello"
+		"result": "[2500 hello 2.12]hello"
 	},
-		"type_map": {
+	{
+		"name": "type_map",
 		"code": "{\n data {}\n conditions {}\n action {var m, m1 map \n m[\"id\"] = 1 \n m[\"name\"] = \"hello\" \n m[\"price\"] = 14.95 \n m1 = m \n $result = Str(m1[\"id\"]) + m1[\"name\"] + Str(m[\"price\"])}\n }",
-		"asert": "1hello14.95"
+		"result": "1hello14.95"
 	},
-		"type_money": {
+	{
+		"name": "type_money",
 		"code": "{\n data {}\n conditions {}\n action {var m money \n m = 12000000 \n $result = m}\n }",
-		"asert": "12000000"
+		"result": "12000000"
 	},
-		"type_float": {
+	{
+		"name": "type_float",
 		"code": "{\n data {}\n conditions {}\n action {var f float \n f = 99.9 - 100 \n $result = f}\n }",
-		"asert": "-0.09999999999999432"
+		"result": "-0.09999999999999432"
 	},
-		"type_string": {
+	{
+		"name": "type_string",
 		"code": "{\n data {}\n conditions {}\n action {var s, s1 string \n s = \"hello\" \n s1 = \"world\" \n $result = s+s1}\n }",
-		"asert": "helloworld"
+		"result": "helloworld"
 	},
-		"getColumnType": {
+	{
+		"name": "getColumnType",
 		"code": "{\n data {}\n conditions {}\n action {\n $result = GetColumnType(\"contracts\", \"id\") }\n }",
-		"asert": "number"
-  },
-  	"decodeBase64": {
+		"result": "number"
+  	},
+  	{
+  		"name": "decodeBase64",
 		"code": "{\n data {}\n conditions {}\n action {\n var s string \n s = \"SGVsbG8h\" \n $result = DecodeBase64(s) }\n }",
-		"asert": "Hello!"
+		"result": "Hello!"
 	},
-		"encodeBase64": {
+	{
+		"name": "encodeBase64",
 		"code": "{\n data {}\n conditions {}\n action {\n $my_str = \"Hello!\" \n $result = EncodeBase64($my_str) }\n }",
-		"asert": "SGVsbG8h"
+		"result": "SGVsbG8h"
 	},
-		"sys_var_roleID":{
+	{
+		"name": "sys_var_roleID",
 		"code": "{\n data { }\n conditions {}\n action {\n $result = $role_id }\n }",
-		"asert": "0"
-  },
-  	"jsonEncode": {
+		"result": "0"
+  	},
+  	{
+  		"name": "jsonEncode",
 		"code": "{\n data {}\n conditions {}\n  action {\n var a array, m map\n m[\"k1\"] = 1\n m[\"k2\"] = 2\n a[0] = m \n a[1] = m \n $result = JSONEncode(a)\n}\n }",
-		"asert": "[{\"k1\":1,\"k2\":2},{\"k1\":1,\"k2\":2}]"
+		"result": "[{\"k1\":1,\"k2\":2},{\"k1\":1,\"k2\":2}]"
 	},
-		"jsonDecode": {
-		"code": "{\n data {}\n conditions {}\n  action {\n var a string \n a = \"[{'k1':1,'k2':2},{'k1':1,'k2':2}]\"\n $result = JSONDecode(a)\n}\n }",
-		"asert": ""
+	{
+		"name": "jsonDecode",
+		"code": "{\n data {}\n conditions {}\n  action {\n var mydata map \n mydata = JSONDecode('{\"name\": \"John Smith\", \"company\": \"Smiths company\"}')\n $result = mydata[\"name\"]}}",
+		"result": "John Smith"
 	},
-		"bytesToString": {
+	{
+		"name": "bytesToString",
 		"code": "{\n data {}\n conditions {} \n action { \n var s string \n s = BytesToString(StringToBytes(\"Success test StringToBytes and BytesToString functions!\")) \n $result = s \n}\n }",
-		"asert": "Success test StringToBytes and BytesToString functions!",
-		"information":"Bytes cannot be returned as a result, so we use the StringToBytes function inside"
+		"result": "Success test StringToBytes and BytesToString functions!"
 	},
-		"stringToBytes": {
+	{
+		"name": "stringToBytes",
 		"code": "{\n data {}\n conditions {} \n action { \n var b bytes \n b = StringToBytes(\"Hello!\") \n $result = b \n}\n }",
-		"asert": "[72 101 108 108 111 33]",
-		"information":"Bytes returned as array of char"
+		"result": "[72 101 108 108 111 33]"
 	},
-		"append": {
+	{
+		"name": "append",
 		"code": "{\n data {}\n conditions {} \n action { \n var a array \n a[0] = \"hello\" \n a = Append(a, 10) \n $result = a \n}\n }",
-		"asert": "[hello 10]"
-  },
-  	"getMapKeys": {
+		"result": "[hello 10]"
+  	},
+  	{
+  		"name": "getMapKeys",
 		"code": "{\n data {} \n conditions {} \n action { \n var val map \n var arr array \n val[\"key\"] = \"hello\"  \n arr = GetMapKeys(val) \n $result = arr \n}\n }",
-		"asert": "[key]"
+		"result": "[key]"
 	},
-		"sortedKeys": {
+	{
+		"name": "sortedKeys",
 		"code": "{\n data {} \n conditions {} \n action { \n var val map \n var arr array \n val[\"k9\"] = \"3\" \n val[\"k5\"] = \"7\" \n val[\"k1\"] = \"1\" \n arr = SortedKeys(val) \n $result = arr \n}\n }",
-		"asert": "[k1 k5 k9]"
-  }
-  },
-  "difficult":
-  {
+		"result": "[k1 k5 k9]"
+  	}
+],
   "langRes":{
 		"code": "{\n data {}\n conditions {}\n action {\n $result=LangRes(1, \"test\", \"de\")\n }\n }",
 		"asert":"test_de",
 		"information":"needs to create language resourse with name - test and localisacions:en- test_en, de- test_de"
-	},	
-		
+	},		
     "dbInsert": {
 		"code": "{\n data {}\n conditions {}\n action {\n $result=DBInsert(\"test\", {name: \"block2\", test: \"val1\"})\n }\n }",
 		"asert":"",
@@ -242,7 +286,11 @@
 		"code": "{\n data {}\n conditions {}\n action {\n $result=DBUpdate(\"test\", 1, {test: \"updated\"})\n }\n }",
 		"asert": ""
 	},
-	    "dbUpdateExt": {
+	"dbSelectMetricsMin": {
+		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_tx\", \"1 month\", \"min\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n } \n $result = m[\"value\"] \n}\n }",
+		"asert": ""
+	},
+	 "dbUpdateExt": {
 		"code": "{\n data {}\n conditions {}\n action {\n DBUpdateExt(\"test\", \"name\", \"block2\", {test: \"updatedByName\"})\n }\n }",
 		"asert": ""
 	},
@@ -270,8 +318,6 @@
 		"getHistoryRow": {
 		"code": "{\n data {\n Table string \n ID, rID int\n }\n conditions {} \n action { \n var m map \n m = GetHistoryRow($Table, $ID, $rID) \n $result = m[\"value\"] \n}\n }",
 		"asert": ""
-	}
-  }
-  
+	} 
   }
 
