@@ -8,12 +8,15 @@ import libs.actions
 def json_to_list(js):
     fullList = []
     list = []
-    tup = ()
     for i in js:
+        tup = ()
+        list = []
         for element in i:
             list.append(i[element])
         tup = tuple(list)
+        print("tup", tup)
         fullList.append(tup)
+    print(fullList)
     return fullList
 
 
