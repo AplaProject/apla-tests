@@ -133,10 +133,13 @@ def tx_status_multi(url, sleepTime, hshs, jvtToken):
         
 def call_get_api(url, data, token):
     resp = requests.get(url, params=data,  headers={"Authorization": token})
-    return resp.json()
+    if resp.status_code == 200:
+        return resp.json()
+    else:
+        return None
 
 def call_get_api_with_full_response(url, data, token):
-    resp = requests.get(url, data=data,  headers={"Authorization": token})
+    resp = requests.get(url, params=data,  headers={"Authorization": token})
     return resp
 
 def call_post_api(url, data, token):
