@@ -52,6 +52,8 @@ def is_count_tx_in_block(db, maxBlockId, countTx):
     return True
 
 #api
+#Returns list of all ecosystem tables
+#can be changed to api.tables
 def get_ecosys_tables(db):
     request = "select table_name from INFORMATION_SCHEMA.TABLES WHERE table_schema='public' AND table_name LIKE '1_%'"
     tables = submit_query(request, db)
@@ -63,18 +65,16 @@ def get_ecosys_tables(db):
     return list
 
 #simvolio api rollback
+#returns number of records in the table
+#can be changed to api.table
 def get_count_table(db, table):
     request = "SELECT count(*) FROM \"" + table + "\""
     return submit_query(request, db)
 
 #protypo
+#can be changed to actions.get_object_id
 def get_founder_id(db):
     request = "SELECT value FROM \"1_parameters\" WHERE name = 'founder_account'"
-    result = submit_query(request, db)
-    return result[0][0]
-
-def get_system_parameter_value(db, name):
-    request = "SELECT value FROM \"1_system_parameters\" WHERE name = '" + name + "'"
     result = submit_query(request, db)
     return result[0][0]
 
@@ -129,10 +129,17 @@ def get_blockchain_hash(db, maxBlockId):
     return submit_query(request, db)
 
 #limits
+#the same function presents
 def get_system_parameter(db, parameter):
     request = "select value from \"1_system_parameters\" WHERE name='" + parameter + "'"
     value = submit_query(request, db)
     return value[0][0]
+
+#can be changed to api.systemparams
+def get_system_parameter_value(db, name):
+    request = "SELECT value FROM \"1_system_parameters\" WHERE name = '" + name + "'"
+    result = submit_query(request, db)
+    return result[0][0]
 
 #cost
 def get_commission_wallet(db, ecosId):
@@ -170,6 +177,7 @@ def get_block_gen_node(db, block):
     return nodes[0][0]
 
 #contract_func
+#may be it can be changed to db.table[count]
 def get_max_id_from_table(db, table):
     request = "SELECT MAX(id) FROM \"" + table + "\""
     result = submit_query(request, db)
