@@ -66,21 +66,15 @@ def setup_vars():
     prKey = conf["1"]['private_key']
     data = actions.login(url, prKey, 0)
     token = data["jwtToken"]
+    data_limits = actions.login(conf["2"]["url"],
+                                conf["1"]['private_key'], 0)
+    token_limits = data_limits["jwtToken"]
+    data_sys_con = actions.login(url1, prKey, 0)
+    token_sys_con = data_sys_con["jwtToken"]
     db1 = conf["1"]["db"]
     db2 = conf["2"]["db"]
     contract = tools.read_fixtures("contracts")
     vars = {"wait": wait, "conf": conf, "keys": keys, "url": url, "url1": url1, "contract": contract, "data": data,
-            "token": token, "private_key": prKey, "db1": db1, "db2": db2}
+            "token": token, "private_key": prKey, "db1": db1, "db2": db2, "data_limits": data_limits,
+            "token_limits": token_limits, "token_sys_con": token_sys_con}
     return vars
-
-
-@pytest.fixture(scope="class")
-def getNodeBalances(self, setup_vars):
-    nodeCount = len(setup_vars["conf"])
-    i = 1
-    nodeBalance = []
-    while i < nodeCount + 1:
-        nodeBalance.append(db.get_balance_from_db(setup_vars["conf"]["1"]["db"],
-                                                  setup_vars["conf"][str(i)]["keyID"]))
-        i = i + 1
-    return nodeBalance
