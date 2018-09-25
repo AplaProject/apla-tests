@@ -4,71 +4,70 @@ from libs import tools
 
 class WebsiteTasks(TaskSet):
     def on_start(self):
-        global url, token, prKey, pause
         self.config = tools.read_config("nodes")
-        url = self.config["2"]["url"]
-        pause = tools.read_config("test")["wait_tx_status"]
-        prKey = self.config["1"]['private_key']
-        self.data = actions.login(url, prKey, 0)
-        token = self.data["jwtToken"]
+        self.url = self.config["2"]["url"]
+        self.pause = tools.read_config("test")["wait_tx_status"]
+        self.prKey = self.config["1"]['private_key']
+        self.data = actions.login(self.url, self.prKey, 0)
+        self.token = self.data["jwtToken"]
     
     @task
     def NewContract(self):
         code, name = self.t.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
-        sign = actions.prepare_tx(url, prKey, "NewContract", token, data)
+        sign = actions.prepare_tx(self.url, self.prKey, "NewContract", self.token, data)
         dataContract = {"time": sign['time'], "signature": sign["signature"]}
         self.client.post("/contract/" + sign["reqID"], dataContract,
-                         headers={"Authorization": token}, name="NewContract")
+                         headers={"Authorization": self.token}, name="NewContract")
         
     @task
     def MoneyTransfer(self):
         data = {"Recipient": "0005-2070-2000-0006-0200",
                 "Amount": "2"}
-        sign = actions.prepare_tx(url, prKey, "MoneyTransfer", token, data)
+        sign = actions.prepare_tx(self.url, self.prKey, "MoneyTransfer", self.token, data)
         dataContract = {"time": sign['time'], "signature": sign["signature"]}
         self.client.post("/contract/" + sign["reqID"], dataContract,
-                         headers={"Authorization": token}, name="MoneyTransfer")
+                         headers={"Authorization": self.token}, name="MoneyTransfer")
      
     @task   
     def NewParameter(self):
         name = "Par_" + tools.generate_random_name()
         data = {"Name": name, "Value": "test", "ApplicationId": 1,
                 "Conditions": "true"}
-        sign = actions.prepare_tx(url, prKey, "NewParameter", token, data)
+        sign = actions.prepare_tx(self.url, self.prKey, "NewParameter", self.token, data)
         dataContract = {"time": sign['time'], "signature": sign["signature"]}
         self.client.post("/contract/" + sign["reqID"], dataContract,
-                         headers={"Authorization": token}, name="NewParameter")
+                         headers={"Authorization": self.token}, name="NewParameter")
         
     @task   
     def NewMenu(self):
         name = "Menu_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
                 "Conditions": "true"}
-        sign = actions.prepare_tx(url, prKey, "NewMenu", token, data)
+        sign = actions.prepare_tx(self.url, self.prKey, "NewMenu", self.token, data)
         dataContract = {"time": sign['time'], "signature": sign["signature"]}
         self.client.post("/contract/" + sign["reqID"], dataContract,
-                         headers={"Authorization": token}, name="NewMenu")
+                         headers={"Authorization": self.token}, name="NewMenu")
         
     @task   
     def NewPage(self):
         name = "Page_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
-        sign = actions.prepare_tx(url, prKey, "NewPage", token, data)
+        sign = actions.prepare_tx(self.url, self.prKey, "NewPage", self.token, data)
         dataContract = {"time": sign['time'], "signature": sign["signature"]}
         self.client.post("/contract/" + sign["reqID"], dataContract,
-                         headers={"Authorization": token}, name="NewPage")
+                         headers={"Authorization": self.token}, name="NewPage")
         
     @task   
     def NewBlock(self):
         name = "Block_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true"}
-        sign = actions.prepare_tx(url, prKey, "NewBlock", token, data)
+        sign = actions.prepare_tx(self.url, self.prKey, "NewBlock", self.token, data)
         dataContract = {"time": sign['time'], "signature": sign["signature"]}
         self.client.post("/contract/" + sign["reqID"], dataContract,
-                         headers={"Authorization": token}, name="NewBlock")
+                         headers={"Authorization": self.token}, name="NewBlock")
         
     @task   
     def NewTable(self):
@@ -79,20 +78,20 @@ class WebsiteTasks(TaskSet):
         data = {"Name": "Tab_" + tools.generate_random_name(),
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
-        sign = actions.prepare_tx(url, prKey, "NewTable", token, data)
+        sign = actions.prepare_tx(self.url, self.prKey, "NewTable", self.token, data)
         dataContract = {"time": sign['time'], "signature": sign["signature"]}
         self.client.post("/contract/" + sign["reqID"], dataContract,
-                         headers={"Authorization": token}, name="NewTable")
+                         headers={"Authorization": self.token}, name="NewTable")
         
     @task   
     def NewLang(self):
         data = {"AppID": 1, "Name": "Lang_" + tools.generate_random_name(),
                 "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}",
                 "ApplicationId": 1}
-        sign = actions.prepare_tx(url, prKey, "NewLang", token, data)
+        sign = actions.prepare_tx(self.url, self.prKey, "NewLang", self.token, data)
         dataContract = {"time": sign['time'], "signature": sign["signature"]}
         self.client.post("/contract/" + sign["reqID"], dataContract,
-                         headers={"Authorization": token}, name="NewLang")
+                         headers={"Authorization": self.token}, name="NewLang")
         
 
 class WebsiteUser(HttpLocust):
