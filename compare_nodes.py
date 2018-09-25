@@ -1,41 +1,32 @@
 import unittest
+import pytest
 from builtins import sum
 
 from libs import actions
 from libs import db
 from libs import tools
 
-class CompareNodes(unittest.TestCase):
-
-    def setup_class(self):
-        global config1, config2, config3, db1, db2, db3
-        fullConfig = tools.read_config("nodes")
-        nodes = len(fullConfig)
-        config1 = fullConfig["1"]
-        config2 = fullConfig["2"]
-        config3 = fullConfig["3"]
-        db1 = config1["db"]
-        db2 = config2["db"]
-        db3 = config3["db"]
-        self.unit = unittest.TestCase() 
+class TestCompareNodes():
+    config = tools.read_config("nodes")
+    unit = unittest.TestCase()
 
     def test_compare_nodes(self):
-        nodes = 3
-        amounts1 = db.get_user_token_amounts(db1)
-        amounts2 = db.get_user_token_amounts(db2)
-        amounts3 = db.get_user_token_amounts(db3)
+        nodes = len(self.config)
+        amounts1 = db.get_user_token_amounts(self.config["1"]["db"])
+        amounts2 = db.get_user_token_amounts(self.config["2"]["db"])
+        amounts3 = db.get_user_token_amounts(self.config["3"]["db"])    
         sumAmounts = sum(amount[0] for amount in amounts1)
-        self.data1 = actions.login(config1["url"], config1['private_key'], 0)
-        maxBlockId1 = actions.get_max_block_id(config1["url"], self.data1["jwtToken"])
-        self.data2 = actions.login(config2["url"], config1['private_key'], 0)
-        maxBlockId2 = actions.get_max_block_id(config2["url"], self.data2["jwtToken"])
-        self.data3 = actions.login(config3["url"], config1['private_key'], 0)
-        maxBlockId3 = actions.get_max_block_id(config3["url"], self.data3["jwtToken"])
+        data1 = actions.login(self.config["1"]["url"], self.config["1"]['private_key'])
+        maxBlockId1 = actions.get_max_block_id(self.config["1"]["url"], data1["jwtToken"])
+        data2 = actions.login(self.config["2"]["url"], self.config["1"]['private_key'])
+        maxBlockId2 = actions.get_max_block_id(self.config["2"]["url"], data2["jwtToken"])
+        data3 = actions.login(self.config["3"]["url"], self.config["1"]['private_key'])
+        maxBlockId3 = actions.get_max_block_id(self.config["3"]["url"], data3["jwtToken"])
         maxBlock = max(maxBlockId2, maxBlockId1, maxBlockId3)
-        hash1 = db.get_blockchain_hash(db1, maxBlock)
-        hash2 = db.get_blockchain_hash(db2, maxBlock)
-        hash3 = db.get_blockchain_hash(db3, maxBlock)
-        node_position = db.compare_node_positions(db1, maxBlock, nodes)
+        hash1 = db.get_blockchain_hash(self.config["1"]["db"], maxBlock)
+        hash2 = db.get_blockchain_hash(self.config["2"]["db"], maxBlock)
+        hash3 = db.get_blockchain_hash(self.config["3"]["db"], maxBlock)
+        node_position = db.compare_node_positions(self.config["1"]["db"], maxBlock, nodes)
         dict1 = dict(amounts=str(amounts1),
                      hash=str(hash1),
                      node_pos=str(node_position))
@@ -54,9 +45,9 @@ class CompareNodes(unittest.TestCase):
         self.unit.assertDictEqual(dict1, dict3, msg)
 
     def test_compare_db(self):
-        dbInformation1 = db.get_count_DB_objects(db1)
-        dbInformation2 = db.get_count_DB_objects(db2)
-        dbInformation3 = db.get_count_DB_objects(db3)
+        dbInformation1 = db.get_count_DB_objects(self.config["1"]["db"])
+        dbInformation2 = db.get_count_DB_objects(self.config["2"]["db"])
+        dbInformation3 = db.get_count_DB_objects(self.config["3"]["db"])
         for key in dbInformation1:
             dbInf1 = dbInformation1[key]
             dbInf2 = dbInformation2[key]

@@ -142,6 +142,7 @@ def get_system_parameter_value(db, name):
     return result[0][0]
 
 #cost
+#can be changed to api.systemparams
 def get_commission_wallet(db, ecosId):
     request = "select value from \"1_system_parameters\" where name='commission_wallet'"
     wallets = submit_query(request, db)
