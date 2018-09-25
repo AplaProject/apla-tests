@@ -9,42 +9,48 @@ from libs import db
 
 
 class TestPrototipo():
+    setup_vars = setup_vars()
+    conf = setup_vars["conf"]
+    pages = setup_vars["pages"]
+    url = setup_vars["url"]
+    prKey = setup_vars["private_key"]
+    data = actions.login(url, prKey, 0)
+    token = data["jwtToken"]
+    db2 = setup_vars["db2"]
 
     @classmethod
     def setup_class(self):
-        self.pages = tools.read_fixtures("pages")
-        self.data = actions.login(setup_vars["url"], setup_vars["private_key"], 0)
         self.maxDiff = None
         self.uni = unittest.TestCase()
 
-    def assert_tx_in_block(self, result, jwtToken, setup_vars):
+    def assert_tx_in_block(self, result, jwtToken):
         self.uni.assertIn("hash", result)
-        status = actions.tx_status(setup_vars["url"],
+        status = actions.tx_status(self.url,
                                    tools.read_config("test")["wait_tx_status"],
                                    result['hash'], jwtToken)
         self.uni.assertNotIn(json.dumps(status), 'errmsg')
         self.uni.assertGreater(len(status['blockid']), 0)
 
-    def create_contract(self, code, setup_vars):
+    def create_contract(self, code):
         data = {"Wallet": "", "ApplicationId": 1,
                 "Value": code,
                 "Conditions": "ContractConditions(`MainCondition`)"}
-        result = actions.call_contract(setup_vars["url"], setup_vars["private_key"], "NewContract",
-                                       data, setup_vars["token"])
-        self.assert_tx_in_block(result, setup_vars["token"], setup_vars())
+        result = actions.call_contract(self.url, self.prKey, "NewContract",
+                                       data, self.token)
+        self.assert_tx_in_block(result, self.token)
 
-    def call_contract(self, name, data, setup_vars):
-        result = actions.call_contract(setup_vars["url"], setup_vars["private_key"], name,
-                                       data, setup_vars["token"])
-        self.assert_tx_in_block(result, setup_vars["token"], setup_vars())
+    def call_contract(self, name, data):
+        result = actions.call_contract(self.url, self.prKey, name,
+                                       data, self.token)
+        self.assert_tx_in_block(result, self.token)
 
-    def check_page(self, sourse, setup_vars):
+    def check_page(self, sourse):
         name = "Page_" + tools.generate_random_name()
         data = {"Name": name, "Value": sourse, "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
-        resp = actions.call_contract(setup_vars["url"], setup_vars["private_key"], "NewPage", data, setup_vars["token"])
-        self.assert_tx_in_block(resp, setup_vars["token"], setup_vars())
-        cont = actions.get_content(setup_vars["url"], "page", name, "", 1, setup_vars["token"])
+        resp = actions.call_contract(self.url, self.prKey, "NewPage", data, self.token)
+        self.assert_tx_in_block(resp, self.token)
+        cont = actions.get_content(self.url, "page", name, "", 1, self.token)
         return cont
 
     def findPositionElementInTree(self, contentTree, tagName):
@@ -62,29 +68,29 @@ class TestPrototipo():
                     return i
             i += 1
 
-    def check_post_api(self, endPoint, data, keys, setup_vars):
-        end = setup_vars["url"] + endPoint
-        result = actions.call_post_api(end, data, setup_vars["token"])
+    def check_post_api(self, endPoint, data, keys):
+        end = self.url + endPoint
+        result = actions.call_post_api(end, data, self.token)
         for key in keys:
             self.uni.assertIn(key, result)
         return result
 
-    def check_get_api(self, endPoint, data, keys, setup_vars):
-        end = setup_vars["url"] + endPoint
-        result = actions.call_get_api(end, data, setup_vars["token"])
+    def check_get_api(self, endPoint, data, keys):
+        end = self.url + endPoint
+        result = actions.call_get_api(end, data, self.token)
         for key in keys:
             self.uni.assertIn(key, result)
         return result
 
     def test_page_button(self):
         contract = self.pages["button"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         self.uni.assertEqual(content["tree"][0]["tag"], "button",
                          "There is no button in content" + str(content["tree"]))
 
     def test_page_button_composite_contract(self):
         contract = self.pages["buttonCompositeContract"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content["tree"]
         contractContent = contract["content"]
         mustBe = dict(tag=partContent[0]["tag"],
@@ -99,7 +105,7 @@ class TestPrototipo():
 
     def test_page_button_popup(self):
         contract = self.pages["buttonPopup"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content["tree"]
         contractContent = contract["content"]
         mustBe = dict(tag=partContent[0]["tag"],
@@ -114,7 +120,7 @@ class TestPrototipo():
 
     def test_page_selectorFromDB(self):
         contract = self.pages["selectorFromDB"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         requiredTagNum = self.findPositionElementInTree(content["tree"], "dbfind")
         mustBe = dict(tag="dbfind", data=True)
         page = dict(tag=content["tree"][requiredTagNum]["tag"],
@@ -124,7 +130,7 @@ class TestPrototipo():
 
     def test_page_selectorFromData(self):
         contract = self.pages["selectorFromData"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         mustBe = dict(tag="data", columns=['gender'], source="myData",
                       select="select", selectName="mySelect", selectSourse="myData")
         page = dict(tag=content["tree"][0]["tag"], columns=content["tree"][0]["attr"]["columns"],
@@ -136,7 +142,7 @@ class TestPrototipo():
 
     def test_page_now(self):
         contract = self.pages["now"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         contractContent = contract["content"]
         partContent = content['tree'][0]
         mustBe = dict(tagOwner=contractContent["tag"],
@@ -151,7 +157,7 @@ class TestPrototipo():
 
     def test_page_divs(self):
         contract = self.pages["divs"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         # outer DIV
         partContent = content['tree'][0]
         # first level inner DIV
@@ -182,7 +188,7 @@ class TestPrototipo():
 
     def test_page_setVar(self):
         contract = self.pages["setVar"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         requiredTagNum = self.findPositionElementInTree(content['tree'], "div")
         partContent = content['tree'][requiredTagNum]
         contractContent = contract['content']
@@ -195,7 +201,7 @@ class TestPrototipo():
 
     def test_page_input(self):
         contract = self.pages["input"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"]
         mustBe = dict(tag=partContent['tag'],
@@ -213,7 +219,7 @@ class TestPrototipo():
 
     def test_page_menuGroup(self):
         contract = self.pages["menuGroup"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"]
         menuItem1 = contractContent['children'][0]
@@ -249,7 +255,7 @@ class TestPrototipo():
 
     def test_page_linkPage(self):
         contract = self.pages["linkPage"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"]
         mustBe = dict(tag=partContent['tag'],
@@ -265,7 +271,7 @@ class TestPrototipo():
 
     def test_page_ecosysParam(self):
         contract = self.pages["ecosysParam"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"]
         mustBe = dict(tag=partContent['tag'],
@@ -277,7 +283,7 @@ class TestPrototipo():
 
     def test_page_paragraph(self):
         contract = self.pages["paragraph"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"]
         mustBe = dict(tag=partContent['tag'],
@@ -289,7 +295,7 @@ class TestPrototipo():
 
     def test_page_getVar(self):
         contract = self.pages["getVar"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"]
         mustBe = dict(tag=partContent['tag'],
@@ -301,7 +307,7 @@ class TestPrototipo():
 
     def test_page_hint(self):
         page = self.pages["hint"]
-        content = self.check_page(page["code"], setup_vars())
+        content = self.check_page(page["code"])
         partContent = content['tree'][0]
         pageContent = page["content"]
         mustBe = dict(tag=partContent['tag'],
@@ -317,7 +323,7 @@ class TestPrototipo():
 
     def test_page_iff(self):
         contract = self.pages["iff"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"]
         mustBe = dict(tag=partContent['tag'],
@@ -329,7 +335,7 @@ class TestPrototipo():
 
     def test_page_orr(self):
         contract = self.pages["orr"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"]
         mustBe = dict(tag=partContent['tag'],
@@ -341,7 +347,7 @@ class TestPrototipo():
 
     def test_page_andd(self):
         contract = self.pages["andd"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"]
         mustBe = dict(tag=partContent['tag'],
@@ -353,7 +359,7 @@ class TestPrototipo():
 
     def test_page_form(self):
         contract = self.pages["form"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         partContent1 = content['tree'][0]['children'][0]['children'][0]
         contractContent = contract["content"]
@@ -369,7 +375,7 @@ class TestPrototipo():
 
     def test_page_label(self):
         contract = self.pages["label"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"]
         mustBe = dict(tag=partContent['tag'],
@@ -381,7 +387,7 @@ class TestPrototipo():
 
     def test_page_span(self):
         contract = self.pages["span"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"]
         mustBe = dict(tag=partContent['tag'],
@@ -391,25 +397,25 @@ class TestPrototipo():
         self.uni.assertDictEqual(mustBe, page,
                                           "span has problem: " + str(content["tree"]))
 
-    def test_page_langRes(self, setup_vars):
+    def test_page_langRes(self):
         lang = "lang_" + tools.generate_random_name()
         data = {"ApplicationId": 1,
                 "Name": lang,
                 "Trans": "{\"en\": \"Lang_en\", \"ru\" : \"Язык\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
-        res = actions.call_contract(setup_vars["url"], setup_vars["private_key"], "NewLang", data, setup_vars["token"])
-        self.assert_tx_in_block(res, setup_vars["token"], setup_vars())
+        res = actions.call_contract(self.url, self.prKey, "NewLang", data, self.token)
+        self.assert_tx_in_block(res, self.token)
         world = "world_" + tools.generate_random_name()
         data = {"ApplicationId": 1,
                 "Name": world,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
-        res = actions.call_contract(setup_vars["url"], setup_vars["private_key"], "NewLang", data, setup_vars["token"])
-        self.assert_tx_in_block(res, setup_vars["token"], setup_vars())
+        res = actions.call_contract(self.url, self.prKey, "NewLang", data, self.token)
+        self.assert_tx_in_block(res, self.token)
         contract = self.pages["langRes"]
-        content = self.check_page("LangRes(" + lang + ") LangRes(" + world + ", ru)", setup_vars())
+        content = self.check_page("LangRes(" + lang + ") LangRes(" + world + ", ru)")
 
     def test_page_inputErr(self):
         contract = self.pages["inputErr"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         # iterating response elements
         requiredTagNum = self.findPositionElementInTree(content['tree'], "inputerr")
         partContent = content['tree'][requiredTagNum]['tag']
@@ -426,20 +432,20 @@ class TestPrototipo():
         self.uni.assertDictEqual(mustBe, page,
                                           "inputErr has problem: " + str(content["tree"]))
 
-    def test_page_include(self, setup_vars):
+    def test_page_include(self):
         name = "Block_" + tools.generate_random_name()
         data = {"Name": name, "ApplicationId": 1,
                 "Value": "Hello page!", "Conditions": "true"}
-        res = actions.call_contract(setup_vars["url"], setup_vars["private_key"], "NewBlock", data, setup_vars["token"])
-        self.assert_tx_in_block(res, setup_vars["token"], setup_vars())
+        res = actions.call_contract(self.url, self.prKey, "NewBlock", data, self.token)
+        self.assert_tx_in_block(res, self.token)
         contract = self.pages["include"]
-        content = self.check_page("Include(" + name + ")", setup_vars())
+        content = self.check_page("Include(" + name + ")")
         self.uni.assertEqual(content["tree"][0]["text"], contract["content"][0]["text"],
                                       "include has problem: " + str(content["tree"]))
 
     def test_page_inputImage(self):
         contract = self.pages["inputImage"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content["tree"][0]
         contractContent = contract["content"][0]
         mustBe = dict(tag=partContent["tag"],
@@ -455,7 +461,7 @@ class TestPrototipo():
 
     def test_page_alert(self):
         contract = self.pages["alert"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"]
         partContent1 = content['tree'][0]['attr']['alert']
@@ -475,7 +481,7 @@ class TestPrototipo():
 
     def test_page_table(self):
         contract = self.pages["table"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         mustBe = dict(tag="dbfind", source="mysrc",
                       tag2="table", columns=[{'Name': 'name', 'Title': 'Name'}, {'Name': 'value', 'Title': 'Value'},
                                              {'Name': 'conditions', 'Title': 'Conditions'}])
@@ -487,7 +493,7 @@ class TestPrototipo():
 
     def test_page_kurs(self):
         contract = self.pages["kurs"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"][0]
         mustBe = dict(tag=partContent['tag'],
@@ -499,7 +505,7 @@ class TestPrototipo():
 
     def test_page_strong(self):
         contract = self.pages["strong"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"][0]
         mustBe = dict(tag=partContent['tag'],
@@ -511,13 +517,13 @@ class TestPrototipo():
 
     def test_page_getColumnType(self):
         contract = self.pages["getColumnType"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         self.uni.assertEqual(str(content["tree"][0]["text"]), contract["content"]["text"],
                                       "getColumnType has problem: " + str(content["tree"]))
 
     def test_page_sys_var_isMobile(self):
         contract = self.pages["sys_var_isMobile"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"][0]
         mustBe = dict(tag=partContent['tag'],
@@ -529,7 +535,7 @@ class TestPrototipo():
 
     def test_page_sys_var_roleID(self):
         contract = self.pages["sys_var_roleID"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"][0]
         mustBe = dict(tag=partContent['tag'],
@@ -541,7 +547,7 @@ class TestPrototipo():
 
     def test_page_sys_var_ecosystemID(self):
         contract = self.pages["sys_var_ecosystemID"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"][0]
         mustBe = dict(tag=partContent['tag'],
@@ -554,7 +560,7 @@ class TestPrototipo():
     def test_page_sys_var_ecosystem_name(self):
         # get ecosystem name from api
         asserts = ["list"]
-        res = self.check_get_api("/list/ecosystems", "", asserts, setup_vars())
+        res = self.check_get_api("/list/ecosystems", "", asserts)
         id = 1
         i = 0
         requiredEcosysName = ""
@@ -564,7 +570,7 @@ class TestPrototipo():
             i += 1
         # test
         contract = self.pages["sys_var_ecosystem_name"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         mustBe = dict(tag="em",
                       text=requiredEcosysName)
@@ -574,10 +580,10 @@ class TestPrototipo():
                                           "ecosystem_name has problem: " + str(content["tree"]))
 
     def test_page_sys_var_key_id(self):
-        content = self.check_page("Em(EcosysParam(founder_account))", setup_vars())
+        content = self.check_page("Em(EcosysParam(founder_account))")
         founderAcc = content["tree"][0]["children"][0]["text"]
         contract = self.pages["sys_var_keyID"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         keyID = content["tree"][0]["children"][0]["text"]
         self.uni.assertEqual(keyID, founderAcc,
                                       "key_id has problem: " + contract["content"] + ". Content = " + str(
@@ -586,10 +592,10 @@ class TestPrototipo():
     def test_dbfind_count(self):
         asserts = ["count"]
         data = {}
-        res = self.check_get_api("/contracts", data, asserts, setup_vars())
+        res = self.check_get_api("/contracts", data, asserts)
         contractsCount = res["count"]
         contract = self.pages["dbfindCount"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         RequiredNum = self.findPositionElementInTree(content["tree"], "em")
         page = content['tree'][RequiredNum]["children"][0]["text"]
         self.uni.assertEqual(contractsCount, page,
@@ -598,7 +604,7 @@ class TestPrototipo():
 
     def test_dbfind_where_count(self):
         contract = self.pages["dbfindWhereCount"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         RequiredNum = self.findPositionElementInTree(content["tree"], "em")
         page = content['tree'][RequiredNum]["children"][0]["text"]
         self.uni.assertEqual(contract["content"], page,
@@ -607,14 +613,14 @@ class TestPrototipo():
 
     def test_dbfind_whereId_count(self):
         contract = self.pages["dbfindWhereIdCount"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         RequiredNum = self.findPositionElementInTree(content["tree"], "em")
         page = content['tree'][RequiredNum]["children"][0]["text"]
         self.uni.assertEqual(contract["content"], page,
                                       "dbfind_whereId_count has problem: " + contract["content"] + ". Content = " + str(
                                           content["tree"]))
 
-    def test_binary(self, setup_vars):
+    def test_binary(self):
         # this test has not fixture
         name = "image_" + tools.generate_random_name()
         appID = "1"
@@ -623,19 +629,19 @@ class TestPrototipo():
             file = f.read()
         files = {'Data': file}
         data = {"Name": name, "ApplicationId": appID}
-        resp = actions.call_contract_with_files(setup_vars["url"], setup_vars["private_key"], "UploadBinary", data,
-                                                files, setup_vars["token"])
-        self.assert_tx_in_block(resp, setup_vars["token"], setup_vars())
+        resp = actions.call_contract_with_files(self.url, self.prKey, "UploadBinary", data,
+                                                files, self.token)
+        self.assert_tx_in_block(resp, self.token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = db.get_founder_id(setup_vars["db2"])
-        lastRec = actions.get_count(setup_vars["url"], "binaries", setup_vars["token"])
+        MemberID = db.get_founder_id(self.db2)
+        lastRec = actions.get_count(self.url, "binaries", self.token)
         content = self.check_page("Binary(Name: " + name + ", AppID: " + appID + ", MemberID: " + MemberID + ")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
         self.uni.assertEqual("/data/1_binaries/" + lastRec + "/data/b40ad01eacc0312f6dd1ff2a705756ec",
                                       content["tree"][0]["text"])
 
-    def test_binary_by_id(self, setup_vars):
+    def test_binary_by_id(self):
         # this test has not fixture
         name = "image_" + tools.generate_random_name()
         appID = "1"
@@ -644,18 +650,18 @@ class TestPrototipo():
             file = f.read()
         files = {'Data': file}
         data = {"Name": name, "ApplicationId": appID}
-        resp = actions.call_contract_with_files(setup_vars["url"], setup_vars["private_key"], "UploadBinary", data,
-                                                files, setup_vars["token"])
-        res = self.assert_tx_in_block(resp, setup_vars["token"], setup_vars())
+        resp = actions.call_contract_with_files(self.url, self.prKey, "UploadBinary", data,
+                                                files, self.token)
+        res = self.assert_tx_in_block(resp, self.token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        lastRec = actions.get_count(setup_vars["url"], "binaries", setup_vars["token"])
-        content = self.check_page("Binary().ById(" + lastRec + ")", setup_vars())
+        lastRec = actions.get_count(self.url, "binaries", self.token)
+        content = self.check_page("Binary().ById(" + lastRec + ")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
         self.uni.assertEqual("/data/1_binaries/" + lastRec + "/data/b40ad01eacc0312f6dd1ff2a705756ec",
                                       content["tree"][0]["text"])
 
-    def test_image_binary(self, setup_vars):
+    def test_image_binary(self):
         # this test has not fixture
         name = "image_" + tools.generate_random_name()
         appID = "1"
@@ -664,13 +670,13 @@ class TestPrototipo():
             file = f.read()
         files = {'Data': file}
         data = {"Name": name, "ApplicationId": appID}
-        resp = actions.call_contract_with_files(setup_vars["url"], setup_vars["private_key"], "UploadBinary", data,
-                                                files, setup_vars["token"])
-        self.assert_tx_in_block(resp, setup_vars["token"], setup_vars())
+        resp = actions.call_contract_with_files(self.url, self.prKey, "UploadBinary", data,
+                                                files, self.token)
+        self.assert_tx_in_block(resp, self.token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = db.get_founder_id(setup_vars["db2"])
-        lastRec = actions.get_count(setup_vars["url"], "binaries", setup_vars["token"])
+        MemberID = db.get_founder_id(self.db2)
+        lastRec = actions.get_count(self.url, "binaries", self.token)
         content = self.check_page("Image(Binary(Name: " + name + ", AppID: " + appID + ", MemberID: " + MemberID + "))")
         partContent = content["tree"][0]
         mustBe = dict(tag=partContent['tag'],
@@ -680,7 +686,7 @@ class TestPrototipo():
         self.uni.assertDictEqual(mustBe, page,
                                           "test_image_binary has problem: " + str(content["tree"]))
 
-    def test_image_binary_by_id(self, setup_vars):
+    def test_image_binary_by_id(self):
         # this test has not fixture
         name = "image_" + tools.generate_random_name()
         appID = "1"
@@ -689,13 +695,13 @@ class TestPrototipo():
             file = f.read()
         files = {'Data': file}
         data = {"Name": name, "ApplicationId": appID}
-        resp = actions.call_contract_with_files(setup_vars["url"], setup_vars["private_key"], "UploadBinary", data,
-                                                files, setup_vars["token"])
-        self.assert_tx_in_block(resp, setup_vars["token"], setup_vars())
+        resp = actions.call_contract_with_files(self.url, self.prKey, "UploadBinary", data,
+                                                files, self.token)
+        self.assert_tx_in_block(resp, self.token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        lastRec = actions.get_count(setup_vars["url"], "binaries", setup_vars["token"])
-        content = self.check_page("Image(Binary().ById(" + lastRec + "))", setup_vars())
+        lastRec = actions.get_count(self.url, "binaries", self.token)
+        content = self.check_page("Image(Binary().ById(" + lastRec + "))")
         partContent = content["tree"][0]
         mustBe = dict(tag=partContent['tag'],
                       src=partContent['attr']["src"])
@@ -706,7 +712,7 @@ class TestPrototipo():
 
     def test_address(self):
         contract = self.pages["address"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"]
         mustBe = dict(tagOwner=contractContent['tag'],
@@ -720,8 +726,8 @@ class TestPrototipo():
 
     def test_money(self):
         contract = self.pages["money"]
-        content1 = self.check_page(contract["code1"], setup_vars())
-        content2 = self.check_page(contract["code2"], setup_vars())
+        content1 = self.check_page(contract["code1"])
+        content2 = self.check_page(contract["code2"])
         partContent1 = content1['tree'][0]
         partContent2 = content2['tree'][0]
         contractContent1 = contract["content1"]
@@ -745,118 +751,118 @@ class TestPrototipo():
     def test_calculate(self):
         contract = self.pages["calculate"]
         # Set for type of money
-        moneyContent1 = self.check_page(contract["moneyCode1"], setup_vars())
+        moneyContent1 = self.check_page(contract["moneyCode1"])
         partMoneyContent1 = moneyContent1['tree'][0]
         contractMoneyContent1 = contract["moneyContent1"]
-        moneyContent2 = self.check_page(contract["moneyCode2"], setup_vars())
+        moneyContent2 = self.check_page(contract["moneyCode2"])
         partMoneyContent2 = moneyContent2['tree'][0]
         contractMoneyContent2 = contract["moneyContent2"]
-        moneyContent3 = self.check_page(contract["moneyCode3"], setup_vars())
+        moneyContent3 = self.check_page(contract["moneyCode3"])
         partMoneyContent3 = moneyContent3['tree'][0]
         contractMoneyContent3 = contract["moneyContent3"]
-        moneyContent4 = self.check_page(contract["moneyCode4"], setup_vars())
+        moneyContent4 = self.check_page(contract["moneyCode4"])
         partMoneyContent4 = moneyContent4['tree'][0]
         contractMoneyContent4 = contract["moneyContent4"]
-        moneyContent5 = self.check_page(contract["moneyCode5"], setup_vars())
+        moneyContent5 = self.check_page(contract["moneyCode5"])
         partMoneyContent5 = moneyContent5['tree'][0]
         contractMoneyContent5 = contract["moneyContent5"]
-        moneyContent6 = self.check_page(contract["moneyCode6"], setup_vars())
+        moneyContent6 = self.check_page(contract["moneyCode6"])
         partMoneyContent6 = moneyContent6['tree'][0]
         contractMoneyContent6 = contract["moneyContent6"]
-        moneyContent7 = self.check_page(contract["moneyCode7"], setup_vars())
+        moneyContent7 = self.check_page(contract["moneyCode7"])
         partMoneyContent7 = moneyContent7['tree'][0]
         contractMoneyContent7 = contract["moneyContent7"]
-        moneyContent8 = self.check_page(contract["moneyCode8"], setup_vars())
+        moneyContent8 = self.check_page(contract["moneyCode8"])
         partMoneyContent8 = moneyContent8['tree'][0]
         contractMoneyContent8 = contract["moneyContent8"]
-        moneyContent9 = self.check_page(contract["moneyCode9"], setup_vars())
+        moneyContent9 = self.check_page(contract["moneyCode9"])
         partMoneyContent9 = moneyContent9['tree'][0]
         contractMoneyContent9 = contract["moneyContent9"]
-        moneyContent10 = self.check_page(contract["moneyCode10"], setup_vars())
+        moneyContent10 = self.check_page(contract["moneyCode10"])
         partMoneyContent10 = moneyContent10['tree'][0]
         contractMoneyContent10 = contract["moneyContent10"]
-        moneyContent11 = self.check_page(contract["moneyCode11"], setup_vars())
+        moneyContent11 = self.check_page(contract["moneyCode11"])
         partMoneyContent11 = moneyContent11['tree'][0]
         contractMoneyContent11 = contract["moneyContent11"]
-        moneyContent12 = self.check_page(contract["moneyCode12"], setup_vars())
+        moneyContent12 = self.check_page(contract["moneyCode12"])
         partMoneyContent12 = moneyContent12['tree'][0]
         contractMoneyContent12 = contract["moneyContent12"]
-        moneyContent13 = self.check_page(contract["moneyCode13"], setup_vars())
+        moneyContent13 = self.check_page(contract["moneyCode13"])
         partMoneyContent13 = moneyContent13['tree'][0]
         contractMoneyContent13 = contract["moneyContent13"]
-        moneyContent14 = self.check_page(contract["moneyCode14"], setup_vars())
+        moneyContent14 = self.check_page(contract["moneyCode14"])
         partMoneyContent14 = moneyContent14['tree'][0]
         contractMoneyContent14 = contract["moneyContent14"]
-        moneyContent15 = self.check_page(contract["moneyCode15"], setup_vars())
+        moneyContent15 = self.check_page(contract["moneyCode15"])
         partMoneyContent15 = moneyContent15['tree'][0]
         contractMoneyContent15 = contract["moneyContent15"]
         # Set for type of money
-        floatContent1 = self.check_page(contract["floatCode1"], setup_vars())
+        floatContent1 = self.check_page(contract["floatCode1"])
         partFloatContent1 = floatContent1['tree'][0]
         contractFloatContent1 = contract["floatContent1"]
-        floatContent2 = self.check_page(contract["floatCode2"], setup_vars())
+        floatContent2 = self.check_page(contract["floatCode2"])
         partFloatContent2 = floatContent2['tree'][0]
         contractFloatContent2 = contract["floatContent2"]
-        floatContent3 = self.check_page(contract["floatCode3"], setup_vars())
+        floatContent3 = self.check_page(contract["floatCode3"])
         partFloatContent3 = floatContent3['tree'][0]
         contractFloatContent3 = contract["floatContent3"]
-        floatContent4 = self.check_page(contract["floatCode4"], setup_vars())
+        floatContent4 = self.check_page(contract["floatCode4"])
         partFloatContent4 = floatContent4['tree'][0]
         contractFloatContent4 = contract["floatContent4"]
-        floatContent5 = self.check_page(contract["floatCode5"], setup_vars())
+        floatContent5 = self.check_page(contract["floatCode5"])
         partFloatContent5 = floatContent5['tree'][0]
         contractFloatContent5 = contract["floatContent5"]
-        floatContent6 = self.check_page(contract["floatCode6"], setup_vars())
+        floatContent6 = self.check_page(contract["floatCode6"])
         partFloatContent6 = floatContent6['tree'][0]
         contractFloatContent6 = contract["floatContent6"]
-        floatContent7 = self.check_page(contract["floatCode7"], setup_vars())
+        floatContent7 = self.check_page(contract["floatCode7"])
         partFloatContent7 = floatContent7['tree'][0]
         contractFloatContent7 = contract["floatContent7"]
-        floatContent8 = self.check_page(contract["floatCode8"], setup_vars())
+        floatContent8 = self.check_page(contract["floatCode8"])
         partFloatContent8 = floatContent8['tree'][0]
         contractFloatContent8 = contract["floatContent8"]
-        floatContent9 = self.check_page(contract["floatCode9"], setup_vars())
+        floatContent9 = self.check_page(contract["floatCode9"])
         partFloatContent9 = floatContent9['tree'][0]
         contractFloatContent9 = contract["floatContent9"]
-        floatContent10 = self.check_page(contract["floatCode10"], setup_vars())
+        floatContent10 = self.check_page(contract["floatCode10"])
         partFloatContent10 = floatContent10['tree'][0]
         contractFloatContent10 = contract["floatContent10"]
-        floatContent11 = self.check_page(contract["floatCode11"], setup_vars())
+        floatContent11 = self.check_page(contract["floatCode11"])
         partFloatContent11 = floatContent11['tree'][0]
         contractFloatContent11 = contract["floatContent11"]
-        floatContent12 = self.check_page(contract["floatCode12"], setup_vars())
+        floatContent12 = self.check_page(contract["floatCode12"])
         partFloatContent12 = floatContent12['tree'][0]
         contractFloatContent12 = contract["floatContent12"]
-        floatContent13 = self.check_page(contract["floatCode13"], setup_vars())
+        floatContent13 = self.check_page(contract["floatCode13"])
         partFloatContent13 = floatContent13['tree'][0]
         contractFloatContent13 = contract["floatContent13"]
-        floatContent14 = self.check_page(contract["floatCode14"], setup_vars())
+        floatContent14 = self.check_page(contract["floatCode14"])
         partFloatContent14 = floatContent14['tree'][0]
         contractFloatContent14 = contract["floatContent14"]
-        floatContent15 = self.check_page(contract["floatCode15"], setup_vars())
+        floatContent15 = self.check_page(contract["floatCode15"])
         partFloatContent15 = floatContent15['tree'][0]
         contractFloatContent15 = contract["floatContent15"]
         # Set for type of int
-        intContent1 = self.check_page(contract["intCode1"], setup_vars())
+        intContent1 = self.check_page(contract["intCode1"])
         partIntContent1 = intContent1['tree'][0]
         contractIntContent1 = contract["intContent1"]
-        intContent2 = self.check_page(contract["intCode2"], setup_vars())
+        intContent2 = self.check_page(contract["intCode2"])
         partIntContent2 = intContent2['tree'][0]
         contractIntContent2 = contract["intContent2"]
-        intContent3 = self.check_page(contract["intCode3"], setup_vars())
+        intContent3 = self.check_page(contract["intCode3"])
         partIntContent3 = intContent3['tree'][0]
         contractIntContent3 = contract["intContent3"]
-        intContent4 = self.check_page(contract["intCode4"], setup_vars())
+        intContent4 = self.check_page(contract["intCode4"])
         partIntContent4 = intContent4['tree'][0]
         contractIntContent4 = contract["intContent4"]
-        intContent5 = self.check_page(contract["intCode5"], setup_vars())
+        intContent5 = self.check_page(contract["intCode5"])
         partIntContent5 = intContent5['tree'][0]
         contractIntContent5 = contract["intContent5"]
-        intContent6 = self.check_page(contract["intCode6"], setup_vars())
+        intContent6 = self.check_page(contract["intCode6"])
         partIntContent6 = intContent6['tree'][0]
         contractIntContent6 = contract["intContent6"]
         # Set wrong type
-        wrongContent1 = self.check_page(contract["wrongCode1"], setup_vars())
+        wrongContent1 = self.check_page(contract["wrongCode1"])
         partWrongContent1 = wrongContent1['tree'][0]
         contractWrongContent1 = contract["wrongContent1"]
         mustBe = dict(money1=contractMoneyContent1['children'][0]["text"],
@@ -937,7 +943,7 @@ class TestPrototipo():
 
     def test_arrayToSource(self):
         contract = self.pages["arrayToSource"]
-        content = self.check_page(contract["code"], setup_vars())
+        content = self.check_page(contract["code"])
         partContent = content['tree'][0]
         contractContent = contract["content"]
         mustBe = dict(tag=partContent["tag"],
@@ -953,7 +959,7 @@ class TestPrototipo():
         self.uni.assertDictEqual(mustBe, page,
                                           "arrayToSource has problem: " + "\n" + str(content["tree"]))
 
-    def test_getHistoryContract(self, setup_vars):
+    def test_getHistoryContract(self):
         # it test has not fixture
         # create contract
         replacedString = "variable_for_replace"
@@ -965,14 +971,14 @@ class TestPrototipo():
                 }
                 """ % replacedString
         code, name = tools.generate_name_and_code(code)
-        self.create_contract(code, setup_vars())
+        self.create_contract(code)
         # change contract
-        id = actions.get_object_id(setup_vars["url"], name, "contracts", setup_vars["token"])
+        id = actions.get_object_id(self.url, name, "contracts", self.token)
         newCode = code.replace(replacedString, "new_var")
         data = {"Id": id,
                 "Value": newCode}
-        self.call_contract("EditContract", data, setup_vars())
+        self.call_contract("EditContract", data)
         # test
-        content = self.check_page("GetHistory(src, contracts, " + str(id) + ")", setup_vars())
+        content = self.check_page("GetHistory(src, contracts, " + str(id) + ")")
         partContent = content['tree'][0]["attr"]["data"][0]
         self.uni.assertIn(replacedString, str(partContent), "getHistoryContract has problem: " + str(content["tree"]))
