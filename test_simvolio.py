@@ -7,11 +7,12 @@ from libs import actions
 from libs import db
 from libs import tools
 
+
 class TestSimvolio():
     contracts = tools.read_fixtures("simvolio")
     wait = tools.read_config("test")["wait_tx_status"]
     config = tools.read_config("nodes")
-    unit = unittest.TestCase() 
+    unit = unittest.TestCase()
 
     def setup(self):
         print("setup class")
@@ -72,7 +73,7 @@ class TestSimvolio():
         print("name", name)
         print("result", result)
         self.check_contract(code, result)
-        
+
     def test_contract_langRes(self):
         data = {"ApplicationId": 1,
                 "Name": "test",
@@ -113,7 +114,7 @@ class TestSimvolio():
         self.check_contract(contract["code"], contract["asert"])
         contract = self.contracts["dbUpdate"]
         self.check_contract(contract["code"], contract["asert"])
-        
+
     def test_contracts_dbUpdateExt(self):
         columns = """[{"name":"name","type":"varchar",
         "index": "1",  "conditions":"true"},
@@ -151,7 +152,7 @@ class TestSimvolio():
         expResult = "system variable " + sysVarName + " cannot be changed"
         msg = "system variable " + sysVarName + " was been changed!"
         self.unit.assertEqual(tx["error"], expResult, msg)
-        
+
     def getMetrics(self, ecosystemNum, metricName):
         # get metrics count
         res = actions.get_list(self.url, "metrics", self.token)
@@ -251,7 +252,7 @@ class TestSimvolio():
         data = {"Table": "pages", "ID": id}
         contract = self.contracts["getHistory"]
         self.check_contract_with_data(contract["code"], data, page)
-        
+
     def test_sys_var_stack(self):
         # This test has not a fixture
         innerBody = """
