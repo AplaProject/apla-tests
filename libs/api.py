@@ -4,6 +4,28 @@ from genesis_blockchain_tools.crypto import get_public_key
 import requests
 
 
+def call_get_api(url, data, token):
+    resp = requests.get(url, params=data, headers={"Authorization": token})
+    if resp.status_code == 200:
+        return resp.json()
+    else:
+        return None
+
+
+def call_get_api_with_full_response(url, data, token):
+    resp = requests.get(url, params=data, headers={"Authorization": token})
+    return resp
+
+
+
+def call_post_api(url, data, token):
+    resp = requests.post(url, data=data, headers={"Authorization": token})
+    if resp.status_code == 200:
+        return resp.json()
+    else:
+        return None
+
+
 def getuid(url):
     endpoint = '/getuid'
     url += endpoint
@@ -63,21 +85,21 @@ def version(url, token):
     data = {}
     endpoint = '/version'
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def balance(url, token, key_id):
     data = {}
     endpoint = '/balance/{}'.format(key_id)
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def ecosystemname(url, token, id=1):
     data = {'id': id}
     endpoint = '/ecosystemname'
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def appparams(url, token, appid, ecosystem=1, names=''):
@@ -89,7 +111,7 @@ def appparams(url, token, appid, ecosystem=1, names=''):
         appid,
     )
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def appparam(url, token, appid, name, ecosystem=1):
@@ -99,7 +121,7 @@ def appparam(url, token, appid, name, ecosystem=1):
         name,
     )
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def ecosystemparams(url, token, ecosystem=1, names=''):
@@ -108,7 +130,7 @@ def ecosystemparams(url, token, ecosystem=1, names=''):
         data['names'] = names
     endpoint = '/ecosystemparams'
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def ecosystemparam(url, token, name, ecosystem=1):
@@ -117,7 +139,7 @@ def ecosystemparam(url, token, name, ecosystem=1):
         name,
     )
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def tables(url, token, limit=25, offset=0):
@@ -127,7 +149,7 @@ def tables(url, token, limit=25, offset=0):
     }
     endpoint = '/tables'
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def table(url, token, name):
@@ -136,7 +158,7 @@ def table(url, token, name):
         name,
     )
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def list(url, token, name, limit=25, offset=0, columns=''):
@@ -150,7 +172,7 @@ def list(url, token, name, limit=25, offset=0, columns=''):
         name,
     )
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def row(url, token, tablename, id, columns=''):
@@ -162,7 +184,7 @@ def row(url, token, tablename, id, columns=''):
         id,
     )
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def systemparams(url, token, names=''):
@@ -171,7 +193,7 @@ def systemparams(url, token, names=''):
         data['names'] = names
     endpoint = '/systemparams'
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def history(url, token, name, id):
@@ -181,7 +203,7 @@ def history(url, token, name, id):
         id,
     )
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def interface(url, token, entity, name):
@@ -192,7 +214,7 @@ def interface(url, token, entity, name):
         name,
     )
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def contracts(url, token, limit=25, offset=0):
@@ -202,7 +224,7 @@ def contracts(url, token, limit=25, offset=0):
     }
     endpoint = '/contracts'
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def contract(url, token, name):
@@ -211,7 +233,7 @@ def contract(url, token, name):
         name,
     )
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 # contract/{request_id}
@@ -233,7 +255,7 @@ def content(url, token, entity, name, lang='en-US', app_id=1):
         name,
     )
     url += endpoint
-    return actions.call_post_api(url, data, token)
+    return call_post_api(url, data, token)
 
 
 def content_source(url, token, name):
@@ -242,7 +264,7 @@ def content_source(url, token, name):
         name,
     )
     url += endpoint
-    return actions.call_post_api(url, data, token)
+    return call_post_api(url, data, token)
 
 
 def content_hash(url, token, name):
@@ -251,7 +273,7 @@ def content_hash(url, token, name):
         name,
     )
     url += endpoint
-    return actions.call_post_api(url, data, token)
+    return call_post_api(url, data, token)
 
 
 def content_template(url, token, template, source=0):
@@ -261,7 +283,7 @@ def content_template(url, token, template, source=0):
     }
     endpoint = '/content'
     url += endpoint
-    return actions.call_post_api(url, data, token)
+    return call_post_api(url, data, token)
 
 
 # node/{name} - only VDE
@@ -271,7 +293,7 @@ def maxblockid(url, token):
     data = {}
     endpoint = '/maxblockid'
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def block(url, token, id):
@@ -280,7 +302,7 @@ def block(url, token, id):
         id,
     )
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 def avatar(url, token, member, ecosystem=1):
@@ -290,14 +312,14 @@ def avatar(url, token, member, ecosystem=1):
         member,
     )
     url += endpoint
-    return actions.call_get_api_with_full_response(url, data, token)
+    return call_get_api_with_full_response(url, data, token)
 
 
 def config_centrifugo(url, token):
     data = {}
     endpoint = '/config/centrifugo'
     url += endpoint
-    return actions.call_get_api(url, data, token)
+    return call_get_api(url, data, token)
 
 
 if __name__ == 'main':
