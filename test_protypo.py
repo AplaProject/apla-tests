@@ -2,21 +2,19 @@ import unittest
 import json
 import os
 
-from conftest import setup_vars
 from libs import actions
 from libs import tools
 from libs import db
 
 
 class TestPrototipo():
-    setup_vars = setup_vars()
-    conf = setup_vars["conf"]
-    pages = setup_vars["pages"]
-    url = setup_vars["url"]
-    prKey = setup_vars["private_key"]
+    conf = tools.read_config("nodes")
+    pages = tools.read_fixtures("pages")
+    url = conf["2"]["url"]
+    prKey = conf["1"]['private_key']
     data = actions.login(url, prKey, 0)
     token = data["jwtToken"]
-    db2 = setup_vars["db2"]
+    db2 = conf["2"]["db"]
 
     @classmethod
     def setup_class(self):

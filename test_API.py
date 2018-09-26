@@ -4,8 +4,6 @@ import json
 import os
 import time
 
-from conftest import setup_vars
-
 from libs import actions
 from libs import tools
 from libs import db
@@ -13,11 +11,10 @@ from libs import db
 
 
 class TestApi():
-    setup_vars = setup_vars()
-    config = setup_vars["conf"]
-    url = setup_vars["url"]
-    wait = setup_vars["wait"]
-    prKey = setup_vars["private_key"]
+    config = tools.read_config("nodes")
+    url = config["2"]["url"]
+    wait = tools.read_config("test")["wait_tx_status"]
+    prKey = config["1"]['private_key']
     data = actions.login(url, prKey, 0)
     token = data["jwtToken"]
 

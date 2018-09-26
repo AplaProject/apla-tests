@@ -3,21 +3,19 @@ import json
 import time
 import os
 
-from conftest import setup_vars
 from libs import actions
 from libs import tools
 from libs import db
 
 
 class TestRollback1():
-    setup_vars = setup_vars()
     conf = tools.read_config("main")
     url = conf["url"]
     prKey = conf['private_key']
     dbNode = conf["db"]
     lData = actions.login(url, prKey, 0)
     token = lData["jwtToken"]
-    wait = setup_vars["wait"]
+    wait = tools.read_config("test")["wait_tx_status"]
 
     def setup_class(self):
         self.unit = unittest.TestCase()
