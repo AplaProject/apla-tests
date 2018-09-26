@@ -4,16 +4,13 @@ import pytest
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
 
-from conftest import setup_vars
-
 from libs import tools, actions, db
 
 
 class TestCost():
-    setup_vars = setup_vars()
-    wait = setup_vars["wait"]
-    conf = setup_vars["conf"]
-    keys = setup_vars["keys"]
+    wait = tools.read_config("test")["wait_tx_status"]
+    conf = tools.read_config("nodes")
+    keys = tools.read_fixtures("keys")
 
     def setup_class(self):
         print("setup_class")

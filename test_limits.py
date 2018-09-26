@@ -2,18 +2,15 @@ import unittest
 import json
 import time
 
-from conftest import setup_vars
-
 from libs import actions
 from libs import tools
 from libs import db
 
 
 class TestLimits():
-    setup_vars = setup_vars()
-    conf = setup_vars["conf"]
-    contracts = setup_vars["contract"]
-    wait = setup_vars["wait"]
+    conf = tools.read_config("nodes")
+    contracts = tools.read_fixtures("contracts")
+    wait = tools.read_config("test")["wait_tx_status"]
     data = actions.login(conf["2"]["url"],
                               conf["1"]['private_key'], 0)
     token = data["jwtToken"]

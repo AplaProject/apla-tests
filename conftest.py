@@ -55,26 +55,3 @@ def pytest_addoption(parser):
     parser.addoption('--privKey', action="store", default='')
     parser.addoption('--name', action="store", default='')
     parser.addoption('--value', action="store", default='')
-
-@pytest.fixture(scope="class")
-def setup_vars():
-    wait = tools.read_config("test")["wait_tx_status"]
-    conf = tools.read_config("nodes")
-    keys = tools.read_fixtures("keys")
-    url = conf["2"]["url"]
-    url1 = conf["1"]["url"]
-    prKey = conf["1"]['private_key']
-    data = actions.login(url, prKey, 0)
-    token = data["jwtToken"]
-    data_limits = actions.login(conf["2"]["url"],
-                                conf["1"]['private_key'], 0)
-    token_limits = data_limits["jwtToken"]
-    data_sys_con = actions.login(url1, prKey, 0)
-    token_sys_con = data_sys_con["jwtToken"]
-    db1 = conf["1"]["db"]
-    db2 = conf["2"]["db"]
-    contract = tools.read_fixtures("contracts")
-    vars = {"wait": wait, "conf": conf, "keys": keys, "url": url, "url1": url1, "contract": contract, "data": data,
-            "token": token, "private_key": prKey, "db1": db1, "db2": db2, "data_limits": data_limits,
-            "token_limits": token_limits, "token_sys_con": token_sys_con}
-    return vars
