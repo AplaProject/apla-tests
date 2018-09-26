@@ -7,9 +7,17 @@ from libs import tools
 from libs import db
 
 class TestBlockChain():
+    fullConfig = tools.read_config("nodes")
+    nodes = len(fullConfig)
+    config1 = fullConfig[0]
+    config2 = fullConfig[1]
+    db1 = config1["db"]
+    db2 = config2["db"]
 
     def setup_class(self):
         self.uni = unittest.TestCase()
+        self.nodes = len(fullConfig)
+
 
     def create_contract(self, url, prKey):
         code, name = tools.generate_name_and_code("")
@@ -31,12 +39,6 @@ class TestBlockChain():
     
     def test_block_chain(self):
         print("test_block_chain started")
-        fullConfig = tools.read_config("nodes")
-        nodes = len(fullConfig)
-        config1 = fullConfig[0]
-        config2 = fullConfig[1]
-        db1 = config1["db"]
-        db2 = config2["db"]
         ts_count = 30
         self.data1 = actions.login(config1["url"], config1['private_key'], 0)
         i = 1
