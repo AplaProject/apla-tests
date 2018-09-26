@@ -10,16 +10,16 @@ from libs import db
 class TestPrototipo():
     conf = tools.read_config("nodes")
     pages = tools.read_fixtures("pages")
-    url = conf["2"]["url"]
-    prKey = conf["1"]['private_key']
-    data = actions.login(url, prKey, 0)
-    token = data["jwtToken"]
-    db2 = conf["2"]["db"]
+    url = conf[0]["url"]
+    prKey = conf[0]['private_key']
+    db2 = conf[0]["db"]
 
     @classmethod
     def setup_class(self):
         self.maxDiff = None
         self.uni = unittest.TestCase()
+        data = actions.login(self.url, self.prKey, 0)
+        self.token = data["jwtToken"]
 
     def assert_tx_in_block(self, result, jwtToken):
         self.uni.assertIn("hash", result)
@@ -27,7 +27,7 @@ class TestPrototipo():
                                    tools.read_config("test")["wait_tx_status"],
                                    result['hash'], jwtToken)
         self.uni.assertNotIn(json.dumps(status), 'errmsg')
-        self.uni.assertGreater(len(status['blockid']), 0)
+        self.uni.assertGreater(status['blockid'], 0)
 
     def create_contract(self, code):
         data = {"Wallet": "", "ApplicationId": 1,

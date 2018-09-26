@@ -133,6 +133,8 @@ def tx_status_multi(url, sleepTime, hshs, jvtToken):
         
 def call_get_api(url, data, token):
     resp = requests.get(url, params=data,  headers={"Authorization": token})
+    print("resp", resp)
+    print(resp.json())
     if resp.status_code == 200:
         return resp.json()
     else:
@@ -179,6 +181,7 @@ def get_object_id(url, name, object, token):
 def is_contract_activated(url, name, token):
     endPoint = url + "/contract/" + name
     res = call_get_api(endPoint, "", token)
+    print("res", res)
     return res["active"]
 
 def get_activated_wallet(url, name, token):
