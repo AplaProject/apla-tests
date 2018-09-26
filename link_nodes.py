@@ -134,10 +134,10 @@ def voiting(id, url, prKey, token):
 
 if __name__ == "__main__":
     conf = tools.read_config("nodes")
-    url = conf["1"]["url"]
-    prKey1 = conf["1"]['private_key']
-    prKey2 = conf["2"]['private_key']
-    prKey3 = conf["3"]['private_key']
+    url = conf[0]["url"]
+    prKey1 = conf[0]['private_key']
+    prKey2 = conf[1]['private_key']
+    prKey3 = conf[2]['private_key']
     data = actions.login(url, prKey1, 0)
     token1 = data["jwtToken"]
     impApp("admin", url, prKey1, token1)
@@ -150,10 +150,10 @@ if __name__ == "__main__":
     
     voitingInstall(url, prKey1, token1)
     editAppParam("voting_sysparams_template_id", 2, url, prKey1, token1)
-    node1 = json.dumps({"tcp_address": conf["1"]["tcp_address"],
-                      "api_address": conf["1"]["api_address"],
-                      "key_id": conf["1"]["keyID"],
-                      "public_key": conf["1"]["pubKey"]})
+    node1 = json.dumps({"tcp_address": conf[0]["tcp_address"],
+                      "api_address": conf[0]["api_address"],
+                      "key_id": conf[0]["keyID"],
+                      "public_key": conf[0]["pubKey"]})
     editAppParam("first_node", node1, url, prKey1, token1)
     
     data2 = actions.login(url, prKey2, 0)
@@ -166,16 +166,16 @@ if __name__ == "__main__":
     data = actions.login(url, prKey1, 1)
     token1 = data["jwtToken"]
     
-    setAplaConsensus(conf["2"]['keyID'], url, prKey1, token1)
-    setAplaConsensus(conf["3"]['keyID'], url, prKey1, token1)
-    setAplaConsensus(conf["1"]['keyID'], url, prKey1, token1)
+    setAplaConsensus(conf[1]['keyID'], url, prKey1, token1)
+    setAplaConsensus(conf[2]['keyID'], url, prKey1, token1)
+    setAplaConsensus(conf[0]['keyID'], url, prKey1, token1)
     
     print("Start create voting 1")
     
     data = actions.login(url, prKey2, 3)
     token2 = data["jwtToken"]
-    createVoiting(conf["2"]["tcp_address"], conf["2"]["api_address"],
-                 conf["2"]["keyID"], conf["2"]["pubKey"],
+    createVoiting(conf[1]["tcp_address"], conf[1]["api_address"],
+                 conf[1]["keyID"], conf[1]["pubKey"],
                  url, prKey2, token2)
     voitingStatusUpdate(url, prKey1, token1)
 
@@ -192,8 +192,8 @@ if __name__ == "__main__":
     print("Start create voting 2")
     data = actions.login(url, prKey3, 3)
     token3 = data["jwtToken"]
-    createVoiting(conf["3"]["tcp_address"], conf["3"]["api_address"],
-                 conf["3"]["keyID"], conf["3"]["pubKey"],
+    createVoiting(conf[2]["tcp_address"], conf[2]["api_address"],
+                 conf[2]["keyID"], conf[2]["pubKey"],
                  url, prKey3, token3)
     voitingStatusUpdate(url, prKey1, token1)
     

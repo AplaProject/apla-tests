@@ -16,9 +16,9 @@ class TestSimvolio():
 
     def setup(self):
         print("setup class")
-        self.url = self.config["2"]["url"]
-        self.prKey = self.config["1"]['private_key']
-        self.db1 = self.config["1"]['db']
+        self.url = self.config[1]["url"]
+        self.prKey = self.config[0]['private_key']
+        self.db1 = self.config[0]['db']
         data = actions.login(self.url, self.prKey, 0)
         self.token = data["jwtToken"]
 
