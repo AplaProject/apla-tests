@@ -122,7 +122,8 @@ def voitingStatusUpdate(url, prKey, token):
         exit(1)
         
 def voiting(id, url, prKey, token):
-    data = {"votingID": id}
+    data = {"votingID": id,
+            "RoleId": 3}
     call = utils.call_contract(url, prKey, "VotingDecisionAccept",
                                data, token)
 
