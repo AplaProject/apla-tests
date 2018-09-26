@@ -1409,7 +1409,7 @@ class SystemContractsTestCase(unittest.TestCase):
 
     def test_ei3_ImportUpload(self):
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
-        with open(path, 'r') as f:
+        with open(path, 'r', encoding='UTF-8') as f:
             file = f.read()
         files = {'input_file': file}
         resp = utils.call_contract_with_files(url, prKey, "ImportUpload", {},
