@@ -204,8 +204,8 @@ def test_three_nodes(request):
 
 
 
-	config = {
-		"1": {
+	config = [
+		{
 			"url": "http://localhost:" + request.config.getoption('--httpPort1') + "/api/v2",
 			"private_key": privKey1,
 			"keyID": keyID1,
@@ -218,10 +218,9 @@ def test_three_nodes(request):
 				"dbName": request.config.getoption('--dbName1'),
 				"login": request.config.getoption('--dbUser'),
 				"pass": request.config.getoption('--dbPassword')
-				},
-			"time_wait_tx_in_block": 30
+				}
 		},
-		"2": {
+		{
 			"url": "http://localhost:" + request.config.getoption('--httpPort2') + "/api/v2",
 			"private_key": privKey2,
 			"keyID": keyID2,
@@ -234,10 +233,9 @@ def test_three_nodes(request):
 				"dbName": request.config.getoption('--dbName2'),
 				"login": request.config.getoption('--dbUser'),
 				"pass": request.config.getoption('--dbPassword')
-				},
-			"time_wait_tx_in_block": 30
+				}
 		},
-		"3": {
+		{
 			"url": "http://localhost:" + request.config.getoption('--httpPort3') + "/api/v2",
 			"private_key": privKey3,
 			"keyID": keyID3,
@@ -250,9 +248,8 @@ def test_three_nodes(request):
 				"dbName": request.config.getoption('--dbName3'),
 				"login": request.config.getoption('--dbUser'),
 				"pass": request.config.getoption('--dbPassword')
-			},
-			"time_wait_tx_in_block": 30
-		}}
+			}
+		}]
 
 	# Update config for tests
 	confPath = os.path.join(curDir+ '/../', 'nodesConfig.json')

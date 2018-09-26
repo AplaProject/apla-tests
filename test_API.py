@@ -52,6 +52,7 @@ class TestApi():
     def get_error_api(self, endPoint, data):
         end = self.url + endPoint
         result = actions.call_get_api(end, data, self.token)
+        print("result", result)
         error = result["error"]
         message = result["msg"]
         return error, message
