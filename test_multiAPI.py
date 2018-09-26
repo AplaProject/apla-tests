@@ -6,9 +6,9 @@ from libs import tools
 
 class TestMultiApi():
     config = tools.read_config("nodes")
-    url = config["2"]["url"]
+    url = config[1]["url"]
     wait = tools.read_config("test")["wait_tx_status"]
-    prKey = config["1"]['private_key']
+    prKey = config[0]['private_key']
     data = actions.login(url, prKey, 0)
     token = data["jwtToken"]
 

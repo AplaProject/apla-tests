@@ -33,8 +33,8 @@ class TestBlockChain():
         print("test_block_chain started")
         fullConfig = tools.read_config("nodes")
         nodes = len(fullConfig)
-        config1 = fullConfig["1"]
-        config2 = fullConfig["2"]
+        config1 = fullConfig[0]
+        config2 = fullConfig[1]
         db1 = config1["db"]
         db2 = config2["db"]
         ts_count = 30
@@ -80,8 +80,8 @@ class TestBlockChain():
         print("test_block_chain_edit started")
         fullConfig = tools.read_config("nodes")
         nodes = len(fullConfig)
-        config1 = fullConfig["1"]
-        config2 = fullConfig["2"]
+        config1 = fullConfig[0]
+        config2 = fullConfig[0]
         db1 = config1["db"]
         db2 = config2["db"]
         ts_count = 100
