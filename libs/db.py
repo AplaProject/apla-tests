@@ -103,6 +103,8 @@ def get_count_DB_objects(db, url, token):
         tablesCount[table[2:]] = get_count_table(db, table)
     return tablesCount
 
+#TODO for Elena
+
 #block_chain compare_nodes
 def get_count_DB_objects(db, url, token):
     tables = {}
