@@ -111,13 +111,13 @@ class TestApi():
         dictNames = {}
         dictNamesAPI = {}
         data = {}
-        tables = db.get_ecosys_tables(self.config["1"]["db"])
+        tables = db.get_ecosys_tables(self.url, self.token)
         for table in tables:
             if "table" not in table:
-                tableInfo = actions.call_get_api(self.url + "/table/" + table[2:], data, self.token)
+                tableInfo = actions.call_get_api(self.url + "/table/" + table, data, self.token)
                 if "name" in str(tableInfo):
-                    dictNames[table[2:]] = table[2:]
-                    dictNamesAPI[table[2:]] = tableInfo["name"]
+                    dictNames[table] = table
+                    dictNamesAPI[table] = tableInfo["name"]
                 else:
                     self.unit.fail("Answer from API /table/" + table + " is: " + str(tableInfo))
         self.unit.assertDictEqual(dictNamesAPI, dictNames,
@@ -136,25 +136,12 @@ class TestApi():
         dictCount = {}
         dictCountTable = {}
         data = {}
-        tables = db.get_ecosys_tables(self.config["1"]["db"])
+        tables = db.get_ecosys_tables(self.url, self.token)
         for table in tables:
-            tableData = actions.call_get_api(self.url + "/list/" + table[2:], data, self.token)
-            count = db.get_count_table(self.config["1"]["db"], table)
-            if count > 0:
-                if len(tableData["list"]) == count or (len(tableData["list"]) == 25 and
-                                                       count > 25):
-                    dictCount[table] = count
-                    dictCountTable[table] = int(tableData["count"])
-                else:
-                    self.unit.fail("Count list of " + table +\
-                              " not equels of count table. Count of table: " +\
-                              str(count) + " Count of list length: " +\
-                              str(len(tableData["list"])))
-            else:
-                dictCount[table] = 0
-                dictCountTable[table] = int(tableData["count"])
-        self.unit.assertDictEqual(dictCount, dictCountTable,
-                             "Any of count not equels real count")  
+            tableData = actions.call_get_api(self.url + "/list/" + table, data, self.token)
+            msg = "Table " + table + " has not list"
+            self.unit.assertIn('list', tableData, msg)      
+            
         
     def test_get_incorrect_table_data(self):
         table = "tab"
