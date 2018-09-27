@@ -64,16 +64,21 @@ with open(cenConfig, 'w') as fconf:
 # Run centrifugo
 cenPath = os.path.join(args.centrifugo, "centrifugo")
 if sys.platform == 'win32':
-	insecure_param = '--insecure_admin'
+	centrifugo = subprocess.Popen([
+		cenPath,
+		'--config=config.json',
+		'--admin',
+		'--insecure_admin',
+		'--web'
+	])
 else:
-	insecure_param = '--admin_insecure'
-centrifugo = subprocess.Popen([
-	cenPath,
-	'--config=config.json',
-	'--admin',
-	insecure_param,
-	'--web'
-])
+	centrifugo = subprocess.Popen([
+		cenPath,
+		'--config=config.json',
+		'--admin',
+		'--admin_insecure'
+	])
+
 time.sleep(3)
 
 # Generate config for first node
