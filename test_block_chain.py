@@ -2,7 +2,7 @@ import unittest
 import time
 from builtins import sum
 
-from libs import actions, tools, db
+from libs import actions, tools, db, check
 
 class TestBlockChain():
     fullConfig = tools.read_config("nodes")
@@ -14,112 +14,64 @@ class TestBlockChain():
 
     def setup_class(self):
         self.uni = unittest.TestCase()
-        self.nodes = len(fullConfig)
+        data = actions.login(self.config1["url"], self.config1['private_key'], 0)
+        self.token = data["jwtToken"]
 
 
     def create_contract(self, url, prKey):
         code, name = tools.generate_name_and_code("")
         data = {'Wallet': '', 'Value': code, "ApplicationId": 1,
                 'Conditions': "ContractConditions(`MainCondition`)"}
-        resp = actions.call_contract(url, prKey, "NewContract", data, self.data1["jwtToken"])
+        resp = actions.call_contract(url, prKey, "NewContract", data, self.token)
         return name
     
     def edit_menu(self, url, prKey, id):
-        print("edit_menu started")
         dataEdit = {"Id": id, "Value": "tryam", "Conditions": "true"}
-        res = actions.call_contract(url, prKey, "EditMenu", dataEdit, self.data1["jwtToken"])
+        res = actions.call_contract(url, prKey, "EditMenu", dataEdit, self.token)
         
     def new_menu(self, url, prKey):
         name = "Menu_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Item1", "Conditions": "true"}
-        res = actions.call_contract(url, prKey, "NewMenu", data, self.data1["jwtToken"])
-        return actions.get_count(url, "menu", self.data1["jwtToken"])
+        res = actions.call_contract(url, prKey, "NewMenu", data, self.token)
+        return actions.get_count(url, "menu", self.token)
     
     def test_block_chain(self):
-        print("test_block_chain started")
         ts_count = 30
-        self.data1 = actions.login(config1["url"], config1['private_key'], 0)
         i = 1
-        amountsB = db.get_user_token_amounts(db1)
+        amountsB = db.get_user_token_amounts(self.db1)
         sumAmountsBefore = sum(amount[0] for amount in amountsB)
         while i < ts_count:
-            contName = self.create_contract(config1["url"],
-                                            config1['private_key'])
+            contName = self.create_contract(self.config1["url"],
+                                            self.config1['private_key'])
             i = i + 1
             time.sleep(1)
         time.sleep(120)
 
-        count_contracts1 = db.get_count_DB_objects(db1)["contracts"]
-        count_contracts2 = db.get_count_DB_objects(db2)["contracts"]
-        amounts1 = db.get_user_token_amounts(db1)
-        amounts2 = db.get_user_token_amounts(db2)
-        sumAmounts = sum(amount[0] for amount in amounts1)
-        maxBlockId1 = actions.get_max_block_id(config1["url"], self.data1["jwtToken"])
-        self.data2 = actions.login(config2["url"], config1['private_key'], 0)
-        maxBlockId2 = actions.get_max_block_id(config2["url"], self.data2["jwtToken"])
-        maxBlock = max(maxBlockId2, maxBlockId1)
-        hash1 = db.get_blockchain_hash(db1, maxBlock)
-        hash2 = db.get_blockchain_hash(db2, maxBlock)
-        node_position = db.compare_node_positions(db1, maxBlock, nodes)
-        dict1 = dict(count_contract=count_contracts1,
-                     amounts=str(amounts1), summ=str(sumAmounts),
-                     hash=str(hash1),
-                     node_pos=str(node_position))
-        dict2 = dict(count_contract=count_contracts2,
-                     amounts=str(amounts2),
-                     summ=str(sumAmountsBefore),
-                     hash=str(hash2),
-                     node_pos="True")
-        msg = "Test two_nodes is faild. contracts: \n"
-        msg += str(count_contracts1) + str(amounts1) + str(hash1) + str(node_position) + "\n"
-        msg += str(count_contracts2) + str(amounts1) + str(hash1) + str(node_position) + "\n"
-        msg += "Amounts summ: " + str(sumAmounts)
-        self.uni.assertDictEqual(dict1, dict2, msg)
+        amountsAfter = db.get_user_token_amounts(self.db1)
+        expect = {"isTheSameNodes": True, "isTheSameDB": True,
+                      "sumAmounts": sumAmountsBefore}
+        dict = {"isTheSameNodes": check.compare_nodes(self.fullConfig),
+                "isTheSameDB": check.compare_db(self.fullConfig),
+                      "sumAmounts": sum(amount[0] for amount in amountsAfter)}   
+        self.uni.assertDictEqual(expect, dict, "Error in test_block_chain")
         
     def test_block_chain_edit(self):
-        print("test_block_chain_edit started")
-        fullConfig = tools.read_config("nodes")
-        nodes = len(fullConfig)
-        config1 = fullConfig[0]
-        config2 = fullConfig[0]
-        db1 = config1["db"]
-        db2 = config2["db"]
         ts_count = 100
-        self.data1 = actions.login(config1["url"], config1['private_key'], 0)
-        id = self.new_menu(config1["url"], config1['private_key'])
+        id = self.new_menu(self.config1["url"], self.config1['private_key'])
         time.sleep(10)
         i = 1
-        amountsB = db.get_user_token_amounts(db1)
+        amountsB = db.get_user_token_amounts(self.db1)
         sumAmountsBefore = sum(amount[0] for amount in amountsB)
         while i < ts_count:
-            self.edit_menu(config1["url"], config1['private_key'], id)
+            self.edit_menu(self.config1["url"], self.config1['private_key'], id)
             i = i + 1
-            print("i - ", i)
         time.sleep(120)
-        count_contracts1 = db.get_count_DB_objects(db1)["contracts"]
-        count_contracts2 = db.get_count_DB_objects(db2)["contracts"]
-        amounts1 = db.get_user_token_amounts(db1)
-        amounts2 = db.get_user_token_amounts(db2)
-        sumAmounts = sum(amount[0] for amount in amounts1)
-        maxBlockId1 = actions.get_max_block_id(config1["url"],self.data1["jwtToken"])
-        self.data2 = actions.login(config2["url"], config1['private_key'], 0)
-        maxBlockId2 = actions.get_max_block_id(config2["url"],self.data2["jwtToken"])
-        maxBlock = max(maxBlockId2, maxBlockId1)
-        hash1 = db.get_blockchain_hash(db1, maxBlock)
-        hash2 = db.get_blockchain_hash(db2, maxBlock)
-        node_position = db.compare_node_positions(db1, maxBlock, nodes)
-        dict1 = dict(count_contract = count_contracts1,
-                     amounts = str(amounts1), summ = str(sumAmounts),
-                     hash = str(hash1),
-                     node_pos = str(node_position))
-        dict2 = dict(count_contract = count_contracts2,
-                     amounts = str(amounts2),
-                     summ = str(sumAmountsBefore),
-                     hash = str(hash2),
-                     node_pos = "True")
-        msg = "Test two_nodes is faild. contracts: \n"
-        msg += str(count_contracts1) + str(amounts1) + str(hash1) + str(node_position) + "\n"
-        msg += str(count_contracts2) + str(amounts1) + str(hash1) + str(node_position) + "\n"
-        msg += "Amounts summ: " + str(sumAmounts)
-        self.uni.assertDictEqual(dict1, dict2, msg)
+        
+        amountsAfter = db.get_user_token_amounts(self.db1)
+        expect = {"isTheSameNodes": True, "isTheSameDB": True,
+                      "sumAmounts": sumAmountsBefore}
+        dict = {"isTheSameNodes": check.compare_nodes(self.fullConfig),
+                "isTheSameDB": check.compare_db(self.fullConfig),
+                      "sumAmounts": sum(amount[0] for amount in amountsAfter)}   
+        self.uni.assertDictEqual(expect, dict, "Error in test_block_chain_edit")
     

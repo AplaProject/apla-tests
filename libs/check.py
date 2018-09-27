@@ -1,5 +1,4 @@
-from libs import db
-from libs import actions
+from libs import db, actions
 
 
 def compare_nodes(config):
