@@ -54,7 +54,7 @@ class TestBlockChain():
         expect = {"isTheSameNodes": True, "isTheSameDB": True,
                       "sumAmounts": sumAmountsBefore}
         dict = {"isTheSameNodes": check.compare_nodes(self.fullConfig),
-                "isTheSameDB": check.compare_db(self.fullConfig),
+                "isTheSameDB": check.compare_db(self.fullConfig, self.config1["url"], self.token),
                       "sumAmounts": sum(amount[0] for amount in amountsAfter)}   
         self.uni.assertDictEqual(expect, dict, "Error in test_block_chain")
         
@@ -74,7 +74,8 @@ class TestBlockChain():
         expect = {"isTheSameNodes": True, "isTheSameDB": True,
                       "sumAmounts": sumAmountsBefore}
         dict = {"isTheSameNodes": check.compare_nodes(self.fullConfig),
-                "isTheSameDB": check.compare_db(self.fullConfig),
+                "isTheSameDB": check.compare_db(self.fullConfig, self.config1["url"], self.token),
                       "sumAmounts": sum(amount[0] for amount in amountsAfter)}   
         self.uni.assertDictEqual(expect, dict, "Error in test_block_chain_edit")
+        
     

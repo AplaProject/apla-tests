@@ -47,20 +47,16 @@ def compare_nodes(config):
     return True
 
 
-def compare_db(config):
+def compare_db(config, url, token):
     nodes = len(config)
     dbInformation = []
-    i = 0 
+    firstDb = db.get_count_DB_objects(config[0]["db"], url, token)
+    i = 1 
     while i < nodes:
-        dbInformation.append(db.get_count_DB_objects(config[i]["db"]))
-        dbInf = []
-        for key in dbInformation[i]:
-            print(key)
-            dbInf.append(dbInformation[i][key])
-        if(i > 0):
-            if dbInf[i-1] != dbInf[i]:
-                print("Errorin db: Different info about " + key + str(dbInf[i-1]) +\
-                       " != " + str(dbInf[i]) + " current node is " + str(i))
-                return False
+        currentDb = db.get_count_DB_objects(config[i]["db"], url, token)
+        if currentDb != firstDb:
+            print("Errorin db: Different info about " + str(currentDb) +\
+                  " != " + str(firstDb) + " current node is " + str(i))
+            return False
         i += 1
     return True

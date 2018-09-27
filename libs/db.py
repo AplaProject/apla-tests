@@ -10,6 +10,8 @@ from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
 from gevent.resolver.cares import result
 
+from libs import api
+
 #here
 def submit_query(query, db):
     connect = psycopg2.connect(host=db["dbHost"], dbname=db["dbName"],
@@ -54,9 +56,19 @@ def is_count_tx_in_block(db, maxBlockId, countTx):
 #api
 #Returns list of all ecosystem tables
 #can be changed to api.tables
-def get_ecosys_tables(db):
+def get_ecosys_tables1(db):
     request = "select table_name from INFORMATION_SCHEMA.TABLES WHERE table_schema='public' AND table_name LIKE '1_%'"
     tables = submit_query(request, db)
+    list = []
+    i = 0
+    while i < len(tables):
+        list.append(tables[i][0])
+        i = i + 1
+    return list
+
+def get_ecosys_tables(url, token):
+    tables = api.tables(url, token, 100)
+    print("tables", tables)
     list = []
     i = 0
     while i < len(tables):
@@ -92,12 +104,20 @@ def get_import_app_data(db, member_id):
     return cursor.fetchall()[0][0]
 
 #block_chain compare_nodes
-def get_count_DB_objects(db):
+def get_count_DB_objects(db, url, token):
     tablesCount = {}
-    tables = get_ecosys_tables(db)
+    tables = get_ecosys_tables(url, token)
     for table in tables:
         tablesCount[table[2:]] = get_count_table(db, table)
     return tablesCount
+
+#block_chain compare_nodes
+def get_count_DB_objects(db, url, token):
+    tables = {}
+    list = api.tables(url, token)['list']
+    for table in list:
+        tables[table['name']] = table['count']
+    return tables
 
 #here
 def get_table_column_names(db, table):
