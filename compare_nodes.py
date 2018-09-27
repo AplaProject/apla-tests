@@ -1,11 +1,5 @@
 import unittest
-import pytest
-from builtins import sum
-
-from libs import actions
-from libs import db
-from libs import tools
-from libs import check
+from libs import tools, check
 
 class TestCompareNodes():
     config = tools.read_config("nodes")

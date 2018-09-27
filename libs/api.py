@@ -1,7 +1,7 @@
-from libs import actions
+import requests
+
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
-import requests
 
 
 def call_get_api(url, data, token):

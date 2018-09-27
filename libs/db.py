@@ -1,14 +1,8 @@
-import random
-import string
-import requests
 import psycopg2
 import json
-import time
 
-from collections import Counter
-from genesis_blockchain_tools.crypto import sign
-from genesis_blockchain_tools.crypto import get_public_key
-from gevent.resolver.cares import result
+
+from psycopg2.psycopg1 import cursor
 
 from libs import api
 

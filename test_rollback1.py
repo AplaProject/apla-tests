@@ -3,9 +3,7 @@ import json
 import time
 import os
 
-from libs import actions
-from libs import tools
-from libs import db
+from libs import actions, tools, db
 
 
 class TestRollback1():

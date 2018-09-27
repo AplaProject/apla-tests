@@ -1,8 +1,6 @@
 import pytest
 import os
 
-from libs import tools, actions, db
-
 
 def pytest_addoption(parser):
     curDir = os.path.dirname(os.path.abspath(__file__))

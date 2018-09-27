@@ -3,9 +3,7 @@ import json
 import time
 import pytest
 
-from libs import actions
-from libs import db
-from libs import tools
+from libs import actions, db, tools
 
 
 class TestSimvolio():

@@ -1,13 +1,7 @@
 import unittest
-import requests
 import json
-import os
-import time
 
-from libs import actions
-from libs import tools
-from libs import db
-from libs import api
+from libs import actions, tools, api
 
 
 class TestApi():
