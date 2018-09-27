@@ -2,9 +2,7 @@ import unittest
 import json
 import time
 
-from libs import actions
-from libs import tools
-from libs import db
+from libs import actions, tools, db
 
 
 class TestLimits():

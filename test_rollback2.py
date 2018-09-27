@@ -2,8 +2,7 @@ import unittest
 import os
 import json
 
-from libs import db
-from libs import tools
+from libs import db, tools
 
 class Rollback2():
     

@@ -1,12 +1,9 @@
 import unittest
-import requests
 import json
 import os
-import time
 import pytest
 
-from libs import actions
-from libs import tools
+from libs import actions, tools
 
 def jsonToList(json_api_fixture):
     fullList = []

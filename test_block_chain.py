@@ -2,9 +2,7 @@ import unittest
 import time
 from builtins import sum
 
-from libs import actions
-from libs import tools
-from libs import db
+from libs import actions, tools, db
 
 class TestBlockChain():
     fullConfig = tools.read_config("nodes")

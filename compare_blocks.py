@@ -1,8 +1,7 @@
 import unittest
 import time
 
-from libs import actions
-from libs import tools
+from libs import actions, tools
 
 class CompareBlocks(unittest.TestCase):
 

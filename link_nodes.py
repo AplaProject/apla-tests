@@ -2,8 +2,7 @@ import time
 import os
 import json
 
-from libs import actions
-from libs import tools
+from libs import actions, tools
 
 def isInBlock(call, url, token):
     if "hash" in call:
