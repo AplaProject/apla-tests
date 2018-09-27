@@ -8,10 +8,10 @@ from libs import actions, db, tools
 
 class TestSystemContracts():
     config = tools.read_config("nodes")
-    url = config["1"]["url"]
+    url = config[0]["url"]
     wait = tools.read_config("test")["wait_tx_status"]
-    prKey = config["1"]['private_key']
-    db = config["1"]["db"]
+    prKey = config[0]['private_key']
+    db = config[0]["db"]
     data = actions.login(url, prKey, 0)
     token = data["jwtToken"]
 

@@ -55,10 +55,12 @@ def compare_db(config):
         dbInformation.append(db.get_count_DB_objects(config[i]["db"]))
         dbInf = []
         for key in dbInformation[i]:
+            print(key)
             dbInf.append(dbInformation[i][key])
         if(i > 0):
             if dbInf[i-1] != dbInf[i]:
-                print("Errorin db: Different info about " + key)
+                print("Errorin db: Different info about " + key + str(dbInf[i-1]) +\
+                       " != " + str(dbInf[i]) + " current node is " + str(i))
                 return False
         i += 1
     return True
