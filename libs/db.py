@@ -61,13 +61,11 @@ def get_ecosys_tables1(db):
     return list
 
 def get_ecosys_tables(url, token):
-    tables = api.tables(url, token, 100)
+    tables = api.tables(url, token, 100)['list']
     print("tables", tables)
     list = []
-    i = 0
-    while i < len(tables):
-        list.append(tables[i][0])
-        i = i + 1
+    for table in tables:
+        list.append(table['name'])
     return list
 
 #simvolio api rollback
