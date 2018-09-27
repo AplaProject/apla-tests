@@ -3,8 +3,6 @@ import json
 import random
 import string
 
-import libs.actions
-
 def json_to_list(js):
     fullList = []
     list = []

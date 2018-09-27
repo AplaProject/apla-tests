@@ -1,7 +1,6 @@
 import unittest
 
-from libs import actions
-from libs import tools
+from libs import actions, tools
 
 
 class TestMultiApi():

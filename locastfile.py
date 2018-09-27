@@ -1,6 +1,5 @@
 from locust import HttpLocust, TaskSet, task
-from libs import actions
-from libs import tools
+from libs import actions, tools
 
 class WebsiteTasks(TaskSet):
     def on_start(self):
