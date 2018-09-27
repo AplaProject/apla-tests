@@ -10,40 +10,40 @@ class TestApi():
     config = tools.read_config("nodes")
     url = config[1]["url"]
     wait = tools.read_config("test")["wait_tx_status"]
-    prKey = config[0]['private_key']
-    data = actions.login(url, prKey, 0)
+    pr_key = config[0]['private_key']
+    data = actions.login(url, pr_key, 0)
     token = data["jwtToken"]
 
     @classmethod
     def setup_class(self):
         self.unit = unittest.TestCase()
 
-    def assert_tx_in_block(self, result, jwtToken):
+    def assert_tx_in_block(self, result, jwt_token):
         self.unit.assertIn("hash", result)
         hash = result['hash']
-        status = actions.tx_status(self.url, self.wait, hash, jwtToken)
+        status = actions.tx_status(self.url, self.wait, hash, jwt_token)
         if status['blockid'] > 0:
             self.unit.assertNotIn(json.dumps(status), 'errmsg')
             return status["blockid"]
         else:
             return status["errmsg"]["error"]
 
-    def check_get_api(self, endPoint, data, keys):
-        end = self.url + endPoint
+    def check_get_api(self, end_point, data, keys):
+        end = self.url + end_point
         result = actions.call_get_api(end, data, self.token)
         for key in keys:
             self.unit.assertIn(key, result)
         return result
 
-    def check_post_api(self, endPoint, data, keys):
-        end = self.url + endPoint
+    def check_post_api(self, end_point, data, keys):
+        end = self.url + end_point
         result = actions.call_post_api(end, data, self.token)
         for key in keys:
             self.unit.assertIn(key, result)
         return result
             
-    def get_error_api(self, endPoint, data):
-        end = self.url + endPoint
+    def get_error_api(self, end_point, data):
+        end = self.url + end_point
         result = actions.call_get_api(end, data, self.token)
         print("result", result)
         error = result["error"]
@@ -51,7 +51,7 @@ class TestApi():
         return error, message
 
     def call(self, name, data):
-        resp = actions.call_contract(self.url, self.prKey, name, data, self.token)
+        resp = actions.call_contract(self.url, self.pr_key, name, data, self.token)
         resp = self.assert_tx_in_block(resp, self.token)
         return resp
 
@@ -71,8 +71,8 @@ class TestApi():
 
     def test_get_param_ecosystem(self):
         asserts = ["list"]
-        ecosysNum = "1"
-        self.check_get_api("/ecosystemparams/?ecosystem="+ecosysNum, "", asserts)
+        ecosys_num = "1"
+        self.check_get_api("/ecosystemparams/?ecosystem="+ecosys_num, "", asserts)
 
     def test_get_param_current_ecosystem(self):
         asserts = ["list"]
@@ -82,7 +82,7 @@ class TestApi():
         asserts = ["list"]
         names = "founder_account,new_table,changing_tables"
         res = self.check_get_api("/ecosystemparams/?names="+names, "", asserts)
-        mustBe = dict(count=3,
+        must_be = dict(count=3,
                       par1="founder_account",
                       par2="new_table",
                       par3="changing_tables")
@@ -90,7 +90,7 @@ class TestApi():
                       par1=res["list"][0]["name"],
                       par2=res["list"][1]["name"],
                       par3=res["list"][2]["name"])
-        self.unit.assertDictEqual(actual, mustBe, "test_get_params_ecosystem_with_names is failed!")
+        self.unit.assertDictEqual(actual, must_be, "test_get_params_ecosystem_with_names is failed!")
 
     def test_get_parametr_of_current_ecosystem(self):
         asserts = ["id", "name", "value", "conditions"]
@@ -108,19 +108,19 @@ class TestApi():
         self.check_get_api("/tables", data, asserts)
 
     def test_get_table_information(self):
-        dictNames = {}
-        dictNamesAPI = {}
+        dict_names = {}
+        dict_names_api = {}
         data = {}
         tables = db.get_ecosys_tables(self.url, self.token)
         for table in tables:
             if "table" not in table:
-                tableInfo = actions.call_get_api(self.url + "/table/" + table, data, self.token)
-                if "name" in str(tableInfo):
-                    dictNames[table] = table
-                    dictNamesAPI[table] = tableInfo["name"]
+                table_info = actions.call_get_api(self.url + "/table/" + table, data, self.token)
+                if "name" in str(table_info):
+                    dict_names[table] = table
+                    dict_names_api_i[table] = table_info["name"]
                 else:
-                    self.unit.fail("Answer from API /table/" + table + " is: " + str(tableInfo))
-        self.unit.assertDictEqual(dictNamesAPI, dictNames,
+                    self.unit.fail("Answer from API /table/" + table + " is: " + str(table_info))
+        self.unit.assertDictEqual(dict_names_api, dict_names,
                              "Any of API tableInfo gives incorrect data")
         
     def test_get_incorrect_table_information(self):
@@ -314,17 +314,17 @@ class TestApi():
         res = self.call("NewEcosystem", data)
         self.unit.assertGreater(int(res), 0,
                            "BlockId is not generated: " + str(res))
-        ecosysNum = actions.call_get_api(self.url + "/ecosystems/", "", self.token)["number"]
+        ecosys_num = actions.call_get_api(self.url + "/ecosystems/", "", self.token)["number"]
         # login founder in new ecosystem
-        data2 = actions.login(self.url, self.prKey, 0, ecosysNum)
+        data2 = actions.login(self.url, self.pr_key, 0, ecosys_num)
         token2 = data2["jwtToken"]
         # create page in new ecosystem
         pageName = "Page_" + tools.generate_random_name()
-        pageText = "Page in "+str(ecosysNum)+" ecosystem"
+        pageText = "Page in "+str(ecosys_num)+" ecosystem"
         pageValue = "Span("+pageText+")"
         data = {"Name": pageName, "Value": pageValue, "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
-        resp = actions.call_contract(self.url, self.prKey, "@1NewPage", data, token2)
+        resp = actions.call_contract(self.url, self.pr_key, "@1NewPage", data, token2)
         status = actions.tx_status(self.url, self.wait, resp["hash"], token2)
         self.unit.assertGreater(int(status["blockid"]), 0,"BlockId is not generated: " + str(status))
         # create menu in new ecosystem
@@ -332,19 +332,19 @@ class TestApi():
         menuTitle = "Test menu"
         data = {"Name": menuName, "Value": "MenuItem(Title:\""+menuTitle+"\")", "ApplicationId": 1,
                 "Conditions": "true"}
-        resp = actions.call_contract(self.url, self.prKey, "@1NewMenu", data, token2)
+        resp = actions.call_contract(self.url, self.pr_key, "@1NewMenu", data, token2)
         status = actions.tx_status(self.url, self.wait, resp["hash"], token2)
         self.unit.assertGreater(int(status["blockid"]), 0, "BlockId is not generated: " + str(status))
         # test
         data = ""
         asserts = ["tree"]
-        resPage = self.check_post_api("/content/page/@" + str(ecosysNum) + pageName, data, asserts)
-        resMenu = self.check_post_api("/content/menu/@" + str(ecosysNum) + menuName, data, asserts)
-        mustBe = dict(pageText=pageText,
+        resPage = self.check_post_api("/content/page/@" + str(ecosys_num) + pageName, data, asserts)
+        resMenu = self.check_post_api("/content/menu/@" + str(ecosys_num) + menuName, data, asserts)
+        must_be = dict(pageText=pageText,
                       menu=menuTitle)
         expectedValue = dict(pageText=resPage["tree"][0]["children"][0]["text"],
                       menu=resMenu["tree"][0]["attr"]["title"])
-        self.unit.assertEqual(mustBe, expectedValue, "Dictionaries are different!")
+        self.unit.assertEqual(must_be, expectedValue, "Dictionaries are different!")
 
     def test_get_back_api_version(self):
         asserts = ["."]
@@ -450,18 +450,18 @@ class TestApi():
 
     def is_node_owner_true(self):
         data = {}
-        resp = actions.call_contract(self.url, self.prKey, "NodeOwnerCondition", data, self.token)
+        resp = actions.call_contract(self.url, self.pr_key, "NodeOwnerCondition", data, self.token)
         status = actions.tx_status(self.url, self.wait, resp["hash"], self.token)
         self.unit.assertGreater(int(status["blockid"]), 0,
                            "BlockId is not generated: " + str(status))
         
     def is_node_owner_false(self):
         keys = tools.read_config("keys")
-        prKey2 = keys["key1"]
-        data2 = actions.login(self.url, prKey2, 0)
+        pr_key2 = keys["key1"]
+        data2 = actions.login(self.url, pr_key2, 0)
         token2 = data2["jwtToken"]
         data = {}
-        resp = actions.call_contract(self.url, prKey2, "NodeOwnerCondition", data, token2)
+        resp = actions.call_contract(self.url, pr_key2, "NodeOwnerCondition", data, token2)
         status = actions.tx_status(self.url, self.wait, resp["hash"], token2)
         self.unit.assertEqual(status["errmsg"]["error"],
                          "Sorry, you do not have access to this action.",
@@ -476,7 +476,7 @@ class TestApi():
         self.unit.assertTrue(res, "Wallet for new user didn't created")
         
     def test_login2(self):
-        isOne = False
+        is_one = False
         keys = tools.read_fixtures("keys")
         data1 = actions.login(self.url, keys["key3"], 0)
         time.sleep(5)
@@ -496,23 +496,23 @@ class TestApi():
             file = f.read()
         files = {'Data': file}
         data = {"Name": name, "ApplicationId": 1, "DataMimeType":"image/jpeg"}
-        resp = actions.call_contract_with_files(self.url, self.prKey, "UploadBinary", data,
+        resp = actions.call_contract_with_files(self.url, self.pr_key, "UploadBinary", data,
                                                 files, self.token)
         res = self.assert_tx_in_block(resp, self.token)
         self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # find last added file
         asserts = ["count"]
         res = self.check_get_api("/list/binaries", "", asserts)
-        lastRec = res["count"]
+        last_rec = res["count"]
         # find founder ID
         asserts = ["list"]
         res = self.check_get_api("/list/members", "", asserts)
         # iterating response elements
         i = 0
-        founderID = ""
+        founder_id = ""
         while i < len(res['list']):
             if res['list'][i]['member_name'] == "founder":
-                founderID = res['list'][i]['id']
+                founder_id = res['list'][i]['id']
             i += 1
         # change column permissions
         data = {"TableName": "members",
@@ -530,14 +530,14 @@ class TestApi():
                 DBUpdate("members", %s, {image_id: "%s"})
             }
         }
-        """ % (founderID, lastRec)
+        """ % (founder_id, last_rec)
         code, name = tools.generate_name_and_code(code)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         data = {}
-        resp = actions.call_contract(self.url, self.prKey, name, data, self.token)
+        resp = actions.call_contract(self.url, self.pr_key, name, data, self.token)
         res = self.assert_tx_in_block(resp, self.token)
         self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # rollback changes column permissions
@@ -548,11 +548,11 @@ class TestApi():
         res = self.call("EditColumn", data)
         self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # test
-        ecosystemID = "1"
+        ecosystem_id = "1"
         asserts = ""
         data = ""
-        avaURL = self.url + "/avatar/" + ecosystemID + "/" + founderID
-        res = actions.call_get_api_with_full_response(avaURL, data, asserts)
+        avatar_url = self.url + "/avatar/" + ecosystem_id + "/" + founder_id
+        res = actions.call_get_api_with_full_response(avatar_url, data, asserts)
         msg = "Content-Length is different!"
         self.unit.assertIn("71926", str(res.headers["Content-Length"]),msg)
 
@@ -564,23 +564,23 @@ class TestApi():
             file = f.read()
         files = {'Data': file}
         data = {"Name": name, "ApplicationId": 1, "DataMimeType":"image/jpeg"}
-        resp = actions.call_contract_with_files(self.url, self.prKey, "UploadBinary", data,
+        resp = actions.call_contract_with_files(self.url, self.pr_key, "UploadBinary", data,
                                                 files, self.token)
         res = self.assert_tx_in_block(resp, self.token)
         self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + str(res))
         # find last added file
         asserts = ["count"]
         res = self.check_get_api("/list/binaries", "", asserts)
-        lastRec = res["count"]
+        last_rec = res["count"]
         # find founder ID
         asserts = ["list"]
         res = self.check_get_api("/list/members", "", asserts)
         # iterating response elements
         i = 0
-        founderID = ""
+        founder_id = ""
         while i < len(res['list']):
             if res['list'][i]['member_name'] == "founder":
-                founderID = res['list'][i]['id']
+                founder_id = res['list'][i]['id']
             i += 1
         # change column permissions
         data = {"TableName": "members",
@@ -598,14 +598,14 @@ class TestApi():
                        DBUpdate("members", %s, {image_id: "%s"})
                    }
                }
-               """ % (founderID, lastRec)
+               """ % (founder_id, last_rec)
         code, name = tools.generate_name_and_code(code)
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         data = {}
-        resp = actions.call_contract(self.url, self.prKey, name, data, self.token)
+        resp = actions.call_contract(self.url, self.pr_key, name, data, self.token)
         res = self.assert_tx_in_block(resp, self.token)
         self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # rollback changes column permissions
@@ -616,9 +616,9 @@ class TestApi():
         res = self.call("EditColumn", data)
         self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # test
-        ecosystemID = "1"
-        avaURL = self.url + "/avatar/" + ecosystemID + "/" + founderID
-        resp = requests.get(avaURL)
+        ecosystem_id = "1"
+        avatar_url = self.url + "/avatar/" + ecosystem_id + "/" + founder_id
+        resp = requests.get(avatar_url)
         msg = "Content-Length is different!"
         self.unit.assertIn("71926", str(resp.headers["Content-Length"]), msg)
 
@@ -648,19 +648,19 @@ class TestApi():
         res = self.call("NewPage", data)
         self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + str(res))
         asserts = ["hash"]
-        authRes = self.check_post_api("/content/hash/" + name, "", asserts)
-        notAuthRes = requests.post(self.url + "/content/hash/" + name)
-        notAuthRes = notAuthRes.json()
+        auth_res = self.check_post_api("/content/hash/" + name, "", asserts)
+        not_auth_res = requests.post(self.url + "/content/hash/" + name)
+        not_auth_res = not_auth_res.json()
         page = "not_exist_page_xxxxxxxxx"
         notAuthResNotExist = requests.post(self.url + "/content/hash/" + page)
         notAuthResNotExist = notAuthResNotExist.json()
-        mustBe = dict(authRes=True,
+        must_be = dict(authRes=True,
                       notAuthRes=True,
                       msg="Page not found")
-        actual = dict(authRes=is_hash_not_empty(authRes),
-                      notAuthRes=is_hash_not_empty(notAuthRes),
+        actual = dict(authRes=is_hash_not_empty(auth_res),
+                      notAuthRes=is_hash_not_empty(not_auth_res),
                       msg=notAuthResNotExist["msg"])
-        self.unit.assertDictEqual(mustBe, actual, "Not all assertions passed in test_content_hash")
+        self.unit.assertDictEqual(must_be, actual, "Not all assertions passed in test_content_hash")
 
     def test_get_ecosystem_name(self):
         id = 1
