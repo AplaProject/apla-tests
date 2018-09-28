@@ -39,10 +39,10 @@ def compare_nodes(config):
 def compare_db(config, url, token):
     nodes = len(config)
     dbInformation = []
-    firstDb = db.get_count_DB_objects(config[0]["db"], url, token)
+    firstDb = db.get_count_DB_objects(url, token)
     i = 1 
     while i < nodes:
-        currentDb = db.get_count_DB_objects(config[i]["db"], url, token)
+        currentDb = db.get_count_DB_objects(url, token)
         if currentDb != firstDb:
             print("Errorin db: Different info about " + str(currentDb) +\
                   " != " + str(firstDb) + " current node is " + str(i))

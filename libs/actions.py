@@ -40,7 +40,6 @@ def prepare_tx_with_files(url, prKey, entity, jvtToken, data, files):
     resp = requests.post(url + '/prepare/' + entity,
                         data=data, headers=heads, files=files)
     result = resp.json()
-    print("result", result)
     signature = sign(prKey, result['forsign'])
     return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
@@ -87,17 +86,11 @@ def tx_status(url, sleepTime, hsh, jvtToken):
         time.sleep(1)
         resp = requests.get(urlEnd, headers={'Authorization': jvtToken})
         jresp = resp.json()
-        print(jresp)
         status = {}
         if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
-            print("if")
             break
         else:
-            print("else")
-            sec = sec + 1
-            print(sec)   
-    print("status", jresp)
-    print("blockid", jresp['blockid'])
+            sec = sec + 1  
     if 'errmsg' not in jresp and jresp['blockid'] == '':
         return {"blockid": None, "result": None, "error": None}     
     if 'errmsg' not in jresp and int(jresp['blockid']) > 0:

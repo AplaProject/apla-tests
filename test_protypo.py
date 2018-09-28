@@ -1,6 +1,7 @@
 import unittest
 import json
 import os
+import pytest
 
 from libs import actions, tools, db
 
@@ -630,8 +631,7 @@ class TestPrototipo():
         self.assert_tx_in_block(resp, self.token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = db.get_founder_id(self.db2)
-        lastRec = actions.get_count(self.url, "binaries", self.token)
+        MemberID = actions.get_parameter_value(self.url, 'founder_account', self.token)
         content = self.check_page("Binary(Name: " + name + ", AppID: " + appID + ", MemberID: " + MemberID + ")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
         self.uni.assertEqual("/data/1_binaries/" + lastRec + "/data/b40ad01eacc0312f6dd1ff2a705756ec",
@@ -671,7 +671,7 @@ class TestPrototipo():
         self.assert_tx_in_block(resp, self.token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = db.get_founder_id(self.db2)
+        MemberID = actions.get_parameter_value(self.url, 'founder_account', self.token)
         lastRec = actions.get_count(self.url, "binaries", self.token)
         content = self.check_page("Image(Binary(Name: " + name + ", AppID: " + appID + ", MemberID: " + MemberID + "))")
         partContent = content["tree"][0]
