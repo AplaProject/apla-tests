@@ -4,7 +4,6 @@ import time
 
 from libs import actions, tools, db
 
-
 class TestLimits():
     conf = tools.read_config("nodes")
     contracts = tools.read_fixtures("contracts")
@@ -79,10 +78,10 @@ class TestLimits():
         time.sleep(5)
         maxBlock = actions.get_max_block_id(self.conf[1]["url"], self.token)
         print("maxBlock = ", maxBlock)
-        isOneOrTwo = db.is_count_tx_in_block(self.conf[1]["db"], maxBlock, 1)
+        is_one_or_two = db.is_count_tx_in_block(self.conf[1]["db"], maxBlock, 1)
         self.update_sys_param("max_block_user_tx ", str(max_block_user_tx ))
         time.sleep(30)
-        self.unit.assertTrue(isOneOrTwo,
+        self.unit.assertTrue(is_one_or_two,
                         "One of block contains more than 2 transaction")
         
         
@@ -99,7 +98,7 @@ class TestLimits():
                                 "NewContract", data, self.token)
             i = i + 1
         time.sleep(5)
-        maxBlock = actions.get_max_block_id(self.conf[1]["url"], self.token)
-        self.unit.assertTrue(db.is_count_tx_in_block(self.conf[1]["db"], maxBlock, 2),
+        max_block = actions.get_max_block_id(self.conf[1]["url"], self.token)
+        self.unit.assertTrue(db.is_count_tx_in_block(self.conf[1]["db"], max_block, 2),
                         "One of block contains more than 2 transaction")
         self.update_sys_param("max_tx_count ", str(max_tx_count))
