@@ -114,9 +114,6 @@ class TestRollback1():
         dataEdit["NewColumnPerm"] = "ContractConditions(\"MainCondition\")"
         res = self.call("EditTable", dataEdit)
 
-    def get_count_table(self, name):
-        return db.get_count_table(self.dbNode, name)
-
     def add_binary(self):
         name = "image_" + tools.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
@@ -381,8 +378,8 @@ class TestRollback1():
         with open(file, 'w') as fconf:
             json.dump(dbUserTableInfo, fconf)
         # Save to file all tables state
-        dbInformation = db.get_count_DB_objects(self.dbNode)
-        dbInformation = db.get_count_DB_objects(self.dbNode)
+        dbInformation = db.get_count_DB_objects(self.url, self.token)
+        dbInformation = db.get_count_DB_objects(self.url, sel.token)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'w') as fconf:
             json.dump(dbInformation, fconf)

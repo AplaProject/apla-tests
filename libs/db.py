@@ -47,19 +47,8 @@ def is_count_tx_in_block(db, maxBlockId, countTx):
         i = i + 1
     return True
 
-#api
-#Returns list of all ecosystem tables
-#can be changed to api.tables
-def get_ecosys_tables1(db):
-    request = "select table_name from INFORMATION_SCHEMA.TABLES WHERE table_schema='public' AND table_name LIKE '1_%'"
-    tables = submit_query(request, db)
-    list = []
-    i = 0
-    while i < len(tables):
-        list.append(tables[i][0])
-        i = i + 1
-    return list
 
+#done
 def get_ecosys_tables(url, token):
     tables = api.tables(url, token, 100)['list']
     print("tables", tables)
@@ -67,20 +56,6 @@ def get_ecosys_tables(url, token):
     for table in tables:
         list.append(table['name'])
     return list
-
-#simvolio api rollback
-#returns number of records in the table
-#can be changed to api.table
-def get_count_table(db, table):
-    request = "SELECT count(*) FROM \"" + table + "\""
-    return submit_query(request, db)
-
-#protypo
-#can be changed to actions.get_object_id
-def get_founder_id(db):
-    request = "SELECT value FROM \"1_parameters\" WHERE name = 'founder_account'"
-    result = submit_query(request, db)
-    return result[0][0]
 
 #system_contracts
 def get_export_app_data(db, app_id, member_id):
@@ -95,16 +70,8 @@ def get_import_app_data(db, member_id):
     result = submit_query(request, db)
     return cursor.fetchall()[0][0]
 
-#block_chain compare_nodes
-def get_count_DB_objects(db, url, token):
-    tablesCount = {}
-    tables = get_ecosys_tables(url, token)
-    for table in tables:
-        tablesCount[table[2:]] = get_count_table(db, table)
-    return tablesCount
-
-#block_chain compare_nodes
-def get_count_DB_objects(db, url, token):
+#done
+def get_count_DB_objects(url, token):
     tables = {}
     list = api.tables(url, token)['list']
     for table in list:
@@ -127,6 +94,7 @@ def get_user_table_state(db, userTable):
     table = {}
     for i in range(len(col)):
         table[col[i][0]] = res[0][i]
+    print("table -----------", table)
     return table
 
 #block_chain

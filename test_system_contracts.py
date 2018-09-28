@@ -347,7 +347,6 @@ class TestSystemContracts():
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_menu(self):
-        countMenu = db.get_count_table(self.db, "1_menu")
         name = "Menu_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
                 "Conditions": "true"}
@@ -1391,7 +1390,7 @@ class TestSystemContracts():
         appID = 1
         data = {}
         resExport = self.call("Export", data)
-        founderID = db.get_founder_id(self.db)
+        founderID = actions.get_parameter_value(self.url, 'founder_account', self.token)
         exportAppData = db.get_export_app_data(self.db, appID, founderID)
         jsonApp = str(exportAppData, encoding='utf-8')
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
@@ -1419,7 +1418,7 @@ class TestSystemContracts():
                            "BlockId is not generated: " + str(resImportUpload))
 
     def test_ei4_Import(self):
-        founderID = db.get_founder_id(self.db)
+        founderID = actions.get_parameter_value(self.url, 'founder_account', self.token)
         importAppData = db.get_import_app_data(self.db, founderID)
         importAppData = importAppData['data']
         contractName = "Import"

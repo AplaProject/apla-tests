@@ -35,44 +35,9 @@ class TestBlockChain():
         res = actions.call_contract(url, prKey, "NewMenu", data, self.token)
         return actions.get_count(url, "menu", self.token)
     
-    def test_block_chain(self):
-        ts_count = 30
-        i = 1
-        amountsB = db.get_user_token_amounts(self.db1)
-        sumAmountsBefore = sum(amount[0] for amount in amountsB)
-        while i < ts_count:
-            contName = self.create_contract(self.config1["url"],
-                                            self.config1['private_key'])
-            i = i + 1
-            time.sleep(1)
-        time.sleep(120)
 
-        amountsAfter = db.get_user_token_amounts(self.db1)
-        expect = {"isTheSameNodes": True, "isTheSameDB": True,
-                      "sumAmounts": sumAmountsBefore}
-        dict = {"isTheSameNodes": check.compare_nodes(self.fullConfig),
-                "isTheSameDB": check.compare_db(self.fullConfig, self.config1["url"], self.token),
-                      "sumAmounts": sum(amount[0] for amount in amountsAfter)}   
-        self.uni.assertDictEqual(expect, dict, "Error in test_block_chain")
         
-    def test_block_chain_edit(self):
-        ts_count = 100
-        id = self.new_menu(self.config1["url"], self.config1['private_key'])
-        time.sleep(10)
-        i = 1
-        amountsB = db.get_user_token_amounts(self.db1)
-        sumAmountsBefore = sum(amount[0] for amount in amountsB)
-        while i < ts_count:
-            self.edit_menu(self.config1["url"], self.config1['private_key'], id)
-            i = i + 1
-        time.sleep(120)
-        
-        amountsAfter = db.get_user_token_amounts(self.db1)
-        expect = {"isTheSameNodes": True, "isTheSameDB": True,
-                      "sumAmounts": sumAmountsBefore}
-        dict = {"isTheSameNodes": check.compare_nodes(self.fullConfig),
-                "isTheSameDB": check.compare_db(self.fullConfig, self.config1["url"], self.token),
-                      "sumAmounts": sum(amount[0] for amount in amountsAfter)}   
-        self.uni.assertDictEqual(expect, dict, "Error in test_block_chain_edit")
-        
+    def test_db(self):
+        tables = db.get_user_table_state(self.config1['db'], "1_contracts")
+        print(tables)
     
