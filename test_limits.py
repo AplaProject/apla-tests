@@ -2,7 +2,7 @@ import unittest
 import json
 import time
 
-from libs import actions, tools, db
+from libs import actions, tools, db, api
 
 class TestLimits():
     conf = tools.read_config("nodes")
@@ -40,7 +40,9 @@ class TestLimits():
                            str(res))
         
     def test_max_tx_size(self):
-        max_tx_size = db.get_system_parameter(self.conf[0]["db"], "max_tx_size")
+        max_tx_size = actions.get_sysparam_value(self.conf[1]["url"], self.token,
+                                                 'max_tx_size')
+        print(max_tx_size)
         self.update_sys_param("max_tx_size", "500")
         name = "cont" + tools.generate_random_name()
         code = "contract " + name + self.contracts["limits"]["code"]
@@ -51,7 +53,7 @@ class TestLimits():
         self.update_sys_param("max_tx_size", str(max_tx_size))
         
     def test_max_block_size(self):
-        max_block_size = db.get_system_parameter(self.conf[0]["db"], "max_block_size")
+        max_block_size = actions.get_sysparam_value(self.conf[1]["url"], self.token, 'max_block_size')
         self.update_sys_param("max_block_size", "500")
         name = "cont" + tools.generate_random_name()
         code = "contract " + name + self.contracts["limits"]["code"]
@@ -63,7 +65,8 @@ class TestLimits():
         time.sleep(30)
       
     def test_max_block_user_tx(self):
-        max_block_user_tx = db.get_system_parameter(self.conf[0]["db"], "max_block_user_tx")
+        max_block_user_tx = actions.get_sysparam_value(self.conf[1]["url"],
+                                             self.token, 'max_block_user_tx')
         self.update_sys_param("max_block_user_tx", "1")
         time.sleep(30)
         i = 1
@@ -86,7 +89,7 @@ class TestLimits():
         
         
     def test_max_tx_count (self):
-        max_tx_count = db.get_system_parameter(self.conf[0]["db"], "max_tx_count")
+        max_tx_count = actions.get_sysparam_value(self.conf[0]["url"], self.token, 'max_tx_count')
         self.update_sys_param("max_tx_count", "2")
         i = 1
         while i < 10: 
