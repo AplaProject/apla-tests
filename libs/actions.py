@@ -4,6 +4,7 @@ import time
 
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
+from libs import api
 
 def get_uid(url):
     resp = requests.get(url + '/getuid')
@@ -187,6 +188,10 @@ def get_parameter_value(url, name, token):
     endPoint = url + "/ecosystemparam/" + name
     res = call_get_api(endPoint, "", token)
     return res["value"]
+
+def get_sysparam_value(url, token, name):
+    list = api.systemparams(url, token, name)
+    return list['list'][0]['value']
 
 def get_content(url, type, name, lang, appId, token):
     if(lang != ""):

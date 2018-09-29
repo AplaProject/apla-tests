@@ -109,17 +109,10 @@ def get_blockchain_hash(db, maxBlockId):
     return submit_query(request, db)
 
 #limits
-#the same function presents
 def get_system_parameter(db, parameter):
     request = "select value from \"1_system_parameters\" WHERE name='" + parameter + "'"
     value = submit_query(request, db)
     return value[0][0]
-
-#can be changed to api.systemparams
-def get_system_parameter_value(db, name):
-    request = "SELECT value FROM \"1_system_parameters\" WHERE name = '" + name + "'"
-    result = submit_query(request, db)
-    return result[0][0]
 
 #cost
 #can be changed to api.systemparams
