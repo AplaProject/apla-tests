@@ -272,6 +272,12 @@ def getCountTable(dbHost, dbName, login, password, table):
 	cursor.execute("SELECT count(*) FROM \"" + table + "\"")
 	return cursor.fetchall()[0][0]
 
+def getCountTableFromEcosystem(dbHost, dbName, login, password, table, ecosys=1):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT count(*) FROM \"" + table + "\" WHERE ecosystem="+str(ecosys))
+	return cursor.fetchall()[0][0]
+
 def getMaxIdFromTable(dbHost, dbName, login, password, table):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
