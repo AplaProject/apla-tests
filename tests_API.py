@@ -148,15 +148,18 @@ class ApiTestCase(unittest.TestCase):
                                        self.config["1"]["dbName"],
                                        self.config["1"]["login"],
                                        self.config["1"]["pass"])
+        exception_table = [
+            '1_menu',
+            '1_blocks',
+            '1_sections',
+            '1_parameters',
+            '1_pages',
+            '1_tables',
+            '1_contracts',
+        ]
         for table in tables:
             tableData = funcs.call_get_api(url + "/list/" + table[2:], data, token)
-            if table == '1_menu' \
-                    or table == '1_blocks' \
-                    or table == '1_sections' \
-                    or table == '1_parameters' \
-                    or table == '1_pages' \
-                    or table == '1_tables' \
-                    or table == '1_contracts':
+            if table in exception_table:
                 count = utils.getCountTableFromEcosystem(self.config["1"]["dbHost"],
                                                          self.config["1"]["dbName"],
                                                          self.config["1"]["login"],
