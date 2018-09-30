@@ -399,7 +399,7 @@
 		"content": ""
 	},
     "dbfindCount":{
-		"code": "DBFind(Name: contracts, Source: con).Count(cnt) Em(#cnt#)",
+		"code": "DBFind(Name: contracts, Source: con).Where({ecosystem:1}).Count(cnt) Em(#cnt#)",
 		"menu": "default_menu",
 		"content": ""
 	},
