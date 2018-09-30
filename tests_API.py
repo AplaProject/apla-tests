@@ -19,9 +19,7 @@ class ApiTestCase(unittest.TestCase):
         token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
-        self.assertIn("hash", result)
-        hash = result['hash']
-        status = utils.txstatus(url, pause, hash, jwtToken)
+        status = utils.txstatus(url, pause, result, jwtToken)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return status["blockid"]

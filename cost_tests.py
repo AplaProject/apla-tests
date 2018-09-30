@@ -45,7 +45,7 @@ class CostTestCase(unittest.TestCase):
         result = utils.call_contract(conf["1"]["url"], conf["1"]["private_key"],
                                      "NewContract", data, tokenCreater)
         status = utils.txstatus(conf["1"]["url"], conf["1"]["time_wait_tx_in_block"],
-                                result['hash'], tokenCreater)
+                                result, tokenCreater)
         print(status)
         
     def activateContract(self):
@@ -56,7 +56,7 @@ class CostTestCase(unittest.TestCase):
         result = utils.call_contract(conf["2"]["url"], conf["1"]["private_key"],
                                      "ActivateContract", data, tokenCreater)
         status = utils.txstatus(conf["2"]["url"], conf["1"]["time_wait_tx_in_block"],
-                                result['hash'], tokenCreater)
+                                result, tokenCreater)
         
     def deactivateContract(self):
         dataCreater = utils.login(conf["1"]["url"],conf["1"]["private_key"], 0)
@@ -66,7 +66,7 @@ class CostTestCase(unittest.TestCase):
         result = utils.call_contract(conf["1"]["url"], conf["1"]["private_key"],
                                      "DeactivateContract", data, tokenCreater)
         status = utils.txstatus(conf["1"]["url"], conf["1"]["time_wait_tx_in_block"],
-                                result['hash'], tokenCreater) 
+                                result, tokenCreater) 
             
     def isCommissionsInHistory(self, nodeCommision, idFrom, platformaCommission, node):
         isNodeCommission = utils.isCommissionInHistory(conf["1"]["dbHost"],
@@ -118,7 +118,7 @@ class CostTestCase(unittest.TestCase):
         res = utils.call_contract(conf["2"]["url"], keys["key2"],
                                   "CostContract", {"State": 1}, tokenRunner)
         result = utils.txstatus(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
-                                res["hash"], tokenRunner)
+                                res, tokenRunner)
         time.sleep(10)
         node = utils.get_block_gen_node(conf["1"]["dbHost"], conf["1"]["dbName"],
                                         conf["1"]["login"], conf["1"] ["pass"],
@@ -191,7 +191,7 @@ class CostTestCase(unittest.TestCase):
         res = utils.call_contract(conf["2"]["url"], keys["key2"],
                                   "CostContract", {"State": 1}, tokenRunner)
         result = utils.txstatus(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
-                                res["hash"], tokenRunner)
+                                res, tokenRunner)
         time.sleep(10)
         node = utils.get_block_gen_node(conf["1"]["dbHost"], conf["1"]["dbName"],
                                         conf["1"]["login"], conf["1"] ["pass"],
@@ -273,9 +273,8 @@ class CostTestCase(unittest.TestCase):
                                                          pubRunner)
         dataRunner = utils.login(conf["2"]["url"],keys["key2"], 0)
         tokenRunner = dataRunner ["jwtToken"]
-        res = utils.call_contract(conf["2"]["url"], keys["key2"],
+        hash = utils.call_contract(conf["2"]["url"], keys["key2"],
                                   "CostContract", {"State": 0}, tokenRunner)
-        hash = res["hash"]
         result = utils.txstatus(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
                                 hash, tokenRunner)
         time.sleep(10)
@@ -355,10 +354,9 @@ class CostTestCase(unittest.TestCase):
                                                          pubRunner)
         dataRunner = utils.login(conf["2"]["url"],keys["key2"], 0)
         tokenRunner = dataRunner ["jwtToken"]
-        res = utils.call_contract(conf["2"]["url"], keys["key2"],
+        hash = utils.call_contract(conf["2"]["url"], keys["key2"],
                                   "CostContract", {"State": 0}, tokenRunner)
         time.sleep(10)
-        hash = res["hash"]
         result = utils.txstatus(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
                                 hash, tokenRunner)
         balanceContractOwnerA = utils.get_balance_from_db(conf["1"]["dbHost"],

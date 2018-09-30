@@ -12,7 +12,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.config = config.getNodeConfig()
         global url, prKey,token, dbHost, dbName, login, pas
         self.contracts = config.readFixtures("contracts")
-        url = self.config["2"]["url"]
+        url = self.config["1"]["url"]
         prKey = self.config["1"]['private_key']
         dbHost = self.config["1"]["dbHost"]
         dbName = self.config["1"]['dbName']
@@ -22,11 +22,9 @@ class ContractFunctionsTestCase(unittest.TestCase):
         token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
-        self.assertIn("hash",  result)
         status = utils.txstatus(url,
                                 self.config["1"]["time_wait_tx_in_block"],
-                                result['hash'], jwtToken)
-        print(status)
+                                result, jwtToken)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
@@ -52,17 +50,16 @@ class ContractFunctionsTestCase(unittest.TestCase):
     def check_contract(self, sourse, checkPoint):
         code, name = self.generate_name_and_code(sourse)
         self.create_contract(code)
-        url = self.config["2"]["url"]
+        url = self.config["1"]["url"]
         prKey = self.config["1"]['private_key']
         token = self.data["jwtToken"]
         sleep = self.config["1"]["time_wait_tx_in_block"]
-        res = utils.call_contract(url, prKey, name, {}, token)
-        hash = res["hash"]
+        hash = utils.call_contract(url, prKey, name, {}, token)
         result = utils.txstatus(url, sleep, hash, token)
         self.assertIn(checkPoint, result["result"], "error")
 
     def call(self, name, data):
-        url = self.config["2"]["url"]
+        url = self.config["1"]["url"]
         prKey = self.config["1"]['private_key']
         token = self.data["jwtToken"]
         result = utils.call_contract(url, prKey, name, data, token)
@@ -74,7 +71,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
     def check_contract_with_data(self, sourse, data, checkPoint):
         code, name = self.generate_name_and_code(sourse)
         self.create_contract(code)
-        url = self.config["2"]["url"]
+        url = self.config["1"]["url"]
         prKey = self.config["1"]['private_key']
         token = self.data["jwtToken"]
         sleep = self.config["1"]["time_wait_tx_in_block"]
