@@ -5,7 +5,7 @@
 	},
     "dbFind":{
 		"code": "{ \n data {}\n conditions {}\n action { \n var res array\n var val map\n res = DBFind(\"pages\").Columns(\"name\").Where({id: \"1\"}).Order(\"id\")\n val = res[0]\n $result = val[\"name\"]\n }\n }",
-		"asert": "default"
+		"asert": "admin_index"
 	},
 	"toUpper":{
 		"code": "{ \n data {}\n conditions {}\n action { \n $result = ToUpper(\"Hello My Friends!\")\n }}",
@@ -30,10 +30,10 @@
 	},
     "dbRow":{
 		"code":"{\n data {}\n conditions {}\n action {\n var vals map\n vals = DBRow(\"pages\").Columns(\"name, menu\").Where({id: \"1\"})\n $result = vals[\"name\"]\n }\n }",
-		"asert": "default_page"
+		"asert": "admin_index"
 	},	
     "langRes":{
-		"code": "{\n data {}\n conditions {}\n action {\n $result=LangRes(1, \"test\", \"de\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n $result=LangRes(\"test\", \"de\")\n }\n }",
 		"asert":"test_de",
 		"information":"needs to create language resourse with name - test and localisacions:en- test_en, de- test_de"
 	},		
@@ -87,11 +87,11 @@
 	},
 	"one": {
 		"code": "{\n data {}\n conditions {}\n action {\n $result = DBFind(\"pages\").Columns(\"id,name\").WhereId(1).One(\"name\")\n } \n }",
-		"asert": "default_page"
+		"asert": "admin_index"
 	},
 	"row": {
 		"code": "{\n data {}\n conditions {}\n action {\n var ret map\n ret = DBFind(\"pages\").Columns(\"id,name\").WhereId(1).Row()\n $result = ret[\"name\"]\n } \n }",
-		"asert": "default_page"
+		"asert": "admin_index"
 	},
     "contains": {
 		"code": "{\n data {}\n conditions {}\n action {\n if Contains(\"Hello world\", `Hello`) {\n $result = \"Hello world\"\n }\n }\n }",

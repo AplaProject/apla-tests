@@ -8,6 +8,8 @@ import os
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
 
+NODE_COMISSION = 139680000000000000
+PLATFORM_COMISSION = 4320000000000000
 
 class CostTestCase(unittest.TestCase):
     @classmethod
@@ -130,8 +132,8 @@ class CostTestCase(unittest.TestCase):
                                                      conf["1"] ["pass"])
         summAfter = sum(summ[0] for summ in sumsAfter)
         aNodeBalance = self.getNodeBalances()
-        nodeCommission = 141620000000000000
-        platformaCommission = 4380000000000000
+        nodeCommission = NODE_COMISSION
+        platformaCommission = PLATFORM_COMISSION
         balanceRunnerA = utils.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                          conf["1"]["dbName"],
                                                          conf["1"]["login"],
@@ -202,8 +204,8 @@ class CostTestCase(unittest.TestCase):
                                                      conf["1"] ["pass"])
         summAfter = sum(summ[0] for summ in sumsAfter)
         aNodeBalance = self.getNodeBalances()
-        nodeCommission = 141620000000000000
-        platformaCommission = 4380000000000000
+        nodeCommission = NODE_COMISSION
+        platformaCommission = PLATFORM_COMISSION
         commission = nodeCommission + platformaCommission
         balanceRunnerA = utils.get_balance_from_db_by_pub(conf["1"]["dbHost"],
                                                          conf["1"]["dbName"],

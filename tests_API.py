@@ -81,15 +81,21 @@ class ApiTestCase(unittest.TestCase):
         asserts = ["list"]
         names = "founder_account,new_table,changing_tables"
         res = self.check_get_api("/ecosystemparams/?names="+names, "", asserts)
-        mustBe = dict(count=3,
-                      par1="founder_account",
-                      par2="new_table",
-                      par3="changing_tables")
-        actual = dict(count=len(res["list"]),
-                      par1=res["list"][0]["name"],
-                      par2=res["list"][1]["name"],
-                      par3=res["list"][2]["name"])
-        self.assertDictEqual(actual, mustBe, "test_get_params_ecosystem_with_names is failed!")
+        mustBe = [
+            "3",
+            "founder_account",
+            "new_table",
+            "changing_tables"
+        ]
+        actual = [
+            str(len(res["list"])),
+            res["list"][0]["name"],
+            res["list"][1]["name"],
+            res["list"][2]["name"]
+        ]
+        mustBe.sort()
+        actual.sort()
+        self.assertEqual(actual, mustBe, "test_get_params_ecosystem_with_names is failed!")
 
     def test_get_parametr_of_current_ecosystem(self):
         asserts = ["id", "name", "value", "conditions"]
@@ -142,12 +148,27 @@ class ApiTestCase(unittest.TestCase):
                                        self.config["1"]["dbName"],
                                        self.config["1"]["login"],
                                        self.config["1"]["pass"])
+        exception_table = [
+            '1_menu',
+            '1_blocks',
+            '1_sections',
+            '1_parameters',
+            '1_pages',
+            '1_tables',
+            '1_contracts',
+        ]
         for table in tables:
             tableData = funcs.call_get_api(url + "/list/" + table[2:], data, token)
-            count = utils.getCountTable(self.config["1"]["dbHost"],
-                                       self.config["1"]["dbName"],
-                                       self.config["1"]["login"],
-                                       self.config["1"]["pass"], table)
+            if table in exception_table:
+                count = utils.getCountTableFromEcosystem(self.config["1"]["dbHost"],
+                                                         self.config["1"]["dbName"],
+                                                         self.config["1"]["login"],
+                                                         self.config["1"]["pass"], table, ecosys=1)
+            else:
+                count = utils.getCountTable(self.config["1"]["dbHost"],
+                                           self.config["1"]["dbName"],
+                                           self.config["1"]["login"],
+                                           self.config["1"]["pass"], table)
             if count > 0:
                 if len(tableData["list"]) == count or (len(tableData["list"]) == 25 and
                                                        count > 25):
