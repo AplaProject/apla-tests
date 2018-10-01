@@ -45,26 +45,26 @@ class TestSimvolio():
                                        data, self.token)
         self.assert_tx_in_block(result, self.token)
 
-    def check_contract(self, sourse, checkPoint):
+    def check_contract(self, sourse, check_point):
         code, name = self.generate_name_and_code(sourse)
         self.create_contract(code)
         res = actions.call_contract(self.url, self.pr_key, name, {}, self.token)
         hash = res["hash"]
         result = actions.tx_status(self.url, self.wait, hash, self.token)
-        self.unit.assertIn(checkPoint, result["result"], "error")
+        self.unit.assertIn(check_point, result["result"], "error")
 
     def call(self, name, data):
         result = actions.call_contract(self.url, self.pr_key, name, data, self.token)
         status = actions.tx_status(self.url, self.wait, result['hash'], self.token)
         return status
 
-    def check_contract_with_data(self, sourse, data, checkPoint):
+    def check_contract_with_data(self, sourse, data, check_point):
         code, name = self.generate_name_and_code(sourse)
         self.create_contract(code)
         res = actions.call_contract(self.url, self.pr_key, name, data, self.token)
         hash = res["hash"]
         result = actions.tx_status(self.url, self.wait, hash, self.token)
-        self.unit.assertIn(checkPoint, result["result"], "error")
+        self.unit.assertIn(check_point, result["result"], "error")
 
     @pytest.mark.parametrize("name,code,result", tools.json_to_list(contracts["simple"]))
     def test_contract_db_find(self, name, code, result):
@@ -151,7 +151,7 @@ class TestSimvolio():
         msg = "system variable " + sys_var_name + " was been changed!"
         self.unit.assertEqual(tx["error"], exp_result, msg)
 
-    def getMetrics(self, ecosystem_num, metric_name):
+    def get_metrics(self, ecosystem_num, metric_name):
         # get metrics count
         res = actions.get_list(self.url, "metrics", self.token)
         i = 0
@@ -191,19 +191,19 @@ class TestSimvolio():
             count = current_block_id + (100 - (current_block_id % 100))
             wait_block_id(current_block_id, count)
         # test
-        ecosystem_tx = self.getMetrics(1, "ecosystem_tx")
+        ecosystem_tx = self.get_metrics(1, "ecosystem_tx")
         contract = self.contracts["dbSelectMetricsMin"]
         self.check_contract(contract["code"], str(ecosystem_tx))
 
     def test_z2_db_select_metrics_max(self):
         # Run test after test_z1_db_select_metrics_min
-        ecosystem_members = self.getMetrics(1, "ecosystem_members")
+        ecosystem_members = self.get_metrics(1, "ecosystem_members")
         contract = self.contracts["dbSelectMetricsMax"]
         self.check_contract(contract["code"], str(ecosystem_members))
 
     def test_z3_db_select_metrics_max(self):
         # Run test after test_z1_db_select_metrics_min
-        ecosystem_pages = self.getMetrics(1, "ecosystem_pages")
+        ecosystem_pages = self.get_metrics(1, "ecosystem_pages")
         contract = self.contracts["dbSelectMetricsAvg"]
         self.check_contract(contract["code"], str(ecosystem_pages))
 

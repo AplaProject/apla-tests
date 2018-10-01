@@ -1,7 +1,6 @@
 import unittest
 import json
 import os
-import pytest
 
 from libs import actions, tools, db
 
@@ -10,14 +9,14 @@ class TestPrototipo():
     conf = tools.read_config("nodes")
     pages = tools.read_fixtures("pages")
     url = conf[0]["url"]
-    prKey = conf[0]['private_key']
+    pr_key = conf[0]['private_key']
     db2 = conf[0]["db"]
 
     @classmethod
     def setup_class(self):
         self.maxDiff = None
         self.uni = unittest.TestCase()
-        data = actions.login(self.url, self.prKey, 0)
+        data = actions.login(self.url, self.pr_key, 0)
         self.token = data["jwtToken"]
 
     def assert_tx_in_block(self, result, jwtToken):
@@ -32,12 +31,12 @@ class TestPrototipo():
         data = {"Wallet": "", "ApplicationId": 1,
                 "Value": code,
                 "Conditions": "ContractConditions(`MainCondition`)"}
-        result = actions.call_contract(self.url, self.prKey, "NewContract",
+        result = actions.call_contract(self.url, self.pr_key, "NewContract",
                                        data, self.token)
         self.assert_tx_in_block(result, self.token)
 
     def call_contract(self, name, data):
-        result = actions.call_contract(self.url, self.prKey, name,
+        result = actions.call_contract(self.url, self.pr_key, name,
                                        data, self.token)
         self.assert_tx_in_block(result, self.token)
 
@@ -45,35 +44,35 @@ class TestPrototipo():
         name = "Page_" + tools.generate_random_name()
         data = {"Name": name, "Value": sourse, "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
-        resp = actions.call_contract(self.url, self.prKey, "NewPage", data, self.token)
+        resp = actions.call_contract(self.url, self.pr_key, "NewPage", data, self.token)
         self.assert_tx_in_block(resp, self.token)
         cont = actions.get_content(self.url, "page", name, "", 1, self.token)
         return cont
 
-    def findPositionElementInTree(self, contentTree, tagName):
+    def find_position_element_in_tree(self, content_tree, tagName):
         i = 0
-        while i < len(contentTree):
-            if contentTree[i]['tag'] == tagName:
+        while i < len(content_tree):
+            if content_tree[i]['tag'] == tagName:
                 return i
             i += 1
 
-    def findPositionElementInTreeByAttributeNameAndValue(self, contentTree, tagName, attrName, attrValue):
+    def find_position_element_in_tree_by_attribute_name_and_value(self, content_tree, tag_name, attr_name, attr_value):
         i = 0
-        while i < len(contentTree):
-            if contentTree[i]['tag'] == tagName:
-                if contentTree[i]['attr'][attrName] == attrValue:
+        while i < len(content_tree):
+            if content_tree[i]['tag'] == tag_name:
+                if content_tree[i]['attr'][attr_name] == attr_value:
                     return i
             i += 1
 
-    def check_post_api(self, endPoint, data, keys):
-        end = self.url + endPoint
+    def check_post_api(self, end_point, data, keys):
+        end = self.url + end_point
         result = actions.call_post_api(end, data, self.token)
         for key in keys:
             self.uni.assertIn(key, result)
         return result
 
-    def check_get_api(self, endPoint, data, keys):
-        end = self.url + endPoint
+    def check_get_api(self, end_point, data, keys):
+        end = self.url + end_point
         result = actions.call_get_api(end, data, self.token)
         for key in keys:
             self.uni.assertIn(key, result)
@@ -88,310 +87,310 @@ class TestPrototipo():
     def test_page_button_composite_contract(self):
         contract = self.pages["buttonCompositeContract"]
         content = self.check_page(contract["code"])
-        partContent = content["tree"]
-        contractContent = contract["content"]
-        mustBe = dict(tag=partContent[0]["tag"],
-                      compositeName=partContent[0]["attr"]["composite"][0]["name"],
-                      compositeData=partContent[0]["attr"]["composite"][0]["data"][0],
-                      text=partContent[0]["children"][0]["text"])
-        page = dict(tag=contractContent[0]["tag"],
-                    compositeName=contractContent[0]["attr"]["composite"][0]["name"],
-                    compositeData=contractContent[0]["attr"]["composite"][0]["data"][0],
-                    text=contractContent[0]["children"][0]["text"])
-        self.uni.assertDictEqual(mustBe, page, "now has problem: " + str(content["tree"]))
+        part_content = content["tree"]
+        contract_content = contract["content"]
+        must_be = dict(tag=part_content[0]["tag"],
+                      compositeName=part_content[0]["attr"]["composite"][0]["name"],
+                      compositeData=part_content[0]["attr"]["composite"][0]["data"][0],
+                      text=part_content[0]["children"][0]["text"])
+        page = dict(tag=contract_content[0]["tag"],
+                    compositeName=contract_content[0]["attr"]["composite"][0]["name"],
+                    compositeData=contract_content[0]["attr"]["composite"][0]["data"][0],
+                    text=contract_content[0]["children"][0]["text"])
+        self.uni.assertDictEqual(must_be, page, "now has problem: " + str(content["tree"]))
 
     def test_page_button_popup(self):
         contract = self.pages["buttonPopup"]
         content = self.check_page(contract["code"])
-        partContent = content["tree"]
-        contractContent = contract["content"]
-        mustBe = dict(tag=partContent[0]["tag"],
-                      popupHeader=partContent[0]["attr"]["popup"]["header"],
-                      popupWidth=partContent[0]["attr"]["popup"]["width"],
-                      text=partContent[0]["children"][0]["text"])
-        page = dict(tag=contractContent[0]["tag"],
-                    popupHeader=contractContent[0]["attr"]["popup"]["header"],
-                    popupWidth=contractContent[0]["attr"]["popup"]["width"],
-                    text=contractContent[0]["children"][0]["text"])
-        self.uni.assertDictEqual(mustBe, page, "now has problem: " + str(content["tree"]))
+        part_content = content["tree"]
+        contract_content = contract["content"]
+        must_be = dict(tag=part_content[0]["tag"],
+                      popupHeader=part_content[0]["attr"]["popup"]["header"],
+                      popupWidth=part_content[0]["attr"]["popup"]["width"],
+                      text=part_content[0]["children"][0]["text"])
+        page = dict(tag=contract_content[0]["tag"],
+                    popupHeader=contract_content[0]["attr"]["popup"]["header"],
+                    popupWidth=contract_content[0]["attr"]["popup"]["width"],
+                    text=contract_content[0]["children"][0]["text"])
+        self.uni.assertDictEqual(must_be, page, "now has problem: " + str(content["tree"]))
 
     def test_page_selectorFromDB(self):
         contract = self.pages["selectorFromDB"]
         content = self.check_page(contract["code"])
-        requiredTagNum = self.findPositionElementInTree(content["tree"], "dbfind")
-        mustBe = dict(tag="dbfind", data=True)
-        page = dict(tag=content["tree"][requiredTagNum]["tag"],
-                    data=len(content["tree"][requiredTagNum]["attr"]["columns"]) > 2)
-        self.uni.assertDictEqual(mustBe, page,
+        required_tag_num = self.find_position_element_in_tree(content["tree"], "dbfind")
+        must_be = dict(tag="dbfind", data=True)
+        page = dict(tag=content["tree"][required_tag_num]["tag"],
+                    data=len(content["tree"][required_tag_num]["attr"]["columns"]) > 2)
+        self.uni.assertDictEqual(must_be, page,
                                           "DBfind has problem: " + str(content["tree"]))
 
     def test_page_selectorFromData(self):
         contract = self.pages["selectorFromData"]
         content = self.check_page(contract["code"])
-        mustBe = dict(tag="data", columns=['gender'], source="myData",
+        must_be = dict(tag="data", columns=['gender'], source="myData",
                       select="select", selectName="mySelect", selectSourse="myData")
         page = dict(tag=content["tree"][0]["tag"], columns=content["tree"][0]["attr"]["columns"],
                     source=content["tree"][0]["attr"]["source"],
                     select=content["tree"][2]["tag"], selectName=content["tree"][2]["attr"]["name"],
                     selectSourse=content["tree"][2]["attr"]["source"])
-        self.uni.assertDictEqual(mustBe, page,
+        self.uni.assertDictEqual(must_be, page,
                                           "selectorFromData has problem: " + str(content["tree"]))
 
     def test_page_now(self):
         contract = self.pages["now"]
         content = self.check_page(contract["code"])
-        contractContent = contract["content"]
-        partContent = content['tree'][0]
-        mustBe = dict(tagOwner=contractContent["tag"],
-                      tag=contractContent["children"][0]["tag"],
-                      format=contractContent["children"][0]["attr"]["format"],
-                      interval=contractContent["children"][0]["attr"]["interval"])
-        page = dict(tagOwner=partContent["tag"],
-                    tag=partContent["children"][0]["tag"],
-                    format=partContent["children"][0]["attr"]["format"],
-                    interval=partContent["children"][0]["attr"]["interval"])
-        self.uni.assertDictEqual(mustBe, page, "now has problem: " + str(content["tree"]))
+        contract_content = contract["content"]
+        part_content = content['tree'][0]
+        must_be = dict(tagOwner=contract_content["tag"],
+                      tag=contract_content["children"][0]["tag"],
+                      format=contract_content["children"][0]["attr"]["format"],
+                      interval=contract_content["children"][0]["attr"]["interval"])
+        page = dict(tagOwner=part_content["tag"],
+                    tag=part_content["children"][0]["tag"],
+                    format=part_content["children"][0]["attr"]["format"],
+                    interval=part_content["children"][0]["attr"]["interval"])
+        self.uni.assertDictEqual(must_be, page, "now has problem: " + str(content["tree"]))
 
     def test_page_divs(self):
         contract = self.pages["divs"]
         content = self.check_page(contract["code"])
         # outer DIV
-        partContent = content['tree'][0]
+        part_content = content['tree'][0]
         # first level inner DIV
-        requiredInnerTagNum = self.findPositionElementInTree(content['tree'][0]['children'], "div")
-        partContent1 = content['tree'][0]['children'][requiredInnerTagNum]
-        contractContent1 = contract["content"]['children']
+        requiredInnerTagNum = self.find_position_element_in_tree(content['tree'][0]['children'], "div")
+        part_content1 = content['tree'][0]['children'][requiredInnerTagNum]
+        contract_content1 = contract["content"]['children']
         # second level inner DIV
-        requiredInner2TagNum = self.findPositionElementInTree(
+        requiredInner2TagNum = self.find_position_element_in_tree(
             content['tree'][0]['children'][requiredInnerTagNum]['children'], "div")
-        partContent2 = content['tree'][0]['children'][requiredInnerTagNum]['children'][requiredInner2TagNum]
-        contractContent2 = contract["content"]['children']['children']
-        mustBe = dict(firstDivTag=partContent['tag'],
-                      firstDivClass=partContent['attr']['class'],
-                      innerDivTag1=partContent1['tag'],
-                      innerDivClass1=partContent1['attr']['class'],
-                      innerDivTag2=partContent2['tag'],
-                      innerDivClass2=partContent2['attr']['class'],
-                      childrenText=partContent2['children'][0]['text'])
+        part_content2 = content['tree'][0]['children'][requiredInnerTagNum]['children'][requiredInner2TagNum]
+        contract_content2 = contract["content"]['children']['children']
+        must_be = dict(firstDivTag=part_content['tag'],
+                      firstDivClass=part_content['attr']['class'],
+                      innerDivTag1=part_content1['tag'],
+                      innerDivClass1=part_content1['attr']['class'],
+                      innerDivTag2=part_content2['tag'],
+                      innerDivClass2=part_content2['attr']['class'],
+                      childrenText=part_content2['children'][0]['text'])
         page = dict(firstDivTag=contract["content"]['tag'],
                     firstDivClass=contract["content"]['attr']['class'],
-                    innerDivTag1=contractContent1['tag'],
-                    innerDivClass1=contractContent1['attr']['class'],
-                    innerDivTag2=contractContent2['tag'],
-                    innerDivClass2=contractContent2['attr']['class'],
-                    childrenText=contractContent2['children'][0]['text'])
-        self.uni.assertDictEqual(mustBe, page,
+                    innerDivTag1=contract_content1['tag'],
+                    innerDivClass1=contract_content1['attr']['class'],
+                    innerDivTag2=contract_content2['tag'],
+                    innerDivClass2=contract_content2['attr']['class'],
+                    childrenText=contract_content2['children'][0]['text'])
+        self.uni.assertDictEqual(must_be, page,
                                           "divs has problem: " + str(content["tree"]))
 
     def test_page_setVar(self):
         contract = self.pages["setVar"]
         content = self.check_page(contract["code"])
-        requiredTagNum = self.findPositionElementInTree(content['tree'], "div")
-        partContent = content['tree'][requiredTagNum]
-        contractContent = contract['content']
-        mustBe = dict(tag=partContent['tag'],
-                      childrenText=partContent['children'][0]['text'])
-        page = dict(tag=contractContent['tag'],
-                    childrenText=contractContent['children'][0]['text'])
-        self.uni.assertDictEqual(mustBe, page,
+        required_tag_num = self.find_position_element_in_tree(content['tree'], "div")
+        part_content = content['tree'][required_tag_num]
+        contract_content = contract['content']
+        must_be = dict(tag=part_content['tag'],
+                      childrenText=part_content['children'][0]['text'])
+        page = dict(tag=contract_content['tag'],
+                    childrenText=contract_content['children'][0]['text'])
+        self.uni.assertDictEqual(must_be, page,
                                           "setVar has problem: " + str(content["tree"]))
 
     def test_page_input(self):
         contract = self.pages["input"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"]
-        mustBe = dict(tag=partContent['tag'],
-                      inputClass=partContent['attr']['class'],
-                      name=partContent['attr']['name'],
-                      placeholder=partContent['attr']['placeholder'],
-                      type=partContent['attr']['type'])
-        page = dict(tag=contractContent['tag'],
-                    inputClass=contractContent['attr']['class'],
-                    name=contractContent['attr']['name'],
-                    placeholder=contractContent['attr']['placeholder'],
-                    type=contractContent['attr']['type'])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"]
+        must_be = dict(tag=part_content['tag'],
+                      inputClass=part_content['attr']['class'],
+                      name=part_content['attr']['name'],
+                      placeholder=part_content['attr']['placeholder'],
+                      type=part_content['attr']['type'])
+        page = dict(tag=contract_content['tag'],
+                    inputClass=contract_content['attr']['class'],
+                    name=contract_content['attr']['name'],
+                    placeholder=contract_content['attr']['placeholder'],
+                    type=contract_content['attr']['type'])
+        self.uni.assertDictEqual(must_be, page,
                                           "input has problem: " + str(content["tree"]))
 
     def test_page_menuGroup(self):
         contract = self.pages["menuGroup"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"]
-        menuItem1 = contractContent['children'][0]
-        menuItem2 = contractContent['children'][1]
-        requiredNumMenuItem1 = self.findPositionElementInTreeByAttributeNameAndValue(partContent['children'],
+        part_content = content['tree'][0]
+        contract_content = contract["content"]
+        menuItem1 = contract_content['children'][0]
+        menuItem2 = contract_content['children'][1]
+        requiredNumMenuItem1 = self.find_position_element_in_tree_by_attribute_name_and_value(part_content['children'],
                                                                                      "menuitem", "title",
-                                                                                     menuItem1['attr']['title'])
-        requiredNumMenuItem2 = self.findPositionElementInTreeByAttributeNameAndValue(partContent['children'],
+                                                                                              menuItem1['attr']['title'])
+        requiredNumMenuItem2 = self.find_position_element_in_tree_by_attribute_name_and_value(part_content['children'],
                                                                                      "menuitem", "title",
-                                                                                     menuItem2['attr']['title'])
-        partContent1 = partContent['children'][requiredNumMenuItem1]
-        partContent2 = partContent['children'][requiredNumMenuItem2]
-        mustBe = dict(menuTag=partContent['tag'],
-                      name=partContent['attr']['name'],
-                      title=partContent['attr']['title'],
-                      menuItemTag1=partContent1['tag'],
-                      menuItemPage1=partContent1['attr']['page'],
-                      menuItemTitle1=partContent1['attr']['title'],
-                      menuItemTag2=partContent2['tag'],
-                      menuItemPage2=partContent2['attr']['page'],
-                      menuItemTitle2=partContent2['attr']['title'])
-        page = dict(menuTag=contractContent['tag'],
-                    name=contractContent['attr']['name'],
-                    title=contractContent['attr']['title'],
-                    menuItemTag1=partContent1['tag'],
+                                                                                              menuItem2['attr']['title'])
+        part_content1 = part_content['children'][requiredNumMenuItem1]
+        part_content2 = part_content['children'][requiredNumMenuItem2]
+        must_be = dict(menuTag=part_content['tag'],
+                      name=part_content['attr']['name'],
+                      title=part_content['attr']['title'],
+                      menuItemTag1=part_content1['tag'],
+                      menuItemPage1=part_content1['attr']['page'],
+                      menuItemTitle1=part_content1['attr']['title'],
+                      menuItemTag2=part_content2['tag'],
+                      menuItemPage2=part_content2['attr']['page'],
+                      menuItemTitle2=part_content2['attr']['title'])
+        page = dict(menuTag=contract_content['tag'],
+                    name=contract_content['attr']['name'],
+                    title=contract_content['attr']['title'],
+                    menuItemTag1=part_content1['tag'],
                     menuItemPage1=menuItem1['attr']['page'],
                     menuItemTitle1=menuItem1['attr']['title'],
-                    menuItemTag2=partContent2['tag'],
+                    menuItemTag2=part_content2['tag'],
                     menuItemPage2=menuItem2['attr']['page'],
                     menuItemTitle2=menuItem2['attr']['title'])
-        self.uni.assertDictEqual(mustBe, page,
+        self.uni.assertDictEqual(must_be, page,
                                           "menuGroup has problem: " + str(content["tree"]))
 
     def test_page_linkPage(self):
         contract = self.pages["linkPage"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"]
-        mustBe = dict(tag=partContent['tag'],
-                      linkPageClass=partContent['attr']['class'],
-                      page=partContent['attr']['page'],
-                      text=partContent['children'][0]['text'])
-        page = dict(tag=contractContent['tag'],
-                    linkPageClass=contractContent['attr']['class'],
-                    page=contractContent['attr']['page'],
-                    text=contractContent['children'][0]['text'])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"]
+        must_be = dict(tag=part_content['tag'],
+                      linkPageClass=part_content['attr']['class'],
+                      page=part_content['attr']['page'],
+                      text=part_content['children'][0]['text'])
+        page = dict(tag=contract_content['tag'],
+                    linkPageClass=contract_content['attr']['class'],
+                    page=contract_content['attr']['page'],
+                    text=contract_content['children'][0]['text'])
+        self.uni.assertDictEqual(must_be, page,
                                           "linkPage has problem: " + str(content["tree"]))
 
     def test_page_ecosysParam(self):
         contract = self.pages["ecosysParam"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"]
-        mustBe = dict(tag=partContent['tag'],
-                      text=partContent['children'][0]['text'])
-        page = dict(tag=contractContent['tag'],
-                    text=contractContent['children'][0]['text'])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"]
+        must_be = dict(tag=part_content['tag'],
+                      text=part_content['children'][0]['text'])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['children'][0]['text'])
+        self.uni.assertDictEqual(must_be, page,
                                           "ecosysParam has problem: " + str(content["tree"]))
 
     def test_page_paragraph(self):
         contract = self.pages["paragraph"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"]
-        mustBe = dict(tag=partContent['tag'],
-                      text=partContent['text'])
-        page = dict(tag=contractContent['tag'],
-                    text=contractContent['text'])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"]
+        must_be = dict(tag=part_content['tag'],
+                      text=part_content['text'])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['text'])
+        self.uni.assertDictEqual(must_be, page,
                                           "paragraph has problem: " + str(content["tree"]))
 
     def test_page_getVar(self):
         contract = self.pages["getVar"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"]
-        mustBe = dict(tag=partContent['tag'],
-                      text=partContent['children'][0]['text'])
-        page = dict(tag=contractContent['tag'],
-                    text=contractContent['children'][0]['text'])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"]
+        must_be = dict(tag=part_content['tag'],
+                      text=part_content['children'][0]['text'])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['children'][0]['text'])
+        self.uni.assertDictEqual(must_be, page,
                                           "getVar has problem: " + str(content["tree"]))
 
     def test_page_hint(self):
         page = self.pages["hint"]
         content = self.check_page(page["code"])
-        partContent = content['tree'][0]
-        pageContent = page["content"]
-        mustBe = dict(tag=partContent['tag'],
-                      icon=partContent['attr']['icon'],
-                      title=partContent['attr']['title'],
-                      text=partContent['attr']['text'])
-        page = dict(tag=pageContent['tag'],
-                    icon=pageContent['attr']['icon'],
-                    title=pageContent['attr']['title'],
-                    text=pageContent['attr']['text'])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        page_content = page["content"]
+        must_be = dict(tag=part_content['tag'],
+                      icon=part_content['attr']['icon'],
+                      title=part_content['attr']['title'],
+                      text=part_content['attr']['text'])
+        page = dict(tag=page_content['tag'],
+                    icon=page_content['attr']['icon'],
+                    title=page_content['attr']['title'],
+                    text=page_content['attr']['text'])
+        self.uni.assertDictEqual(must_be, page,
                                           "getVar has problem: " + str(content["tree"]))
 
     def test_page_iff(self):
         contract = self.pages["iff"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"]
-        mustBe = dict(tag=partContent['tag'],
-                      text=partContent['text'])
-        page = dict(tag=contractContent['tag'],
-                    text=contractContent['text'])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"]
+        must_be = dict(tag=part_content['tag'],
+                      text=part_content['text'])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['text'])
+        self.uni.assertDictEqual(must_be, page,
                                           "iff has problem: " + str(content["tree"]))
 
     def test_page_orr(self):
         contract = self.pages["orr"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"]
-        mustBe = dict(tag=partContent['tag'],
-                      text=partContent['text'])
-        page = dict(tag=contractContent['tag'],
-                    text=contractContent['text'])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"]
+        must_be = dict(tag=part_content['tag'],
+                      text=part_content['text'])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['text'])
+        self.uni.assertDictEqual(must_be, page,
                                           "orr has problem: " + str(content["tree"]))
 
     def test_page_andd(self):
         contract = self.pages["andd"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"]
-        mustBe = dict(tag=partContent['tag'],
-                      text=partContent['text'])
-        page = dict(tag=contractContent['tag'],
-                    text=contractContent['text'])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"]
+        must_be = dict(tag=part_content['tag'],
+                      text=part_content['text'])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['text'])
+        self.uni.assertDictEqual(must_be, page,
                                           "andd has problem: " + str(content["tree"]))
 
     def test_page_form(self):
         contract = self.pages["form"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        partContent1 = content['tree'][0]['children'][0]['children'][0]
-        contractContent = contract["content"]
-        contractContent1 = contract["content"]['children'][0]['children'][0]
-        mustBe = dict(formTag=partContent['tag'],
-                      spanTag=partContent['children'][0]['tag'],
-                      spanText=partContent1['text'])
-        page = dict(formTag=contractContent['tag'],
-                    spanTag=contractContent['children'][0]['tag'],
-                    spanText=contractContent1['text'])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        part_content1 = content['tree'][0]['children'][0]['children'][0]
+        contract_content = contract["content"]
+        contract_content1 = contract["content"]['children'][0]['children'][0]
+        must_be = dict(formTag=part_content['tag'],
+                      spanTag=part_content['children'][0]['tag'],
+                      spanText=part_content1['text'])
+        page = dict(formTag=contract_content['tag'],
+                    spanTag=contract_content['children'][0]['tag'],
+                    spanText=contract_content1['text'])
+        self.uni.assertDictEqual(must_be, page,
                                           "form has problem: " + str(content["tree"]))
 
     def test_page_label(self):
         contract = self.pages["label"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"]
-        mustBe = dict(tag=partContent['tag'],
-                      labelFor=partContent['attr']['for'])
-        page = dict(tag=contractContent['tag'],
-                    labelFor=contractContent['attr']['for'])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"]
+        must_be = dict(tag=part_content['tag'],
+                      labelFor=part_content['attr']['for'])
+        page = dict(tag=contract_content['tag'],
+                    labelFor=contract_content['attr']['for'])
+        self.uni.assertDictEqual(must_be, page,
                                           "label has problem: " + str(content["tree"]))
 
     def test_page_span(self):
         contract = self.pages["span"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"]
-        mustBe = dict(tag=partContent['tag'],
-                      text=partContent['children'][0]['text'])
-        page = dict(tag=contractContent['tag'],
-                    text=contractContent['children'][0]['text'])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"]
+        must_be = dict(tag=part_content['tag'],
+                      text=part_content['children'][0]['text'])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['children'][0]['text'])
+        self.uni.assertDictEqual(must_be, page,
                                           "span has problem: " + str(content["tree"]))
 
     def test_page_langRes(self):
@@ -399,13 +398,13 @@ class TestPrototipo():
         data = {"ApplicationId": 1,
                 "Name": lang,
                 "Trans": "{\"en\": \"Lang_en\", \"ru\" : \"Язык\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
-        res = actions.call_contract(self.url, self.prKey, "NewLang", data, self.token)
+        res = actions.call_contract(self.url, self.pr_key, "NewLang", data, self.token)
         self.assert_tx_in_block(res, self.token)
         world = "world_" + tools.generate_random_name()
         data = {"ApplicationId": 1,
                 "Name": world,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
-        res = actions.call_contract(self.url, self.prKey, "NewLang", data, self.token)
+        res = actions.call_contract(self.url, self.pr_key, "NewLang", data, self.token)
         self.assert_tx_in_block(res, self.token)
         contract = self.pages["langRes"]
         content = self.check_page("LangRes(" + lang + ") LangRes(" + world + ", ru)")
@@ -414,26 +413,26 @@ class TestPrototipo():
         contract = self.pages["inputErr"]
         content = self.check_page(contract["code"])
         # iterating response elements
-        requiredTagNum = self.findPositionElementInTree(content['tree'], "inputerr")
-        partContent = content['tree'][requiredTagNum]['tag']
-        self.uni.assertEqual(partContent, contract["content"]['tag'],
+        required_tag_num = self.find_position_element_in_tree(content['tree'], "inputerr")
+        part_content = content['tree'][required_tag_num]['tag']
+        self.uni.assertEqual(part_content, contract["content"]['tag'],
                          "Error in content " + str(content['tree']))
-        partContent = content['tree'][requiredTagNum]['attr']
-        contractContent = contract["content"]['attr']
-        mustBe = dict(maxlength=partContent['maxlength'],
-                      name=partContent['name'],
-                      minlength=partContent['minlength'])
-        page = dict(maxlength=contractContent['maxlength'],
-                    name=contractContent['name'],
-                    minlength=contractContent['minlength'])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][required_tag_num]['attr']
+        contract_content = contract["content"]['attr']
+        must_be = dict(maxlength=part_content['maxlength'],
+                      name=part_content['name'],
+                      minlength=part_content['minlength'])
+        page = dict(maxlength=contract_content['maxlength'],
+                    name=contract_content['name'],
+                    minlength=contract_content['minlength'])
+        self.uni.assertDictEqual(must_be, page,
                                           "inputErr has problem: " + str(content["tree"]))
 
     def test_page_include(self):
         name = "Block_" + tools.generate_random_name()
         data = {"Name": name, "ApplicationId": 1,
                 "Value": "Hello page!", "Conditions": "true"}
-        res = actions.call_contract(self.url, self.prKey, "NewBlock", data, self.token)
+        res = actions.call_contract(self.url, self.pr_key, "NewBlock", data, self.token)
         self.assert_tx_in_block(res, self.token)
         contract = self.pages["include"]
         content = self.check_page("Include(" + name + ")")
@@ -443,73 +442,73 @@ class TestPrototipo():
     def test_page_inputImage(self):
         contract = self.pages["inputImage"]
         content = self.check_page(contract["code"])
-        partContent = content["tree"][0]
-        contractContent = contract["content"][0]
-        mustBe = dict(tag=partContent["tag"],
-                      name=partContent["attr"]["name"],
-                      ratio=partContent["attr"]["ratio"],
-                      width=partContent["attr"]["width"])
-        page = dict(tag=contractContent["tag"],
-                    name=contractContent["attr"]["name"],
-                    ratio=contractContent["attr"]["ratio"],
-                    width=contractContent["attr"]["width"])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content["tree"][0]
+        contract_content = contract["content"][0]
+        must_be = dict(tag=part_content["tag"],
+                      name=part_content["attr"]["name"],
+                      ratio=part_content["attr"]["ratio"],
+                      width=part_content["attr"]["width"])
+        page = dict(tag=contract_content["tag"],
+                    name=contract_content["attr"]["name"],
+                    ratio=contract_content["attr"]["ratio"],
+                    width=contract_content["attr"]["width"])
+        self.uni.assertDictEqual(must_be, page,
                                           "inputErr has problem: " + str(content["tree"]))
 
     def test_page_alert(self):
         contract = self.pages["alert"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"]
-        partContent1 = content['tree'][0]['attr']['alert']
-        contractContent1 = contract["content"]['attr']['alert']
-        mustBe = dict(tag=partContent["tag"],
-                      cancelbutton=partContent1['cancelbutton'],
-                      confirmbutton=partContent1['confirmbutton'],
-                      icon=partContent1['icon'],
-                      text=partContent1['text'])
-        page = dict(tag=contractContent["tag"],
-                    cancelbutton=contractContent1['cancelbutton'],
-                    confirmbutton=contractContent1['confirmbutton'],
-                    icon=contractContent1['icon'],
-                    text=contractContent1['text'])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"]
+        part_content1 = content['tree'][0]['attr']['alert']
+        contract_content1 = contract["content"]['attr']['alert']
+        must_be = dict(tag=part_content["tag"],
+                      cancelbutton=part_content1['cancelbutton'],
+                      confirmbutton=part_content1['confirmbutton'],
+                      icon=part_content1['icon'],
+                      text=part_content1['text'])
+        page = dict(tag=contract_content["tag"],
+                    cancelbutton=contract_content1['cancelbutton'],
+                    confirmbutton=contract_content1['confirmbutton'],
+                    icon=contract_content1['icon'],
+                    text=contract_content1['text'])
+        self.uni.assertDictEqual(must_be, page,
                                           "alert has problem: " + str(content["tree"]))
 
     def test_page_table(self):
         contract = self.pages["table"]
         content = self.check_page(contract["code"])
-        mustBe = dict(tag="dbfind", source="mysrc",
+        must_be = dict(tag="dbfind", source="mysrc",
                       tag2="table", columns=[{'Name': 'name', 'Title': 'Name'}, {'Name': 'value', 'Title': 'Value'},
                                              {'Name': 'conditions', 'Title': 'Conditions'}])
         page = dict(tag=content["tree"][0]["tag"], source=content["tree"][1]["attr"]["source"],
                     tag2=content["tree"][1]["tag"],
                     columns=content["tree"][1]["attr"]["columns"])
-        self.uni.assertDictEqual(mustBe, page,
+        self.uni.assertDictEqual(must_be, page,
                                           "selectorFromData has problem: " + str(content["tree"]))
 
     def test_page_kurs(self):
         contract = self.pages["kurs"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"][0]
-        mustBe = dict(tag=partContent['tag'],
-                      text=partContent['children'][0]["text"])
-        page = dict(tag=contractContent['tag'],
-                    text=contractContent['children'][0]["text"])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"][0]
+        must_be = dict(tag=part_content['tag'],
+                      text=part_content['children'][0]["text"])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['children'][0]["text"])
+        self.uni.assertDictEqual(must_be, page,
                                           "kurs has problem: " + str(content["tree"]))
 
     def test_page_strong(self):
         contract = self.pages["strong"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"][0]
-        mustBe = dict(tag=partContent['tag'],
-                      text=partContent['children'][0]["text"])
-        page = dict(tag=contractContent['tag'],
-                    text=contractContent['children'][0]["text"])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"][0]
+        must_be = dict(tag=part_content['tag'],
+                      text=part_content['children'][0]["text"])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['children'][0]["text"])
+        self.uni.assertDictEqual(must_be, page,
                                           "strong has problem: " + str(content["tree"]))
 
     def test_page_getColumnType(self):
@@ -521,37 +520,37 @@ class TestPrototipo():
     def test_page_sys_var_isMobile(self):
         contract = self.pages["sys_var_isMobile"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"][0]
-        mustBe = dict(tag=partContent['tag'],
-                      text=partContent['children'][0]["text"])
-        page = dict(tag=contractContent['tag'],
-                    text=contractContent['children'][0]["text"])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"][0]
+        must_be = dict(tag=part_content['tag'],
+                      text=part_content['children'][0]["text"])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['children'][0]["text"])
+        self.uni.assertDictEqual(must_be, page,
                                           "isMobile has problem: " + str(content["tree"]))
 
     def test_page_sys_var_roleID(self):
         contract = self.pages["sys_var_roleID"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"][0]
-        mustBe = dict(tag=partContent['tag'],
-                      text=partContent['children'][0]["text"])
-        page = dict(tag=contractContent['tag'],
-                    text=contractContent['children'][0]["text"])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"][0]
+        must_be = dict(tag=part_content['tag'],
+                      text=part_content['children'][0]["text"])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['children'][0]["text"])
+        self.uni.assertDictEqual(must_be, page,
                                           "roleID has problem: " + str(content["tree"]))
 
     def test_page_sys_var_ecosystemID(self):
         contract = self.pages["sys_var_ecosystemID"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"][0]
-        mustBe = dict(tag=partContent['tag'],
-                      text=partContent['children'][0]["text"])
-        page = dict(tag=contractContent['tag'],
-                    text=contractContent['children'][0]["text"])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"][0]
+        must_be = dict(tag=part_content['tag'],
+                      text=part_content['children'][0]["text"])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['children'][0]["text"])
+        self.uni.assertDictEqual(must_be, page,
                                           "ecosystemID has problem: " + str(content["tree"]))
 
     def test_page_sys_var_ecosystem_name(self):
@@ -568,12 +567,12 @@ class TestPrototipo():
         # test
         contract = self.pages["sys_var_ecosystem_name"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        mustBe = dict(tag="em",
+        part_content = content['tree'][0]
+        must_be = dict(tag="em",
                       text=requiredEcosysName)
-        page = dict(tag=partContent['tag'],
-                    text=partContent['children'][0]["text"])
-        self.uni.assertDictEqual(mustBe, page,
+        page = dict(tag=part_content['tag'],
+                    text=part_content['children'][0]["text"])
+        self.uni.assertDictEqual(must_be, page,
                                           "ecosystem_name has problem: " + str(content["tree"]))
 
     def test_page_sys_var_key_id(self):
@@ -586,33 +585,33 @@ class TestPrototipo():
                                       "key_id has problem: " + contract["content"] + ". Content = " + str(
                                           content["tree"]))
 
-    def test_dbfind_count(self):
+    def test_db_find_count(self):
         asserts = ["count"]
         data = {}
         res = self.check_get_api("/contracts", data, asserts)
         contractsCount = res["count"]
         contract = self.pages["dbfindCount"]
         content = self.check_page(contract["code"])
-        RequiredNum = self.findPositionElementInTree(content["tree"], "em")
-        page = content['tree'][RequiredNum]["children"][0]["text"]
+        required_num = self.find_position_element_in_tree(content["tree"], "em")
+        page = content['tree'][required_num]["children"][0]["text"]
         self.uni.assertEqual(contractsCount, page,
                                       "dbfind_count has problem: " + contract["content"] + ". Content = " + str(
                                           content["tree"]))
 
-    def test_dbfind_where_count(self):
+    def test_db_find_where_count(self):
         contract = self.pages["dbfindWhereCount"]
         content = self.check_page(contract["code"])
-        RequiredNum = self.findPositionElementInTree(content["tree"], "em")
-        page = content['tree'][RequiredNum]["children"][0]["text"]
+        required_num = self.find_position_element_in_tree(content["tree"], "em")
+        page = content['tree'][required_num]["children"][0]["text"]
         self.uni.assertEqual(contract["content"], page,
                                       "dbfind_where_count has problem: " + contract["content"] + ". Content = " + str(
                                           content["tree"]))
 
-    def test_dbfind_whereId_count(self):
+    def test_db_find_where_id_count(self):
         contract = self.pages["dbfindWhereIdCount"]
         content = self.check_page(contract["code"])
-        RequiredNum = self.findPositionElementInTree(content["tree"], "em")
-        page = content['tree'][RequiredNum]["children"][0]["text"]
+        required_num = self.find_position_element_in_tree(content["tree"], "em")
+        page = content['tree'][required_num]["children"][0]["text"]
         self.uni.assertEqual(contract["content"], page,
                                       "dbfind_whereId_count has problem: " + contract["content"] + ". Content = " + str(
                                           content["tree"]))
@@ -620,127 +619,127 @@ class TestPrototipo():
     def test_binary(self):
         # this test has not fixture
         name = "image_" + tools.generate_random_name()
-        appID = "1"
+        app_id = "1"
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
-        data = {"Name": name, "ApplicationId": appID}
-        resp = actions.call_contract_with_files(self.url, self.prKey, "UploadBinary", data,
+        data = {"Name": name, "ApplicationId": app_id}
+        resp = actions.call_contract_with_files(self.url, self.pr_key, "UploadBinary", data,
                                                 files, self.token)
         self.assert_tx_in_block(resp, self.token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
         MemberID = actions.get_parameter_value(self.url, 'founder_account', self.token)
-        content = self.check_page("Binary(Name: " + name + ", AppID: " + appID + ", MemberID: " + MemberID + ")")
+        content = self.check_page("Binary(Name: " + name + ", AppID: " + app_id + ", MemberID: " + MemberID + ")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
-        self.uni.assertEqual("/data/1_binaries/" + lastRec + "/data/b40ad01eacc0312f6dd1ff2a705756ec",
+        self.uni.assertEqual("/data/1_binaries/" + last_rec + "/data/b40ad01eacc0312f6dd1ff2a705756ec",
                                       content["tree"][0]["text"])
 
     def test_binary_by_id(self):
         # this test has not fixture
         name = "image_" + tools.generate_random_name()
-        appID = "1"
+        app_id = "1"
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
-        data = {"Name": name, "ApplicationId": appID}
-        resp = actions.call_contract_with_files(self.url, self.prKey, "UploadBinary", data,
+        data = {"Name": name, "ApplicationId": app_id}
+        resp = actions.call_contract_with_files(self.url, self.pr_key, "UploadBinary", data,
                                                 files, self.token)
         res = self.assert_tx_in_block(resp, self.token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        lastRec = actions.get_count(self.url, "binaries", self.token)
-        content = self.check_page("Binary().ById(" + lastRec + ")")
+        last_rec = actions.get_count(self.url, "binaries", self.token)
+        content = self.check_page("Binary().ById(" + last_rec + ")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
-        self.uni.assertEqual("/data/1_binaries/" + lastRec + "/data/b40ad01eacc0312f6dd1ff2a705756ec",
+        self.uni.assertEqual("/data/1_binaries/" + last_rec + "/data/b40ad01eacc0312f6dd1ff2a705756ec",
                                       content["tree"][0]["text"])
 
     def test_image_binary(self):
         # this test has not fixture
         name = "image_" + tools.generate_random_name()
-        appID = "1"
+        app_id = "1"
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
-        data = {"Name": name, "ApplicationId": appID}
-        resp = actions.call_contract_with_files(self.url, self.prKey, "UploadBinary", data,
+        data = {"Name": name, "ApplicationId": app_id}
+        resp = actions.call_contract_with_files(self.url, self.pr_key, "UploadBinary", data,
                                                 files, self.token)
         self.assert_tx_in_block(resp, self.token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
         MemberID = actions.get_parameter_value(self.url, 'founder_account', self.token)
-        lastRec = actions.get_count(self.url, "binaries", self.token)
-        content = self.check_page("Image(Binary(Name: " + name + ", AppID: " + appID + ", MemberID: " + MemberID + "))")
-        partContent = content["tree"][0]
-        mustBe = dict(tag=partContent['tag'],
-                      src=partContent['attr']["src"])
+        last_rec = actions.get_count(self.url, "binaries", self.token)
+        content = self.check_page("Image(Binary(Name: " + name + ", AppID: " + app_id + ", MemberID: " + MemberID + "))")
+        part_content = content["tree"][0]
+        must_be = dict(tag=part_content['tag'],
+                      src=part_content['attr']["src"])
         page = dict(tag="image",
-                    src="/data/1_binaries/" + lastRec + "/data/b40ad01eacc0312f6dd1ff2a705756ec")
-        self.uni.assertDictEqual(mustBe, page,
+                    src="/data/1_binaries/" + last_rec + "/data/b40ad01eacc0312f6dd1ff2a705756ec")
+        self.uni.assertDictEqual(must_be, page,
                                           "test_image_binary has problem: " + str(content["tree"]))
 
     def test_image_binary_by_id(self):
         # this test has not fixture
         name = "image_" + tools.generate_random_name()
-        appID = "1"
+        app_id = "1"
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
-        data = {"Name": name, "ApplicationId": appID}
-        resp = actions.call_contract_with_files(self.url, self.prKey, "UploadBinary", data,
+        data = {"Name": name, "ApplicationId": app_id}
+        resp = actions.call_contract_with_files(self.url, self.pr_key, "UploadBinary", data,
                                                 files, self.token)
         self.assert_tx_in_block(resp, self.token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        lastRec = actions.get_count(self.url, "binaries", self.token)
-        content = self.check_page("Image(Binary().ById(" + lastRec + "))")
-        partContent = content["tree"][0]
-        mustBe = dict(tag=partContent['tag'],
-                      src=partContent['attr']["src"])
+        last_rec = actions.get_count(self.url, "binaries", self.token)
+        content = self.check_page("Image(Binary().ById(" + last_rec + "))")
+        part_content = content["tree"][0]
+        must_be = dict(tag=part_content['tag'],
+                      src=part_content['attr']["src"])
         page = dict(tag="image",
-                    src="/data/1_binaries/" + lastRec + "/data/b40ad01eacc0312f6dd1ff2a705756ec")
-        self.uni.assertDictEqual(mustBe, page,
+                    src="/data/1_binaries/" + last_rec + "/data/b40ad01eacc0312f6dd1ff2a705756ec")
+        self.uni.assertDictEqual(must_be, page,
                                           "test_image_binary_by_id has problem: " + str(content["tree"]))
 
     def test_address(self):
         contract = self.pages["address"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"]
-        mustBe = dict(tagOwner=contractContent['tag'],
-                      tag=contractContent['children'][0]["tag"],
-                      text=contractContent['children'][0]["text"])
-        page = dict(tagOwner=partContent['tag'],
-                    tag=partContent['children'][0]["tag"],
-                    text=partContent['children'][0]["text"])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"]
+        must_be = dict(tagOwner=contract_content['tag'],
+                      tag=contract_content['children'][0]["tag"],
+                      text=contract_content['children'][0]["text"])
+        page = dict(tagOwner=part_content['tag'],
+                    tag=part_content['children'][0]["tag"],
+                    text=part_content['children'][0]["text"])
+        self.uni.assertDictEqual(must_be, page,
                                           "address has problem: " + str(content["tree"]))
 
     def test_money(self):
         contract = self.pages["money"]
         content1 = self.check_page(contract["code1"])
         content2 = self.check_page(contract["code2"])
-        partContent1 = content1['tree'][0]
-        partContent2 = content2['tree'][0]
-        contractContent1 = contract["content1"]
-        contractContent2 = contract["content2"]
-        mustBe = dict(tagOwner1=contractContent1['tag'],
-                      tag1=contractContent1['children'][0]["tag"],
-                      text1=contractContent1['children'][0]["text"],
-                      tagOwner2=contractContent2['tag'],
-                      tag2=contractContent2['children'][0]["tag"],
-                      text2=contractContent2['children'][0]["text"])
-        page = dict(tagOwner1=partContent1['tag'],
-                    tag1=partContent1['children'][0]["tag"],
-                    text1=partContent1['children'][0]["text"],
-                    tagOwner2=partContent2['tag'],
-                    tag2=partContent2['children'][0]["tag"],
-                    text2=partContent2['children'][0]["text"])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content1 = content1['tree'][0]
+        part_content2 = content2['tree'][0]
+        contract_content1 = contract["content1"]
+        contract_content2 = contract["content2"]
+        must_be = dict(tagOwner1=contract_content1['tag'],
+                      tag1=contract_content1['children'][0]["tag"],
+                      text1=contract_content1['children'][0]["text"],
+                      tagOwner2=contract_content2['tag'],
+                      tag2=contract_content2['children'][0]["tag"],
+                      text2=contract_content2['children'][0]["text"])
+        page = dict(tagOwner1=part_content1['tag'],
+                    tag1=part_content1['children'][0]["tag"],
+                    text1=part_content1['children'][0]["text"],
+                    tagOwner2=part_content2['tag'],
+                    tag2=part_content2['children'][0]["tag"],
+                    text2=part_content2['children'][0]["text"])
+        self.uni.assertDictEqual(must_be, page,
                                           "money has problem: " + "\n" + str(content1["tree"]) + "\n" + str(
                                               content2["tree"]))
 
@@ -861,7 +860,7 @@ class TestPrototipo():
         wrongContent1 = self.check_page(contract["wrongCode1"])
         partWrongContent1 = wrongContent1['tree'][0]
         contractWrongContent1 = contract["wrongContent1"]
-        mustBe = dict(money1=contractMoneyContent1['children'][0]["text"],
+        must_be = dict(money1=contractMoneyContent1['children'][0]["text"],
                       money2=contractMoneyContent2['children'][0]["text"],
                       money3=contractMoneyContent3['children'][0]["text"],
                       money4=contractMoneyContent4['children'][0]["text"],
@@ -935,24 +934,24 @@ class TestPrototipo():
                     int5=partIntContent5['children'][0]["text"],
                     int6=partIntContent6['children'][0]["text"],
                     wrong1=partWrongContent1['children'][0]["text"])
-        self.uni.assertDictEqual(mustBe, page, "calculate has problem!")
+        self.uni.assertDictEqual(must_be, page, "calculate has problem!")
 
     def test_arrayToSource(self):
         contract = self.pages["arrayToSource"]
         content = self.check_page(contract["code"])
-        partContent = content['tree'][0]
-        contractContent = contract["content"]
-        mustBe = dict(tag=partContent["tag"],
-                      data1=partContent["attr"]["data"][0],
-                      data2=partContent["attr"]["data"][1],
-                      data3=partContent["attr"]["data"][2],
-                      source=partContent["attr"]["source"])
-        page = dict(tag=contractContent["tag"],
-                    data1=contractContent["attr"]["data"][0],
-                    data2=contractContent["attr"]["data"][1],
-                    data3=contractContent["attr"]["data"][2],
-                    source=contractContent["attr"]["source"])
-        self.uni.assertDictEqual(mustBe, page,
+        part_content = content['tree'][0]
+        contract_content = contract["content"]
+        must_be = dict(tag=part_content["tag"],
+                      data1=part_content["attr"]["data"][0],
+                      data2=part_content["attr"]["data"][1],
+                      data3=part_content["attr"]["data"][2],
+                      source=part_content["attr"]["source"])
+        page = dict(tag=contract_content["tag"],
+                    data1=contract_content["attr"]["data"][0],
+                    data2=contract_content["attr"]["data"][1],
+                    data3=contract_content["attr"]["data"][2],
+                    source=contract_content["attr"]["source"])
+        self.uni.assertDictEqual(must_be, page,
                                           "arrayToSource has problem: " + "\n" + str(content["tree"]))
 
     def test_getHistoryContract(self):
@@ -976,5 +975,5 @@ class TestPrototipo():
         self.call_contract("EditContract", data)
         # test
         content = self.check_page("GetHistory(src, contracts, " + str(id) + ")")
-        partContent = content['tree'][0]["attr"]["data"][0]
-        self.uni.assertIn(replacedString, str(partContent), "getHistoryContract has problem: " + str(content["tree"]))
+        part_content = content['tree'][0]["attr"]["data"][0]
+        self.uni.assertIn(replacedString, str(part_content), "getHistoryContract has problem: " + str(content["tree"]))
