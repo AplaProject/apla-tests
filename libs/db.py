@@ -15,11 +15,11 @@ def submit_query(query, db):
     return cursor.fetchall()    
     
 #block_chain
-def compare_node_positions(db, maxBlockId, nodes):
+def compare_node_positions(db, max_block_id, nodes):
     count_rec = nodes * 3 + nodes
-    minBlock = maxBlockId - count_rec + 1
+    min_block = max_block_id - count_rec + 1
     request = "SELECT node_position, count(node_position) FROM block_chain WHERE id>" + str(
-        minBlock) + " AND id<" + str(maxBlockId) + "GROUP BY node_position"
+        min_block) + " AND id<" + str(max_block_id) + "GROUP BY node_position"
     positions = submit_query(request, db)
     countBlocks = round(count_rec / nodes / 10 * 7)
     if len(positions) < nodes:
@@ -34,13 +34,13 @@ def compare_node_positions(db, maxBlockId, nodes):
     return True
 
 #limits
-def is_count_tx_in_block(db, maxBlockId, countTx):
-    minBlock = maxBlockId - 3
-    request = "SELECT id, tx FROM block_chain WHERE id>" + str(minBlock) + " AND id<" + str(maxBlockId)
+def is_count_tx_in_block(db, max_block_id, count_tx):
+    min_block = max_block_id - 3
+    request = "SELECT id, tx FROM block_chain WHERE id>" + str(min_block) + " AND id<" + str(max_block_id)
     tx = submit_query(request, db)
     i = 0
     while i < len(tx):
-        if tx[i][1] > countTx:
+        if tx[i][1] > count_tx:
             print("Block " + str(tx[i][0]) + " contains " + \
                   str(tx[i][1]) + " transactions")
             return False
@@ -87,10 +87,10 @@ def get_table_column_names(db, table):
     return col
 
 #rollback1
-def get_user_table_state(db, userTable):
-    request = "SELECT * FROM \"" + userTable + "\""
+def get_user_table_state(db, user_table):
+    request = "SELECT * FROM \"" + user_table + "\""
     res = submit_query(request, db)
-    col = get_table_column_names(db, userTable)
+    col = get_table_column_names(db, user_table)
     table = {}
     for i in range(len(col)):
         table[col[i][0]] = res[0][i]
@@ -103,9 +103,9 @@ def get_user_token_amounts(db):
     return submit_query(request, db)
 
 #block_chain
-def get_blockchain_hash(db, maxBlockId):
+def get_blockchain_hash(db, max_block_id):
     request = "SELECT md5(array_agg(md5((t.id, t.hash, t.data, t.ecosystem_id, t.key_id, t.node_position, t.time, t.tx)::varchar))::varchar)  FROM (SELECT * FROM block_chain WHERE id <= " + str(
-        maxBlockId) + " ORDER BY id) AS t"
+        max_block_id) + " ORDER BY id) AS t"
     return submit_query(request, db)
 
 #limits
@@ -123,8 +123,8 @@ def get_commission_wallet(db, ecosId):
     return wallet
 
 #cost
-def get_balance_from_db(db, keyId):
-    request = "select amount from \"1_keys\" WHERE id=" + keyId
+def get_balance_from_db(db, key_id):
+    request = "select amount from \"1_keys\" WHERE id=" + key_id
     amount = submit_query(request, db)
     balance = amount[0][0]
     return balance

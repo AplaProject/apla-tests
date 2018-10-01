@@ -179,74 +179,74 @@ class TestApi():
         msg = "There is not " + contract + " contract"
 
     def test_content_lang(self):
-        nameLang = "Lang_" + tools.generate_random_name()
-        data = {"ApplicationId": 1, "Name": nameLang,
+        name_lang = "Lang_" + tools.generate_random_name()
+        data = {"ApplicationId": 1, "Name": name_lang,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
                 "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = self.call("NewLang", data)
         self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        namePage = "Page_" + tools.generate_random_name()
-        valuePage = "Hello, LangRes(" + nameLang + ")"
-        dataPage = {"ApplicationId": 1, "Name": namePage, "Value": valuePage, "Conditions": "true",
+        name_page = "Page_" + tools.generate_random_name()
+        value_page = "Hello, LangRes(" + name_lang + ")"
+        data_page = {"ApplicationId": 1, "Name": name_page, "Value": value_page, "Conditions": "true",
                     "Menu": "default_menu"}
-        res = self.call("NewPage", dataPage)
+        res = self.call("NewPage", data_page)
         self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = [{'tag': 'text', 'text': 'Hello, World_en'}]
-        contentRu = [{'tag': 'text', 'text': 'Hello, Мир_ru'}]
-        contentFr = [{'tag': 'text', 'text': 'Hello, Monde_fr-FR'}]
-        contentDe = [{'tag': 'text', 'text': 'Hello, Welt_de'}]
-        dictExp ={"default" : content, "ru": contentRu,
-                  "fr": contentFr, "de": contentDe, "pe": content}
-        pContent = actions.get_content(self.url, "page", namePage, "en", 1, self.token)     # should be: en
-        ruPContent = actions.get_content(self.url, "page", namePage, "ru", 1, self.token)      # should be: ru
-        frPcontent = actions.get_content(self.url, "page", namePage, "fr-FR", 1, self.token) # should be: fr-FR
-        dePcontent = actions.get_content(self.url, "page", namePage, "de-DE", 1, self.token)   # should be: de
-        pePcontent = actions.get_content(self.url, "page", namePage, "pe", 1, self.token)      # should be: en
-        dictCur = {"default" : pContent['tree'], "ru": ruPContent['tree'],
-                  "fr": frPcontent['tree'], "de": dePcontent['tree'], "pe": pePcontent['tree']}
-        self.unit.assertDictEqual(dictCur, dictExp, "One of langRes is faild")
+        content_ru = [{'tag': 'text', 'text': 'Hello, Мир_ru'}]
+        content_fr = [{'tag': 'text', 'text': 'Hello, Monde_fr-FR'}]
+        content_de = [{'tag': 'text', 'text': 'Hello, Welt_de'}]
+        dict_exp ={"default" : content, "ru": content_ru,
+                  "fr": content_fr, "de": content_de, "pe": content}
+        p_content = actions.get_content(self.url, "page", name_page, "en", 1, self.token)     # should be: en
+        ru_p_content = actions.get_content(self.url, "page", name_page, "ru", 1, self.token)      # should be: ru
+        fr_p_content = actions.get_content(self.url, "page", name_page, "fr-FR", 1, self.token) # should be: fr-FR
+        de_p_content = actions.get_content(self.url, "page", name_page, "de-DE", 1, self.token)   # should be: de
+        pe_p_content = actions.get_content(self.url, "page", name_page, "pe", 1, self.token)      # should be: en
+        dict_cur = {"default" : p_content['tree'], "ru": ru_p_content['tree'],
+                  "fr": fr_p_content['tree'], "de": de_p_content['tree'], "pe": pe_p_content['tree']}
+        self.unit.assertDictEqual(dict_cur, dict_exp, "One of langRes is faild")
         
     def test_content_lang_after_edit(self):
-        nameLang = "Lang_" + tools.generate_random_name()
-        data = {"ApplicationId": 1, "Name": nameLang,
+        name_lang = "Lang_" + tools.generate_random_name()
+        data = {"ApplicationId": 1, "Name": name_lang,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
                 "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = self.call("NewLang", data)
         self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + str(res))
-        namePage = "Page_" + tools.generate_random_name()
-        valuePage = "Hello, LangRes(" + nameLang + ")"
-        dataPage = {"Name": namePage, "Value": valuePage, "Conditions": "true",
+        name_page = "Page_" + tools.generate_random_name()
+        value_page = "Hello, LangRes(" + name_lang + ")"
+        data_page = {"Name": name_page, "Value": value_page, "Conditions": "true",
                     "Menu": "default_menu", "ApplicationId": 1,}
-        res = self.call("NewPage", dataPage)
+        res = self.call("NewPage", data_page)
         self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         count = self.check_get_api("/list/languages", "", [])["count"]
-        dataEdit = {"Id": count, "AppID": 1, "Name": nameLang,
+        data_edit = {"Id": count, "AppID": 1, "Name": name_lang,
                 "Trans": "{\"en\": \"World_en_ed\", \"ru\" : \"Мир_ru_ed\"," +\
                 "\"fr-FR\": \"Monde_fr-FR_ed\", \"de\": \"Welt_de_ed\"}"}
-        res = self.call("EditLang", dataEdit)
+        res = self.call("EditLang", data_edit)
         self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = [{'tag': 'text', 'text': 'Hello, World_en_ed'}]
-        contentRu = [{'tag': 'text', 'text': 'Hello, Мир_ru_ed'}]
-        contentFr = [{'tag': 'text', 'text': 'Hello, Monde_fr-FR_ed'}]
-        contentDe = [{'tag': 'text', 'text': 'Hello, Welt_de_ed'}]
-        dictExp ={"default" : content, "ru": contentRu,
-                  "fr": contentFr, "de": contentDe, "pe": content}
-        pContent = actions.get_content(self.url, "page", namePage, "en", 1, self.token)          # should be: en
-        ruPContent = actions.get_content(self.url, "page", namePage, "ru", 1, self.token)      # should be: ru
-        frPcontent = actions.get_content(self.url, "page", namePage, "fr-FR", 1, self.token) # should be: fr-FR
-        dePcontent = actions.get_content(self.url, "page", namePage, "de-DE", 1, self.token)   # should be: de
-        pePcontent = actions.get_content(self.url, "page", namePage, "pe", 1, self.token)      # should be: en
-        dictCur = {"default" : pContent['tree'], "ru": ruPContent['tree'],
-                  "fr": frPcontent['tree'], "de": dePcontent['tree'], "pe": pePcontent['tree']}
-        self.unit.assertDictEqual(dictCur, dictExp, "One of langRes is faild")
+        content_ru = [{'tag': 'text', 'text': 'Hello, Мир_ru_ed'}]
+        content_fr = [{'tag': 'text', 'text': 'Hello, Monde_fr-FR_ed'}]
+        content_de = [{'tag': 'text', 'text': 'Hello, Welt_de_ed'}]
+        dict_exp ={"default" : content, "ru": content_ru,
+                  "fr": content_fr, "de": content_de, "pe": content}
+        p_content = actions.get_content(self.url, "page", name_page, "en", 1, self.token)          # should be: en
+        ru_p_content = actions.get_content(self.url, "page", name_page, "ru", 1, self.token)      # should be: ru
+        fr_p_content = actions.get_content(self.url, "page", name_page, "fr-FR", 1, self.token) # should be: fr-FR
+        de_p_content = actions.get_content(self.url, "page", name_page, "de-DE", 1, self.token)   # should be: de
+        pe_p_content = actions.get_content(self.url, "page", name_page, "pe", 1, self.token)      # should be: en
+        dict_cur = {"default" : p_content['tree'], "ru": ru_p_content['tree'],
+                  "fr": fr_p_content['tree'], "de": de_p_content['tree'], "pe": pe_p_content['tree']}
+        self.unit.assertDictEqual(dict_cur, dict_exp, "One of langRes is faild")
 
     def test_get_content_from_template(self):
         data = {}
         data["template"] = "SetVar(mytest, 100) Div(Body: #mytest#)"
         asserts = ["tree"]
         res = self.check_post_api("/content", data, asserts)
-        answerTree = {'tree': [{'tag': 'div', 'children': [{'tag': 'text', 'text': '100'}]}]}
-        self.unit.assertEqual(answerTree, res)
+        answer_tree = {'tree': [{'tag': 'div', 'children': [{'tag': 'text', 'text': '100'}]}]}
+        self.unit.assertEqual(answer_tree, res)
 
     def test_get_content_from_template_empty(self):
         data = {}
@@ -261,8 +261,8 @@ class TestApi():
         data["source"] = "true"
         asserts = ["tree"]
         res = self.check_post_api("/content", data, asserts)
-        answerTree = {'tree': [{'tag': 'setvar', 'attr': {'name': 'mytest', 'value': '100'}}, {'tag': 'div', 'children': [{'tag': 'text', 'text': '#mytest#'}]}]}
-        self.unit.assertEqual(answerTree, res)
+        answer_tree = {'tree': [{'tag': 'setvar', 'attr': {'name': 'mytest', 'value': '100'}}, {'tag': 'div', 'children': [{'tag': 'text', 'text': '#mytest#'}]}]}
+        self.unit.assertEqual(answer_tree, res)
 
     def test_get_content_from_template_source_empty(self):
         data = {}
@@ -309,8 +309,8 @@ class TestApi():
 
     def test_get_content_from_another_ecosystem(self):
         # create new ecosystem
-        ecosysName = "Ecosys_" + tools.generate_random_name()
-        data = {"Name": ecosysName}
+        ecosys_name = "Ecosys_" + tools.generate_random_name()
+        data = {"Name": ecosys_name}
         res = self.call("NewEcosystem", data)
         self.unit.assertGreater(int(res), 0,
                            "BlockId is not generated: " + str(res))
@@ -319,18 +319,18 @@ class TestApi():
         data2 = actions.login(self.url, self.pr_key, 0, ecosys_num)
         token2 = data2["jwtToken"]
         # create page in new ecosystem
-        pageName = "Page_" + tools.generate_random_name()
-        pageText = "Page in "+str(ecosys_num)+" ecosystem"
-        pageValue = "Span("+pageText+")"
-        data = {"Name": pageName, "Value": pageValue, "ApplicationId": 1,
+        page_name = "Page_" + tools.generate_random_name()
+        page_text = "Page in "+str(ecosys_num)+" ecosystem"
+        page_value = "Span("+page_text+")"
+        data = {"Name": page_name, "Value": page_value, "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         resp = actions.call_contract(self.url, self.pr_key, "@1NewPage", data, token2)
         status = actions.tx_status(self.url, self.wait, resp["hash"], token2)
         self.unit.assertGreater(int(status["blockid"]), 0,"BlockId is not generated: " + str(status))
         # create menu in new ecosystem
-        menuName = "Menu_" + tools.generate_random_name()
-        menuTitle = "Test menu"
-        data = {"Name": menuName, "Value": "MenuItem(Title:\""+menuTitle+"\")", "ApplicationId": 1,
+        menu_name = "Menu_" + tools.generate_random_name()
+        menu_title = "Test menu"
+        data = {"Name": menu_name, "Value": "MenuItem(Title:\""+menu_title+"\")", "ApplicationId": 1,
                 "Conditions": "true"}
         resp = actions.call_contract(self.url, self.pr_key, "@1NewMenu", data, token2)
         status = actions.tx_status(self.url, self.wait, resp["hash"], token2)
@@ -338,13 +338,13 @@ class TestApi():
         # test
         data = ""
         asserts = ["tree"]
-        resPage = self.check_post_api("/content/page/@" + str(ecosys_num) + pageName, data, asserts)
-        resMenu = self.check_post_api("/content/menu/@" + str(ecosys_num) + menuName, data, asserts)
-        must_be = dict(pageText=pageText,
-                      menu=menuTitle)
-        expectedValue = dict(pageText=resPage["tree"][0]["children"][0]["text"],
-                      menu=resMenu["tree"][0]["attr"]["title"])
-        self.unit.assertEqual(must_be, expectedValue, "Dictionaries are different!")
+        res_page = self.check_post_api("/content/page/@" + str(ecosys_num) + page_name, data, asserts)
+        res_menu = self.check_post_api("/content/menu/@" + str(ecosys_num) + menu_name, data, asserts)
+        must_be = dict(pageText=page_text,
+                      menu=menu_title)
+        expected_value = dict(pageText=res_page["tree"][0]["children"][0]["text"],
+                      menu=res_menu["tree"][0]["attr"]["title"])
+        self.unit.assertEqual(must_be, expected_value, "Dictionaries are different!")
 
     def test_get_back_api_version(self):
         asserts = ["."]
@@ -652,14 +652,14 @@ class TestApi():
         not_auth_res = requests.post(self.url + "/content/hash/" + name)
         not_auth_res = not_auth_res.json()
         page = "not_exist_page_xxxxxxxxx"
-        notAuthResNotExist = requests.post(self.url + "/content/hash/" + page)
-        notAuthResNotExist = notAuthResNotExist.json()
+        not_auth_res_not_exist = requests.post(self.url + "/content/hash/" + page)
+        not_auth_res_not_exist = not_auth_res_not_exist.json()
         must_be = dict(authRes=True,
                       notAuthRes=True,
                       msg="Page not found")
         actual = dict(authRes=is_hash_not_empty(auth_res),
                       notAuthRes=is_hash_not_empty(not_auth_res),
-                      msg=notAuthResNotExist["msg"])
+                      msg=not_auth_res_not_exist["msg"])
         self.unit.assertDictEqual(must_be, actual, "Not all assertions passed in test_content_hash")
 
     def test_get_ecosystem_name(self):

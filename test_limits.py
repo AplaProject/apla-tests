@@ -79,9 +79,9 @@ class TestLimits():
                                 "NewContract", data, self.token)
             i = i + 1
         time.sleep(5)
-        maxBlock = actions.get_max_block_id(self.conf[1]["url"], self.token)
-        print("maxBlock = ", maxBlock)
-        is_one_or_two = db.is_count_tx_in_block(self.conf[1]["db"], maxBlock, 1)
+        max_block = actions.get_max_block_id(self.conf[1]["url"], self.token)
+        print("max_block = ", max_block)
+        is_one_or_two = db.is_count_tx_in_block(self.conf[1]["db"], max_block, 1)
         self.update_sys_param("max_block_user_tx ", str(max_block_user_tx ))
         time.sleep(30)
         self.unit.assertTrue(is_one_or_two,

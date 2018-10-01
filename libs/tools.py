@@ -25,17 +25,17 @@ def generate_random_name():
         name.append(sym)
     return "".join(name)
 
-def generate_name_and_code(sourceCode):
+def generate_name_and_code(source_code):
     name = "Cont_" + generate_random_name()
-    code = generate_code(name, sourceCode)
+    code = generate_code(name, source_code)
     return code, name
 
-def generate_code(contractName, sourceCode):
-    if sourceCode == "":
-        sCode = """{data { }    conditions {    }    action {    }    }"""
+def generate_code(contract_name, source_code):
+    if source_code == "":
+        s_code = """{data { }    conditions {    }    action {    }    }"""
     else:
-        sCode = sourceCode
-    code = "contract " + contractName + sCode
+        s_code = source_code
+    code = "contract " + contract_name + s_code
     return code
 
 
