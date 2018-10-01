@@ -17,6 +17,16 @@ def call_post_api(url, data, token):
     else:
         return None
 
+def find_id_by_name(url, token, table, name):
+    # get_list must have column 'name', else Error
+    answer_dict = get_list(url, table, token)['list']
+    print(answer_dict)
+    for element in range(len(answer_dict)):
+        if answer_dict[element]['name'] == name:
+            return answer_dict[element]['id']
+        else:
+            return None
+
 def get_count(url, type, token):
     endPoint = url + "/list/" + type
     res = call_get_api(endPoint, "", token)

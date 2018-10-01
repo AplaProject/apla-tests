@@ -237,11 +237,12 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewContract", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        data2 = {"Id": funcs.get_contract_id(url, name, token),
+        count = funcs.find_id_by_name(url, token, "contracts", name)
+        data2 = {"Id": count,
                  "Value": code, "Conditions": "true",
                  "WalletId": newWallet}
         ans = self.call("EditContract", data2)
-        msg = "New contract owner " + newWallet + " is invalid"
+        msg = "New owner " + newWallet + " is invalid"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract(self):
@@ -345,7 +346,6 @@ class SystemContractsTestCase(unittest.TestCase):
         data = {"Name": name, "Value": "test", "ApplicationId": 1,
                 "Conditions": condition}
         ans = self.call("NewParameter", data)
-        print(ans)
         msg = "Condition " + condition + " is not allowed"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
@@ -407,7 +407,7 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewMenu", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "menu", token)
+        count = funcs.find_id_by_name(url, token, "menu", name)
         dataEdit = {"Id": count, "Value": "ItemEdited", "Conditions": "true"}
         res = self.call("EditMenu", dataEdit)
         self.assertGreater(res["blockid"], 0,
@@ -420,7 +420,7 @@ class SystemContractsTestCase(unittest.TestCase):
         id = "9999"
         dataEdit = {"Id": id, "Value": "ItemEdited", "Conditions": "true"}
         ans = self.call("EditMenu", dataEdit)
-        msg = "Item " + id + " has not been found"
+        msg = "Item is not found"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_menu_incorrect_condition(self):
@@ -430,7 +430,7 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewMenu", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "menu", token)
+        count = funcs.find_id_by_name(url, token, "menu", name)
         dataEdit = {"Id": count, "Value": "ItemEdited", "Conditions": condition}
         ans = self.call("EditMenu", dataEdit)
         msg = "Condition " + condition + " is not allowed"
@@ -442,7 +442,7 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewMenu", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "menu", token)
+        count = funcs.find_id_by_name(url, token, "menu", name)
         dataEdit = {"Id": count, "Value": "AppendedItem", "Conditions": "true"}
         res = self.call("AppendMenu", dataEdit)
         self.assertGreater(res["blockid"], 0,
@@ -493,7 +493,8 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewPage", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataEdit = {"Id": funcs.get_count(url, "pages", token),
+        count = funcs.find_id_by_name(url, token, "pages", name)
+        dataEdit = {"Id": count,
                     "Value": "Good by page!", "Conditions": "true",
                     "Menu": "default_menu"}
         res = self.call("EditPage", dataEdit)
@@ -511,7 +512,8 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewPage", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataEdit = {"Id": funcs.get_count(url, "pages", token),
+        count = funcs.find_id_by_name(url, token, "pages", name)
+        dataEdit = {"Id": count,
                     "Value": "Good by page!", "Conditions": "true",
                     "ValidateCount": 1, "Menu": "default_menu"}
         res = self.call("EditPage", dataEdit)
@@ -526,7 +528,7 @@ class SystemContractsTestCase(unittest.TestCase):
         dataEdit = {"Id": id, "Value": "Good by page!",
                     "Conditions": "true", "Menu": "default_menu"} 
         ans = self.call("EditPage", dataEdit)
-        self.assertEqual("Item " + id + " has not been found",
+        self.assertEqual("Item is not found",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_page_incorrect_condition(self):
@@ -538,7 +540,8 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         condition = "tryam"
-        dataEdit = {"Id": funcs.get_count(url, "pages", token),
+        count = funcs.find_id_by_name(url, token, "pages", name)
+        dataEdit = {"Id": count,
                     "Value": "Good by page!", "Conditions": condition,
                     "Menu": "default_menu"}
         ans = self.call("EditPage", dataEdit)
@@ -552,8 +555,9 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewPage", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "pages", token)
-        dataEdit = {"Id": funcs.get_count(url, "pages", token),
+
+        count = funcs.find_id_by_name(url, token, 'pages', name)
+        dataEdit = {"Id": count,
                     "Value": "Good by!", "Conditions": "true",
                     "Menu": "default_menu"}
         res = self.call("AppendPage", dataEdit)
@@ -587,7 +591,7 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         ans = self.call("NewBlock", data)
-        self.assertEqual("Block " + name + " already exists",
+        self.assertEqual("Block '" + name + "' is already exists",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_block_incorrect_condition(self):
@@ -603,7 +607,7 @@ class SystemContractsTestCase(unittest.TestCase):
         id = "9999"
         dataEdit = {"Id": id, "Value": "Good by!", "Conditions": "true"}
         ans = self.call("EditBlock", dataEdit)
-        msg = "Item " + id + " has not been found"
+        msg = "Item is not found"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_block(self):
@@ -613,7 +617,7 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewBlock", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "blocks", token)
+        count = funcs.find_id_by_name(url, token, "blocks", name)
         dataEdit = {"Id": count, "Value": "Good by!", "Conditions": "true"}
         res = self.call("EditBlock", dataEdit)
         self.assertGreater(res["blockid"], 0,
@@ -626,7 +630,7 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewBlock", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = funcs.get_count(url, "blocks", token)
+        count = funcs.find_id_by_name(url, token, "blocks", name)
         condition = "tryam"
         dataEdit = {"Id": count, "Value": "Good by!", "Conditions": condition}
         ans = self.call("EditBlock", dataEdit)

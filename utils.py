@@ -27,7 +27,6 @@ def login(url, prKey, role=0, ecosystem=1):
 	head = {'Authorization': fullToken}
 	resp = requests.post(url + '/login', params=data, headers=head)
 	res = resp.json()
-	print(res)
 	result = {}
 	result["uid"] = uid
 	result["jwtToken"] = 'Bearer ' + res["token"]
@@ -36,14 +35,12 @@ def login(url, prKey, role=0, ecosystem=1):
 	result["key_id"] = res["key_id"]
 	return result
 
-
 def get_schema(url, name, jvtToken):
 	resp = requests.get(url + '/contract/' + name, headers={"Authorization": jvtToken})
 	return resp.json()
 
 def call_contract(url, prKey, name, data, jvtToken):
 	schema = get_schema(url, name, jvtToken)
-	print('schema', schema)
 	contract = Contract(schema=schema, private_key=prKey,
 					params=data)
 	tx_bin_data = contract.concat()
@@ -67,7 +64,6 @@ def call_multi_contract(url, prKey, name, data, jvtToken):
 	resp = requests.post(url + '/sendTx', files=full_bindata,
 						headers={"Authorization": jvtToken})
 	result = resp.json()
-	print(result)
 	return result
 
 
@@ -99,7 +95,6 @@ def txstatus_multi(url, sleepTime, hshs, jvtToken):
 	while sec < sleepTime:
 		time.sleep(1)
 		resp = requests.post(urlEnd, params={"data": json.dumps({"hashes": list})}, headers={'Authorization': jvtToken})
-		print(resp.json())
 		jresp = resp.json()["results"]
 		for status in jresp.values():
 			if (len(status['blockid']) > 0 and 'errmsg' not in json.dumps(status)):
@@ -257,6 +252,12 @@ def getCountTable(dbHost, dbName, login, password, table):
 	cursor.execute("SELECT count(*) FROM \"" + table + "\"")
 	return cursor.fetchall()[0][0]
 
+def getCountTableFromEcosystem(dbHost, dbName, login, password, table, ecosys=1):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT count(*) FROM \"" + table + "\" WHERE ecosystem="+str(ecosys))
+	return cursor.fetchall()[0][0]
+
 def getMaxIdFromTable(dbHost, dbName, login, password, table):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
@@ -273,7 +274,6 @@ def getObjectIdByName(dbHost, dbName, login, password, table, name):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute("SELECT id FROM \"" + table + "\" WHERE name = '"+str(name)+"'")
-	print(cursor.fetchall())
 	return cursor.fetchall()[0][0]
 
 def getFounderId(dbHost, dbName, login, password):
