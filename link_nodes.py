@@ -7,48 +7,46 @@ import os
 import json
 
 def isInBlock(call, url, token):
-    if "hash" in call:
-        status = utils.txstatus(url, 30, call["hash"], token)
+    status = utils.txstatus(url, 30, call, token)
+    print(status)
+    if "blockid" not in status or int(status["blockid"]) < 0:
         print(status)
-        if "blockid" not in status or int(status["blockid"]) < 0:
-            print(status)
-            return False 
-    else:
-        return False
+        return False 
     return True
         
 def impApp(appName, url, prKey, token):
     path = os.path.join(os.getcwd(), "fixtures", "basic", appName + ".json")
     with open(path, 'r', encoding = "utf8") as f:
         file = f.read()
-    files = {'input_file': file}
-    resp = utils.call_contract_with_files(url, prKey, "ImportUpload", {},
-                                          files, token)
-    if("hash" in resp):
-        resImportUpload = utils.txstatus(url, 30,
-                                         resp["hash"], token)
-        if int(resImportUpload["blockid"]) > 0:
-            founderID = funcs.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
-            result = funcs.call_get_api(url + "/list/buffer_data", "", token)
-            buferDataList = result['list']
-            for item in buferDataList:
-                if item['key'] == "import" and item['member_id'] == founderID:
-                    importAppData = json.loads(item['value'])['data']
-                    break
-            contractName = "Import"
-            data = [{"contract": contractName,
-                     "params": importAppData[i]} for i in range(len(importAppData))]
-            resp = utils.call_multi_contract(url, prKey, contractName, data, token)
-            time.sleep(30)
-            if "hashes" in resp:
-                hashes = resp['hashes']
-                result = utils.txstatus_multi(url, 30, hashes, token)
-                for status in result.values():
-                    print(status)
-                    if int(status["blockid"]) < 1:
-                        print("Import is failed")
-                        exit(1)
-                print("App '" + appName + "' successfully installed")
+    files = {'Data': {'Path': path}}
+    resp = utils.call_contract(url, prKey, "ImportUpload", {'input_file': {'Path': path}},
+                               token)
+    print(resp)
+    resImportUpload = utils.txstatus(url, 30, resp, token)
+    if int(resImportUpload["blockid"]) > 0:
+        founderID = funcs.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
+        result = funcs.call_get_api(url + "/list/buffer_data", "", token)
+        buferDataList = result['list']
+        for item in buferDataList:
+            if item['key'] == "import" and item['member_id'] == founderID:
+                importAppData = json.loads(item['value'])['data']
+                break
+        contractName = "Import"
+        data = [{"contract": contractName,
+                 "params": importAppData[i]} for i in range(len(importAppData))]
+        resp = utils.call_multi_contract(url, prKey, contractName, data, token)
+        time.sleep(30)
+        print("5555555555555555")
+        print(resp)
+        if "hashes" in resp:
+            hashes = resp['hashes']
+            result = utils.txstatus_multi(url, 30, hashes, token)
+            for status in result.values():
+                print(status)
+                if int(status["blockid"]) < 1:
+                    print("Import is failed")
+                    exit(1)
+            print("App '" + appName + "' successfully installed")
                 
 def rolesInsatll(url, prKey, token):
     data = {}
@@ -72,8 +70,7 @@ def voitingInstall(url, prKey, token):
 def editAppParam(name, val, url, prKey, token):
     id = funcs.get_object_id(url, name, "app_params", token)
     print("id", id)
-    data = {"Id": id,
-            "Name": name, "Value": val, "Conditions": "true" }
+    data = {"Id": id, "Value": val, "Conditions": "true" }
     call = utils.call_contract(url, prKey, "EditAppParam",
                                data, token)
     if not isInBlock(call, url, token):
@@ -85,10 +82,9 @@ def updateProfile(name, url, prKey, token):
     path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
     with open(path, 'rb') as f:
         file = f.read()
-    files = {'member_image': file}
     data = {"member_name": name}
-    resp = utils.call_contract_with_files(url, prKey, "ProfileEdit",
-                                          data, files, token)
+    resp = utils.call_contract(url, prKey, "ProfileEdit",
+                                          data, token)
     if not isInBlock(resp, url, token):
         print("UpdateProfile " + name + " is failed")
         exit(1)

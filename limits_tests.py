@@ -19,14 +19,12 @@ class LimitsTestCase(unittest.TestCase):
     def setUp(self):
         global pause, token
         pause = conf["1"]["time_wait_tx_in_block"]
-        self.data = utils.login(conf["2"]["url"],
+        self.data = utils.login(conf["1"]["url"],
                                 conf["1"]['private_key'], 0)
         token = self.data["jwtToken"]        
 
     def assertTxInBlock(self, result, jwtToken):
-        self.assertIn("hash", result)
-        hash = result['hash']
-        status = utils.txstatus(conf["2"]["url"], pause, hash, token)
+        status = utils.txstatus(conf["1"]["url"], pause, result, token)
         print("status tx: ", status)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
@@ -35,7 +33,7 @@ class LimitsTestCase(unittest.TestCase):
             return status["errmsg"]["error"]
         
     def call(self, name, data):
-        resp = utils.call_contract(conf["2"]["url"], conf["1"]['private_key'],
+        resp = utils.call_contract(conf["1"]["url"], conf["1"]['private_key'],
                                    name, data, token)
         res = self.assertTxInBlock(resp, token)
         return res
@@ -96,7 +94,7 @@ class LimitsTestCase(unittest.TestCase):
                                 "NewContract", data, token)
             i = i + 1
         time.sleep(5)
-        maxBlock = funcs.get_max_block_id(conf["2"]["url"], token)
+        maxBlock = funcs.get_max_block_id(conf["1"]["url"], token)
         print("maxBlock = ", maxBlock)
         isOneOrTwo = utils.isCountTxInBlock(conf["2"]["dbHost"],
                                                conf["2"]["dbName"],
@@ -126,7 +124,7 @@ class LimitsTestCase(unittest.TestCase):
                                 "NewContract", data, token)
             i = i + 1
         time.sleep(5)
-        maxBlock = funcs.get_max_block_id(conf["2"]["url"], token)
+        maxBlock = funcs.get_max_block_id(conf["1"]["url"], token)
         self.assertTrue(utils.isCountTxInBlock(conf["2"]["dbHost"],
                                                conf["2"]["dbName"],
                                                conf["2"]["login"],
