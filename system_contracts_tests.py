@@ -24,9 +24,8 @@ class SystemContractsTestCase(unittest.TestCase):
         token = self.data["jwtToken"]
 
     def assertTxInBlock(self, result, jwtToken):
-        self.assertIn("hash", result)
-        hash = result['hash']
-        status = utils.txstatus(url, pause, hash, jwtToken)
+        status = utils.txstatus(url, pause, result, jwtToken)
+        print(status)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return {"blockid": int(status["blockid"]), "error": "0"}
@@ -373,7 +372,7 @@ class SystemContractsTestCase(unittest.TestCase):
     def test_new_menu(self):
         countMenu = utils.getCountTable(dbHost, dbName, login, pas, "1_menu")
         name = "Menu_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
+        data = {"Name": name, "Value": "Item1",
                 "Conditions": "true"}
         res = self.call("NewMenu", data)
         self.assertGreater(res["blockid"], 0,
@@ -1188,9 +1187,9 @@ class SystemContractsTestCase(unittest.TestCase):
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
-        data = {"Name": name, "ApplicationId": 1}
-        resp = utils.call_contract_with_files(url, prKey, "UploadBinary",
-                                              data, files, token)
+        data = {'Name': name, 'ApplicationId': '1', 'Data': file}
+        resp = utils.call_contract(url, prKey, "UploadBinary",
+                                              data, token)
         res = self.assertTxInBlock(resp, token)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -1415,8 +1414,7 @@ class SystemContractsTestCase(unittest.TestCase):
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
         with open(path, 'r', encoding='UTF-8') as f:
             file = f.read()
-        files = {'input_file': file}
-        resp = utils.call_contract_with_files(url, prKey, "ImportUpload", {},
+        resp = utils.call_contract(url, prKey, "ImportUpload", {'input_file': {'Path': path}},
                                               files, token)
         resImportUpload = self.assertTxInBlock(resp, token)
         self.assertGreater(resImportUpload["blockid"], 0,

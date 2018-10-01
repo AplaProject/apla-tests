@@ -14,7 +14,7 @@ class PrototipoTestCase(unittest.TestCase):
         self.config = config.getNodeConfig()
         global url, prKey, token, dbHost, dbName, login, password
         self.pages = config.readFixtures("pages")
-        url = self.config["2"]["url"]
+        url = self.config["1"]["url"]
         prKey = self.config["1"]['private_key']
         self.data = utils.login(url,prKey, 0)
         token = self.data["jwtToken"]
@@ -25,10 +25,9 @@ class PrototipoTestCase(unittest.TestCase):
         self.maxDiff = None
 
     def assertTxInBlock(self, result, jwtToken):
-        self.assertIn("hash",  result)
         status = utils.txstatus(url,
                                 self.config["1"]["time_wait_tx_in_block"],
-                                result['hash'], jwtToken)
+                                result, jwtToken)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
