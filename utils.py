@@ -25,7 +25,6 @@ def login(url, prKey, role=0, ecosystem=1):
 	head = {'Authorization': fullToken}
 	resp = requests.post(url + '/login', params=data, headers=head)
 	res = resp.json()
-	print(res)
 	result = {}
 	result["uid"] = uid
 	result["jwtToken"] = 'Bearer ' + res["token"]
@@ -39,7 +38,6 @@ def prepare_tx(url, prKey, entity, jvtToken, data):
 	heads = {'Authorization': jvtToken}
 	resp = requests.post(url + '/prepare/' + entity, data=data, headers=heads)
 	result = resp.json()
-	print(result)
 	signature = sign(prKey, result['forsign'])
 	return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
@@ -54,11 +52,9 @@ def prepare_tx_with_files(url, prKey, entity, jvtToken, data, files):
 
 def call_contract(url, prKey, name, data, jvtToken):
 	sign = prepare_tx(url, prKey, name, jvtToken, data)
-	print("sign", sign)
 	dataContract = {"time": sign['time'], "signature": sign["signature"]}
 	urlEnd = url + '/contract/' + sign["reqID"]
 	resp = requests.post(urlEnd, data=dataContract, headers={"Authorization": jvtToken})
-	print("resp", resp)
 	result = resp.json()
 	return result
 
@@ -294,7 +290,6 @@ def getObjectIdByName(dbHost, dbName, login, password, table, name):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute("SELECT id FROM \"" + table + "\" WHERE name = '"+str(name)+"'")
-	print(cursor.fetchall())
 	return cursor.fetchall()[0][0]
 
 def getFounderId(dbHost, dbName, login, password):

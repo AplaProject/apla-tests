@@ -347,7 +347,6 @@ class SystemContractsTestCase(unittest.TestCase):
         data = {"Name": name, "Value": "test", "ApplicationId": 1,
                 "Conditions": condition}
         ans = self.call("NewParameter", data)
-        print(ans)
         msg = "Condition " + condition + " is not allowed"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
