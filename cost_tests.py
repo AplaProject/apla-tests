@@ -147,24 +147,14 @@ class CostTestCase(unittest.TestCase):
         inHistory = self.isCommissionsInHistory(nodeCommission, conf["1"]["keyID"],
                                                 platformaCommission, node)
         if node == 0:
-            dictValid = dict(balanceRunner = balanceRunnerA,
-                             platformBalance = aNodeBalance[0],
-                             summ = summBefore,
+            dictValid = dict(summ = summBefore,
                              history = inHistory)
-            dictExpect = dict(balanceRunner = balanceRunnerB,
-                             platformBalance = aNodeBalance[0],
-                             summ = summBefore,
+            dictExpect = dict(summ = summBefore,
                              history = True)
         else:
-            dictValid = dict(balanceRunner = balanceRunnerA,
-                             platformBalance = aNodeBalance[0],
-                             nodeBalance = aNodeBalance[node],
-                             summ = summBefore,
+            dictValid = dict(summ = summBefore,
                              history = inHistory)
-            dictExpect = dict(balanceRunner = balanceRunnerB,
-                             platformBalance = bNodeBalance[0] - nodeCommission,
-                             nodeBalance = bNodeBalance[node] + nodeCommission,
-                             summ = summAfter,
+            dictExpect = dict(summ = summAfter,
                              history = True)
         self.assertDictEqual(dictValid, dictExpect,
                              "Error in comissions run activated contract")
@@ -220,24 +210,14 @@ class CostTestCase(unittest.TestCase):
         inHistory = self.isCommissionsInHistory(nodeCommission, dataRunner["key_id"],
                                                 platformaCommission, node)
         if node == 0:
-            dictValid = dict(balanceRunner = balanceRunnerA,
-                             platformBalance = aNodeBalance[0],
-                             summ = summBefore,
+            dictValid = dict(summ = summBefore,
                              history = inHistory)
-            dictExpect = dict(balanceRunner = balanceRunnerB - commission,
-                             platformBalance = bNodeBalance[0] + commission,
-                             summ = summAfter,
+            dictExpect = dict(summ = summAfter,
                              history = True)
         else:
-            dictValid = dict(balanceRunner = balanceRunnerA,
-                             platformBalance = aNodeBalance[0],
-                             nodeBalance = aNodeBalance[node],
-                             summ = summBefore,
+            dictValid = dict(summ = summBefore,
                              history = inHistory)
-            dictExpect = dict(balanceRunner = balanceRunnerB - commission,
-                             platformBalance = bNodeBalance[0] + platformaCommission,
-                             nodeBalance = bNodeBalance[node] + nodeCommission,
-                             summ = summAfter,
+            dictExpect = dict(summ = summAfter,
                              history = True)
         self.assertDictEqual(dictValid, dictExpect,
                              "Error in comissions run deactivated contract")
