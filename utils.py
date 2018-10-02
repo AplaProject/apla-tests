@@ -53,10 +53,13 @@ def call_contract(url, prKey, name, data, jvtToken):
 
 
 def call_multi_contract(url, prKey, name, data, jvtToken):
+	print("start call_multi_contract")
 	full_bindata = {}
 	i = 1
 	for inf in data:
 		schema = get_schema(url, inf['contract'], jvtToken)
+		print("schema**********", schema)
+		print("inf['params']*******", inf['params'])
 		contract = Contract(schema=schema, private_key=prKey,
 					params=inf['params'])
 		tx_bin_data = contract.concat()
@@ -64,6 +67,7 @@ def call_multi_contract(url, prKey, name, data, jvtToken):
 		i += 1
 	resp = requests.post(url + '/sendTx', files=full_bindata,
 						headers={"Authorization": jvtToken})
+	print("resp33333333: ", resp)
 	result = resp.json()
 	return result
 

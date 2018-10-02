@@ -37,7 +37,7 @@ def impApp(appName, url, prKey, token):
         resp = utils.call_multi_contract(url, prKey, contractName, data, token)
         time.sleep(30)
         print("5555555555555555")
-        print(resp)
+        print("resp--------", resp)
         if "hashes" in resp:
             hashes = resp['hashes']
             result = utils.txstatus_multi(url, 30, hashes, token)
