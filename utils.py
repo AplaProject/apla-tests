@@ -58,8 +58,6 @@ def call_multi_contract(url, prKey, name, data, jvtToken):
 	i = 1
 	for inf in data:
 		schema = get_schema(url, inf['contract'], jvtToken)
-		print("schema**********", schema)
-		print("inf['params']*******", inf['params'])
 		contract = Contract(schema=schema, private_key=prKey,
 					params=inf['params'])
 		tx_bin_data = contract.concat()
@@ -69,6 +67,7 @@ def call_multi_contract(url, prKey, name, data, jvtToken):
 						headers={"Authorization": jvtToken})
 	print("resp33333333: ", resp)
 	result = resp.json()
+	print("result33333333: ", result)
 	return result
 
 
