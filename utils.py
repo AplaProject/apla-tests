@@ -62,8 +62,8 @@ def call_multi_contract(url, prKey, name, data, jvtToken):
 					params=inf['params'])
 		tx_bin_data = contract.concat()
 		full_bindata.update({'call' + str(i): tx_bin_data})
+		print('call' + str(i) + ' --- ', tx_bin_data)
 		i += 1
-	print("full_bindata33333: ", full_bindata)
 	resp = requests.post(url + '/sendTx', files=full_bindata,
 						headers={"Authorization": jvtToken})
 	print("resp33333333: ", resp)
