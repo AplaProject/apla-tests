@@ -41,8 +41,6 @@ def get_schema(url, name, jvtToken):
 
 def call_contract(url, prKey, name, data, jvtToken):
 	schema = get_schema(url, name, jvtToken)
-	print('schema: ', schema)
-	print('data', data)
 	contract = Contract(schema=schema, private_key=prKey,
 					params=data)
 	tx_bin_data = contract.concat()
@@ -53,7 +51,6 @@ def call_contract(url, prKey, name, data, jvtToken):
 
 
 def call_multi_contract(url, prKey, name, data, jvtToken):
-	print("start call_multi_contract")
 	full_bindata = {}
 	i = 1
 	for inf in data:
@@ -64,13 +61,10 @@ def call_multi_contract(url, prKey, name, data, jvtToken):
 					params=inf['params'])
 		tx_bin_data = contract.concat()
 		full_bindata.update({'call' + str(i): tx_bin_data})
-		print('call' + str(i) + ' --- ', tx_bin_data)
 		i += 1
 	resp = requests.post(url + '/sendTx', files=full_bindata,
 						headers={"Authorization": jvtToken})
-	print("resp33333333: ", resp)
 	result = resp.json()
-	print("result33333333: ", result)
 	return result
 
 
@@ -81,9 +75,7 @@ def txstatus(url, sleepTime, hsh, jvtToken):
 	while sec < sleepTime:
 		time.sleep(1)
 		resp = requests.post(urlEnd, params={"data": json.dumps({"hashes": [hsh]})}, headers={'Authorization': jvtToken})
-		print(resp.json())
 		jresp = resp.json()["results"][hsh]
-		print(jresp)
 		if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
 			return resp.json()["results"][hsh]
 		else:
@@ -97,7 +89,6 @@ def txstatus_multi(url, sleepTime, hshs, jvtToken):
 	sec = 0
 	list = []
 	for hash in hshs:
-		print(hash)
 		list.append(hshs[hash])
 	while sec < sleepTime:
 		time.sleep(1)
