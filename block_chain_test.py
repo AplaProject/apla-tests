@@ -48,8 +48,7 @@ class BlockChainTestCase(unittest.TestCase):
         sumAmountsBefore = sum(amount[0] for amount in amountsB)
         while i < ts_count:
             contName = self.create_contract(config1["url"],
-                                            config1['private_key'],
-                                            )
+                                            config1['private_key'])
             i = i + 1
             time.sleep(1)
         time.sleep(120)

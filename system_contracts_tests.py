@@ -25,7 +25,6 @@ class SystemContractsTestCase(unittest.TestCase):
 
     def assertTxInBlock(self, result, jwtToken):
         status = utils.txstatus(url, pause, result, jwtToken)
-        print(status)
         if len(status['blockid']) > 0:
             self.assertNotIn(json.dumps(status), 'errmsg')
             return {"blockid": int(status["blockid"]), "error": "0"}

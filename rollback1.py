@@ -27,7 +27,7 @@ class Rollback1TestCase(unittest.TestCase):
         resp = utils.call_contract(url, prKey, "ImportUpload",
                                    {'input_file': {'Path': path}}, token)
         resImportUpload = utils.txstatus(url, 30,
-                                             resp["hash"], token)
+                                             resp, token)
         if int(resImportUpload["blockid"]) > 0:
             founderID = funcs.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
             result = funcs.call_get_api(url + "/list/buffer_data", "", token)
@@ -54,7 +54,7 @@ class Rollback1TestCase(unittest.TestCase):
     def call(self, name, data):
         resp = utils.call_contract(url, prKey, name, data, token)
         res = utils.txstatus(url, waitTx,
-                             resp['hash'], token)
+                             resp, token)
         return res
 
     def create_contract(self, data):
@@ -116,12 +116,10 @@ class Rollback1TestCase(unittest.TestCase):
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
-        files = {'Data': file}
-        data = {"Name": name, "ApplicationId": 1}
-        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
-                                              files, token)
+        data = {"Name": name, "ApplicationId": 1, 'Data': file}
+        resp = utils.call_contract(url, prKey, "UploadBinary", data, token)
         res = utils.txstatus(url, waitTx,
-                             resp['hash'], token)
+                             resp, token)
         self.assertGreater(int(res['blockid']), 0, "BlockId is not generated: " + str(res))
 
     def addUserTable(self):
@@ -157,7 +155,7 @@ class Rollback1TestCase(unittest.TestCase):
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         # call contarct, wich added record in created table
-        res = self.call(name, data)
+        res = self.call(name, {})
 
     def updateUserTable(self, tableName):
         # create contarct, wich updated record in created table
@@ -175,7 +173,7 @@ class Rollback1TestCase(unittest.TestCase):
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         # call contarct, wich added record in created table
-        res = self.call(name, data)
+        res = self.call(name, {})
 
     def create_ecosystem(self):
         data = {"Name": "Ecosys" + utils.generate_random_name()}
@@ -254,9 +252,7 @@ class Rollback1TestCase(unittest.TestCase):
     def append_page(self):
         count = funcs.get_count(url, "pages", token)
         dataEdit = {"Id": funcs.get_count(url, "pages", token),
-                    "Value": "Good by!",
-                    "Conditions": "true",
-                    "Menu": "default_menu"}
+                    "Value": "Good by!"}
         res = self.call("AppendPage", dataEdit)
 
     def new_block(self):
@@ -314,7 +310,7 @@ class Rollback1TestCase(unittest.TestCase):
 
     def new_lang(self):
         name = "Lang_" + utils.generate_random_name()
-        data = {"Name": name, "ApplicationId": 1,
+        data = {"Name": name,
                 "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("NewLang", data)
         return name
