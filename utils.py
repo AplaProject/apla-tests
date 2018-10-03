@@ -50,11 +50,11 @@ def call_contract(url, prKey, name, data, jvtToken):
 	return result['hashes']['call1']
 
 
-def call_multi_contract(url, prKey, name, data, jvtToken):
+def call_multi_contract(url, prKey, name, data, jvtToken, withData=True):
 	full_bindata = {}
 	i = 1
 	for inf in data:
-		if inf['params']['Data'] == '[]':
+		if inf['params']['Data'] == '[]' and withData == True:
 			continue
 		schema = get_schema(url, inf['contract'], jvtToken)
 		contract = Contract(schema=schema, private_key=prKey,

@@ -27,7 +27,7 @@ class MultiTxApiTestCase(unittest.TestCase):
             self.assertGreater(int(status["blockid"]), 0, "BlockID not generated")
 
     def callMulti(self, name, data):
-        resp = utils.call_multi_contract(url, prKey, name, data, token)
+        resp = utils.call_multi_contract(url, prKey, name, data, token, False)
         resp = self.assertMultiTxInBlock(resp, token)
         return resp
 
