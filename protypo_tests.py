@@ -397,15 +397,13 @@ class PrototipoTestCase(unittest.TestCase):
                              "span has problem: " + str(content["tree"]))
         
     def test_page_langRes(self):
-        lang = "lang_"+utils.generate_random_name()
-        data = {"ApplicationId": 1,
-                "Name": lang,
+        lang = "lang_" + utils.generate_random_name()
+        data = {"Name": lang,
                 "Trans": "{\"en\": \"Lang_en\", \"ru\" : \"Язык\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = utils.call_contract(url, prKey, "NewLang", data, token)
         self.assertTxInBlock(res, token)
         world = "world_" + utils.generate_random_name()
-        data = {"ApplicationId": 1,
-                "Name": world,
+        data = {"Name": world,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = utils.call_contract(url, prKey, "NewLang", data, token)
         self.assertTxInBlock(res, token)
@@ -622,12 +620,9 @@ class PrototipoTestCase(unittest.TestCase):
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
-        files = {'Data': file}
-        data = {"Name": name, "ApplicationId": appID}
-        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
-                                              files, token)
+        data = {"Name": name, "ApplicationId": appID, 'Data': file}
+        resp = utils.call_contract(url, prKey, "UploadBinary", data, token)
         self.assertTxInBlock(resp, token)
-        self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
         MemberID = utils.getFounderId(dbHost, dbName, login, password)
         lastRec = funcs.get_count(url, "binaries", token)
@@ -643,12 +638,9 @@ class PrototipoTestCase(unittest.TestCase):
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
-        files = {'Data': file}
-        data = {"Name": name, "ApplicationId": appID}
-        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
-                                              files, token)
+        data = {"Name": name, "ApplicationId": appID, 'Data': file}
+        resp = utils.call_contract(url, prKey, "UploadBinary", data, token)
         res = self.assertTxInBlock(resp, token)
-        self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
         lastRec = funcs.get_count(url, "binaries", token)
         content = self.check_page("Binary().ById("+lastRec+")")
@@ -663,12 +655,9 @@ class PrototipoTestCase(unittest.TestCase):
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
-        files = {'Data': file}
-        data = {"Name": name, "ApplicationId": appID}
-        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
-                                              files, token)
+        data = {"Name": name, "ApplicationId": appID, 'Data': file}
+        resp = utils.call_contract(url, prKey, "UploadBinary", data, token)
         self.assertTxInBlock(resp, token)
-        self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
         MemberID = utils.getFounderId(dbHost, dbName, login, password)
         lastRec = funcs.get_count(url, "binaries", token)
@@ -689,12 +678,9 @@ class PrototipoTestCase(unittest.TestCase):
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
-        files = {'Data': file}
-        data = {"Name": name, "ApplicationId": appID}
-        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
-                                              files, token)
+        data = {"Name": name, "ApplicationId": appID, 'Data': file}
+        resp = utils.call_contract(url, prKey, "UploadBinary", data, token)
         self.assertTxInBlock(resp, token)
-        self.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
         lastRec = funcs.get_count(url, "binaries", token)
         content = self.check_page("Image(Binary().ById("+lastRec+"))")

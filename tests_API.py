@@ -220,7 +220,7 @@ class ApiTestCase(unittest.TestCase):
 
     def test_content_lang(self):
         nameLang = "Lang_" + utils.generate_random_name()
-        data = {"ApplicationId": 1, "Name": nameLang,
+        data = {"Name": nameLang,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
                 "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = self.call("NewLang", data)
@@ -248,7 +248,7 @@ class ApiTestCase(unittest.TestCase):
         
     def test_content_lang_after_edit(self):
         nameLang = "Lang_" + utils.generate_random_name()
-        data = {"ApplicationId": 1, "Name": nameLang,
+        data = {"Name": nameLang,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
                 "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = self.call("NewLang", data)
@@ -260,9 +260,9 @@ class ApiTestCase(unittest.TestCase):
         res = self.call("NewPage", dataPage)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         count = self.check_get_api("/list/languages", "", [])["count"]
-        dataEdit = {"Id": count, "AppID": 1, "Name": nameLang,
-                "Trans": "{\"en\": \"World_en_ed\", \"ru\" : \"Мир_ru_ed\"," +\
-                "\"fr-FR\": \"Monde_fr-FR_ed\", \"de\": \"Welt_de_ed\"}"}
+        dataEdit = {"Id": count,
+                    "Trans": "{\"en\": \"World_en_ed\", \"ru\" : \"Мир_ru_ed\"," +\
+                    "\"fr-FR\": \"Monde_fr-FR_ed\", \"de\": \"Welt_de_ed\"}"}
         res = self.call("EditLang", dataEdit)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         content = [{'tag': 'text', 'text': 'Hello, World_en_ed'}]
@@ -362,18 +362,18 @@ class ApiTestCase(unittest.TestCase):
         pageName = "Page_" + utils.generate_random_name()
         pageText = "Page in "+str(ecosysNum)+" ecosystem"
         pageValue = "Span("+pageText+")"
-        data = {"Name": pageName, "Value": pageValue, "ApplicationId": 1,
+        data = {"Name": pageName, "Value": pageValue, 'ApplicationId': 1,
                 "Conditions": "true", "Menu": "default_menu"}
         resp = utils.call_contract(url, prKey, "@1NewPage", data, token2)
-        status = utils.txstatus(url, pause, resp["hash"], token2)
+        status = utils.txstatus(url, pause, resp, token2)
         self.assertGreater(int(status["blockid"]), 0,"BlockId is not generated: " + str(status))
         # create menu in new ecosystem
         menuName = "Menu_" + utils.generate_random_name()
         menuTitle = "Test menu"
-        data = {"Name": menuName, "Value": "MenuItem(Title:\""+menuTitle+"\")", "ApplicationId": 1,
+        data = {"Name": menuName, "Value": "MenuItem(Title:\""+menuTitle+"\")",
                 "Conditions": "true"}
         resp = utils.call_contract(url, prKey, "@1NewMenu", data, token2)
-        status = utils.txstatus(url, pause, resp["hash"], token2)
+        status = utils.txstatus(url, pause, resp, token2)
         self.assertGreater(int(status["blockid"]), 0, "BlockId is not generated: " + str(status))
         # test
         data = ""
@@ -540,10 +540,8 @@ class ApiTestCase(unittest.TestCase):
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
-        files = {'Data': file}
-        data = {"Name": name, "ApplicationId": 1, "DataMimeType":"image/jpeg"}
-        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
-                                              files, token)
+        data = {"Name": name, "ApplicationId": 1, 'Data': file}
+        resp = utils.call_contract(url, prKey, "UploadBinary", data, token)
         res = self.assertTxInBlock(resp, token)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # find last added file
@@ -608,10 +606,8 @@ class ApiTestCase(unittest.TestCase):
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
-        files = {'Data': file}
-        data = {"Name": name, "ApplicationId": 1, "DataMimeType":"image/jpeg"}
-        resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
-                                              files, token)
+        data = {"Name": name, "ApplicationId": 1, "DataMimeType":"image/jpeg", 'Data': file}
+        resp = utils.call_contract(url, prKey, "UploadBinary", data, token)
         res = self.assertTxInBlock(resp, token)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # find last added file

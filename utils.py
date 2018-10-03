@@ -41,6 +41,7 @@ def get_schema(url, name, jvtToken):
 
 def call_contract(url, prKey, name, data, jvtToken):
 	schema = get_schema(url, name, jvtToken)
+	print(schema)
 	contract = Contract(schema=schema, private_key=prKey,
 					params=data)
 	tx_bin_data = contract.concat()
