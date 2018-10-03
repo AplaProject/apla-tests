@@ -23,7 +23,10 @@ class BlockChainTestCase(unittest.TestCase):
         name = "Menu_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Item1", "Conditions": "true"}
         res = utils.call_contract(url, prKey, "NewMenu", data, self.data1["jwtToken"])
-        return funcs.get_count(url, "menu", self.data1["jwtToken"])
+        utils.txstatus(url, 30, res, self.data1["jwtToken"])
+        id = funcs.get_object_id(url, name, "menu", self.data1["jwtToken"])
+        print(id)
+        return id
     
     def test_block_chain(self):
         fullConfig = config.getNodeConfig()
