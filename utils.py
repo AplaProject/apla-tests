@@ -57,6 +57,8 @@ def call_multi_contract(url, prKey, name, data, jvtToken):
 	full_bindata = {}
 	i = 1
 	for inf in data:
+		if inf['params']['Data'] == '[]':
+			continue
 		schema = get_schema(url, inf['contract'], jvtToken)
 		contract = Contract(schema=schema, private_key=prKey,
 					params=inf['params'])
