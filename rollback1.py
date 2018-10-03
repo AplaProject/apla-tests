@@ -24,35 +24,31 @@ class Rollback1TestCase(unittest.TestCase):
 
     def impApp(self, appName, url, prKey, token):
         path = os.path.join(os.getcwd(), "fixtures", "basic", appName + ".json")
-        with open(path, 'r', encoding="utf8") as f:
-            file = f.read()
-        files = {'input_file': file}
-        resp = utils.call_contract_with_files(url, prKey, "ImportUpload", {},
-                                              files, token)
-        if ("hash" in resp):
-            resImportUpload = utils.txstatus(url, 30,
+        resp = utils.call_contract(url, prKey, "ImportUpload",
+                                   {'input_file': {'Path': path}}, token)
+        resImportUpload = utils.txstatus(url, 30,
                                              resp["hash"], token)
-            if int(resImportUpload["blockid"]) > 0:
-                founderID = funcs.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
-                result = funcs.call_get_api(url + "/list/buffer_data", "", token)
-                buferDataList = result['list']
-                for item in buferDataList:
-                    if item['key'] == "import" and item['member_id'] == founderID:
-                        importAppData = json.loads(item['value'])['data']
-                        break
-                contractName = "Import"
-                data = [{"contract": contractName,
+        if int(resImportUpload["blockid"]) > 0:
+            founderID = funcs.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
+            result = funcs.call_get_api(url + "/list/buffer_data", "", token)
+            buferDataList = result['list']
+            for item in buferDataList:
+                if item['key'] == "import" and item['member_id'] == founderID:
+                    importAppData = json.loads(item['value'])['data']
+                    break
+            contractName = "Import"
+            data = [{"contract": contractName,
                          "params": importAppData[i]} for i in range(len(importAppData))]
-                resp = utils.call_multi_contract(url, prKey, contractName, data, token)
-                time.sleep(30)
-                if "hashes" in resp:
-                    hashes = resp['hashes']
-                    result = utils.txstatus_multi(url, 30, hashes, token)
-                    for status in result.values():
-                        if int(status["blockid"]) < 1:
-                            print("Import is failed")
-                            exit(1)
-                    print("App '" + appName + "' successfully installed")
+            resp = utils.call_multi_contract(url, prKey, contractName, data, token)
+            time.sleep(30)
+            if "hashes" in resp:
+                hashes = resp['hashes']
+                result = utils.txstatus_multi(url, 30, hashes, token)
+                for status in result.values():
+                    if int(status["blockid"]) < 1:
+                        print("Import is failed")
+                        exit(1)
+                print("App '" + appName + "' successfully installed")
 
 
     def call(self, name, data):
