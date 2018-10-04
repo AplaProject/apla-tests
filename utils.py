@@ -39,10 +39,12 @@ def get_schema(url, name, jvtToken):
 	resp = requests.get(url + '/contract/' + name, headers={"Authorization": jvtToken})
 	return resp.json()
 
-def call_contract(url, prKey, name, data, jvtToken):
+def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
 	schema = get_schema(url, name, jvtToken)
-	contract = Contract(schema=schema, private_key=prKey,
-					params=data)
+	contract = Contract(schema=schema,
+						private_key=prKey,
+						ecosystem_id=ecosystem,
+						params=data)
 	tx_bin_data = contract.concat()
 	resp = requests.post(url + '/sendTx', files={'call1': tx_bin_data},
 						headers={"Authorization": jvtToken})
