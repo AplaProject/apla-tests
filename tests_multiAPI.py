@@ -52,7 +52,7 @@ class MultiTxApiTestCase(unittest.TestCase):
         contractName = "NewLang"
         nameLang = "Lang_" + utils.generate_random_name()
         data = [{"contract": contractName,
-                 "params": {"ApplicationId": "1", "Name": nameLang,
+                 "params": {"Name": nameLang,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
                 "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}}]
         res = self.callMulti(contractName, data)
