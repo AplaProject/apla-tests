@@ -20,7 +20,7 @@ class WebsiteTasks(TaskSet):
     def NewContract(self):
         code, name = utils.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
-        schema = get_schema(url, "NewContract", token)
+        schema = utils.get_schema(url, "NewContract", token)
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
@@ -33,7 +33,7 @@ class WebsiteTasks(TaskSet):
     def MoneyTransfer(self):
         data = {"Recipient": "0005-2070-2000-0006-0200",
                 "Amount": "2"}        
-        schema = get_schema(url, "MoneyTransfer", token)
+        schema = utils.get_schema(url, "MoneyTransfer", token)
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
@@ -45,9 +45,8 @@ class WebsiteTasks(TaskSet):
     @task   
     def NewParameter(self):
         name = "Par_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "test", "ApplicationId": 1,
-                "Conditions": "true"}        
-        schema = get_schema(url, "NewParameter", token)
+        data = {"Name": name, "Value": "test", "Conditions": "true"}        
+        schema = utils.get_schema(url, "NewParameter", token)
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
@@ -59,9 +58,9 @@ class WebsiteTasks(TaskSet):
     @task   
     def NewMenu(self):
         name = "Menu_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
+        data = {"Name": name, "Value": "Item1",
                 "Conditions": "true"}
-        schema = get_schema(url, "NewMenu", token)
+        schema = utils.get_schema(url, "NewMenu", token)
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
@@ -75,7 +74,7 @@ class WebsiteTasks(TaskSet):
         name = "Page_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
-        schema = get_schema(url, "NewPage", token)
+        schema = utils.get_schema(url, "NewPage", token)
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
@@ -89,7 +88,7 @@ class WebsiteTasks(TaskSet):
         name = "Block_" + utils.generate_random_name()
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true"}
-        schema = get_schema(url, "NewBlock", token)
+        schema = utils.get_schema(url, "NewBlock", token)
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
@@ -107,7 +106,7 @@ class WebsiteTasks(TaskSet):
         data = {"Name": "Tab_" + utils.generate_random_name(),
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
-        schema = get_schema(url, "NewTable", token)
+        schema = utils.get_schema(url, "NewTable", token)
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
@@ -118,17 +117,16 @@ class WebsiteTasks(TaskSet):
         
     @task   
     def NewLang(self):
-        data = {"AppID": 1, "Name": "Lang_" + utils.generate_random_name(),
-                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}",
-                "ApplicationId": 1}
-        schema = get_schema(url, "NewTable", token)
+        data = {"Name": "Lang_" + utils.generate_random_name(),
+                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
+        schema = utils.get_schema(url, "NewLang", token)
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
         resp = requests.post(url + '/sendTx', files={'call1': tx_bin_data},
                         headers={"Authorization": token})
         self.client.post("/sendTx", files={'call1': tx_bin_data},
-                         headers={"Authorization": token}, name="NewTable")
+                         headers={"Authorization": token}, name="NewLang")
         
 
 class WebsiteUser(HttpLocust):

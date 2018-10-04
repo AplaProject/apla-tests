@@ -1002,9 +1002,8 @@ class SystemContractsTestCase(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_new_lang(self):
-        data = {"AppID": 1, "Name": "Lang_" + utils.generate_random_name(),
-                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}",
-                "ApplicationId": 1}
+        data = {"Name": "Lang_" + utils.generate_random_name(),
+                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("NewLang", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
