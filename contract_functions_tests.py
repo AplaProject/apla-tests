@@ -65,7 +65,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         result = utils.call_contract(url, prKey, name, data, token)
         status = utils.txstatus(url,
                                 self.config["1"]["time_wait_tx_in_block"],
-                                result['hash'], token)
+                                result, token)
         return status
       
     def check_contract_with_data(self, sourse, data, checkPoint):
@@ -75,9 +75,8 @@ class ContractFunctionsTestCase(unittest.TestCase):
         prKey = self.config["1"]['private_key']
         token = self.data["jwtToken"]
         sleep = self.config["1"]["time_wait_tx_in_block"]
-        res = utils.call_contract(url, prKey, name, data, token)
-        hash = res["hash"]
-        result = utils.txstatus(url, sleep, hash, token)
+        hash = utils.call_contract(url, prKey, name, data, token)
+        result = utils.txstatus(url, sleep, res, token)
         self.assertIn(checkPoint, result["result"], "error")
 
     def test_contract_dbfind(self):
@@ -208,7 +207,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         data = {"Name": "test",
                 "Trans": "{\"en\": \"test_en\", \"de\" : \"test_de\"}"}
         result = utils.call_contract(url, prKey, "NewLang", data, token)
-        tx = utils.txstatus(url, self.config["1"]["time_wait_tx_in_block"], result['hash'], token)
+        tx = utils.txstatus(url, self.config["1"]["time_wait_tx_in_block"], result, token)
         contract = self.contracts["langRes"]
         self.check_contract(contract["code"], contract["asert"])
         
@@ -225,7 +224,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         result = utils.call_contract(url, prKey, "NewTable", data, token)
         tx = utils.txstatus(url,
                                 self.config["1"]["time_wait_tx_in_block"],
-                                result['hash'], token)
+                                result, token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
         
@@ -242,7 +241,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         result = utils.call_contract(url, prKey, "NewTable", data, token)
         tx = utils.txstatus(url,
                                 self.config["1"]["time_wait_tx_in_block"],
-                                result['hash'], token)
+                                result, token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
         contract = self.contracts["dbUpdate"]
@@ -273,7 +272,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         result = utils.call_contract(url, prKey, "NewTable", data, token)
         tx = utils.txstatus(url,
                                 self.config["1"]["time_wait_tx_in_block"],
-                                result['hash'], token)
+                                result, token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
         contract = self.contracts["dbUpdateExt"]
@@ -361,7 +360,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         result = utils.call_contract(url, prKey, "NewContract", data, token)
         tx = utils.txstatus(url,
                             self.config["1"]["time_wait_tx_in_block"],
-                            result['hash'], token)
+                            result, token)
         expResult = "system variable "+sysVarName+" cannot be changed"
         msg = "system variable "+sysVarName+" was been changed!"
         self.assertEqual(tx["errmsg"]["error"], expResult, msg)
@@ -395,7 +394,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 result = utils.call_contract(url, prKey, "NewContract", data, token)
                 tx = utils.txstatus(url,
                                     self.config["1"]["time_wait_tx_in_block"],
-                                    result['hash'], token)
+                                    result, token)
                 current_block_id = int(tx["blockid"])
                 self.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
                 old_block_id = current_block_id
@@ -407,7 +406,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         result = utils.call_contract(url, prKey, "NewContract", data, token)
         tx = utils.txstatus(url,
                             self.config["1"]["time_wait_tx_in_block"],
-                            result['hash'], token)
+                            result, token)
         current_block_id = int(tx["blockid"])
         self.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
         # wait until generated 100 blocks

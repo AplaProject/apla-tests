@@ -54,7 +54,7 @@ class LimitsTestCase(unittest.TestCase):
         self.update_sys_param("max_tx_size", "500")
         name = "cont" + utils.generate_random_name()
         code = "contract " + name + contract["limits"]["code"]
-        data = {"Wallet": "", "Value": code, "ApplicationId": 1,
+        data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         error = self.call("NewContract", data)
         self.assertEqual(error, "Max size of tx", "Incorrect error: " + error)
@@ -69,7 +69,7 @@ class LimitsTestCase(unittest.TestCase):
         self.update_sys_param("max_block_size", "500")
         name = "cont" + utils.generate_random_name()
         code = "contract " + name + contract["limits"]["code"]
-        data = {"Wallet": "", "Value": code, "ApplicationId": 1,
+        data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         error = self.call("NewContract", data)
         self.assertEqual(error, "stop generating block", "Incorrect error: " + error)
@@ -88,7 +88,7 @@ class LimitsTestCase(unittest.TestCase):
         while i < 10: 
             name = "cont" + utils.generate_random_name()
             code = "contract " + name + contract["limits"]["code"]
-            data = {"Wallet": "", "Value": code, "ApplicationId": 1,
+            data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
             utils.call_contract(conf["2"]["url"], conf["1"]['private_key'],
                                 "NewContract", data, token)
@@ -118,7 +118,7 @@ class LimitsTestCase(unittest.TestCase):
         while i < 10: 
             name = "cont" + utils.generate_random_name()
             code = "contract " + name + contract["limits"]["code"]
-            data = {"Wallet": "", "Value": code, "ApplicationId": 1,
+            data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
             utils.call_contract(conf["2"]["url"], conf["1"]['private_key'],
                                 "NewContract", data, token)

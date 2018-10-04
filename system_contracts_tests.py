@@ -151,14 +151,14 @@ class SystemContractsTestCase(unittest.TestCase):
 
     def test_money_transfer_zero_amount(self):
         wallet = "0005-2070-2000-0006-0200"
-        msg = "Amount must be greater then zero"
+        msg = "Amount must be greater than zero"
         data = {"Recipient": wallet, "Amount": "0"}
         ans = self.call("MoneyTransfer", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
     def test_money_transfer_negative_amount(self):
         wallet = "0005-2070-2000-0006-0200"
-        msg = "Amount must be greater then zero"
+        msg = "Amount must be greater than zero"
         data = {"Recipient": wallet, "Amount": "-1000"}
         ans = self.call("MoneyTransfer", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
@@ -201,7 +201,7 @@ class SystemContractsTestCase(unittest.TestCase):
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         ans = self.call("NewContract", data)
-        self.assertIn("must be the name", ans["error"],
+        self.assertIn("Contract name is missing", ans["error"],
                       "Incorrect message: " + str(ans))
 
     def test_new_contract_incorrect_condition(self):
@@ -322,16 +322,14 @@ class SystemContractsTestCase(unittest.TestCase):
 
     def test_new_parameter(self):
         name = "Par_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "test", "ApplicationId": 1,
-                "Conditions": "true"}
+        data = {"Name": name, "Value": "test", "Conditions": "true"}
         res = self.call("NewParameter", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_new_parameter_exist_name(self):
         name = "Par_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "test", "ApplicationId": 1,
-                "Conditions": "true"}
+        data = {"Name": name, "Value": "test", "Conditions": "true"}
         res = self.call("NewParameter", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -342,8 +340,7 @@ class SystemContractsTestCase(unittest.TestCase):
     def test_new_parameter_incorrect_condition(self):
         condition = "tryam"
         name = "Par_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "test", "ApplicationId": 1,
-                "Conditions": condition}
+        data = {"Name": name, "Value": "test", "Conditions": condition}
         ans = self.call("NewParameter", data)
         msg = "Condition " + condition + " is not allowed"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
@@ -382,8 +379,7 @@ class SystemContractsTestCase(unittest.TestCase):
 
     def test_new_menu_exist_name(self):
         name = "Menu_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
-                "Conditions": "true"}
+        data = {"Name": name, "Value": "Item1", "Conditions": "true"}
         res = self.call("NewMenu", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -394,8 +390,7 @@ class SystemContractsTestCase(unittest.TestCase):
     def test_new_menu_incorrect_condition(self):
         name = "Menu_" + utils.generate_random_name()
         condition = "tryam"
-        data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
-                "Conditions": condition}
+        data = {"Name": name, "Value": "Item1", "Conditions": condition}
         ans = self.call("NewMenu", data)
         msg = "Condition " + condition + " is not allowed"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
@@ -442,14 +437,14 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         count = funcs.find_id_by_name(url, token, "menu", name)
-        dataEdit = {"Id": count, "Value": "AppendedItem", "Conditions": "true"}
+        dataEdit = {"Id": count, "Value": "AppendedItem"}
         res = self.call("AppendMenu", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_append_incorrect_menu(self):
         id = "999"
-        dataEdit = {"Id": id, "Value": "AppendedItem", "Conditions": "true"}
+        dataEdit = {"Id": id, "Value": "AppendedItem"}
         ans = self.call("AppendMenu", dataEdit)
         msg = "Item " + id + " has not been found"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
@@ -557,8 +552,7 @@ class SystemContractsTestCase(unittest.TestCase):
 
         count = funcs.find_id_by_name(url, token, 'pages', name)
         dataEdit = {"Id": count,
-                    "Value": "Good by!", "Conditions": "true",
-                    "Menu": "default_menu"}
+                    "Value": "Good by!"}
         res = self.call("AppendPage", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -568,8 +562,7 @@ class SystemContractsTestCase(unittest.TestCase):
 
     def test_append_page_incorrect_id(self):
         id = "9999"
-        dataEdit = {"Id": id, "Value": "Good by!", "Conditions": "true",
-                    "Menu": "default_menu"} 
+        dataEdit = {"Id": id, "Value": "Good by!"} 
         ans = self.call("AppendPage", dataEdit)
         msg = "Item " + id + " has not been found"
         self.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
@@ -752,32 +745,6 @@ class SystemContractsTestCase(unittest.TestCase):
         content = [['num1', '1']]
         cont = funcs.get_content(url, "page", name, "", 1, token)
         self.assertEqual(cont['tree'][0]['attr']['data'], content)
-
-    def test_new_table_joint(self):
-        columns = ["varchar", "Myb", "MyD", "MyM", "MyT", "MyDouble", "MyC"]
-        types = ["varchar", "json", "datetime", "money", "text", "double", "character"]
-        dicColumns = {"ColumnsArr[]": len(columns), "ColumnsArr[0]": columns[0],
-                      "ColumnsArr[1]": columns[1], "ColumnsArr[2]": columns[2],
-                      "ColumnsArr[3]": columns[3], "ColumnsArr[4]": columns[4],
-                      "ColumnsArr[5]": columns[5], "ColumnsArr[6]": columns[6]}
-        dicTypes = {"TypesArr[]": len(types), "TypesArr[0]": types[0],
-                    "TypesArr[1]": types[1], "TypesArr[2]": types[2],
-                    "TypesArr[3]": types[3], "TypesArr[4]": types[4],
-                    "TypesArr[5]": types[5], "TypesArr[6]": types[6]}
-        permission = """{"insert": "false", "update" : "true","new_column": "true"}"""
-        data = {"ApplicationId": 1,
-                "Name" :"Tab_" + utils.generate_random_name(),
-                "ColumnsArr": dicColumns,
-                "TypesArr": dicTypes,
-                "InsertPerm": "true",
-                "UpdatePerm": "true",
-                "ReadPerm": "true",
-                "NewColumnPerm": "true"}
-        data.update(dicColumns)
-        data.update(dicTypes)
-        res = self.call("NewTableJoint", data)
-        self.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
 
     def test_new_table_incorrect_column_name_digit(self):
         column = """[{"name":"123","type":"varchar",
@@ -995,7 +962,7 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewColumn", dataCol)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        dataEdit = {"TableName": nameTab, "Name": name, "Type": "number",
+        dataEdit = {"TableName": nameTab, "Name": name,
                    "UpdatePerm": "false", "ReadPerm": "false"}
         res = self.call("EditColumn", dataEdit)
         self.assertGreater(res["blockid"], 0,
@@ -1009,16 +976,14 @@ class SystemContractsTestCase(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
         
     def test_new_lang_joint(self):
-        data = {"ApplicationId": 1,
-                "Name": "Lang_" + utils.generate_random_name(),
+        data = {"Name": "Lang_" + utils.generate_random_name(),
                 "ValueArr": ["en", "ru"], "LocaleArr": ["Hi", "Привет"]}
         res = self.call("NewLangJoint", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         
     def test_edit_lang_joint(self):
-        data = {"ApplicationId": 1,
-                "Name": "Lang_" + utils.generate_random_name(),
+        data = {"Name": "Lang_" + utils.generate_random_name(),
                 "ValueArr": ["en", "ru"], "LocaleArr": ["Hi", "Привет"]}
         res = self.call("NewLangJoint", data)
         self.assertGreater(res["blockid"], 0,
@@ -1032,14 +997,12 @@ class SystemContractsTestCase(unittest.TestCase):
 
     def test_edit_lang(self):
         name = "Lang_" + utils.generate_random_name()
-        data = {"AppID": 1, "Name": name, "ApplicationId": 1,
-                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
+        data = {"Name": name, "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("NewLang", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         count = funcs.get_count(url, "languages", token)
-        dataEdit = {"Id": count, "Name": name, "AppID": 1,
-                    "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
+        dataEdit = {"Id": count, "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("EditLang", dataEdit)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -1117,7 +1080,7 @@ class SystemContractsTestCase(unittest.TestCase):
         res = self.call("NewAppParam", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        data2 = {"Id": 1, "Name": name, "Value": "myParamEdited", "Conditions": "true" }
+        data2 = {"Id": 1, "Value": "myParamEdited", "Conditions": "true" }
         res = self.call("EditAppParam", data2)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -1412,8 +1375,8 @@ class SystemContractsTestCase(unittest.TestCase):
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
         with open(path, 'r', encoding='UTF-8') as f:
             file = f.read()
-        resp = utils.call_contract(url, prKey, "ImportUpload", {'input_file': {'Path': path}},
-                                              files, token)
+        resp = utils.call_contract(url, prKey, "ImportUpload",
+                                   {'input_file': {'Path': path}}, token)
         resImportUpload = self.assertTxInBlock(resp, token)
         self.assertGreater(resImportUpload["blockid"], 0,
                            "BlockId is not generated: " + str(resImportUpload))
