@@ -47,6 +47,7 @@ def call_contract(url, prKey, name, data, jvtToken):
 	resp = requests.post(url + '/sendTx', files={'call1': tx_bin_data},
 						headers={"Authorization": jvtToken})
 	result = resp.json()
+	print(result)
 	return result['hashes']['call1']
 
 
