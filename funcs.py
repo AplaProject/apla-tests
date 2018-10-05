@@ -20,7 +20,6 @@ def call_post_api(url, data, token):
 def find_id_by_name(url, token, table, name):
     # get_list must have column 'name', else Error
     answer_dict = get_list(url, table, token)['list']
-    print(answer_dict)
     for element in range(len(answer_dict)):
         if answer_dict[element]['name'] == name:
             return answer_dict[element]['id']
@@ -55,10 +54,7 @@ def get_application_id(url, name, token):
 def get_object_id(url, name, object, token):
     id = None
     endPoint = url + "/list/" + object + "?limit=1000"
-    print("endPoint", endPoint)
     res = call_get_api(endPoint, "", token)
-    print("ans", res)
-    print("name", name)
     for object in res["list"]:
         if object["name"] == name:
             id = object["id"]
@@ -68,7 +64,6 @@ def get_object_id(url, name, object, token):
 def is_contract_activated(url, name, token):
     endPoint = url + "/contract/" + name
     res = call_get_api(endPoint, "", token)
-    print(res)
     return res["active"]
 
 def get_activated_wallet(url, name, token):

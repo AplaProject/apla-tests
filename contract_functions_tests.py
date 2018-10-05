@@ -76,7 +76,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         token = self.data["jwtToken"]
         sleep = self.config["1"]["time_wait_tx_in_block"]
         hash = utils.call_contract(url, prKey, name, data, token)
-        result = utils.txstatus(url, sleep, res, token)
+        result = utils.txstatus(url, sleep, hash, token)
         self.assertIn(checkPoint, result["result"], "error")
 
     def test_contract_dbfind(self):

@@ -121,7 +121,7 @@ class CostTestCase(unittest.TestCase):
                                   "CostContract", {"State": 1}, tokenRunner)
         result = utils.txstatus(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
                                 res, tokenRunner)
-        time.sleep(10)
+        time.sleep(30)
         node = utils.get_block_gen_node(conf["1"]["dbHost"], conf["1"]["dbName"],
                                         conf["1"]["login"], conf["1"] ["pass"],
                                         result["blockid"])
@@ -184,7 +184,7 @@ class CostTestCase(unittest.TestCase):
                                   "CostContract", {"State": 1}, tokenRunner)
         result = utils.txstatus(conf["2"]["url"], conf["2"]["time_wait_tx_in_block"],
                                 res, tokenRunner)
-        time.sleep(10)
+        time.sleep(30)
         node = utils.get_block_gen_node(conf["1"]["dbHost"], conf["1"]["dbName"],
                                         conf["1"]["login"], conf["1"] ["pass"],
                                         result["blockid"])

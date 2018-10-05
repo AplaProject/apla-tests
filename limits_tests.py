@@ -41,6 +41,7 @@ class LimitsTestCase(unittest.TestCase):
     def update_sys_param(self, param, value):
         data = {"Name": param, "Value" : value}
         res = self.call("UpdateSysParam", data)
+        print(res)
         self.assertGreater(int(res), 0,
                            "Block is not generated for updating sysparam: " +\
                            res)
@@ -90,16 +91,16 @@ class LimitsTestCase(unittest.TestCase):
             code = "contract " + name + contract["limits"]["code"]
             data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
-            utils.call_contract(conf["2"]["url"], conf["1"]['private_key'],
+            utils.call_contract(conf["1"]["url"], conf["1"]['private_key'],
                                 "NewContract", data, token)
             i = i + 1
         time.sleep(5)
         maxBlock = funcs.get_max_block_id(conf["1"]["url"], token)
         print("maxBlock = ", maxBlock)
-        isOneOrTwo = utils.isCountTxInBlock(conf["2"]["dbHost"],
-                                               conf["2"]["dbName"],
-                                               conf["2"]["login"],
-                                               conf["2"] ["pass"],
+        isOneOrTwo = utils.isCountTxInBlock(conf["1"]["dbHost"],
+                                               conf["1"]["dbName"],
+                                               conf["1"]["login"],
+                                               conf["1"] ["pass"],
                                                maxBlock, 1)
         self.update_sys_param("max_block_user_tx ", str(max_block_user_tx ))
         time.sleep(30)
@@ -120,15 +121,15 @@ class LimitsTestCase(unittest.TestCase):
             code = "contract " + name + contract["limits"]["code"]
             data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
-            utils.call_contract(conf["2"]["url"], conf["1"]['private_key'],
+            utils.call_contract(conf["1"]["url"], conf["1"]['private_key'],
                                 "NewContract", data, token)
             i = i + 1
         time.sleep(5)
         maxBlock = funcs.get_max_block_id(conf["1"]["url"], token)
-        self.assertTrue(utils.isCountTxInBlock(conf["2"]["dbHost"],
-                                               conf["2"]["dbName"],
-                                               conf["2"]["login"],
-                                               conf["2"] ["pass"],
+        self.assertTrue(utils.isCountTxInBlock(conf["1"]["dbHost"],
+                                               conf["1"]["dbName"],
+                                               conf["1"]["login"],
+                                               conf["1"] ["pass"],
                                                maxBlock, 2),
                         "One of block contains more than 2 transaction")
         self.update_sys_param("max_tx_count ", str(max_tx_count))
