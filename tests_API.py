@@ -364,7 +364,7 @@ class ApiTestCase(unittest.TestCase):
         pageValue = "Span("+pageText+")"
         data = {"Name": pageName, "Value": pageValue, 'ApplicationId': 1,
                 "Conditions": "true", "Menu": "default_menu"}
-        resp = utils.call_contract(url, prKey, "@1NewPage", data, token2)
+        resp = utils.call_contract(url, prKey, "@1NewPage", data, token2, ecosystem=ecosysNum)
         status = utils.txstatus(url, pause, resp, token2)
         self.assertGreater(int(status["blockid"]), 0,"BlockId is not generated: " + str(status))
         # create menu in new ecosystem
@@ -372,7 +372,7 @@ class ApiTestCase(unittest.TestCase):
         menuTitle = "Test menu"
         data = {"Name": menuName, "Value": "MenuItem(Title:\""+menuTitle+"\")",
                 "Conditions": "true"}
-        resp = utils.call_contract(url, prKey, "@1NewMenu", data, token2)
+        resp = utils.call_contract(url, prKey, "@1NewMenu", data, token2, ecosystem=ecosysNum)
         status = utils.txstatus(url, pause, resp, token2)
         self.assertGreater(int(status["blockid"]), 0, "BlockId is not generated: " + str(status))
         # test
