@@ -516,11 +516,9 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 """ % innerName
         outerCode, outerName = self.generate_name_and_code(outerBody)
         self.create_contract(outerCode)
-        data = {"Wallet": "", "ApplicationId": 1,
-                "Value": outerCode,
-                "Conditions": "ContractConditions(\"MainCondition\")"}
+        data = {}
         res = self.call(outerName, data)
-        mustBe = "[@1" + outerName + " CallContract @1" + innerName +"]"
+        mustBe = "[@1" + outerName + " @1" + innerName +"]"
         self.assertEqual(mustBe, res["result"], "test_sys_var_stack is failed!")
 
     def test_getHistoryRowMenu(self):
