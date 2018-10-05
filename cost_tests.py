@@ -85,10 +85,12 @@ class CostTestCase(unittest.TestCase):
                                                            idFrom,
                                                            conf["1"]["keyID"],
                                                            platformaCommission)
-        print(str(isNodeCommission))
-        print(str(isPlatformCommission))
+        print("isNodeCommission", isNodeCommission)
+        print("isPlatformCommission", isPlatformCommission)
         print("PlatformID  ", str(conf["1"]["keyID"]))
         print("platforma commission: ", str(platformaCommission))
+        print("Key node: ", conf[str(node+1)]["keyID"])
+        print("nodeCommision", nodeCommision)
         if isNodeCommission and isPlatformCommission:
             return True
         else:
