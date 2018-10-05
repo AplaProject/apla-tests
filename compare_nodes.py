@@ -67,6 +67,10 @@ class CompareNodes(unittest.TestCase):
         dbInformation1 = utils.getCountDBObjects(host1, db1, login1, pas1)
         dbInformation2 = utils.getCountDBObjects(host2, db2, login2, pas2)
         dbInformation3 = utils.getCountDBObjects(host3, db3, login3, pas3)
+        data = utils.login(config1["url"], config1['private_key'], 0)
+        print(funcs.get_list(config1["url"], "node_ban_logs", data["jwtToken"]))
+        print(funcs.call_get_api(config1["url"] + "/systemparams/?names=full_nodes", "",
+                                 data["jwtToken"]))
         for key in dbInformation1:
             dbInf1 = dbInformation1[key]
             dbInf2 = dbInformation2[key]
