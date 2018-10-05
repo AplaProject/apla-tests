@@ -348,10 +348,6 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["jsonDecode"]
         self.check_contract(contract["code"], contract["asert"])
 
-    def test_sys_var_role_id(self):
-        contract = self.contracts["sys_var_roleID"]
-        self.check_contract(contract["code"], contract["asert"])
-
     def test_sys_var_role_id_readonly(self):
         sysVarName = "$role_id"
         contracName = utils.generate_random_name()
@@ -516,11 +512,9 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 """ % innerName
         outerCode, outerName = self.generate_name_and_code(outerBody)
         self.create_contract(outerCode)
-        data = {"Wallet": "", "ApplicationId": 1,
-                "Value": outerCode,
-                "Conditions": "ContractConditions(\"MainCondition\")"}
+        data = {}
         res = self.call(outerName, data)
-        mustBe = "[@1" + outerName + " CallContract @1" + innerName +"]"
+        mustBe = "[@1" + outerName + " @1" + innerName +"]"
         self.assertEqual(mustBe, res["result"], "test_sys_var_stack is failed!")
 
     def test_getHistoryRowMenu(self):
