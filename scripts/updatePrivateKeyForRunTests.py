@@ -31,7 +31,7 @@ lines["2"]["dbName"] = args.dbName
 lines["3"]["dbName"] = args.dbName
 
 with open(file, 'w') as f:
-	json.dump(lines, f)
+	json.dump(lines, f, indent=4)
 
 print("hostConfig.json is updated!")
 

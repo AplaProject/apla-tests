@@ -1,5 +1,6 @@
 import os
 import argparse
+import json
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-privateKeyPath', default='D:\\genesis-go')
@@ -10,19 +11,18 @@ args = parser.parse_args()
 with open(os.path.join(args.privateKeyPath, 'PrivateKey'), 'r') as f:
 	privKey1 = f.read()
 
-config = os.path.join(args.configPath, 'config.json')
-with open(config) as fconf:
-	lines = fconf.readlines()
+file = os.path.join(args.configPath, "config.json")
+with open(file, 'r') as f:
+	data = f.read()
+	lines = json.loads(data)
 
 # Update private keys in config
-del lines[2]
-lines.insert(2, "\t\t\"private_key\": \""+privKey1+"\",\n")
+lines["private_key"] = privKey1
 
 # Update DB name in config
-del lines[5]
-lines.insert(5, "\t\t\"dbName\": \""+args.dbName+"\",\n")
+lines["dbName"] = args.dbName
 
-with open(config, 'w') as fconf:
-	fconf.write(''.join(lines))
+with open(file, 'w') as f:
+	json.dump(lines, f, indent=4)
 
 print("config.json is updated!")
