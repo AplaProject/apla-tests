@@ -143,35 +143,36 @@ class SystemContractsTestCase(unittest.TestCase):
                         "No TokensSend resord in history")
 
 
-    def test_money_transfer_incorrect_wallet(self):
+    def test_tokens_send_incorrect_wallet(self):
         wallet = "0005-2070-2000-0006"
-        msg = "Recipient " + wallet + " is invalid"
-        data = {"Recipient": wallet, "Amount": "1000"}
-        ans = self.call("MoneyTransfer", data)
+        msg = "Recipient " + wallet + " is not valid"
+        data = {"Recipient_Account": wallet, "Amount": "1000"}
+        ans = self.call("TokensSend", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
-    def test_money_transfer_zero_amount(self):
+    def test_tokens_send_zero_amount(self):
         wallet = "0005-2070-2000-0006-0200"
-        msg = "Amount must be greater than zero"
-        data = {"Recipient": wallet, "Amount": "0"}
-        ans = self.call("MoneyTransfer", data)
+        msg = "Amount equals zero"
+        data = {"Recipient_Account": wallet, "Amount": "0"}
+        ans = self.call("TokensSend", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
-    def test_money_transfer_negative_amount(self):
+    def test_tokens_send_negative_amount(self):
         wallet = "0005-2070-2000-0006-0200"
-        msg = "Amount must be greater than zero"
-        data = {"Recipient": wallet, "Amount": "-1000"}
-        ans = self.call("MoneyTransfer", data)
+        msg = "Amount is less than zero"
+        data = {"Recipient_Account": wallet, "Amount": "-1000"}
+        ans = self.call("TokensSend", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
-    def test_money_transfer_amount_as_string(self):
+    def test_tokens_send_amount_as_string(self):
         wallet = "0005-2070-2000-0006-0200"
-        msg = "can't convert ttt to decimal"
-        data = {"Recipient": wallet, "Amount": "ttt"}
-        ans = self.call("MoneyTransfer", data)
+        msg = "Invalid param 'Amount': can't convert ttt to decimal"
+        data = {"Recipient_Account": wallet, "Amount": "ttt"}
+        ans = self.call("TokensSend", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
-    def test_money_transfer_with_comment(self):
+    # ???
+    def transfer_with_comment(self):
         wallet = "0005-2070-2000-0006-0200"
         data = {"Recipient": wallet, "Amount": "1000", "Comment": "Test"}
         res = self.call("MoneyTransfer", data)
