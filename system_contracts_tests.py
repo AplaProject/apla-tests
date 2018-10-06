@@ -1156,7 +1156,7 @@ class SystemContractsTestCase(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_update_system_parameters(self):
-        data = {"Name": "max_block_user_tx", "Value" : "2"}
+        data = {"Name": "max_tx_block_per_user", "Value" : "2"}
         res = self.call("UpdateSysParam", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))

@@ -185,7 +185,7 @@
         }
 	},
     "ecosysParam":{
-		"code": "Span(EcosysParam(max_block_user_tx))",
+		"code": "Span(EcosysParam(max_tx_block_per_user))",
 		"menu": "default_menu",
 		"content": {
             "tag": "span",
