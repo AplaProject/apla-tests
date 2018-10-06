@@ -49,7 +49,11 @@ def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
 	resp = requests.post(url + '/sendTx', files={'call1': tx_bin_data},
 						headers={"Authorization": jvtToken})
 	result = resp.json()
-	return result['hashes']['call1']
+	print(result)
+	if 'hashes' in result:
+		return result['hashes']['call1']
+	else:
+		return result
 
 
 def call_multi_contract(url, prKey, name, data, jvtToken, withData=True):

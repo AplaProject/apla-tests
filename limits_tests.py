@@ -6,6 +6,7 @@ import json
 import funcs
 import os
 import time
+from werkzeug.wsgi import responder
 
 
 class LimitsTestCase(unittest.TestCase):
@@ -35,8 +36,11 @@ class LimitsTestCase(unittest.TestCase):
     def call(self, name, data):
         resp = utils.call_contract(conf["1"]["url"], conf["1"]['private_key'],
                                    name, data, token)
-        res = self.assertTxInBlock(resp, token)
-        return res
+        if 'error' in resp:
+            return resp
+        else:
+            res = self.assertTxInBlock(resp, token)
+            return res
         
     def update_sys_param(self, param, value):
         data = {"Name": param, "Value" : value}
@@ -52,13 +56,19 @@ class LimitsTestCase(unittest.TestCase):
                                                     conf["1"]["login"],
                                                     conf["1"] ["pass"],
                                                     "max_tx_size")
-        self.update_sys_param("max_tx_size", "500")
+        print("max_tx_size", max_tx_size)
+        #500
+        self.update_sys_param("max_tx_size", "450")
+        print(funcs.call_get_api(conf["1"]["url"] + "/systemparams/?names=max_tx_size", "",
+                                 token))
         name = "cont" + utils.generate_random_name()
         code = "contract " + name + contract["limits"]["code"]
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         error = self.call("NewContract", data)
-        self.assertEqual(error, "Max size of tx", "Incorrect error: " + error)
+        print("error", error)
+        self.assertIn("The size of tx is too big", error['msg'],
+                      "Incorrect error: " + str(error))
         self.update_sys_param("max_tx_size", str(max_tx_size))
         
     def test_max_block_size(self):
@@ -67,7 +77,7 @@ class LimitsTestCase(unittest.TestCase):
                                                     conf["1"]["login"],
                                                     conf["1"] ["pass"],
                                                     "max_block_size")
-        self.update_sys_param("max_block_size", "500")
+        self.update_sys_param("max_block_size", "450")
         name = "cont" + utils.generate_random_name()
         code = "contract " + name + contract["limits"]["code"]
         data = {"Value": code, "ApplicationId": 1,
@@ -102,7 +112,7 @@ class LimitsTestCase(unittest.TestCase):
                                                conf["1"]["login"],
                                                conf["1"] ["pass"],
                                                maxBlock, 1)
-        self.update_sys_param("max_block_user_tx ", str(max_block_user_tx ))
+        self.update_sys_param("max_block_user_tx", str(max_block_user_tx ))
         time.sleep(30)
         self.assertTrue(isOneOrTwo,
                         "One of block contains more than 2 transaction")
@@ -115,6 +125,7 @@ class LimitsTestCase(unittest.TestCase):
                                                     conf["1"] ["pass"],
                                                     "max_tx_count")
         self.update_sys_param("max_tx_count", "2")
+        print("here")
         i = 1
         while i < 10: 
             name = "cont" + utils.generate_random_name()
@@ -132,7 +143,8 @@ class LimitsTestCase(unittest.TestCase):
                                                conf["1"] ["pass"],
                                                maxBlock, 2),
                         "One of block contains more than 2 transaction")
-        self.update_sys_param("max_tx_count ", str(max_tx_count))
+        print("here2")
+        self.update_sys_param("max_tx_count", str(max_tx_count))
 
 
 if __name__ == '__main__':
