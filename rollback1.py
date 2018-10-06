@@ -179,10 +179,10 @@ class Rollback1TestCase(unittest.TestCase):
         data = {"Name": "Ecosys" + utils.generate_random_name()}
         res = self.call("NewEcosystem", data)
 
-    def money_transfer(self):
-        data = {"Recipient": "0005-2070-2000-0006-0200",
+    def tokens_send(self):
+        data = {"Recipient_Account": "0005-2070-2000-0006-0200",
                 "Amount": "1000"}
-        res = self.call("MoneyTransfer", data)
+        res = self.call("TokensSend", data)
 
     def edit_contract(self, contract, code):
         data2 = {"Id": funcs.get_contract_id(url, contract, token),
@@ -345,8 +345,7 @@ class Rollback1TestCase(unittest.TestCase):
         print('Start ROLLBACK test')
         # Install apps
         self.impApp("system", url, prKey, token)
-        self.impApp("conditions", url, prKey, token)
-        print("Start rollback test")
+        self.impApp("basic", url, prKey, token)
         self.addNotification()
         self.addBinary()
         tableName = self.addUserTable()
@@ -372,7 +371,7 @@ class Rollback1TestCase(unittest.TestCase):
         with open(file, 'w') as fconf:
             json.dump(dbInformation, fconf)
         self.updateUserTable(tableName)
-        self.money_transfer()
+        self.tokens_send()
         contract, code = self.create_contract("")
         self.edit_contract(contract, code)
         self.activate_contract(contract)
@@ -396,8 +395,7 @@ class Rollback1TestCase(unittest.TestCase):
         self.edit_lang(langs["count"], lang)
         #sign = self.new_sign()
         #self.edit_sign(sign)
-        self.impApp("basic", url, prKey, token)
-        self.impApp("lang_res", url, prKey, token)
+        self.impApp("conditions", url, prKey, token)
         time.sleep(20)
 
 
