@@ -87,13 +87,13 @@ class LimitsTestCase(unittest.TestCase):
         self.update_sys_param("max_block_size", str(max_block_size))
         time.sleep(30)
       
-    def test_max_block_user_tx(self):
-        max_block_user_tx = utils.get_system_parameter(conf["1"]["dbHost"],
+    def test_max_tx_block_per_user(self):
+        max_tx_block_per_user = utils.get_system_parameter(conf["1"]["dbHost"],
                                                     conf["1"]["dbName"],
                                                     conf["1"]["login"],
                                                     conf["1"] ["pass"],
-                                                    "max_block_user_tx")
-        self.update_sys_param("max_block_user_tx", "1")
+                                                    "max_tx_block_per_user")
+        self.update_sys_param("max_tx_block_per_user", "1")
         time.sleep(30)
         i = 1
         while i < 10: 
@@ -112,19 +112,19 @@ class LimitsTestCase(unittest.TestCase):
                                                conf["1"]["login"],
                                                conf["1"] ["pass"],
                                                maxBlock, 1)
-        self.update_sys_param("max_block_user_tx", str(max_block_user_tx ))
+        self.update_sys_param("max_tx_block_per_user", str(max_tx_block_per_user ))
         time.sleep(30)
         self.assertTrue(isOneOrTwo,
                         "One of block contains more than 2 transaction")
         
         
-    def test_max_tx_count (self):
-        max_tx_count = utils.get_system_parameter(conf["1"]["dbHost"],
+    def test_max_tx_block (self):
+        max_tx_block = utils.get_system_parameter(conf["1"]["dbHost"],
                                                     conf["1"]["dbName"],
                                                     conf["1"]["login"],
                                                     conf["1"] ["pass"],
-                                                    "max_tx_count")
-        self.update_sys_param("max_tx_count", "2")
+                                                    "max_tx_block")
+        self.update_sys_param("max_tx_block", "2")
         print("here")
         i = 1
         while i < 10: 
@@ -144,7 +144,7 @@ class LimitsTestCase(unittest.TestCase):
                                                maxBlock, 2),
                         "One of block contains more than 2 transaction")
         print("here2")
-        self.update_sys_param("max_tx_count", str(max_tx_count))
+        self.update_sys_param("max_tx_block", str(max_tx_block))
 
 
 if __name__ == '__main__':
