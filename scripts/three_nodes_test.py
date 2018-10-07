@@ -34,6 +34,7 @@ parser.add_argument('-dbName3', default='gen3')
 
 parser.add_argument('-gapBetweenBlocks', default='2')
 parser.add_argument('-centrifugo', required=True)
+parser.add_argument('-test', default='true')
 
 args = parser.parse_args()
 
@@ -106,7 +107,8 @@ time.sleep(3)
 firstBlock = subprocess.Popen([
 	binary,
 	'generateFirstBlock',
-	'--config='+workDir1+'/config.toml'
+	'--config='+workDir1+'/config.toml',
+	'--test='+args.test
 ])
 time.sleep(3)
 
