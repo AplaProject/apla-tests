@@ -170,12 +170,12 @@
 		"asert": ""
 	},
 	"getContractById": {
-		"code": "{\n data {}\n conditions {}\n action {$result = GetContractById(1)}\n }",
+		"code": "{\n data { ID int }\n conditions {}\n action {$result = GetContractById($ID)}\n }",
 		"asert": "MainCondition"
 	},
 	"getContractByName": {
-		"code": "{\n data {}\n conditions {}\n action {$result = Str(GetContractByName(\"MainCondition\"))}\n }",
-		"asert": "1"
+		"code": "{\n data { }\n conditions {}\n action {$result = Str(GetContractByName(\"MainCondition\"))}\n }",
+		"asert": ""
 	},
 	"random": {
 		"code": "{\n data {}\n conditions {}\n action {$result = Str(Random(5,6))}\n }",

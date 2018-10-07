@@ -194,12 +194,15 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.check_contract(contract["code"], contract["asert"])
 
     def test_contract_getContractById(self):
+        id = funcs.call_get_api(url + '/contract/MainCondition', {}, token)['tableid']
         contract = self.contracts["getContractById"]
-        self.check_contract(contract["code"], contract["asert"])
+        data = {'ID': id}
+        self.check_contract_with_data(contract["code"], data, contract["asert"])
 
     def test_contract_getContractByName(self):
+        id = funcs.call_get_api(url + '/contract/MainCondition', {}, token)['tableid']
         contract = self.contracts["getContractByName"]
-        self.check_contract(contract["code"], contract["asert"])
+        self.check_contract(contract["code"], id)
 
     def test_contract_random(self):
         contract = self.contracts["random"]
