@@ -11,8 +11,9 @@ import time
 class SystemContractsTestCase(unittest.TestCase):
     
     def setUp(self):
-        global url, token, prKey, pause, dbHost, dbName, login, pas
+        global url, token, prKey, pause, dbHost, dbName, login, pas, keys
         self.config = config.getNodeConfig()
+        keys = config.getKeys()
         url = self.config["1"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
         prKey = self.config["1"]['private_key']
@@ -129,9 +130,12 @@ class SystemContractsTestCase(unittest.TestCase):
         self.assertEqual("Ecosystem "+str(id)+" does not exist", res["error"])
 
     def test_tokens_send(self):
-        data = {"Recipient_Account": "0005-2070-2000-0006-0200",
+        ldata = utils.login(self.config["2"]["url"],keys["key2"], 0)
+        time.sleep(10)
+        data = {"Recipient_Account": ldata['address'],
                 "Amount": "1000"}
         res = self.call("TokensSend", data)
+        print(res)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         self.assertTrue(utils.isCommissionInHistory(self.config["1"]["dbHost"],
@@ -144,28 +148,35 @@ class SystemContractsTestCase(unittest.TestCase):
 
 
     def test_tokens_send_incorrect_wallet(self):
-        wallet = "0005-2070-2000-0006"
+        ldata = utils.login(self.config["2"]["url"],keys["key2"], 0)
+        time.sleep(10)
+        wallet = ldata['address']
         msg = "Recipient " + wallet + " is not valid"
         data = {"Recipient_Account": wallet, "Amount": "1000"}
         ans = self.call("TokensSend", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
     def test_tokens_send_zero_amount(self):
-        wallet = "0005-2070-2000-0006-0200"
-        msg = "Amount equals zero"
+        ldata = utils.login(self.config["2"]["url"],keys["key2"], 0)
+        time.sleep(10)
+        wallet = ldata['address']
         data = {"Recipient_Account": wallet, "Amount": "0"}
         ans = self.call("TokensSend", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
     def test_tokens_send_negative_amount(self):
-        wallet = "0005-2070-2000-0006-0200"
+        ldata = utils.login(self.config["2"]["url"],keys["key2"], 0)
+        time.sleep(10)
+        wallet = ldata['address']
         msg = "Amount is less than zero"
         data = {"Recipient_Account": wallet, "Amount": "-1000"}
         ans = self.call("TokensSend", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
     def test_tokens_send_amount_as_string(self):
-        wallet = "0005-2070-2000-0006-0200"
+        ldata = utils.login(self.config["2"]["url"],keys["key2"], 0)
+        time.sleep(10)
+        wallet = ldata['address']
         msg = "Invalid param 'Amount': can't convert ttt to decimal"
         data = {"Recipient_Account": wallet, "Amount": "ttt"}
         ans = self.call("TokensSend", data)
@@ -173,7 +184,9 @@ class SystemContractsTestCase(unittest.TestCase):
 
     # ???
     def transfer_with_comment(self):
-        wallet = "0005-2070-2000-0006-0200"
+        ldata = utils.login(self.config["2"]["url"],keys["key2"], 0)
+        time.sleep(10)
+        wallet = ldata['address']
         data = {"Recipient": wallet, "Amount": "1000", "Comment": "Test"}
         res = self.call("MoneyTransfer", data)
         self.assertGreater(res["blockid"], 0,

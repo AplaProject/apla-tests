@@ -25,6 +25,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         status = utils.txstatus(url,
                                 self.config["1"]["time_wait_tx_in_block"],
                                 result, jwtToken)
+        print(status)
         self.assertNotIn(json.dumps(status), 'errmsg')
         self.assertGreater(len(status['blockid']), 0)
 
@@ -39,6 +40,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
                 "Conditions": "ContractConditions(\"MainCondition\")"}
         result = utils.call_contract(url, prKey, "NewContract",
                                      data, token)
+        print(result)
         self.assertTxInBlock(result, token)
 
     def call_contract(self, name, data):
