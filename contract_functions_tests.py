@@ -350,20 +350,6 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["jsonDecode"]
         self.check_contract(contract["code"], contract["asert"])
 
-    def test_sys_var_role_id_readonly(self):
-        sysVarName = "$role_id"
-        contracName = utils.generate_random_name()
-        value = "contract con_" + contracName + " { data{ } conditions{ } action{ "+ sysVarName + " = 5 } }"
-        data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
-        result = utils.call_contract(url, prKey, "NewContract", data, token)
-        tx = utils.txstatus(url,
-                            self.config["1"]["time_wait_tx_in_block"],
-                            result, token)
-        expResult = "system variable "+sysVarName+" cannot be changed"
-        msg = "system variable "+sysVarName+" was been changed!"
-        print(tx)
-        self.assertEqual(tx["errmsg"]["error"], expResult, msg)
-
     def test_bytesToString(self):
         contract = self.contracts["bytesToString"]
         self.check_contract(contract["code"], contract["asert"])
