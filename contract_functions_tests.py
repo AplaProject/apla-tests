@@ -361,6 +361,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
                             result, token)
         expResult = "system variable "+sysVarName+" cannot be changed"
         msg = "system variable "+sysVarName+" was been changed!"
+        print(tx)
         self.assertEqual(tx["errmsg"]["error"], expResult, msg)
 
     def test_bytesToString(self):

@@ -154,6 +154,7 @@ class ApiTestCase(unittest.TestCase):
             '1_pages',
             '1_tables',
             '1_contracts',
+            '1_applications'
         ]
         for table in tables:
             tableData = funcs.call_get_api(url + "/list/" + table[2:], data, token)
