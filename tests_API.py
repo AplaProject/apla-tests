@@ -560,37 +560,9 @@ class ApiTestCase(unittest.TestCase):
                 founderID = res['list'][i]['id']
             i += 1
         # change column permissions
-        data = {"TableName": "members",
-                "Name":"image_id",
-                "UpdatePerm": "true",
-                "ReadPerm": "true"}
-        res = self.call("EditColumn", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        # update members table
-        code = """
-        {
-            data{}
-            conditions{}
-            action{
-                DBUpdate("members", %s, {image_id: "%s"})
-            }
-        }
-        """ % (founderID, lastRec)
-        code, name = utils.generate_name_and_code(code)
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        data = {}
-        resp = utils.call_contract(url, prKey, name, data, token)
-        res = self.assertTxInBlock(resp, token)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        # rollback changes column permissions
-        data = {"TableName": "members",
-                "Name":"image_id",
-                "UpdatePerm": "ContractAccess(\"Profile_Edit\")",
-                "ReadPerm": "true"}
-        res = self.call("EditColumn", data)
+        data = {'member_name': 'founder',
+                'image_id': lastRec}
+        res = self.call("ProfileEdit", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # test
         ecosystemID = "1"
@@ -626,37 +598,9 @@ class ApiTestCase(unittest.TestCase):
                 founderID = res['list'][i]['id']
             i += 1
         # change column permissions
-        data = {"TableName": "members",
-                "Name": "image_id",
-                "UpdatePerm": "true",
-                "ReadPerm": "true"}
-        res = self.call("EditColumn", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        # update members table
-        code = """
-               {
-                   data{}
-                   conditions{}
-                   action{
-                       DBUpdate("members", %s, {image_id: "%s"})
-                   }
-               }
-               """ % (founderID, lastRec)
-        code, name = utils.generate_name_and_code(code)
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        data = {}
-        resp = utils.call_contract(url, prKey, name, data, token)
-        res = self.assertTxInBlock(resp, token)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
-        # rollback changes column permissions
-        data = {"TableName": "members",
-                "Name":"image_id",
-                "UpdatePerm": "ContractAccess(\"Profile_Edit\")",
-                "ReadPerm": "true"}
-        res = self.call("EditColumn", data)
+        data = {'member_name': 'founder',
+                'image_id': lastRec}
+        res = self.call("ProfileEdit", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # test
         ecosystemID = "1"
