@@ -41,7 +41,6 @@ def get_schema(url, name, jvtToken):
 
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
 	schema = get_schema(url, name, jvtToken)
-	print(schema)
 	contract = Contract(schema=schema,
 						private_key=prKey,
 						ecosystem_id=ecosystem,
@@ -50,7 +49,6 @@ def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
 	resp = requests.post(url + '/sendTx', files={'call1': tx_bin_data},
 						headers={"Authorization": jvtToken})
 	result = resp.json()
-	print(result)
 	if 'hashes' in result:
 		return result['hashes']['call1']
 	else:
