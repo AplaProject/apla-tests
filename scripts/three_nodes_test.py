@@ -281,6 +281,6 @@ config = {
 confPath = os.path.join(curDir+ '/../', 'hostConfig.json')
 
 with open(confPath, 'w') as fconf:
-	fconf.write(json.dumps(config))
+	fconf.write(json.dumps(config, indent=4))
 
 print("Nodes successfully started")
