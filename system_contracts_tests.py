@@ -135,7 +135,6 @@ class SystemContractsTestCase(unittest.TestCase):
         data = {"Recipient_Account": ldata['address'],
                 "Amount": "1000"}
         res = self.call("TokensSend", data)
-        print(res)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         self.assertTrue(utils.isCommissionInHistory(self.config["1"]["dbHost"],
@@ -143,15 +142,13 @@ class SystemContractsTestCase(unittest.TestCase):
                                                     self.config["1"]["login"],
                                                     self.config["1"]["pass"],
                                                     self.config["1"]["keyID"],
-                                                    "52070200000060200", "1000"),
+                                                    ldata['key_id'], "1000"),
                         "No TokensSend resord in history")
 
 
     def test_tokens_send_incorrect_wallet(self):
-        ldata = utils.login(self.config["2"]["url"],keys["key2"], 0)
-        time.sleep(10)
-        wallet = ldata['address']
-        msg = "Recipient " + wallet + " is not valid"
+        wallet = '0005-2070-2000-0006-0200'
+        msg = "Recipient 52070200000060200 is not valid"
         data = {"Recipient_Account": wallet, "Amount": "1000"}
         ans = self.call("TokensSend", data)
         self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
@@ -162,7 +159,8 @@ class SystemContractsTestCase(unittest.TestCase):
         wallet = ldata['address']
         data = {"Recipient_Account": wallet, "Amount": "0"}
         ans = self.call("TokensSend", data)
-        self.assertEqual(ans["error"], msg, "Incorrect message" + msg)
+        msg = 'Amount equals zero'
+        self.assertEqual(ans["error"], msg, "Incorrect message" + str(ans))
 
     def test_tokens_send_negative_amount(self):
         ldata = utils.login(self.config["2"]["url"],keys["key2"], 0)
