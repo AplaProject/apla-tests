@@ -29,32 +29,32 @@ def login(url, pr_key, role=0, ecosystem=1):
     result["key_id"] = res["key_id"]
     return result
 
-def prepare_tx(url, pr_key, entity, jvtToken, data):
-    heads = {'Authorization': jvtToken}
+def prepare_tx(url, pr_key, entity, jvt_token, data):
+    heads = {'Authorization': jvt_token}
     resp = requests.post(url + '/prepare/' + entity, data=data, headers=heads)
     result = resp.json()
     signature = sign(pr_key, result['forsign'])
     return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
-def prepare_tx_with_files(url, pr_key, entity, jvtToken, data, files):
-    heads = {'Authorization': jvtToken}
+def prepare_tx_with_files(url, pr_key, entity, jvt_token, data, files):
+    heads = {'Authorization': jvt_token}
     resp = requests.post(url + '/prepare/' + entity,
                         data=data, headers=heads, files=files)
     result = resp.json()
     signature = sign(pr_key, result['forsign'])
     return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
-def call_contract(url, pr_key, name, data, jvtToken):
-    sign = prepare_tx(url, pr_key, name, jvtToken, data)
+def call_contract(url, pr_key, name, data, jvt_token):
+    sign = prepare_tx(url, pr_key, name, jvt_token, data)
     data_contract = {"time": sign['time'], "signature": sign["signature"]}
     url_end = url + '/contract/' + sign["reqID"]
-    resp = requests.post(url_end, data=data_contract, headers={"Authorization": jvtToken})
+    resp = requests.post(url_end, data=data_contract, headers={"Authorization": jvt_token})
     result = resp.json()
     return result
 
-def prepare_multi_tx(url, pr_key, entity, jvtToken, data):
+def prepare_multi_tx(url, pr_key, entity, jvt_token, data):
     url_to_cont = url + '/prepareMultiple/'
-    heads = {'Authorization': jvtToken}
+    heads = {'Authorization': jvt_token}
     request = {"token_ecosystem": "", "max_sum": "","payover": "",
                "signed_by": "", "contracts": data}
     resp = requests.post(url_to_cont, data={"data": json.dumps(request)}, headers=heads)
@@ -63,29 +63,29 @@ def prepare_multi_tx(url, pr_key, entity, jvtToken, data):
     signatures = [sign(pr_key, forsign) for forsign in forsigns]
     return {"time": result['time'], "signatures": signatures, "reqID": result['request_id']}
 
-def call_multi_contract(url, pr_key, name, data, jvtToken):
-    sign = prepare_multi_tx(url, pr_key, name, jvtToken, data)
+def call_multi_contract(url, pr_key, name, data, jvt_token):
+    sign = prepare_multi_tx(url, pr_key, name, jvt_token, data)
     data_contract = {"time": sign['time'], "signatures": sign["signatures"]}
     url_end = url + '/contractMultiple/' + sign["reqID"]
     resp = requests.post(url_end, data={"data": json.dumps(data_contract)},
-                         headers={"Authorization": jvtToken})
+                         headers={"Authorization": jvt_token})
     result = resp.json()
     return result
 
-def call_contract_with_files(url, pr_key, name, data, files, jvtToken):
-    sign = prepare_tx_with_files(url, pr_key, name, jvtToken, data, files)
+def call_contract_with_files(url, pr_key, name, data, files, jvt_token):
+    sign = prepare_tx_with_files(url, pr_key, name, jvt_token, data, files)
     data_contract = {"time": sign['time'], "signature": sign["signature"]}
     url_end = url + '/contract/' + sign["reqID"]
-    resp = requests.post(url_end, data=data_contract, headers={"Authorization": jvtToken})
+    resp = requests.post(url_end, data=data_contract, headers={"Authorization": jvt_token})
     result = resp.json()
     return result
 
-def tx_status(url, sleepTime, hsh, jvtToken):
+def tx_status(url, sleep_time, hsh, jvt_token):
     sec = 0
     url_end = url + '/txstatus/' + hsh
-    while sec < sleepTime:
+    while sec < sleep_time:
         time.sleep(1)
-        resp = requests.get(url_end, headers={'Authorization': jvtToken})
+        resp = requests.get(url_end, headers={'Authorization': jvt_token})
         jresp = resp.json()
         status = {}
         if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
@@ -100,14 +100,14 @@ def tx_status(url, sleepTime, hsh, jvtToken):
         return {"blockid": 0, "error": jresp['errmsg']['error'], "result": None}
 
 
-def tx_status_multi(url, sleep_time, hshs, jvtToken):
+def tx_status_multi(url, sleep_time, hshs, jvt_token):
     url_end = url + '/txstatusMultiple/'
     all_tx_in_blocks = False
     sec = 0
     while sec < sleep_time:
         time.sleep(1)
         resp = requests.post(url_end, params={"data": json.dumps({"hashes": hshs})},
-                             headers={'Authorization': jvtToken})
+                             headers={'Authorization': jvt_token})
         jresp = resp.json()["results"]
         for status in jresp.values():
             if (len(status['blockid']) > 0 and 'errmsg' not in json.dumps(status)):

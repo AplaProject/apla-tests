@@ -192,9 +192,9 @@ def get_max_id_from_table(db, table):
     return result[0][0]
 
 #cost
-def is_commission_in_history(db, idFrom, idTo, summ):
-    request = "select * from \"1_history\" WHERE sender_id=" + idFrom + \
-                   " AND recipient_id=" + str(idTo) + " AND amount=" + str(summ)
+def is_commission_in_history(db, id_from, id_to, summ):
+    request = "select * from \"1_history\" WHERE sender_id=" + id_from + \
+                   " AND recipient_id=" + str(id_to) + " AND amount=" + str(summ)
     rec = submit_query(request, db)
     if len(rec) > 0:
         return True

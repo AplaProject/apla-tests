@@ -485,8 +485,8 @@ class TestApi():
         if res == True:
             data2 = actions.login(self.url, keys["key1"], 0)
             time.sleep(5)
-            isOne = db.is_wallet_created(conf["1"]["db"], data2["key_id"])
-            self.unit.assertTrue(isOne, "Wallet for new user didn't created")
+            is_one = db.is_wallet_created(conf["1"]["db"], data2["key_id"])
+            self.unit.assertTrue(is_one, "Wallet for new user didn't created")
 
     def test_get_avatar_with_login(self):
         # add file in binaries

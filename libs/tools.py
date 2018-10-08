@@ -4,7 +4,7 @@ import random
 import string
 
 def json_to_list(js):
-    fullList = []
+    full_list = []
     list = []
     for i in js:
         tup = ()
@@ -13,9 +13,9 @@ def json_to_list(js):
             list.append(i[element])
         tup = tuple(list)
         print("tup", tup)
-        fullList.append(tup)
-    print(fullList)
-    return fullList
+        full_list.append(tup)
+    print(full_list)
+    return full_list
 
 
 def generate_random_name():
