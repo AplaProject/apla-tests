@@ -260,15 +260,15 @@
 		"information":"Bytes returned as array of char"
 	},
 	"dbSelectMetricsMin": {
-		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_tx\", \"1 month\", \"min\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break}  i = i + 1\n } \n $result = m[\"value\"] \n}\n }",
+		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_tx\", \"1 month\", \"min\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n i = i + 1 \n} \n $result = m[\"value\"] \n}\n }",
 		"asert": ""
 	},
 	"dbSelectMetricsMax": {
-		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_members\", \"1 days\", \"max\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n }  i = i + 1\n $result = m[\"value\"] \n}\n }",
+		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_members\", \"1 days\", \"max\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n i = i + 1 \n} \n $result = m[\"value\"] \n}\n }",
 		"asert": ""
 	},
 	"dbSelectMetricsAvg": {
-		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_pages\", \"1 day\", \"avg\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break}  i = i + 1\n } \n $result = m[\"value\"] \n}\n }",
+		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_pages\", \"1 day\", \"avg\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n i = i + 1 \n} \n $result = m[\"value\"] \n}\n }",
 		"asert": ""
 	},
 	"append": {
