@@ -15,6 +15,7 @@ class WebsiteTasks(TaskSet):
         prKey = self.config["1"]['private_key']
         self.data = utils.login(url, prKey, 0)
         token = self.data["jwtToken"]
+        keys = config.getKeys()
         ldata = utils.login(self.config["2"]["url"],keys["key2"], 0)
 
     

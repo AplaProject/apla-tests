@@ -1,1 +1,41 @@
-{"1": {"url": "http://localhost:7079/api/v2", "private_key": "a7734298c867b947fc9fb07b27aab3d32fd1dd53b7a556c9dac13de68482b375", "keyID": "-1050296339176914404", "pubKey": "8f39dd095f5a8cab24f999ec9665925d2598849047da01ace8ec7e3ed183daf1fbad5cc76464e48d79b19673a99247355dd819c85f3591dd3599f0d8eddcf0f6", "tcp_address": "localhost:7078", "api_address": "http://localhost:7079", "dbHost": "localhost", "dbName": "gen1", "login": "postgres", "pass": "postgres", "time_wait_tx_in_block": 30}, "2": {"url": "http://localhost:7018/api/v2", "private_key": "cb056e9d4192b51cbb38c542962836a7ee2dc36fbd663c06ee58f8f98868536e", "keyID": "-7727494163902258581", "pubKey": "420da535933c7426399808922e60d2f1db559b47d184aec0c9156ce8c22a1b2980438da4fc97c33b3c2499ce31f256b2e7425cda3a4a364c3f9530b22b1406c9", "tcp_address": "localhost:7081", "api_address": "http://localhost:7018", "dbHost": "localhost", "dbName": "gen2", "login": "postgres", "pass": "postgres", "time_wait_tx_in_block": 30}, "3": {"url": "http://localhost:7082/api/v2", "private_key": "772ad3efe37494e03fde234e35dfe41027c2618c0f56e03bdffe7667461e397b", "keyID": "-7253721417081882115", "pubKey": "dc0c490ef0800e9d891f7cc5e736ec3e2f93481b643e4a3baa3a9b9fb1e57aadeb0858c95ec1ff15cc6bf80d13c1e2e34f133ec820c704dbbc33d62c90d6c10d", "tcp_address": "localhost:7080", "api_address": "http://localhost:7082", "dbHost": "localhost", "dbName": "gen3", "login": "postgres", "pass": "postgres", "time_wait_tx_in_block": 30}}
+{
+    "1": {
+        "url": "http://localhost:7079/api/v2",
+        "private_key": "83f9d16a357a002cd0eaf508558374bc1732edbefb8376a589f2ea4c9fc5385f",
+        "keyID": "-231619397818051932",
+        "pubKey": "c210622680bc565d7fce9d1090a30f76991004a10f620fce4ce58306945da9f86d9269de6d373db87d4a36fd890c4ab8085a7d8c82fff81ced0b6c749e6110b7",
+        "tcp_address": "localhost:7078",
+        "api_address": "http://localhost:7079",
+        "dbHost": "localhost",
+        "dbName": "gen1",
+        "login": "postgres",
+        "pass": "postgres",
+        "time_wait_tx_in_block": 30
+    },
+    "2": {
+        "url": "http://localhost:7018/api/v2",
+        "private_key": "4513a9004e4a36a6329637a8253c6e2036956ddc0f5243b84f4314cc917c4c83",
+        "keyID": "9037196703485971108",
+        "pubKey": "290e8c97fa2dae21912188b6583d70de4ed26c5e308b1c2e097417f669c77948f2df77089f4581a8044686a3c38b69a112754b01c603cce170455a75addc5482",
+        "tcp_address": "localhost:7081",
+        "api_address": "http://localhost:7018",
+        "dbHost": "localhost",
+        "dbName": "gen2",
+        "login": "postgres",
+        "pass": "postgres",
+        "time_wait_tx_in_block": 30
+    },
+    "3": {
+        "url": "http://localhost:7082/api/v2",
+        "private_key": "0aa322d181553bf4b14f4c173a2d186b77c047743c39d0d88a81d069f159f138",
+        "keyID": "-2617691344533968445",
+        "pubKey": "90dcff0f7dc20592052d80cd47f63bbaae8b3726f93f7505637d96b2670655c97360470782ca25fc75c8daa145569be1d406da5ce35717f3f37220add31a8699",
+        "tcp_address": "localhost:7080",
+        "api_address": "http://localhost:7082",
+        "dbHost": "localhost",
+        "dbName": "gen3",
+        "login": "postgres",
+        "pass": "postgres",
+        "time_wait_tx_in_block": 30
+    }
+}
