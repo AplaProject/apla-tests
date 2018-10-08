@@ -52,22 +52,25 @@ os.makedirs(workDir1)
 os.makedirs(workDir2)
 os.makedirs(workDir3)
 
-# Create config for centrifugo
+# Set centrifugo variables
+centrifugo_secret = '4597e75c-4376-42a6-8c1f-7e3fc7eb2114'
+centrifugo_url = 'http://127.0.0.1:8000'
 cenConfig = os.path.join(args.centrifugo, "config.json")
-linesC = []
-linesC.insert(0, "{\n")
-linesC.insert(1, "\"secret\": \"4597e75c-4376-42a6-8c1f-7e3fc7eb2114\",\n")
-linesC.insert(2, "\"admin_secret\": \"admin\"\n")
-linesC.insert(3, "}")
-with open(cenConfig, 'w') as fconf:
-	fconf.write(''.join(linesC))
-	
-# Run centrifugo
 cenPath = os.path.join(args.centrifugo, "centrifugo")
+
+# Create config for centrifugo
+cen_config_string = {
+	'secret': centrifugo_secret,
+	'admin_secret': 'admin'
+	}
+with open(cenConfig, 'w') as cen_conf_file:
+	json.dump(cen_config_string, cen_conf_file, indent=4)
+
+# Run centrifugo
 if sys.platform == 'win32':
 	centrifugo = subprocess.Popen([
 		cenPath,
-		'--config=config.json',
+		'--config='+cenConfig,
 		'--admin',
 		'--insecure_admin',
 		'--web'
@@ -75,7 +78,7 @@ if sys.platform == 'win32':
 else:
 	centrifugo = subprocess.Popen([
 		cenPath,
-		'--config=config.json',
+		'--config='+cenConfig,
 		'--admin',
 		'--admin_insecure'
 	])
@@ -89,8 +92,8 @@ config1 = subprocess.Popen([
 	'--dataDir='+workDir1,
 	'--firstBlock='+firstBlockPath,
 	'--dbPassword='+args.dbPassword,
-	'--centUrl=http://127.0.0.1:8000',
-	'--centSecret=4597e75c-4376-42a6-8c1f-7e3fc7eb2114',
+	'--centUrl='+centrifugo_url,
+	'--centSecret='+centrifugo_secret,
 	'--dbName='+args.dbName1
 ])
 time.sleep(3)
@@ -139,8 +142,8 @@ generateConfig2 = subprocess.Popen([
 	'--httpPort='+args.httpPort2,
 	'--firstBlock='+firstBlockPath,
 	'--dbPassword='+args.dbPassword,
-	'--centUrl="http://127.0.0.1:8000"',
-	'--centSecret="4597e75c-4376-42a6-8c1f-7e3fc7eb2114"',
+	'--centUrl='+centrifugo_url,
+	'--centSecret='+centrifugo_secret,
 	'--nodesAddr='+"127.0.0.1:"+args.tcpPort1
 ])
 time.sleep(3)
@@ -164,8 +167,8 @@ generateConfig3 = subprocess.Popen([
 	'--httpPort='+args.httpPort3,
 	'--firstBlock='+firstBlockPath,
 	'--dbPassword='+args.dbPassword,
-	'--centUrl="http://127.0.0.1:8000"',
-	'--centSecret="4597e75c-4376-42a6-8c1f-7e3fc7eb2114"',
+	'--centUrl='+centrifugo_url,
+	'--centSecret='+centrifugo_secret,
 	'--nodesAddr='+"127.0.0.1:"+args.tcpPort1
 ])
 time.sleep(3)
