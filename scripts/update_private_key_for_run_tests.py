@@ -9,7 +9,7 @@ parser.add_argument('-dbName', default='gen1')
 args = parser.parse_args()
 
 with open(os.path.join(args.privateKeyPath, 'PrivateKey'), 'r') as f:
-    privKey1 = f.read()
+    priv_key1 = f.read()
 
 file = os.path.join(args.configPath, "nodesConfig.json")
 with open(file, 'r') as f:
@@ -18,9 +18,9 @@ with open(file, 'r') as f:
     print(lines)
 
 # Update private keys in config
-lines["1"]["private_key"] = privKey1
-lines["2"]["private_key"] = privKey1
-lines["3"]["private_key"] = privKey1
+lines["1"]["private_key"] = priv_key1
+lines["2"]["private_key"] = priv_key1
+lines["3"]["private_key"] = priv_key1
 
 # Update url in config
 lines["2"]["url"] = lines["1"]["url"]

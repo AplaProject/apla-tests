@@ -3,7 +3,7 @@ import os
 def test_update_private_key_for_rollback(request):
 
 	with open(os.path.join(request.config.getoption('--privateKeyPath'), 'PrivateKey'), 'r') as f:
-		privKey1 = f.read()
+		priv_key1 = f.read()
 
 	config = os.path.join(request.config.getoption('--configPath'), 'config.json')
 	with open(config) as fconf:
@@ -11,7 +11,7 @@ def test_update_private_key_for_rollback(request):
 
 	# Update private keys in config
 	del lines[2]
-	lines.insert(2, "\t\t\"private_key\": \""+privKey1+"\",\n")
+	lines.insert(2, "\t\t\"private_key\": \""+priv_key1+"\",\n")
 
 	# Update DB name in config
 	del lines[5]

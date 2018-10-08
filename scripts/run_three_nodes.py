@@ -11,33 +11,33 @@ def test_three_nodes(request):
 	curDir = os.path.dirname(os.path.abspath(__file__))
 
 	binary = os.path.abspath(request.config.getoption('--binary'))
-	workDir = os.path.abspath(request.config.getoption('--workDir'))
-	workDir1 = os.path.join(workDir, 'node1')
-	workDir2 = os.path.join(workDir, 'node2')
-	workDir3 = os.path.join(workDir, 'node3')
-	firstBlockPath = os.path.join(workDir, '1block')
+	work_dir = os.path.abspath(request.config.getoption('--workDir'))
+	work_dir1 = os.path.join(work_dir, 'node1')
+	work_dir2 = os.path.join(work_dir, 'node2')
+	work_dir3 = os.path.join(work_dir, 'node3')
+	first_block_path = os.path.join(work_dir, '1block')
 
 
-	if os.path.exists(workDir):
-		shutil.rmtree(workDir)
-	os.makedirs(workDir1)
-	os.makedirs(workDir2)
-	os.makedirs(workDir3)
+	if os.path.exists(work_dir):
+		shutil.rmtree(work_dir)
+	os.makedirs(work_dir1)
+	os.makedirs(work_dir2)
+	os.makedirs(work_dir3)
 
 	# Create config for centrifugo
-	cenConfig = os.path.join(request.config.getoption('--centrifugo'), "config.json")
-	linesC = []
-	linesC.insert(0, "{\n")
-	linesC.insert(1, "\"secret\": \"4597e75c-4376-42a6-8c1f-7e3fc7eb2114\",\n")
-	linesC.insert(2, "\"admin_secret\": \"admin\"\n")
-	linesC.insert(3, "}")
-	with open(cenConfig, 'w') as fconf:
-		fconf.write(''.join(linesC))
+	cen_config = os.path.join(request.config.getoption('--centrifugo'), "config.json")
+	lines_c = []
+	lines_c.insert(0, "{\n")
+	lines_c.insert(1, "\"secret\": \"4597e75c-4376-42a6-8c1f-7e3fc7eb2114\",\n")
+	lines_c.insert(2, "\"admin_secret\": \"admin\"\n")
+	lines_c.insert(3, "}")
+	with open(cen_config, 'w') as fconf:
+		fconf.write(''.join(lines_c))
 
 	# Run centrifugo
-	cenPath = os.path.join(request.config.getoption('--centrifugo'), "centrifugo")
+	cen_path = os.path.join(request.config.getoption('--centrifugo'), "centrifugo")
 	centrifugo = subprocess.Popen([
-		cenPath,
+		cen_path,
 		'--config=config.json',
 		'--admin',
 		'--insecure_admin',
@@ -49,8 +49,8 @@ def test_three_nodes(request):
 	config1 = subprocess.Popen([
 		binary,
 		'config',
-		'--dataDir='+workDir1,
-		'--firstBlock='+firstBlockPath,
+		'--dataDir='+work_dir1,
+		'--firstBlock='+first_block_path,
 		'--dbPassword='+request.config.getoption('--dbPassword'),
 		'--centUrl=http://127.0.0.1:8000',
 		'--centSecret=4597e75c-4376-42a6-8c1f-7e3fc7eb2114',
@@ -62,7 +62,7 @@ def test_three_nodes(request):
 	keys1 = subprocess.Popen([
 		binary,
 		'generateKeys',
-		'--config='+workDir1+'/config.toml'
+		'--config='+work_dir1+'/config.toml'
 	])
 	time.sleep(3)
 
@@ -70,7 +70,7 @@ def test_three_nodes(request):
 	firstBlock = subprocess.Popen([
 		binary,
 		'generateFirstBlock',
-		'--config='+workDir1+'/config.toml'
+		'--config='+work_dir1+'/config.toml'
 	])
 	time.sleep(3)
 
@@ -78,7 +78,7 @@ def test_three_nodes(request):
 	firstBlock = subprocess.Popen([
 		binary,
 		'initDatabase',
-		'--config='+workDir1+'/config.toml'
+		'--config='+work_dir1+'/config.toml'
 	])
 	time.sleep(3)
 
@@ -86,7 +86,7 @@ def test_three_nodes(request):
 	startFirstNode = subprocess.Popen([
 		binary,
 		'start',
-		'--config='+workDir1+'/config.toml'
+		'--config='+work_dir1+'/config.toml'
 	])
 	time.sleep(3)
 
@@ -94,12 +94,12 @@ def test_three_nodes(request):
 	generateConfig2 = subprocess.Popen([
 		binary,
 		'config',
-		'--dataDir='+workDir2,
-		'--firstBlock='+firstBlockPath,
+		'--dataDir='+work_dir2,
+		'--firstBlock='+first_block_path,
 		'--dbName='+request.config.getoption('--dbName2'),
 		'--tcpPort='+request.config.getoption('--tcpPort2'),
 		'--httpPort='+request.config.getoption('--httpPort2'),
-		'--firstBlock='+firstBlockPath,
+		'--firstBlock='+first_block_path,
 		'--dbPassword='+request.config.getoption('--dbPassword'),
 		'--centUrl="http://127.0.0.1:8000"',
 		'--centSecret="4597e75c-4376-42a6-8c1f-7e3fc7eb2114"',
@@ -111,7 +111,7 @@ def test_three_nodes(request):
 	generateKeys = subprocess.Popen([
 		binary,
 		'generateKeys',
-		'--config='+workDir2+'/config.toml'
+		'--config='+work_dir2+'/config.toml'
 	])
 	time.sleep(3)
 
@@ -119,12 +119,12 @@ def test_three_nodes(request):
 	generateConfig3 = subprocess.Popen([
 		binary,
 		'config',
-		'--dataDir='+workDir3,
-		'--firstBlock='+firstBlockPath,
+		'--dataDir='+work_dir3,
+		'--firstBlock='+first_block_path,
 		'--dbName=' + request.config.getoption('--dbName3'),
 		'--tcpPort='+request.config.getoption('--tcpPort3'),
 		'--httpPort='+request.config.getoption('--httpPort3'),
-		'--firstBlock='+firstBlockPath,
+		'--firstBlock='+first_block_path,
 		'--dbPassword='+request.config.getoption('--dbPassword'),
 		'--centUrl="http://127.0.0.1:8000"',
 		'--centSecret="4597e75c-4376-42a6-8c1f-7e3fc7eb2114"',
@@ -136,7 +136,7 @@ def test_three_nodes(request):
 	generateKeys = subprocess.Popen([
 		binary,
 		'generateKeys',
-		'--config='+workDir3+'/config.toml'
+		'--config='+work_dir3+'/config.toml'
 	])
 	time.sleep(3)
 
@@ -144,7 +144,7 @@ def test_three_nodes(request):
 	startFirstNode = subprocess.Popen([
 		binary,
 		'initDatabase',
-		'--config='+workDir2+'/config.toml'
+		'--config='+work_dir2+'/config.toml'
 	])
 	time.sleep(3)
 
@@ -152,7 +152,7 @@ def test_three_nodes(request):
 	startFirstNode = subprocess.Popen([
 		binary,
 		'start',
-		'--config='+workDir2+'/config.toml'
+		'--config='+work_dir2+'/config.toml'
 	])
 	time.sleep(3)
 
@@ -160,7 +160,7 @@ def test_three_nodes(request):
 	startThirdNode = subprocess.Popen([
 		binary,
 		'initDatabase',
-		'--config='+workDir3+'/config.toml'
+		'--config='+work_dir3+'/config.toml'
 	])
 	time.sleep(3)
 
@@ -168,34 +168,34 @@ def test_three_nodes(request):
 	startThirdNode = subprocess.Popen([
 		binary,
 		'start',
-		'--config='+workDir3+'/config.toml'
+		'--config='+work_dir3+'/config.toml'
 	])
 	time.sleep(3)
 
-	with open(os.path.join(workDir1, 'PrivateKey'), 'r') as f:
-		privKey1 = f.read()
-	with open(os.path.join(workDir1, 'PublicKey'), 'r') as f:
-		pubKey1 = f.read()
-	with open(os.path.join(workDir2, 'PrivateKey'), 'r') as f:
-		privKey2 = f.read()
-	with open(os.path.join(workDir3, 'PrivateKey'), 'r') as f:
-		privKey3 = f.read()
-	with open(os.path.join(workDir1, 'KeyID'), 'r') as f:
-		keyID1 = f.read()
-	with open(os.path.join(workDir1, 'NodePublicKey'), 'r') as f:
-		nodePubKey1 = f.read()
-	with open(os.path.join(workDir2, 'KeyID'), 'r') as f:
-		keyID2 = f.read()
-	with open(os.path.join(workDir2, 'NodePublicKey'), 'r') as f:
-		nodePubKey2 = f.read()
-	with open(os.path.join(workDir2, 'PublicKey'), 'r') as f:
-		pubKey2 = f.read()
-	with open(os.path.join(workDir3, 'KeyID'), 'r') as f:
-		keyID3 = f.read()
-	with open(os.path.join(workDir3, 'NodePublicKey'), 'r') as f:
-		nodePubKey3 = f.read()
-	with open(os.path.join(workDir3, 'PublicKey'), 'r') as f:
-		pubKey3 = f.read()
+	with open(os.path.join(work_dir1, 'PrivateKey'), 'r') as f:
+		priv_key1 = f.read()
+	with open(os.path.join(work_dir1, 'PublicKey'), 'r') as f:
+		pub_key1 = f.read()
+	with open(os.path.join(work_dir2, 'PrivateKey'), 'r') as f:
+		priv_key2 = f.read()
+	with open(os.path.join(work_dir3, 'PrivateKey'), 'r') as f:
+		priv_key3 = f.read()
+	with open(os.path.join(work_dir1, 'KeyID'), 'r') as f:
+		key_id1 = f.read()
+	with open(os.path.join(work_dir1, 'NodePublicKey'), 'r') as f:
+		node_pub_key1 = f.read()
+	with open(os.path.join(work_dir2, 'KeyID'), 'r') as f:
+		key_id2 = f.read()
+	with open(os.path.join(work_dir2, 'NodePublicKey'), 'r') as f:
+		node_pub_key2 = f.read()
+	with open(os.path.join(work_dir2, 'PublicKey'), 'r') as f:
+		pub_key2 = f.read()
+	with open(os.path.join(work_dir3, 'KeyID'), 'r') as f:
+		key_id3 = f.read()
+	with open(os.path.join(work_dir3, 'NodePublicKey'), 'r') as f:
+		node_pub_key3 = f.read()
+	with open(os.path.join(work_dir3, 'PublicKey'), 'r') as f:
+		pub_key3 = f.read()
 
 	#-------------------------
 
@@ -204,9 +204,9 @@ def test_three_nodes(request):
 	config = [
 		{
 			"url": "http://localhost:" + request.config.getoption('--httpPort1') + "/api/v2",
-			"private_key": privKey1,
-			"keyID": keyID1,
-			"pubKey": nodePubKey1,
+			"private_key": priv_key1,
+			"keyID": key_id1,
+			"pubKey": node_pub_key1,
 			"tcp_address": "localhost:" + request.config.getoption('--tcpPort1'),
 			"api_address": "http://localhost:" + request.config.getoption('--httpPort1'),
 			"db":
@@ -219,9 +219,9 @@ def test_three_nodes(request):
 		},
 		{
 			"url": "http://localhost:" + request.config.getoption('--httpPort2') + "/api/v2",
-			"private_key": privKey2,
-			"keyID": keyID2,
-			"pubKey": nodePubKey2,
+			"private_key": priv_key2,
+			"keyID": key_id2,
+			"pubKey": node_pub_key2,
 			"tcp_address": "localhost:" + request.config.getoption('--tcpPort2'),
 			"api_address": "http://localhost:" + request.config.getoption('--httpPort2'),
 			"db":
@@ -234,9 +234,9 @@ def test_three_nodes(request):
 		},
 		{
 			"url": "http://localhost:" + request.config.getoption('--httpPort3') + "/api/v2",
-			"private_key": privKey3,
-			"keyID": keyID3,
-			"pubKey": nodePubKey3,
+			"private_key": priv_key3,
+			"keyID": key_id3,
+			"pubKey": node_pub_key3,
 			"tcp_address": "localhost:" + request.config.getoption('--tcpPort3'),
 			"api_address": "http://localhost:" + request.config.getoption('--httpPort3'),
 			"db":
@@ -249,9 +249,12 @@ def test_three_nodes(request):
 		}]
 
 	# Update config for tests
-	confPath = os.path.join(curDir+ '/../', 'nodesConfig.json')
+	conf_path = os.path.join(curDir+ '/../', 'nodesConfig.json')
 
-	with open(confPath, 'w') as fconf:
+	with open(conf_path, 'w') as fconf:
 		fconf.write(json.dumps(config))
 
 	print("Nodes successfully started")
+
+if __name__ == "__main__":
+    test_three_nodes()

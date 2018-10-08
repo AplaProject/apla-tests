@@ -19,11 +19,11 @@ class TestPrototipo():
         data = actions.login(self.url, self.pr_key, 0)
         self.token = data["jwtToken"]
 
-    def assert_tx_in_block(self, result, jwtToken):
+    def assert_tx_in_block(self, result, jwt_token):
         self.uni.assertIn("hash", result)
         status = actions.tx_status(self.url,
                                    tools.read_config("test")["wait_tx_status"],
-                                   result['hash'], jwtToken)
+                                   result['hash'], jwt_token)
         self.uni.assertNotIn(json.dumps(status), 'errmsg')
         self.uni.assertGreater(status['blockid'], 0)
 
@@ -49,10 +49,10 @@ class TestPrototipo():
         cont = actions.get_content(self.url, "page", name, "", 1, self.token)
         return cont
 
-    def find_position_element_in_tree(self, content_tree, tagName):
+    def find_position_element_in_tree(self, content_tree, tag_name):
         i = 0
         while i < len(content_tree):
-            if content_tree[i]['tag'] == tagName:
+            if content_tree[i]['tag'] == tag_name:
                 return i
             i += 1
 
@@ -157,13 +157,13 @@ class TestPrototipo():
         # outer DIV
         part_content = content['tree'][0]
         # first level inner DIV
-        requiredInnerTagNum = self.find_position_element_in_tree(content['tree'][0]['children'], "div")
-        part_content1 = content['tree'][0]['children'][requiredInnerTagNum]
+        required_inner_tag_num = self.find_position_element_in_tree(content['tree'][0]['children'], "div")
+        part_content1 = content['tree'][0]['children'][required_inner_tag_num]
         contract_content1 = contract["content"]['children']
         # second level inner DIV
-        requiredInner2TagNum = self.find_position_element_in_tree(
-            content['tree'][0]['children'][requiredInnerTagNum]['children'], "div")
-        part_content2 = content['tree'][0]['children'][requiredInnerTagNum]['children'][requiredInner2TagNum]
+        required_inner2_tag_num = self.find_position_element_in_tree(
+            content['tree'][0]['children'][required_inner_tag_num]['children'], "div")
+        part_content2 = content['tree'][0]['children'][required_inner_tag_num]['children'][required_inner2_tag_num]
         contract_content2 = contract["content"]['children']['children']
         must_be = dict(firstDivTag=part_content['tag'],
                       firstDivClass=part_content['attr']['class'],
@@ -218,16 +218,16 @@ class TestPrototipo():
         content = self.check_page(contract["code"])
         part_content = content['tree'][0]
         contract_content = contract["content"]
-        menuItem1 = contract_content['children'][0]
-        menuItem2 = contract_content['children'][1]
-        requiredNumMenuItem1 = self.find_position_element_in_tree_by_attribute_name_and_value(part_content['children'],
+        menu_item1 = contract_content['children'][0]
+        menu_item2 = contract_content['children'][1]
+        required_num_menu_item1 = self.find_position_element_in_tree_by_attribute_name_and_value(part_content['children'],
                                                                                      "menuitem", "title",
-                                                                                              menuItem1['attr']['title'])
-        requiredNumMenuItem2 = self.find_position_element_in_tree_by_attribute_name_and_value(part_content['children'],
+                                                                                              menu_item1['attr']['title'])
+        required_num_menu_item2 = self.find_position_element_in_tree_by_attribute_name_and_value(part_content['children'],
                                                                                      "menuitem", "title",
-                                                                                              menuItem2['attr']['title'])
-        part_content1 = part_content['children'][requiredNumMenuItem1]
-        part_content2 = part_content['children'][requiredNumMenuItem2]
+                                                                                              menu_item2['attr']['title'])
+        part_content1 = part_content['children'][required_num_menu_item1]
+        part_content2 = part_content['children'][required_num_menu_item2]
         must_be = dict(menuTag=part_content['tag'],
                       name=part_content['attr']['name'],
                       title=part_content['attr']['title'],
@@ -241,11 +241,11 @@ class TestPrototipo():
                     name=contract_content['attr']['name'],
                     title=contract_content['attr']['title'],
                     menuItemTag1=part_content1['tag'],
-                    menuItemPage1=menuItem1['attr']['page'],
-                    menuItemTitle1=menuItem1['attr']['title'],
+                    menuItemPage1=menu_item1['attr']['page'],
+                    menuItemTitle1=menu_item1['attr']['title'],
                     menuItemTag2=part_content2['tag'],
-                    menuItemPage2=menuItem2['attr']['page'],
-                    menuItemTitle2=menuItem2['attr']['title'])
+                    menuItemPage2=menu_item2['attr']['page'],
+                    menuItemTitle2=menu_item2['attr']['title'])
         self.uni.assertDictEqual(must_be, page,
                                           "menuGroup has problem: " + str(content["tree"]))
 
@@ -559,17 +559,17 @@ class TestPrototipo():
         res = self.check_get_api("/list/ecosystems", "", asserts)
         id = 1
         i = 0
-        requiredEcosysName = ""
+        required_ecosys_name = ""
         while i < int(res['count']):
             if int(res['list'][i]['id']) == id:
-                requiredEcosysName = res['list'][i]['name']
+                required_ecosys_name = res['list'][i]['name']
             i += 1
         # test
         contract = self.pages["sys_var_ecosystem_name"]
         content = self.check_page(contract["code"])
         part_content = content['tree'][0]
         must_be = dict(tag="em",
-                      text=requiredEcosysName)
+                      text=required_ecosys_name)
         page = dict(tag=part_content['tag'],
                     text=part_content['children'][0]["text"])
         self.uni.assertDictEqual(must_be, page,
@@ -577,11 +577,11 @@ class TestPrototipo():
 
     def test_page_sys_var_key_id(self):
         content = self.check_page("Em(EcosysParam(founder_account))")
-        founderAcc = content["tree"][0]["children"][0]["text"]
+        founder_acc = content["tree"][0]["children"][0]["text"]
         contract = self.pages["sys_var_keyID"]
         content = self.check_page(contract["code"])
-        keyID = content["tree"][0]["children"][0]["text"]
-        self.uni.assertEqual(keyID, founderAcc,
+        key_id = content["tree"][0]["children"][0]["text"]
+        self.uni.assertEqual(key_id, founder_acc,
                                       "key_id has problem: " + contract["content"] + ". Content = " + str(
                                           content["tree"]))
 
@@ -589,12 +589,12 @@ class TestPrototipo():
         asserts = ["count"]
         data = {}
         res = self.check_get_api("/contracts", data, asserts)
-        contractsCount = res["count"]
+        contracts_count = res["count"]
         contract = self.pages["dbfindCount"]
         content = self.check_page(contract["code"])
         required_num = self.find_position_element_in_tree(content["tree"], "em")
         page = content['tree'][required_num]["children"][0]["text"]
-        self.uni.assertEqual(contractsCount, page,
+        self.uni.assertEqual(contracts_count, page,
                                       "dbfind_count has problem: " + contract["content"] + ". Content = " + str(
                                           content["tree"]))
 
@@ -630,8 +630,8 @@ class TestPrototipo():
         self.assert_tx_in_block(resp, self.token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = actions.get_parameter_value(self.url, 'founder_account', self.token)
-        content = self.check_page("Binary(Name: " + name + ", AppID: " + app_id + ", MemberID: " + MemberID + ")")
+        member_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
+        content = self.check_page("Binary(Name: " + name + ", AppID: " + app_id + ", MemberID: " + member_id + ")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
         self.uni.assertEqual("/data/1_binaries/" + last_rec + "/data/b40ad01eacc0312f6dd1ff2a705756ec",
                                       content["tree"][0]["text"])
@@ -670,9 +670,9 @@ class TestPrototipo():
         self.assert_tx_in_block(resp, self.token)
         self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
-        MemberID = actions.get_parameter_value(self.url, 'founder_account', self.token)
+        member_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
         last_rec = actions.get_count(self.url, "binaries", self.token)
-        content = self.check_page("Image(Binary(Name: " + name + ", AppID: " + app_id + ", MemberID: " + MemberID + "))")
+        content = self.check_page("Image(Binary(Name: " + name + ", AppID: " + app_id + ", MemberID: " + member_id + "))")
         part_content = content["tree"][0]
         must_be = dict(tag=part_content['tag'],
                       src=part_content['attr']["src"])
@@ -746,24 +746,24 @@ class TestPrototipo():
     def test_calculate(self):
         contract = self.pages["calculate"]
         # Set for type of money
-        moneyContent1 = self.check_page(contract["moneyCode1"])
-        partMoneyContent1 = moneyContent1['tree'][0]
-        contractMoneyContent1 = contract["moneyContent1"]
-        moneyContent2 = self.check_page(contract["moneyCode2"])
-        partMoneyContent2 = moneyContent2['tree'][0]
-        contractMoneyContent2 = contract["moneyContent2"]
-        moneyContent3 = self.check_page(contract["moneyCode3"])
-        partMoneyContent3 = moneyContent3['tree'][0]
-        contractMoneyContent3 = contract["moneyContent3"]
-        moneyContent4 = self.check_page(contract["moneyCode4"])
-        partMoneyContent4 = moneyContent4['tree'][0]
-        contractMoneyContent4 = contract["moneyContent4"]
-        moneyContent5 = self.check_page(contract["moneyCode5"])
-        partMoneyContent5 = moneyContent5['tree'][0]
-        contractMoneyContent5 = contract["moneyContent5"]
-        moneyContent6 = self.check_page(contract["moneyCode6"])
-        partMoneyContent6 = moneyContent6['tree'][0]
-        contractMoneyContent6 = contract["moneyContent6"]
+        money_content1 = self.check_page(contract["moneyCode1"])
+        part_money_content1 = money_content1['tree'][0]
+        contract_money_content1 = contract["moneyContent1"]
+        money_content2 = self.check_page(contract["moneyCode2"])
+        part_money_content2 = money_content2['tree'][0]
+        contract_money_content2 = contract["moneyContent2"]
+        money_content3 = self.check_page(contract["moneyCode3"])
+        part_money_content3 = money_content3['tree'][0]
+        contract_money_content3 = contract["moneyContent3"]
+        money_content4 = self.check_page(contract["moneyCode4"])
+        part_money_content4 = money_content4['tree'][0]
+        contract_money_content4 = contract["moneyContent4"]
+        money_content5 = self.check_page(contract["moneyCode5"])
+        part_money_content5 = money_content5['tree'][0]
+        contract_money_content5 = contract["moneyContent5"]
+        money_content6 = self.check_page(contract["moneyCode6"])
+        part_money_content6 = money_content6['tree'][0]
+        contract_money_content6 = contract["moneyContent6"]
         moneyContent7 = self.check_page(contract["moneyCode7"])
         partMoneyContent7 = moneyContent7['tree'][0]
         contractMoneyContent7 = contract["moneyContent7"]
@@ -860,12 +860,12 @@ class TestPrototipo():
         wrongContent1 = self.check_page(contract["wrongCode1"])
         partWrongContent1 = wrongContent1['tree'][0]
         contractWrongContent1 = contract["wrongContent1"]
-        must_be = dict(money1=contractMoneyContent1['children'][0]["text"],
-                      money2=contractMoneyContent2['children'][0]["text"],
-                      money3=contractMoneyContent3['children'][0]["text"],
-                      money4=contractMoneyContent4['children'][0]["text"],
-                      money5=contractMoneyContent5['children'][0]["text"],
-                      money6=contractMoneyContent6['children'][0]["text"],
+        must_be = dict(money1=contract_money_content1['children'][0]["text"],
+                      money2=contract_money_content2['children'][0]["text"],
+                      money3=contract_money_content3['children'][0]["text"],
+                      money4=contract_money_content4['children'][0]["text"],
+                      money5=contract_money_content5['children'][0]["text"],
+                      money6=contract_money_content6['children'][0]["text"],
                       money7=contractMoneyContent7['children'][0]["text"],
                       money8=contractMoneyContent8['children'][0]["text"],
                       money9=contractMoneyContent9['children'][0]["text"],
@@ -897,12 +897,12 @@ class TestPrototipo():
                       int5=contractIntContent5['children'][0]["text"],
                       int6=contractIntContent6['children'][0]["text"],
                       wrong1=contractWrongContent1['children'][0]["text"])
-        page = dict(money1=partMoneyContent1['children'][0]["text"],
-                    money2=partMoneyContent2['children'][0]["text"],
-                    money3=partMoneyContent3['children'][0]["text"],
-                    money4=partMoneyContent4['children'][0]["text"],
-                    money5=partMoneyContent5['children'][0]["text"],
-                    money6=partMoneyContent6['children'][0]["text"],
+        page = dict(money1=part_money_content1['children'][0]["text"],
+                    money2=part_money_content2['children'][0]["text"],
+                    money3=part_money_content3['children'][0]["text"],
+                    money4=part_money_content4['children'][0]["text"],
+                    money5=part_money_content5['children'][0]["text"],
+                    money6=part_money_content6['children'][0]["text"],
                     money7=partMoneyContent7['children'][0]["text"],
                     money8=partMoneyContent8['children'][0]["text"],
                     money9=partMoneyContent9['children'][0]["text"],

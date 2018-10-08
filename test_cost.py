@@ -1,6 +1,5 @@
 import unittest
 import time
-import pytest
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
 
