@@ -93,8 +93,7 @@ class LimitsTestCase(unittest.TestCase):
                                                     conf["1"]["login"],
                                                     conf["1"] ["pass"],
                                                     "max_tx_block_per_user")
-        self.update_sys_param("max_tx_block_per_user", "1")
-        time.sleep(30)
+        self.update_sys_param("max_tx_block_per_user", '1')
         i = 1
         while i < 10: 
             name = "cont" + utils.generate_random_name()

@@ -27,8 +27,6 @@ class WebsiteTasks(TaskSet):
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
-        resp = requests.post(url + '/sendTx', files={'call1': tx_bin_data},
-                        headers={"Authorization": token})
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": token}, name="NewContract")
         
@@ -40,8 +38,6 @@ class WebsiteTasks(TaskSet):
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
-        resp = requests.post(url + '/sendTx', files={'call1': tx_bin_data},
-                        headers={"Authorization": token})
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": token}, name="MoneyTransfer")
 
@@ -54,8 +50,6 @@ class WebsiteTasks(TaskSet):
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
-        resp = requests.post(url + '/sendTx', files={'call1': tx_bin_data},
-                        headers={"Authorization": token})
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": token}, name="NewParameter")
         
@@ -68,8 +62,6 @@ class WebsiteTasks(TaskSet):
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
-        resp = requests.post(url + '/sendTx', files={'call1': tx_bin_data},
-                        headers={"Authorization": token})
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": token}, name="NewMenu")
         
@@ -82,8 +74,6 @@ class WebsiteTasks(TaskSet):
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
-        resp = requests.post(url + '/sendTx', files={'call1': tx_bin_data},
-                        headers={"Authorization": token})
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": token}, name="NewPage")
         
@@ -96,8 +86,6 @@ class WebsiteTasks(TaskSet):
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
-        resp = requests.post(url + '/sendTx', files={'call1': tx_bin_data},
-                        headers={"Authorization": token})
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": token}, name="NewBlock")
         
@@ -114,8 +102,6 @@ class WebsiteTasks(TaskSet):
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
-        resp = requests.post(url + '/sendTx', files={'call1': tx_bin_data},
-                        headers={"Authorization": token})
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": token}, name="NewTable")
         
@@ -127,8 +113,6 @@ class WebsiteTasks(TaskSet):
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
-        resp = requests.post(url + '/sendTx', files={'call1': tx_bin_data},
-                        headers={"Authorization": token})
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": token}, name="NewLang")
         
