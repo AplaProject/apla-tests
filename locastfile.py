@@ -8,13 +8,15 @@ from genesis_blockchain_tools.contract import Contract
 
 class WebsiteTasks(TaskSet):
     def on_start(self):
-        global url, token, prKey, pause
+        global url, token, prKey, pause, ldata
         self.config = config.getNodeConfig()
         url = self.config["2"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
         prKey = self.config["1"]['private_key']
         self.data = utils.login(url, prKey, 0)
         token = self.data["jwtToken"]
+        ldata = utils.login(self.config["2"]["url"],keys["key2"], 0)
+
     
     @task
     def NewContract(self):
@@ -31,9 +33,9 @@ class WebsiteTasks(TaskSet):
         
     @task
     def MoneyTransfer(self):
-        data = {"Recipient": "0005-2070-2000-0006-0200",
-                "Amount": "2"}        
-        schema = utils.get_schema(url, "MoneyTransfer", token)
+        data = {"Recipient_Account": ldata['address'],
+                "Amount": "1000"}        
+        schema = utils.get_schema(url, "TokensSend", token)
         contract = Contract(schema=schema, private_key=prKey,
                     params=data)
         tx_bin_data = contract.concat()
@@ -41,6 +43,7 @@ class WebsiteTasks(TaskSet):
                         headers={"Authorization": token})
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": token}, name="MoneyTransfer")
+
      
     @task   
     def NewParameter(self):
