@@ -49,8 +49,8 @@ class LimitsTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0,
                            "Block is not generated for updating sysparam: " +\
                            res)
-        
-    def test_max_tx_size(self):
+    #off
+    def max_tx_size(self):
         max_tx_size = utils.get_system_parameter(conf["1"]["dbHost"],
                                                     conf["1"]["dbName"],
                                                     conf["1"]["login"],
@@ -70,8 +70,9 @@ class LimitsTestCase(unittest.TestCase):
         self.assertIn("The size of tx is too big", error['msg'],
                       "Incorrect error: " + str(error))
         self.update_sys_param("max_tx_size", str(max_tx_size))
-        
-    def test_max_block_size(self):
+
+    # off
+    def max_block_size(self):
         max_block_size = utils.get_system_parameter(conf["1"]["dbHost"],
                                                     conf["1"]["dbName"],
                                                     conf["1"]["login"],
@@ -86,8 +87,9 @@ class LimitsTestCase(unittest.TestCase):
         self.assertEqual(error, "stop generating block", "Incorrect error: " + error)
         self.update_sys_param("max_block_size", str(max_block_size))
         time.sleep(30)
-      
-    def test_max_tx_block_per_user(self):
+
+    # off
+    def max_tx_block_per_user(self):
         max_tx_block_per_user = utils.get_system_parameter(conf["1"]["dbHost"],
                                                     conf["1"]["dbName"],
                                                     conf["1"]["login"],
@@ -115,9 +117,9 @@ class LimitsTestCase(unittest.TestCase):
         time.sleep(30)
         self.assertTrue(isOneOrTwo,
                         "One of block contains more than 2 transaction")
-        
-        
-    def test_max_tx_block (self):
+
+    # off
+    def max_tx_block (self):
         max_tx_block = utils.get_system_parameter(conf["1"]["dbHost"],
                                                     conf["1"]["dbName"],
                                                     conf["1"]["login"],
