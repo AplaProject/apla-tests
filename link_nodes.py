@@ -127,11 +127,10 @@ if __name__ == "__main__":
     pr_key3 = conf[2]['private_key']
     data = actions.login(url, pr_key1, 0)
     token1 = data["jwtToken"]
-    imp_app("admin", url, pr_key1, token1)
-    imp_app("system_parameters", url, pr_key1, token1)
-    imp_app("basic", url, pr_key1, token1)
-    imp_app("platform_ecosystem", url, pr_key1, token1)
-    imp_app("language_resources", url, pr_key1, token1)
+    imp_app("system", url, prKey1, token1)
+    imp_app("conditions", url, prKey1, token1)
+    imp_app("basic", url, prKey1, token1)
+    imp_app("lang_res", url, prKey1, token1))
     
     roles_install(url, pr_key1, token1)
     
