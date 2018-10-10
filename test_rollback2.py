@@ -6,13 +6,14 @@ from libs import db, tools, actions
 
 class Rollback2():
     
-    def test_rollback1(self):
+    def test_rollback2(self):
         self.unit = unittest.TestCase()
         self.conf = tools.read_config("main")
-        print(self.conf)
         db_conf = self.conf["db"]
+        l_data = actions.login(self.conf[0]['url'], self.conf[0]['private_key'])
+        token = l_data["jwtToken"]
         # Get from file all tables state
-        db_information = db.get_count_DB_objects(db_conf)
+        db_information = db.get_count_DB_objects(self.conf[0]['url'], token)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'r') as dbF:
             data = dbF.read()
