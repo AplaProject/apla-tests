@@ -290,7 +290,7 @@ with open(os.path.join(workDir3, 'PublicKey'), 'r') as f:
 		}]
 
 	# Update config for tests
-confPath = os.path.join(curDir+ '/../', 'hostConfig.json')
+confPath = os.path.join(curDir+ '/../', 'nodesConfig.json')
 
 with open(confPath, 'w') as fconf:
 	fconf.write(json.dumps(config, indent=4))
