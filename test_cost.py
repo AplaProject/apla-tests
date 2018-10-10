@@ -44,7 +44,7 @@ class TestCost():
         result = actions.call_contract(TestCost.conf[0]["url"], TestCost.conf[0]["private_key"],
                                        "NewContract", data, token_creater)
         status = actions.tx_status(TestCost.conf[0]["url"], TestCost.wait,
-                                   result['hash'], token_creater)
+                                   result, token_creater)
 
     def activate_contract(self):
         data_creater = actions.login(self.conf[1]["url"], self.conf[0]["private_key"], 0)
@@ -55,7 +55,7 @@ class TestCost():
                                        "ActivateContract", data, token_creater)
 
         status = actions.tx_status(self.conf[1]["url"], self.wait,
-                                   result['hash'], token_creater)
+                                   result, token_creater)
 
     def deactivate_contract(self):
         data_creater = actions.login(self.conf[0]["url"], self.conf[0]["private_key"], 0)
@@ -64,7 +64,7 @@ class TestCost():
         data = {"Id": id}
         result = actions.call_contract(self.conf[0]["url"], self.conf[0]["private_key"],
                                        "DeactivateContract", data, token_creater)
-        status = actions.tx_status(self.conf[0]["url"], self.wait, result['hash'], token_creater)
+        status = actions.tx_status(self.conf[0]["url"], self.wait, result, token_creater)
 
     def is_commissions_in_history(self, node_commision, id_from, platform_commission, node):
         is_node_commission = db.is_commission_in_history(self.conf[0]["db"], id_from,
@@ -95,7 +95,7 @@ class TestCost():
         token_runner = data_runner["jwtToken"]
         res = actions.call_contract(self.conf[1]["url"], self.keys["key2"],
                                     "CostContract", {"State": 1}, token_runner)
-        result = actions.tx_status(self.conf[1]["url"], self.wait, res["hash"], token_runner)
+        result = actions.tx_status(self.conf[1]["url"], self.wait, res, token_runner)
         time.sleep(10)
         node = db.get_block_gen_node(self.conf[0]["db"], result["blockid"])
         sums_after = db.get_user_token_amounts(self.conf[0]["db"])
@@ -147,7 +147,7 @@ class TestCost():
         token_runner = data_runner["jwtToken"]
         res = actions.call_contract(self.conf[1]["url"], self.keys["key2"],
                                     "CostContract", {"State": 1}, token_runner)
-        result = actions.tx_status(self.conf[1]["url"], self.wait, res["hash"], token_runner)
+        result = actions.tx_status(self.conf[1]["url"], self.wait, res, token_runner)
         time.sleep(10)
         node = db.get_block_gen_node(self.conf[0]["db"], result["blockid"])
         sums_after = db.get_user_token_amounts(self.conf[0]["db"])
@@ -199,8 +199,7 @@ class TestCost():
         token_runner = data_runner["jwtToken"]
         res = actions.call_contract(self.conf[1]["url"], self.keys["key2"],
                                     "CostContract", {"State": 0}, token_runner)
-        hash = res["hash"]
-        result = actions.tx_status(self.conf[1]["url"], self.wait, hash, token_runner)
+        result = actions.tx_status(self.conf[1]["url"], self.wait, res, token_runner)
         time.sleep(10)
         balance_contract_owner_a = db.get_balance_from_db(self.conf[0]["db"], wallet_id)
         balance_node_owner_a = db.get_balance_from_db(self.conf[0]["db"], self.conf[1]["keyID"])
@@ -242,8 +241,7 @@ class TestCost():
         res = actions.call_contract(self.conf[1]["url"], self.keys["key2"],
                                     "CostContract", {"State": 0}, token_runner)
         time.sleep(10)
-        hash = res["hash"]
-        result = actions.tx_status(self.conf[1]["url"], self.wait, hash, token_runner)
+        result = actions.tx_status(self.conf[1]["url"], self.wait, res, token_runner)
         balance_contract_owner_a = db.get_balance_from_db(self.conf[0]["db"], wallet_id)
         balance_node_owner_a = db.get_balance_from_db(self.conf[0]["db"], self.conf[1]["keyID"])
         balance_commision_a = db.get_balance_from_db(self.conf[0]["db"], commision_wallet)

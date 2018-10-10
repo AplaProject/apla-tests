@@ -20,10 +20,9 @@ class TestPrototipo():
         self.token = data["jwtToken"]
 
     def assert_tx_in_block(self, result, jwt_token):
-        self.uni.assertIn("hash", result)
         status = actions.tx_status(self.url,
                                    tools.read_config("test")["wait_tx_status"],
-                                   result['hash'], jwt_token)
+                                   result, jwt_token)
         self.uni.assertNotIn(json.dumps(status), 'errmsg')
         self.uni.assertGreater(status['blockid'], 0)
 
@@ -628,7 +627,6 @@ class TestPrototipo():
         resp = actions.call_contract_with_files(self.url, self.pr_key, "UploadBinary", data,
                                                 files, self.token)
         self.assert_tx_in_block(resp, self.token)
-        self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
         member_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
         content = self.check_page("Binary(Name: " + name + ", AppID: " + app_id + ", MemberID: " + member_id + ")")
@@ -648,7 +646,6 @@ class TestPrototipo():
         resp = actions.call_contract_with_files(self.url, self.pr_key, "UploadBinary", data,
                                                 files, self.token)
         res = self.assert_tx_in_block(resp, self.token)
-        self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
         last_rec = actions.get_count(self.url, "binaries", self.token)
         content = self.check_page("Binary().ById(" + last_rec + ")")
@@ -668,7 +665,6 @@ class TestPrototipo():
         resp = actions.call_contract_with_files(self.url, self.pr_key, "UploadBinary", data,
                                                 files, self.token)
         self.assert_tx_in_block(resp, self.token)
-        self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
         member_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
         last_rec = actions.get_count(self.url, "binaries", self.token)
@@ -693,7 +689,6 @@ class TestPrototipo():
         resp = actions.call_contract_with_files(self.url, self.pr_key, "UploadBinary", data,
                                                 files, self.token)
         self.assert_tx_in_block(resp, self.token)
-        self.uni.assertIn("hash", str(resp), "BlockId is not generated: " + str(resp))
         # test
         last_rec = actions.get_count(self.url, "binaries", self.token)
         content = self.check_page("Image(Binary().ById(" + last_rec + "))")
