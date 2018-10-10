@@ -23,7 +23,6 @@ def login(url, pr_key, role=0, ecosystem=1):
     res = resp.json()
     result = {}
     result["uid"] = uid
-    result["timeToken"] = res["refresh"]
     result["jwtToken"] = 'Bearer ' + res["token"]
     result["pubkey"] = pubkey
     result["address"] = res["address"]
@@ -75,7 +74,8 @@ def tx_status(url, sleep_time, hsh, jvt_token):
     url_end = url + '/txstatus'
     while sec < sleep_time:
         time.sleep(1)
-        resp = requests.get(url_end, params={"data": json.dumps({"hashes": [hsh]})}, headers={'Authorization': jvt_token})
+        resp = requests.post(url_end, params={"data": json.dumps({"hashes": [hsh]})},
+                             headers={'Authorization': jvt_token})
         jresp = resp.json()["results"][hsh]
         status = {}
         if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
@@ -116,8 +116,6 @@ def tx_status_multi(url, sleep_time, hshs, jvt_token):
         
 def call_get_api(url, data, token):
     resp = requests.get(url, params=data,  headers={"Authorization": token})
-    print("resp", resp)
-    print(resp.json())
     if resp.status_code == 200:
         return resp.json()
     else:
@@ -164,7 +162,6 @@ def get_object_id(url, name, object, token):
 def is_contract_activated(url, name, token):
     end_point = url + "/contract/" + name
     res = call_get_api(end_point, "", token)
-    print("res", res)
     return res["active"]
 
 def get_activated_wallet(url, name, token):

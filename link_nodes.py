@@ -7,9 +7,8 @@ from libs import actions, tools
 def is_in_block(call, url, token):
     status = actions.tx_status(url, 30, call, token)
     if "blockid" not in status or int(status["blockid"]) < 0:
+        print(status)
         return False 
-    else:
-        return False
     return True
         
 def imp_app(app_name, url, pr_key, token):
@@ -34,7 +33,6 @@ def imp_app(app_name, url, pr_key, token):
             hashes = resp['hashes']
             result = actions.tx_status_multi(url, 30, hashes, token)
             for status in result.values():
-                print(status)
                 if int(status["blockid"]) < 1:
                     print("Import is failed")
                     exit(1)
@@ -62,8 +60,7 @@ def voiting_install(url, pr_key, token):
 def edit_app_param(name, val, url, pr_key, token):
     id = actions.get_object_id(url, name, "app_params", token)
     print("id", id)
-    data = {"Id": id,
-            "Name": name, "Value": val, "Conditions": "true" }
+    data = {"Id": id, "Value": val, "Conditions": "true"}
     call = actions.call_contract(url, pr_key, "EditAppParam",
                                data, token)
     if not is_in_block(call, url, token):
@@ -108,7 +105,8 @@ def voting_status_update(url, pr_key, token):
         exit(1)
         
 def voiting(id, url, pr_key, token):
-    data = {"votingID": id}
+    data = {"votingID": id,
+            "RoleId": 3}
     call = actions.call_contract(url, pr_key, "VotingDecisionAccept",
                                data, token)
 
@@ -127,10 +125,10 @@ if __name__ == "__main__":
     pr_key3 = conf[2]['private_key']
     data = actions.login(url, pr_key1, 0)
     token1 = data["jwtToken"]
-    imp_app("system", url, prKey1, token1)
-    imp_app("conditions", url, prKey1, token1)
-    imp_app("basic", url, prKey1, token1)
-    imp_app("lang_res", url, prKey1, token1))
+    imp_app("system", url, pr_key1, token1)
+    imp_app("conditions", url, pr_key1, token1)
+    imp_app("basic", url, pr_key1, token1)
+    imp_app("lang_res", url, pr_key1, token1)
     
     roles_install(url, pr_key1, token1)
     
