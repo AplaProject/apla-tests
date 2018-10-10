@@ -21,8 +21,7 @@ class TestSimvolio():
         self.token = data["jwtToken"]
 
     def assert_tx_in_block(self, result, jwt_token):
-        self.unit.assertIn("hash", result)
-        status = actions.tx_status(self.url, self.wait, result['hash'], jwt_token)
+        status = actions.tx_status(self.url, self.wait, result, jwt_token)
         print(status)
         self.unit.assertNotIn(json.dumps(status), 'errmsg')
         self.unit.assertGreater(status['blockid'], 0)
@@ -49,21 +48,19 @@ class TestSimvolio():
         code, name = self.generate_name_and_code(sourse)
         self.create_contract(code)
         res = actions.call_contract(self.url, self.pr_key, name, {}, self.token)
-        hash = res["hash"]
-        result = actions.tx_status(self.url, self.wait, hash, self.token)
+        result = actions.tx_status(self.url, self.wait, res, self.token)
         self.unit.assertIn(check_point, result["result"], "error")
 
     def call(self, name, data):
         result = actions.call_contract(self.url, self.pr_key, name, data, self.token)
-        status = actions.tx_status(self.url, self.wait, result['hash'], self.token)
+        status = actions.tx_status(self.url, self.wait, result, self.token)
         return status
 
     def check_contract_with_data(self, sourse, data, check_point):
         code, name = self.generate_name_and_code(sourse)
         self.create_contract(code)
         res = actions.call_contract(self.url, self.pr_key, name, data, self.token)
-        hash = res["hash"]
-        result = actions.tx_status(self.url, self.wait, hash, self.token)
+        result = actions.tx_status(self.url, self.wait, res, self.token)
         self.unit.assertIn(check_point, result["result"], "error")
 
     @pytest.mark.parametrize("name,code,result", tools.json_to_list(contracts["simple"]))
@@ -77,7 +74,7 @@ class TestSimvolio():
                 "Name": "test",
                 "Trans": "{\"en\": \"test_en\", \"de\" : \"test_de\"}"}
         result = actions.call_contract(self.url, self.pr_key, "NewLang", data, self.token)
-        tx = actions.tx_status(self.url, self.wait, result['hash'], self.token)
+        tx = actions.tx_status(self.url, self.wait, result, self.token)
         contract = self.contracts["langRes"]
         self.check_contract(contract["code"], contract["asert"])
 
@@ -92,7 +89,7 @@ class TestSimvolio():
                 "Columns": columns,
                 "Permissions": permission}
         result = actions.call_contract(self.url, self.pr_key, "NewTable", data, self.token)
-        tx = actions.tx_status(self.url, self.wait, result['hash'], self.token)
+        tx = actions.tx_status(self.url, self.wait, result, self.token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
 
@@ -107,7 +104,7 @@ class TestSimvolio():
                 "Columns": columns,
                 "Permissions": permission}
         result = actions.call_contract(self.url, self.pr_key, "NewTable", data, self.token)
-        tx = actions.tx_status(self.url, self.wait, result['hash'], self.token)
+        tx = actions.tx_status(self.url, self.wait, result, self.token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
         contract = self.contracts["dbUpdate"]
@@ -124,7 +121,7 @@ class TestSimvolio():
                 "Columns": columns,
                 "Permissions": permission}
         result = actions.call_contract(self.url, self.pr_key, "NewTable", data, self.token)
-        tx = actions.tx_status(self.url, self.wait, result['hash'], self.token)
+        tx = actions.tx_status(self.url, self.wait, result, self.token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
         contract = self.contracts["dbUpdateExt"]
@@ -145,7 +142,7 @@ class TestSimvolio():
         value = "contract con_" + contrac_name + " { data{ } conditions{ } action{ " + sys_var_name + " = 5 } }"
         data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
         result = actions.call_contract(self.url, self.pr_key, "NewContract", data, self.token)
-        tx = actions.tx_status(self.url, self.wait, result['hash'], self.token)
+        tx = actions.tx_status(self.url, self.wait, result, self.token)
         print("tx", tx)
         exp_result = "system variable " + sys_var_name + " cannot be changed"
         msg = "system variable " + sys_var_name + " was been changed!"
@@ -170,7 +167,7 @@ class TestSimvolio():
                 value = "contract con_" + contrac_name + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
                 data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
                 result = actions.call_contract(self.url, self.pr_key, "NewContract", data, self.token)
-                tx = actions.tx_status(self.url, self.wait, result['hash'], self.token)
+                tx = actions.tx_status(self.url, self.wait, result, self.token)
                 current_block_id = int(tx["blockid"])
                 self.unit.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
                 old_block_id = current_block_id
@@ -180,7 +177,7 @@ class TestSimvolio():
         value = "contract con_" + contrac_name + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
         data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
         result = actions.call_contract(self.url, self.pr_key, "NewContract", data, self.token)
-        tx = actions.tx_status(self.url, self.wait, result['hash'], self.token)
+        tx = actions.tx_status(self.url, self.wait, result, self.token)
         current_block_id = int(tx["blockid"])
         self.unit.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
         # wait until generated 100 blocks

@@ -4,6 +4,7 @@ import time
 
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
+from genesis_blockchain_tools.contract import Contract
 from libs import api
 
 def get_uid(url):
@@ -29,64 +30,53 @@ def login(url, pr_key, role=0, ecosystem=1):
     result["key_id"] = res["key_id"]
     return result
 
-def prepare_tx(url, pr_key, entity, jvt_token, data):
-    heads = {'Authorization': jvt_token}
-    resp = requests.post(url + '/prepare/' + entity, data=data, headers=heads)
-    result = resp.json()
-    signature = sign(pr_key, result['forsign'])
-    return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
 
-def prepare_tx_with_files(url, pr_key, entity, jvt_token, data, files):
-    heads = {'Authorization': jvt_token}
-    resp = requests.post(url + '/prepare/' + entity,
-                        data=data, headers=heads, files=files)
-    result = resp.json()
-    signature = sign(pr_key, result['forsign'])
-    return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
+def get_schema(url, name, jvtToken):
+    resp = requests.get(url + '/contract/' + name, headers={"Authorization": jvtToken})
+    return resp.json()
 
-def call_contract(url, pr_key, name, data, jvt_token):
-    sign = prepare_tx(url, pr_key, name, jvt_token, data)
-    data_contract = {"time": sign['time'], "signature": sign["signature"]}
-    url_end = url + '/contract/' + sign["reqID"]
-    resp = requests.post(url_end, data=data_contract, headers={"Authorization": jvt_token})
+
+def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
+    schema = get_schema(url, name, jvtToken)
+    contract = Contract(schema=schema,
+                        private_key=prKey,
+                        ecosystem_id=ecosystem,
+                        params=data)
+    tx_bin_data = contract.concat()
+    resp = requests.post(url + '/sendTx', files={'call1': tx_bin_data},
+                        headers={"Authorization": jvtToken})
+    result = resp.json()
+    if 'hashes' in result:
+        return result['hashes']['call1']
+    else:
+        return result
+
+
+def call_multi_contract(url, prKey, name, data, jvtToken, withData=True):
+    full_bindata = {}
+    i = 1
+    for inf in data:
+        if withData == True and inf['params']['Data'] == '[]':
+            continue
+        schema = get_schema(url, inf['contract'], jvtToken)
+        contract = Contract(schema=schema, private_key=prKey,
+                    params=inf['params'])
+        tx_bin_data = contract.concat()
+        full_bindata.update({'call' + str(i): tx_bin_data})
+        i += 1
+    resp = requests.post(url + '/sendTx', files=full_bindata,
+                        headers={"Authorization": jvtToken})
     result = resp.json()
     return result
 
-def prepare_multi_tx(url, pr_key, entity, jvt_token, data):
-    url_to_cont = url + '/prepareMultiple/'
-    heads = {'Authorization': jvt_token}
-    request = {"token_ecosystem": "", "max_sum": "","payover": "",
-               "signed_by": "", "contracts": data}
-    resp = requests.post(url_to_cont, data={"data": json.dumps(request)}, headers=heads)
-    result = resp.json()
-    forsigns = result['forsign']
-    signatures = [sign(pr_key, forsign) for forsign in forsigns]
-    return {"time": result['time'], "signatures": signatures, "reqID": result['request_id']}
-
-def call_multi_contract(url, pr_key, name, data, jvt_token):
-    sign = prepare_multi_tx(url, pr_key, name, jvt_token, data)
-    data_contract = {"time": sign['time'], "signatures": sign["signatures"]}
-    url_end = url + '/contractMultiple/' + sign["reqID"]
-    resp = requests.post(url_end, data={"data": json.dumps(data_contract)},
-                         headers={"Authorization": jvt_token})
-    result = resp.json()
-    return result
-
-def call_contract_with_files(url, pr_key, name, data, files, jvt_token):
-    sign = prepare_tx_with_files(url, pr_key, name, jvt_token, data, files)
-    data_contract = {"time": sign['time'], "signature": sign["signature"]}
-    url_end = url + '/contract/' + sign["reqID"]
-    resp = requests.post(url_end, data=data_contract, headers={"Authorization": jvt_token})
-    result = resp.json()
-    return result
 
 def tx_status(url, sleep_time, hsh, jvt_token):
     sec = 0
-    url_end = url + '/txstatus/' + hsh
+    url_end = url + '/txstatus'
     while sec < sleep_time:
         time.sleep(1)
-        resp = requests.get(url_end, headers={'Authorization': jvt_token})
-        jresp = resp.json()
+        resp = requests.get(url_end, params={"data": json.dumps({"hashes": [hsh]})}, headers={'Authorization': jvt_token})
+        jresp = resp.json()["results"][hsh]
         status = {}
         if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
             break
@@ -101,20 +91,23 @@ def tx_status(url, sleep_time, hsh, jvt_token):
 
 
 def tx_status_multi(url, sleep_time, hshs, jvt_token):
-    url_end = url + '/txstatusMultiple/'
-    all_tx_in_blocks = False
+    url_end = url + '/txstatus'
+    allTxInBlocks = False
     sec = 0
+    list = []
+    for hash in hshs:
+        list.append(hshs[hash])
     while sec < sleep_time:
         time.sleep(1)
-        resp = requests.post(url_end, params={"data": json.dumps({"hashes": hshs})},
+        resp = requests.post(url_end, params={"data": json.dumps({"hashes": list})},
                              headers={'Authorization': jvt_token})
         jresp = resp.json()["results"]
         for status in jresp.values():
             if (len(status['blockid']) > 0 and 'errmsg' not in json.dumps(status)):
-                all_tx_in_blocks = True
+                allTxInBlocks = True
             else:
-                all_tx_in_blocks = False
-        if all_tx_in_blocks == True:
+                allTxInBlocks = False
+        if allTxInBlocks == True:
             return jresp
         else:
             sec = sec + 1

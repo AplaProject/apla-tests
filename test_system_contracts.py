@@ -20,9 +20,7 @@ class TestSystemContracts():
         self.unit = unittest.TestCase()
 
     def assert_tx_in_block(self, result, jwt_token):
-        self.unit.assertIn("hash", result)
-        hash = result['hash']
-        status = actions.tx_status(self.url, self.wait, hash, jwt_token)
+        status = actions.tx_status(self.url, self.wait, result, jwt_token)
         if len(status['blockid']) > 0:
             self.unit.assertNotIn(json.dumps(status), 'errmsg')
             return {"blockid": int(status["blockid"]), "error": "0"}
@@ -1185,17 +1183,10 @@ class TestSystemContracts():
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
-        files = {'Data': file}
-        data = {"Name": name, "ApplicationId": 1}
-        resp = actions.call_contract_with_files(self.url, self.pr_key, "UploadBinary",
-                                                data, files, self.token)
+        data = {'Name': name, 'ApplicationId': '1', 'Data': file}
+        resp = actions.call_contract(self.url, self.pr_key, "UploadBinary",
+                                                data, self.token)
         res = self.assert_tx_in_block(resp, self.token)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-
-    def test_update_system_parameters(self):
-        data = {"Name": "max_block_user_tx", "Value": "2"}
-        res = self.call("UpdateSysParam", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
@@ -1408,11 +1399,8 @@ class TestSystemContracts():
 
     def test_ei3_ImportUpload(self):
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
-        with open(path, 'r') as f:
-            file = f.read()
-        files = {'input_file': file}
-        resp = actions.call_contract_with_files(self.url, self.pr_key, "ImportUpload", {},
-                                                files, self.token)
+        resp = actions.call_contract(self.url, self.pr_key, "ImportUpload",
+                                     {'input_file': {'Path': path}}, self.token)
         res_import_upload = self.assert_tx_in_block(resp, self.token)
         self.unit.assertGreater(res_import_upload["blockid"], 0,
                            "BlockId is not generated: " + str(res_import_upload))

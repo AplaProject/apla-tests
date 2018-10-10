@@ -5,48 +5,40 @@ import json
 from libs import actions, tools
 
 def is_in_block(call, url, token):
-    if "hash" in call:
-        status = actions.tx_status(url, 30, call["hash"], token)
-        print(status)
-        if "blockid" not in status or int(status["blockid"]) < 0:
-            print(status)
-            return False 
+    status = actions.tx_status(url, 30, call, token)
+    if "blockid" not in status or int(status["blockid"]) < 0:
+        return False 
     else:
         return False
     return True
         
 def imp_app(app_name, url, pr_key, token):
     path = os.path.join(os.getcwd(), "fixtures", "basic", app_name + ".json")
-    with open(path, 'r', encoding = "utf8") as f:
-        file = f.read()
-    files = {'input_file': file}
-    resp = actions.call_contract_with_files(url, pr_key, "ImportUpload", {},
-                                            files, token)
-    if("hash" in resp):
-        res_import_upload = actions.tx_status(url, 30,
-                                         resp["hash"], token)
-        if int(res_import_upload["blockid"]) > 0:
-            founder_id = actions.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
-            result = actions.call_get_api(url + "/list/buffer_data", "", token)
-            bufer_data_list = result['list']
-            for item in bufer_data_list:
-                if item['key'] == "import" and item['member_id'] == founder_id:
-                    import_app_data = json.loads(item['value'])['data']
-                    break
-            contract_name = "Import"
-            data = [{"contract": contract_name,
-                     "params": import_app_data[i]} for i in range(len(import_app_data))]
-            resp = actions.call_multi_contract(url, pr_key, contract_name, data, token)
-            time.sleep(30)
-            if "hashes" in resp:
-                hashes = resp['hashes']
-                result = actions.tx_status_multi(url, 30, hashes, token)
-                for status in result.values():
-                    print(status)
-                    if int(status["blockid"]) < 1:
-                        print("Import is failed")
-                        exit(1)
-                print("App '" + app_name + "' successfully installed")
+    resp = actions.call_contract(url, pr_key, "ImportUpload",
+                                 {'input_file': {'Path': path}}, token)
+    res_import_upload = actions.tx_status(url, 30, resp, token)
+    if int(res_import_upload["blockid"]) > 0:
+        founder_id = actions.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
+        result = actions.call_get_api(url + "/list/buffer_data", "", token)
+        bufer_data_list = result['list']
+        for item in bufer_data_list:
+            if item['key'] == "import" and item['member_id'] == founder_id:
+                import_app_data = json.loads(item['value'])['data']
+                break
+        contract_name = "Import"
+        data = [{"contract": contract_name,
+                 "params": import_app_data[i]} for i in range(len(import_app_data))]
+        resp = actions.call_multi_contract(url, pr_key, contract_name, data, token)
+        time.sleep(30)
+        if "hashes" in resp:
+            hashes = resp['hashes']
+            result = actions.tx_status_multi(url, 30, hashes, token)
+            for status in result.values():
+                print(status)
+                if int(status["blockid"]) < 1:
+                    print("Import is failed")
+                    exit(1)
+            print("App '" + app_name + "' successfully installed")
                 
 def roles_install(url, pr_key, token):
     data = {}
@@ -80,13 +72,9 @@ def edit_app_param(name, val, url, pr_key, token):
     
 def update_profile(name, url, pr_key, token):
     time.sleep(5)
-    path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
-    with open(path, 'rb') as f:
-        file = f.read()
-    files = {'member_image': file}
     data = {"member_name": name}
-    resp = actions.call_contract_with_files(url, pr_key, "ProfileEdit",
-                                          data, files, token)
+    resp = actions.call_contract(url, pr_key, "ProfileEdit",
+                                          data, token)
     if not is_in_block(resp, url, token):
         print("UpdateProfile " + name + " is failed")
         exit(1)

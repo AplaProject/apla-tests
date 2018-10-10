@@ -16,9 +16,7 @@ class TestLimits():
         self.unit = unittest.TestCase()
 
     def assert_tx_in_block(self, result, jwtToken):
-        self.unit.assertIn("hash", result)
-        hash = result['hash']
-        status = actions.tx_status(self.conf[1]["url"], self.wait, hash, self.token)
+        status = actions.tx_status(self.conf[1]["url"], self.wait, result, self.token)
         print("status tx: ", status)
         if int(status['blockid']) > 0:
             self.unit.assertNotIn(json.dumps(status), 'errmsg')

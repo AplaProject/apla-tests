@@ -20,47 +20,39 @@ class TestRollback1():
 
     def imp_app(self, appName, url, pr_key, token):
         path = os.path.join(os.getcwd(), "fixtures", "basic", appName + ".json")
-        with open(path, 'r', encoding="utf8") as f:
-            file = f.read()
-        files = {'input_file': file}
-        resp = actions.call_contract_with_files(self.url, self.pr_key,
-                                                "ImportUpload", {}, files, self.token)
-        if ("hash" in resp):
-            res_import_upload = actions.tx_status(self.url, 30, resp["hash"],
-                                                self.token)
-            if int(res_import_upload["blockid"]) > 0:
-                founder_id = actions.call_get_api(self.url + "/ecosystemparam/founder_account/",
+        resp = actions.call_contract(self.url, self.pr_key, "ImportUpload",
+                                     {'input_file': {'Path': path}}, self.token)
+        res_import_upload = actions.tx_status(self.url, 30, resp, self.token)
+        if int(res_import_upload["blockid"]) > 0:
+            founder_id = actions.call_get_api(self.url + "/ecosystemparam/founder_account/",
                                                  "", self.token)['value']
-                result = actions.call_get_api(self.url + "/list/buffer_data", "",
-                                              self.token)
-                buffer_data_list = result['list']
-                for item in buffer_data_list:
-                    if item['key'] == "import" and item['member_id'] == founder_id:
-                        importAppData = json.loads(item['value'])['data']
-                        break
-                contract_name = "Import"
-                data = [{"contract": contract_name,
+            result = actions.call_get_api(self.url + "/list/buffer_data", "", self.token)
+            buffer_data_list = result['list']
+            for item in buffer_data_list:
+                if item['key'] == "import" and item['member_id'] == founder_id:
+                    importAppData = json.loads(item['value'])['data']
+                    break
+            contract_name = "Import"
+            data = [{"contract": contract_name,
                          "params": importAppData[i]} for i in range(len(importAppData))]
-                resp = actions.call_multi_contract(self.url,
-                                                   self.pr_key, contract_name, data,
-                                                   self.token)
-                time.sleep(30)
-                if "hashes" in resp:
-                    hashes = resp['hashes']
-                    result = actions.tx_status_multi(self.url, 30, hashes,
-                                                     self.token)
-                    for status in result.values():
-                        if status["blockid"] < 1:
-                            print("Import is failed")
-                            exit(1)
-                    print("App '" + appName + "' successfully installed")
+            resp = actions.call_multi_contract(self.url, self.pr_key, contract_name,
+                                               data, self.token)
+            time.sleep(30)
+            if "hashes" in resp:
+                hashes = resp['hashes']
+                result = actions.tx_status_multi(self.url, 30, hashes, self.token)
+                for status in result.values():
+                    if status["blockid"] < 1:
+                        print("Import is failed")
+                        exit(1)
+                print("App '" + appName + "' successfully installed")
 
 
     def call(self, name, data):
         resp = actions.call_contract(self.url, self.pr_key, name,
                                      data, self.token)
         res = actions.tx_status(self.url, self.wait,
-                             resp['hash'], self.token)
+                             resp, self.token)
         return res
 
     def create_contract(self, data):
@@ -120,11 +112,11 @@ class TestRollback1():
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
-        data = {"Name": name, "ApplicationId": 1}
-        resp = actions.call_contract_with_files(self.url, self.pr_key,
-                                                "UploadBinary", data, files, self.token)
+        data = {"Name": name, "ApplicationId": 1, 'Data': file}
+        resp = actions.call_contract(self.url, self.pr_key,
+                                                "UploadBinary", data, self.token)
         res = actions.tx_status(self.url, self.wait,
-                             resp['hash'], self.token)
+                             resp, self.token)
         self.unit.assertGreater(int(res['blockid']), 0, "BlockId is not generated: " + str(res))
 
     def add_user_table(self):

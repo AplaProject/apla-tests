@@ -9,64 +9,78 @@ class WebsiteTasks(TaskSet):
         self.pr_key = self.config["1"]['private_key']
         self.data = actions.login(self.url, self.pr_key, 0)
         self.token = self.data["jwtToken"]
+        keys = tools.read_fixtures('keys')
+        self.ldata = utils.login(self.config["2"]["url"],keys["key2"], 0)
     
     @task
     def NewContract(self):
-        code, name = self.t.generate_name_and_code("")
+        code, name = tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
-        sign = actions.prepare_tx(self.url, self.pr_key, "NewContract", self.token, data)
-        data_contract = {"time": sign['time'], "signature": sign["signature"]}
-        self.client.post("/contract/" + sign["reqID"], data_contract,
-                         headers={"Authorization": self.token}, name="NewContract")
+        schema = actions.get_schema(url, "NewContract", token)
+        contract = Contract(schema=schema, private_key=prKey,
+                    params=data)
+        tx_bin_data = contract.concat()
+        self.client.post("/sendTx", files={'call1': tx_bin_data},
+                         headers={"Authorization": token}, name="NewContract")
         
     @task
     def MoneyTransfer(self):
-        data = {"Recipient": "0005-2070-2000-0006-0200",
-                "Amount": "2"}
-        sign = actions.prepare_tx(self.url, self.pr_key, "MoneyTransfer", self.token, data)
-        data_contract = {"time": sign['time'], "signature": sign["signature"]}
-        self.client.post("/contract/" + sign["reqID"], data_contract,
-                         headers={"Authorization": self.token}, name="MoneyTransfer")
+        data = {"Recipient_Account": self.ldata['address'],
+                "Amount": "1000"}        
+        schema = actions.get_schema(url, "TokensSend", token)
+        contract = Contract(schema=schema, private_key=prKey,
+                    params=data)
+        tx_bin_data = contract.concat()
+        self.client.post("/sendTx", files={'call1': tx_bin_data},
+                         headers={"Authorization": token}, name="MoneyTransfer")
+
      
     @task   
     def NewParameter(self):
         name = "Par_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "test", "ApplicationId": 1,
-                "Conditions": "true"}
-        sign = actions.prepare_tx(self.url, self.pr_key, "NewParameter", self.token, data)
-        data_contract = {"time": sign['time'], "signature": sign["signature"]}
-        self.client.post("/contract/" + sign["reqID"], data_contract,
-                         headers={"Authorization": self.token}, name="NewParameter")
+        data = {"Name": name, "Value": "test", "Conditions": "true"}        
+        schema = actions.get_schema(url, "NewParameter", token)
+        contract = Contract(schema=schema, private_key=prKey,
+                    params=data)
+        tx_bin_data = contract.concat()
+        self.client.post("/sendTx", files={'call1': tx_bin_data},
+                         headers={"Authorization": token}, name="NewParameter")
         
     @task   
     def NewMenu(self):
         name = "Menu_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
+        data = {"Name": name, "Value": "Item1",
                 "Conditions": "true"}
-        sign = actions.prepare_tx(self.url, self.pr_key, "NewMenu", self.token, data)
-        data_contract = {"time": sign['time'], "signature": sign["signature"]}
-        self.client.post("/contract/" + sign["reqID"], data_contract,
-                         headers={"Authorization": self.token}, name="NewMenu")
+        schema = actions.get_schema(url, "NewMenu", token)
+        contract = Contract(schema=schema, private_key=prKey,
+                    params=data)
+        tx_bin_data = contract.concat()
+        self.client.post("/sendTx", files={'call1': tx_bin_data},
+                         headers={"Authorization": token}, name="NewMenu")
         
     @task   
     def NewPage(self):
         name = "Page_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
-        sign = actions.prepare_tx(self.url, self.pr_key, "NewPage", self.token, data)
-        data_contract = {"time": sign['time'], "signature": sign["signature"]}
-        self.client.post("/contract/" + sign["reqID"], data_contract,
-                         headers={"Authorization": self.token}, name="NewPage")
+        schema = actions.get_schema(url, "NewPage", token)
+        contract = Contract(schema=schema, private_key=prKey,
+                    params=data)
+        tx_bin_data = contract.concat()
+        self.client.post("/sendTx", files={'call1': tx_bin_data},
+                         headers={"Authorization": token}, name="NewPage")
         
     @task   
     def NewBlock(self):
         name = "Block_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true"}
-        sign = actions.prepare_tx(self.url, self.pr_key, "NewBlock", self.token, data)
-        data_contract = {"time": sign['time'], "signature": sign["signature"]}
-        self.client.post("/contract/" + sign["reqID"], data_contract,
-                         headers={"Authorization": self.token}, name="NewBlock")
+        schema = actions.get_schema(url, "NewBlock", token)
+        contract = Contract(schema=schema, private_key=prKey,
+                    params=data)
+        tx_bin_data = contract.concat()
+        self.client.post("/sendTx", files={'call1': tx_bin_data},
+                         headers={"Authorization": token}, name="NewBlock")
         
     @task   
     def NewTable(self):
@@ -77,20 +91,24 @@ class WebsiteTasks(TaskSet):
         data = {"Name": "Tab_" + tools.generate_random_name(),
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
-        sign = actions.prepare_tx(self.url, self.pr_key, "NewTable", self.token, data)
-        data_contract = {"time": sign['time'], "signature": sign["signature"]}
-        self.client.post("/contract/" + sign["reqID"], data_contract,
-                         headers={"Authorization": self.token}, name="NewTable")
+        schema = actions.get_schema(url, "NewTable", token)
+        contract = Contract(schema=schema, private_key=prKey,
+                    params=data)
+        tx_bin_data = contract.concat()
+        self.client.post("/sendTx", files={'call1': tx_bin_data},
+                         headers={"Authorization": token}, name="NewTable")
         
     @task   
     def NewLang(self):
-        data = {"AppID": 1, "Name": "Lang_" + tools.generate_random_name(),
-                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}",
-                "ApplicationId": 1}
-        sign = actions.prepare_tx(self.url, self.pr_key, "NewLang", self.token, data)
-        data_contract = {"time": sign['time'], "signature": sign["signature"]}
-        self.client.post("/contract/" + sign["reqID"], data_contract,
-                         headers={"Authorization": self.token}, name="NewLang")
+        data = {"Name": "Lang_" + tools.generate_random_name(),
+                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
+        schema = actions.get_schema(url, "NewLang", token)
+        contract = Contract(schema=schema, private_key=prKey,
+                    params=data)
+        tx_bin_data = contract.concat()
+        self.client.post("/sendTx", files={'call1': tx_bin_data},
+                         headers={"Authorization": token}, name="NewLang")
+        
         
 
 class WebsiteUser(HttpLocust):

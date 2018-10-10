@@ -19,9 +19,7 @@ class TestApi():
         self.unit = unittest.TestCase()
 
     def assert_tx_in_block(self, result, jwt_token):
-        self.unit.assertIn("hash", result)
-        hash = result['hash']
-        status = actions.tx_status(self.url, self.wait, hash, jwt_token)
+        status = actions.tx_status(self.url, self.wait, result, jwt_token)
         if status['blockid'] > 0:
             self.unit.assertNotIn(json.dumps(status), 'errmsg')
             return status["blockid"]
@@ -325,7 +323,7 @@ class TestApi():
         data = {"Name": page_name, "Value": page_value, "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         resp = actions.call_contract(self.url, self.pr_key, "@1NewPage", data, token2)
-        status = actions.tx_status(self.url, self.wait, resp["hash"], token2)
+        status = actions.tx_status(self.url, self.wait, resp, token2)
         self.unit.assertGreater(int(status["blockid"]), 0,"BlockId is not generated: " + str(status))
         # create menu in new ecosystem
         menu_name = "Menu_" + tools.generate_random_name()
@@ -333,7 +331,7 @@ class TestApi():
         data = {"Name": menu_name, "Value": "MenuItem(Title:\""+menu_title+"\")", "ApplicationId": 1,
                 "Conditions": "true"}
         resp = actions.call_contract(self.url, self.pr_key, "@1NewMenu", data, token2)
-        status = actions.tx_status(self.url, self.wait, resp["hash"], token2)
+        status = actions.tx_status(self.url, self.wait, resp, token2)
         self.unit.assertGreater(int(status["blockid"]), 0, "BlockId is not generated: " + str(status))
         # test
         data = ""
@@ -451,7 +449,7 @@ class TestApi():
     def is_node_owner_true(self):
         data = {}
         resp = actions.call_contract(self.url, self.pr_key, "NodeOwnerCondition", data, self.token)
-        status = actions.tx_status(self.url, self.wait, resp["hash"], self.token)
+        status = actions.tx_status(self.url, self.wait, resp, self.token)
         self.unit.assertGreater(int(status["blockid"]), 0,
                            "BlockId is not generated: " + str(status))
         
@@ -462,7 +460,7 @@ class TestApi():
         token2 = data2["jwtToken"]
         data = {}
         resp = actions.call_contract(self.url, pr_key2, "NodeOwnerCondition", data, token2)
-        status = actions.tx_status(self.url, self.wait, resp["hash"], token2)
+        status = actions.tx_status(self.url, self.wait, resp, token2)
         self.unit.assertEqual(status["errmsg"]["error"],
                          "Sorry, you do not have access to this action.",
                          "Incorrect message: " + str(status))
