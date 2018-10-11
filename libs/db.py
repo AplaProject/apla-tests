@@ -164,3 +164,14 @@ def is_commission_in_history(db, id_from, id_to, summ):
         return True
     else:
         return False
+
+def is_commission_in_history_new(db_host, db_name, login, password, id_from, id_to, summ):
+    connect = psycopg2.connect(host=db_host, dbname=db_name, user=login, password=password)
+    cursor = connect.cursor()
+    cursor.execute("select * from \"1_history\" WHERE sender_id=" + id_from +\
+				 " AND recipient_id=" + str(id_to) + " AND amount=" + str(summ))
+    rec = cursor.fetchall()
+    if len(rec) > 0:
+        return True
+    else:
+        return False
