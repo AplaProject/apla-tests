@@ -9,11 +9,11 @@ class Rollback2():
     def test_rollback2(self):
         self.unit = unittest.TestCase()
         self.conf = tools.read_config("main")
-        db_Conf = self.conf["db"]
-        lData = actions.login(self.conf[0]['url'], self.conf[0]['private_key'])
-        token = lData["jwtToken"]
+        db_conf = self.conf["db"]
+        l_data = actions.login(self.conf[0]['url'], self.conf[0]['private_key'])
+        token = l_data["jwtToken"]
         # Get from file all tables state
-        db_Information = db.get_count_DB_objects(self.conf[0]['url'], token)
+        db_information = db.get_count_DB_objects(self.conf[0]['url'], token)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'r') as dbF:
             data = dbF.read()
