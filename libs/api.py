@@ -149,7 +149,6 @@ def tables(url, token, limit=25, offset=0):
     }
     endpoint = '/tables'
     url += endpoint
-    print("url", url)
     return call_get_api(url, data, token)
 
 

@@ -12,9 +12,7 @@ def json_to_list(js):
         for element in i:
             list.append(i[element])
         tup = tuple(list)
-        print("tup", tup)
         full_list.append(tup)
-    print(full_list)
     return full_list
 
 

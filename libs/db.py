@@ -62,7 +62,6 @@ def get_ecosys_tables1(db):
 
 def get_ecosys_tables(url, token):
     tables = api.tables(url, token, 100)['list']
-    print("tables", tables)
     list = []
     for table in tables:
         list.append(table['name'])
