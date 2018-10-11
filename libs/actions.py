@@ -116,10 +116,7 @@ def tx_status_multi(url, sleep_time, hshs, jvt_token):
         
 def call_get_api(url, data, token):
     resp = requests.get(url, params=data,  headers={"Authorization": token})
-    if resp.status_code == 200:
-        return resp.json()
-    else:
-        return None
+    return resp.json()
 
 def call_get_api_with_full_response(url, data, token):
     resp = requests.get(url, params=data,  headers={"Authorization": token})
@@ -127,10 +124,7 @@ def call_get_api_with_full_response(url, data, token):
 
 def call_post_api(url, data, token):
     resp = requests.post(url, data=data,  headers={"Authorization": token})
-    if resp.status_code == 200:
-        return resp.json()
-    else:
-        return None
+    return resp.json()
 
 def get_count(url, type, token):
     end_point = url + "/list/" + type

@@ -51,7 +51,6 @@ def is_count_tx_in_block(db, max_block_id, count_tx):
 #done
 def get_ecosys_tables(url, token):
     tables = api.tables(url, token, 100)['list']
-    print("tables", tables)
     list = []
     for table in tables:
         list.append(table['name'])
@@ -94,7 +93,6 @@ def get_user_table_state(db, user_table):
     table = {}
     for i in range(len(col)):
         table[col[i][0]] = res[0][i]
-    print("table -----------", table)
     return table
 
 #block_chain
