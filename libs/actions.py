@@ -113,7 +113,15 @@ def tx_status_multi(url, sleep_time, hshs, jvt_token):
             sec = sec + 1
     return jresp
 
-        
+def get_application_id(url, name, token):
+    id = None
+    endPoint = url + "/list/applications"
+    res = call_get_api(endPoint, "", token)
+    for app in res["list"]:
+        if app["name"] == name:
+            id = app["id"]
+    return id
+
 def call_get_api(url, data, token):
     resp = requests.get(url, params=data,  headers={"Authorization": token})
     return resp.json()
@@ -191,3 +199,5 @@ def get_max_block_id(url, token):
     end_point = url + "/maxblockid"
     result = call_get_api(end_point, data, token)
     return result["max_block_id"]
+
+
