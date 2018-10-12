@@ -83,10 +83,13 @@ def tx_status(url, sleep_time, hsh, jvt_token):
         else:
             sec = sec + 1  
     if 'errmsg' not in jresp and jresp['blockid'] == '':
+        print("block id is empty: " , jresp)
         return {"blockid": None, "result": None, "error": None}     
     if 'errmsg' not in jresp and int(jresp['blockid']) > 0:
+        print("block id is generated: " , jresp)
         return {"blockid": int(jresp['blockid']), "result": jresp['result'], "error": None}
     else:
+        print("error: " , jresp)
         return {"blockid": 0, "error": jresp['errmsg']['error'], "result": None}
 
 

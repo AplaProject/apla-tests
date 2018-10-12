@@ -49,7 +49,8 @@ class TestSimvolio():
         self.create_contract(code)
         res = actions.call_contract(self.url, self.pr_key, name, {}, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertIn(check_point, result["result"], "error")
+        self.unit.assertIn(check_point, result["result"], "ERROR: " +\
+                           str(result))
 
     def call(self, name, data):
         result = actions.call_contract(self.url, self.pr_key, name, data, self.token)
@@ -63,15 +64,18 @@ class TestSimvolio():
         result = actions.tx_status(self.url, self.wait, res, self.token)
         self.unit.assertIn(check_point, result["result"], "error")
 
-    @pytest.mark.parametrize("name,code,result", tools.json_to_list(contracts["simple"]))
-    def test_contract_db_find(self, name, code, result):
-        print("name", name)
-        print("result", result)
-        self.check_contract(code, result)
+    @pytest.mark.parametrize("name,sourse,e_result", tools.json_to_list(contracts["simple"]))
+    def test_simple(self, name, sourse, e_result):
+        code, c_name = self.generate_name_and_code(sourse)
+        self.create_contract(code)
+        res = actions.call_contract(self.url, self.pr_key, c_name, {}, self.token)
+        c_result = actions.tx_status(self.url, self.wait, res, self.token)
+        self.unit.assertIn(e_result, c_result["result"], "ERROR:\n name: " + name + '\n' +\
+                           'expected result: ' + str(e_result) + '\n' +\
+                           'current result: ' + str(c_result))
 
     def test_contract_langRes(self):
-        data = {"ApplicationId": 1,
-                "Name": "test",
+        data = {"Name": "test",
                 "Trans": "{\"en\": \"test_en\", \"de\" : \"test_de\"}"}
         result = actions.call_contract(self.url, self.pr_key, "NewLang", data, self.token)
         tx = actions.tx_status(self.url, self.wait, result, self.token)
@@ -100,7 +104,7 @@ class TestSimvolio():
         "index": "0",  "conditions":"true"}]"""
         permission = """{"insert": "true",
         "update" : "true","new_column": "true"}"""
-        data = {"Name": "test", "ApplicationId": 1,
+        data = {"Name": "test", "ApplicationId":1,
                 "Columns": columns,
                 "Permissions": permission}
         result = actions.call_contract(self.url, self.pr_key, "NewTable", data, self.token)
@@ -109,6 +113,7 @@ class TestSimvolio():
         self.check_contract(contract["code"], contract["asert"])
         contract = self.contracts["dbUpdate"]
         self.check_contract(contract["code"], contract["asert"])
+        
 
     def test_contracts_dbUpdateExt(self):
         columns = """[{"name":"name","type":"varchar",
@@ -158,23 +163,26 @@ class TestSimvolio():
             i += 1
 
     def test_z1_db_select_metrics_min(self):
-        # func generate contract which return block_id and increment count blocks
+         # func generate contract which return block_id and increment count blocks
         def wait_block_id(old_block_id, limit):
             while True:
                 if old_block_id == limit:
                     break
-                contrac_name = tools.generate_random_name()
+                contracName = tools.generate_random_name()
                 value = "contract con_" + contrac_name + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
                 data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
-                result = actions.call_contract(self.url, self.pr_key, "NewContract", data, self.token)
+                result = actions.call_contract(self.url, self.pr_key, "NewContract", data,
+                                               self.token)
                 tx = actions.tx_status(self.url, self.wait, result, self.token)
                 current_block_id = int(tx["blockid"])
-                self.unit.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
+                self.unit.assertGreater(current_block_id, 0, "BlockId is not generated: " +\
+                                        str(tx))
                 old_block_id = current_block_id
 
         # generate contract which return count blocks in blockchain
         contrac_name = tools.generate_random_name()
-        value = "contract con_" + contrac_name + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
+        value = "contract con_" + contrac_name +\
+         " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
         data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
         result = actions.call_contract(self.url, self.pr_key, "NewContract", data, self.token)
         tx = actions.tx_status(self.url, self.wait, result, self.token)
@@ -250,7 +258,7 @@ class TestSimvolio():
 
     def test_sys_var_stack(self):
         # This test has not a fixture
-        inner_body = """
+        innerBody = """
                 {
                 data{}
                 conditions{}
@@ -259,7 +267,7 @@ class TestSimvolio():
                     }
                 }
                 """
-        inner_code, inner_name = self.generate_name_and_code(inner_body)
+        inner_code, inner_name = self.generate_name_and_code(innerBody)
         self.create_contract(inner_code)
         outer_body = """
                 {
@@ -275,11 +283,9 @@ class TestSimvolio():
                 """ % inner_name
         outer_code, outer_name = self.generate_name_and_code(outer_body)
         self.create_contract(outer_code)
-        data = {"Wallet": "", "ApplicationId": 1,
-                "Value": outer_code,
-                "Conditions": "ContractConditions(`MainCondition`)"}
+        data = {}
         res = self.call(outer_name, data)
-        must_be = "[@1" + outer_name + " CallContract @1" + inner_name + "]"
+        must_be = "[@1" + outer_name + " @1" + inner_name +"]"
         self.unit.assertEqual(must_be, res["result"], "test_sys_var_stack is failed!")
 
     def test_get_history_row_menu(self):
@@ -306,7 +312,7 @@ class TestSimvolio():
         contract = self.contracts["getHistoryRow"]
         self.check_contract_with_data(contract["code"], data, menu)
 
-    def test_getHistoryRowBlock(self):
+    def test_get_history_row_block(self):
         # create block
         rollc_before = db.get_max_id_from_table(self.db1, "rollback_tx")
         name = tools.generate_random_name()
