@@ -37,7 +37,7 @@ class TestLimits():
                            "Block is not generated for updating sysparam: " +\
                            str(res))
         
-    def test_max_tx_size(self):
+    def max_tx_size(self):
         max_tx_size = actions.get_sysparam_value(self.conf[1]["url"], self.token,
                                                  'max_tx_size')
         print(max_tx_size)
@@ -50,7 +50,7 @@ class TestLimits():
         self.unit.assertEqual(error, "Max size of tx", "Incorrect error: " + error)
         self.update_sys_param("max_tx_size", str(max_tx_size))
         
-    def test_max_block_size(self):
+    def max_block_size(self):
         max_block_size = actions.get_sysparam_value(self.conf[1]["url"], self.token, 'max_block_size')
         self.update_sys_param("max_block_size", "500")
         name = "cont" + tools.generate_random_name()
@@ -62,7 +62,7 @@ class TestLimits():
         self.update_sys_param("max_block_size", str(max_block_size))
         time.sleep(30)
       
-    def test_max_block_user_tx(self):
+    def max_block_user_tx(self):
         max_block_user_tx = actions.get_sysparam_value(self.conf[1]["url"],
                                              self.token, 'max_block_user_tx')
         self.update_sys_param("max_block_user_tx", "1")
@@ -86,7 +86,7 @@ class TestLimits():
                         "One of block contains more than 2 transaction")
         
         
-    def test_max_tx_count (self):
+    def max_tx_count (self):
         max_tx_count = actions.get_sysparam_value(self.conf[0]["url"], self.token, 'max_tx_count')
         self.update_sys_param("max_tx_count", "2")
         i = 1
