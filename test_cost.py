@@ -5,6 +5,8 @@ from genesis_blockchain_tools.crypto import get_public_key
 
 from libs import tools, actions, db
 
+NODE_COMISSION = 139680000000000000
+PLATFORM_COMISSION = 4320000000000000
 
 class TestCost():
     wait = tools.read_config("test")["wait_tx_status"]
@@ -101,10 +103,10 @@ class TestCost():
         sums_after = db.get_user_token_amounts(self.conf[0]["db"])
         summ_after = sum(summ[0] for summ in sums_after)
         a_node_balance = self.get_node_balances()
-        node_commission = 141620000000000000
-        platforma_commission = 4380000000000000
         balance_runner_a = db.get_balance_from_db_by_pub(self.conf[0]["db"], pub_runner)
         balance_contract_owner_a = db.get_balance_from_db(self.conf[0]["db"], wallet_id)
+        node_commission = NODE_COMISSION
+        platforma_commission = PLATFORM_COMISSION
         in_history = self.is_commissions_in_history(node_commission, self.conf[0]["keyID"],
                                                    platforma_commission, node)
         if node == 0:
@@ -153,13 +155,13 @@ class TestCost():
         sums_after = db.get_user_token_amounts(self.conf[0]["db"])
         summ_after = sum(summ[0] for summ in sums_after)
         a_node_balance = self.get_node_balances()
-        node_commission = 141620000000000000
-        platform_commission = 4380000000000000
-        commission = node_commission + platform_commission
+        node_commission = NODE_COMISSION
+        platforma_commission = PLATFORM_COMISSION
+        commission = node_commission + platforma_commission
         balance_runner_a = db.get_balance_from_db_by_pub(self.conf[0]["db"], pub_runner)
         balance_contract_owner_a = db.get_balance_from_db(self.conf[0]["db"], wallet_id)
         in_history = self.is_commissions_in_history(node_commission, data_runner["key_id"],
-                                                   platform_commission, node)
+                                                   platforma_commission, node)
         if node == 0:
             dict_valid = dict(balanceRunner=balance_runner_a,
                              platformBalance=a_node_balance[0],
@@ -176,7 +178,7 @@ class TestCost():
                              summ=summ_before,
                              history=in_history)
             dict_expect = dict(balanceRunner=balance_runner_b - commission,
-                              platformBalance=b_node_balance[0] + platform_commission,
+                              platformBalance=b_node_balance[0] + platforma_commission,
                               nodeBalance=b_node_balance[node] + node_commission,
                               summ=summ_after,
                               history=True)
