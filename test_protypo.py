@@ -267,14 +267,14 @@ class TestPrototipo():
     def test_page_ecosysParam(self):
         contract = self.pages["ecosysParam"]
         content = self.check_page(contract["code"])
-        part_content = content['tree'][0]
-        contract_content = contract["content"]
-        must_be = dict(tag=part_content['tag'],
-                      text=part_content['children'][0]['text'])
-        page = dict(tag=contract_content['tag'],
-                    text=contract_content['children'][0]['text'])
+        part_сontent = content['tree'][0]
+        contract_сontent = contract["content"]
+        must_be = dict(tag=part_сontent['tag'],
+                      text=part_сontent['children'][0]['text'])
+        page = dict(tag=contract_сontent['tag'],
+                    text=contract_сontent['children'][0]['text'])
         self.uni.assertDictEqual(must_be, page,
-                                          "ecosysParam has problem: " + str(content["tree"]))
+                             "ecosysParam has problem: " + str(content["tree"]))
 
     def test_page_paragraph(self):
         contract = self.pages["paragraph"]
@@ -622,17 +622,18 @@ class TestPrototipo():
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
-        files = {'Data': file}
-        data = {"Name": name, "ApplicationId": app_id}
-        resp = actions.call_contract_with_files(self.url, self.pr_key, "UploadBinary", data,
-                                                files, self.token)
+        data = {"Name": name, "ApplicationId": app_id, 'Data': file}
+        resp = actions.call_contract(self.url, self.pr_key, "UploadBinary", data, self.token)
         self.assert_tx_in_block(resp, self.token)
         # test
         member_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
-        content = self.check_page("Binary(Name: " + name + ", AppID: " + app_id + ", MemberID: " + member_id + ")")
+        last_rec = actions.get_count(self.url, "binaries", self.token)
+        content = self.check_page("Binary(Name: " + name + ", AppID: " + app_id +\
+                                  ", MemberID: " + member_id + ")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
-        self.uni.assertEqual("/data/1_binaries/" + last_rec + "/data/b40ad01eacc0312f6dd1ff2a705756ec",
-                                      content["tree"][0]["text"])
+        file_hash = "122e37a4a7737e0e8663adad6582fc355455f8d5d35bd7a08ed00c87f3e5ca05"
+        self.uni.assertEqual("/data/1_binaries/"+last_rec+"/data/" + file_hash,
+                             content["tree"][0]["text"])
 
     def test_binary_by_id(self):
         # this test has not fixture
@@ -642,16 +643,16 @@ class TestPrototipo():
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
-        data = {"Name": name, "ApplicationId": app_id}
-        resp = actions.call_contract_with_files(self.url, self.pr_key, "UploadBinary", data,
-                                                files, self.token)
+        data = {"Name": name, "ApplicationId": app_id, 'Data': file}
+        resp = actions.call_contract(self.url, self.pr_key, "UploadBinary", data, self.token)
         res = self.assert_tx_in_block(resp, self.token)
         # test
         last_rec = actions.get_count(self.url, "binaries", self.token)
         content = self.check_page("Binary().ById(" + last_rec + ")")
         msg = "test_binary has problem. Content = " + str(content["tree"])
-        self.uni.assertEqual("/data/1_binaries/" + last_rec + "/data/b40ad01eacc0312f6dd1ff2a705756ec",
-                                      content["tree"][0]["text"])
+        file_hash = "122e37a4a7737e0e8663adad6582fc355455f8d5d35bd7a08ed00c87f3e5ca05"
+        self.uni.assertEqual("/data/1_binaries/" + last_rec + "/data/" + file_hash,
+                         content["tree"][0]["text"])
 
     def test_image_binary(self):
         # this test has not fixture
@@ -660,23 +661,23 @@ class TestPrototipo():
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
-        files = {'Data': file}
-        data = {"Name": name, "ApplicationId": app_id}
-        resp = actions.call_contract_with_files(self.url, self.pr_key, "UploadBinary", data,
-                                                files, self.token)
+        data = {"Name": name, "ApplicationId": app_id, 'Data': file}
+        resp = actions.call_contract(self.url, self.pr_key, "UploadBinary", data, self.token)
         self.assert_tx_in_block(resp, self.token)
         # test
         member_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
         last_rec = actions.get_count(self.url, "binaries", self.token)
-        content = self.check_page("Image(Binary(Name: " + name + ", AppID: " + app_id + ", MemberID: " + member_id + "))")
+        content = self.check_page("Image(Binary(Name: " + name + ", AppID: " + app_id +\
+                                  ", MemberID: " + member_id + "))")
         part_content = content["tree"][0]
+        file_hash = "122e37a4a7737e0e8663adad6582fc355455f8d5d35bd7a08ed00c87f3e5ca05"
         must_be = dict(tag=part_content['tag'],
                       src=part_content['attr']["src"])
         page = dict(tag="image",
-                    src="/data/1_binaries/" + last_rec + "/data/b40ad01eacc0312f6dd1ff2a705756ec")
+                    src="/data/1_binaries/" + last_rec + "/data/" + file_hash)
         self.uni.assertDictEqual(must_be, page,
-                                          "test_image_binary has problem: " + str(content["tree"]))
-
+                             "test_image_binary has problem: " + str(content["tree"]))
+        
     def test_image_binary_by_id(self):
         # this test has not fixture
         name = "image_" + tools.generate_random_name()
@@ -684,33 +685,31 @@ class TestPrototipo():
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
-        files = {'Data': file}
-        data = {"Name": name, "ApplicationId": app_id}
-        resp = actions.call_contract_with_files(self.url, self.pr_key, "UploadBinary", data,
-                                                files, self.token)
+        data = {"Name": name, "ApplicationId": app_id, 'Data': file}
+        resp = actions.call_contract(self.url, self.pr_key, "UploadBinary", data, self.token)
         self.assert_tx_in_block(resp, self.token)
         # test
         last_rec = actions.get_count(self.url, "binaries", self.token)
         content = self.check_page("Image(Binary().ById(" + last_rec + "))")
-        part_content = content["tree"][0]
-        must_be = dict(tag=part_content['tag'],
-                      src=part_content['attr']["src"])
-        page = dict(tag="image",
-                    src="/data/1_binaries/" + last_rec + "/data/b40ad01eacc0312f6dd1ff2a705756ec")
+        part_сontent = content["tree"][0]
+        file_hash = "122e37a4a7737e0e8663adad6582fc355455f8d5d35bd7a08ed00c87f3e5ca05"
+        must_be = dict(tag = part_сontent['tag'],
+                      src = part_сontent['attr']["src"])
+        page = dict(tag = "image",
+                    src = "/data/1_binaries/" + last_rec + "/data/" + file_hash)
         self.uni.assertDictEqual(must_be, page,
-                                          "test_image_binary_by_id has problem: " + str(content["tree"]))
-
+                             "test_image_binary_by_id has problem: " + str(content["tree"]))
     def test_address(self):
         contract = self.pages["address"]
         content = self.check_page(contract["code"])
         part_content = content['tree'][0]
         contract_content = contract["content"]
-        must_be = dict(tagOwner=contract_content['tag'],
-                      tag=contract_content['children'][0]["tag"],
-                      text=contract_content['children'][0]["text"])
-        page = dict(tagOwner=part_content['tag'],
-                    tag=part_content['children'][0]["tag"],
-                    text=part_content['children'][0]["text"])
+        must_be = dict(tagOwner = contract_content['tag'],
+                      tag = contract_content['children'][0]["tag"],
+                      text = contract_content['children'][0]["text"])
+        page = dict(tagOwner = part_content['tag'],
+                    tag = part_content['children'][0]["tag"],
+                    text = part_content['children'][0]["text"])
         self.uni.assertDictEqual(must_be, page,
                                           "address has problem: " + str(content["tree"]))
 
@@ -722,17 +721,17 @@ class TestPrototipo():
         part_content2 = content2['tree'][0]
         contract_content1 = contract["content1"]
         contract_content2 = contract["content2"]
-        must_be = dict(tagOwner1=contract_content1['tag'],
-                      tag1=contract_content1['children'][0]["tag"],
-                      text1=contract_content1['children'][0]["text"],
-                      tagOwner2=contract_content2['tag'],
-                      tag2=contract_content2['children'][0]["tag"],
-                      text2=contract_content2['children'][0]["text"])
-        page = dict(tagOwner1=part_content1['tag'],
-                    tag1=part_content1['children'][0]["tag"],
-                    text1=part_content1['children'][0]["text"],
-                    tagOwner2=part_content2['tag'],
-                    tag2=part_content2['children'][0]["tag"],
+        must_be = dict(tagOwner1 = contract_content1['tag'],
+                      tag1 = contract_content1['children'][0]["tag"],
+                      text1 = contract_content1['children'][0]["text"],
+                      tagOwner2 = contract_content2['tag'],
+                      tag2 = contract_content2['children'][0]["tag"],
+                      text2 = contract_content2['children'][0]["text"])
+        page = dict(tagOwner1 = part_content1['tag'],
+                    tag1 = part_content1['children'][0]["tag"],
+                    text1 = part_content1['children'][0]["text"],
+                    tagOwner2 = part_content2['tag'],
+                    tag2 = part_content2['children'][0]["tag"],
                     text2=part_content2['children'][0]["text"])
         self.uni.assertDictEqual(must_be, page,
                                           "money has problem: " + "\n" + str(content1["tree"]) + "\n" + str(
@@ -855,80 +854,80 @@ class TestPrototipo():
         wrongContent1 = self.check_page(contract["wrongCode1"])
         partWrongContent1 = wrongContent1['tree'][0]
         contractWrongContent1 = contract["wrongContent1"]
-        must_be = dict(money1=contract_money_content1['children'][0]["text"],
-                      money2=contract_money_content2['children'][0]["text"],
-                      money3=contract_money_content3['children'][0]["text"],
-                      money4=contract_money_content4['children'][0]["text"],
-                      money5=contract_money_content5['children'][0]["text"],
-                      money6=contract_money_content6['children'][0]["text"],
-                      money7=contractMoneyContent7['children'][0]["text"],
-                      money8=contractMoneyContent8['children'][0]["text"],
-                      money9=contractMoneyContent9['children'][0]["text"],
-                      money10=contractMoneyContent10['children'][0]["text"],
-                      money11=contractMoneyContent11['children'][0]["text"],
-                      money12=contractMoneyContent12['children'][0]["text"],
-                      money13=contractMoneyContent13['children'][0]["text"],
-                      money14=contractMoneyContent14['children'][0]["text"],
-                      money15=contractMoneyContent15['children'][0]["text"],
-                      float1=contractFloatContent1['children'][0]["text"],
-                      float2=contractFloatContent2['children'][0]["text"],
-                      float3=contractFloatContent3['children'][0]["text"],
-                      float4=contractFloatContent4['children'][0]["text"],
-                      float5=contractFloatContent5['children'][0]["text"],
-                      float6=contractFloatContent6['children'][0]["text"],
-                      float7=contractFloatContent7['children'][0]["text"],
-                      float8=contractFloatContent8['children'][0]["text"],
-                      float9=contractFloatContent9['children'][0]["text"],
-                      float10=contractFloatContent10['children'][0]["text"],
-                      float11=contractFloatContent11['children'][0]["text"],
-                      float12=contractFloatContent12['children'][0]["text"],
-                      float13=contractFloatContent13['children'][0]["text"],
-                      float14=contractFloatContent14['children'][0]["text"],
-                      float15=contractFloatContent15['children'][0]["text"],
-                      int1=contractIntContent1['children'][0]["text"],
-                      int2=contractIntContent2['children'][0]["text"],
-                      int3=contractIntContent3['children'][0]["text"],
-                      int4=contractIntContent4['children'][0]["text"],
-                      int5=contractIntContent5['children'][0]["text"],
-                      int6=contractIntContent6['children'][0]["text"],
-                      wrong1=contractWrongContent1['children'][0]["text"])
-        page = dict(money1=part_money_content1['children'][0]["text"],
-                    money2=part_money_content2['children'][0]["text"],
-                    money3=part_money_content3['children'][0]["text"],
-                    money4=part_money_content4['children'][0]["text"],
-                    money5=part_money_content5['children'][0]["text"],
-                    money6=part_money_content6['children'][0]["text"],
-                    money7=partMoneyContent7['children'][0]["text"],
-                    money8=partMoneyContent8['children'][0]["text"],
-                    money9=partMoneyContent9['children'][0]["text"],
-                    money10=partMoneyContent10['children'][0]["text"],
-                    money11=partMoneyContent11['children'][0]["text"],
-                    money12=partMoneyContent12['children'][0]["text"],
-                    money13=partMoneyContent13['children'][0]["text"],
-                    money14=partMoneyContent14['children'][0]["text"],
-                    money15=partMoneyContent15['children'][0]["text"],
-                    float1=partFloatContent1['children'][0]["text"],
-                    float2=partFloatContent2['children'][0]["text"],
-                    float3=partFloatContent3['children'][0]["text"],
-                    float4=partFloatContent4['children'][0]["text"],
-                    float5=partFloatContent5['children'][0]["text"],
-                    float6=partFloatContent6['children'][0]["text"],
-                    float7=partFloatContent7['children'][0]["text"],
-                    float8=partFloatContent8['children'][0]["text"],
-                    float9=partFloatContent9['children'][0]["text"],
-                    float10=partFloatContent10['children'][0]["text"],
-                    float11=partFloatContent11['children'][0]["text"],
-                    float12=partFloatContent12['children'][0]["text"],
-                    float13=partFloatContent13['children'][0]["text"],
-                    float14=partFloatContent14['children'][0]["text"],
-                    float15=partFloatContent15['children'][0]["text"],
-                    int1=partIntContent1['children'][0]["text"],
-                    int2=partIntContent2['children'][0]["text"],
-                    int3=partIntContent3['children'][0]["text"],
-                    int4=partIntContent4['children'][0]["text"],
-                    int5=partIntContent5['children'][0]["text"],
-                    int6=partIntContent6['children'][0]["text"],
-                    wrong1=partWrongContent1['children'][0]["text"])
+        must_be = dict(money1 = contract_money_content1['children'][0]["text"],
+                      money2 = contract_money_content2['children'][0]["text"],
+                      money3 = contract_money_content3['children'][0]["text"],
+                      money4 = contract_money_content4['children'][0]["text"],
+                      money5 = contract_money_content5['children'][0]["text"],
+                      money6 = contract_money_content6['children'][0]["text"],
+                      money7 = contractMoneyContent7['children'][0]["text"],
+                      money8 = contractMoneyContent8['children'][0]["text"],
+                      money9 = contractMoneyContent9['children'][0]["text"],
+                      money10 = contractMoneyContent10['children'][0]["text"],
+                      money11 = contractMoneyContent11['children'][0]["text"],
+                      money12 = contractMoneyContent12['children'][0]["text"],
+                      money13 = contractMoneyContent13['children'][0]["text"],
+                      money14 = contractMoneyContent14['children'][0]["text"],
+                      money15 = contractMoneyContent15['children'][0]["text"],
+                      float1 = contractFloatContent1['children'][0]["text"],
+                      float2 = contractFloatContent2['children'][0]["text"],
+                      float3 = contractFloatContent3['children'][0]["text"],
+                      float4 = contractFloatContent4['children'][0]["text"],
+                      float5 = contractFloatContent5['children'][0]["text"],
+                      float6 = contractFloatContent6['children'][0]["text"],
+                      float7 = contractFloatContent7['children'][0]["text"],
+                      float8 = contractFloatContent8['children'][0]["text"],
+                      float9 = contractFloatContent9['children'][0]["text"],
+                      float10 = contractFloatContent10['children'][0]["text"],
+                      float11 = contractFloatContent11['children'][0]["text"],
+                      float12 = contractFloatContent12['children'][0]["text"],
+                      float13 = contractFloatContent13['children'][0]["text"],
+                      float14 = contractFloatContent14['children'][0]["text"],
+                      float15 = contractFloatContent15['children'][0]["text"],
+                      int1 = contractIntContent1['children'][0]["text"],
+                      int2 = contractIntContent2['children'][0]["text"],
+                      int3 = contractIntContent3['children'][0]["text"],
+                      int4 = contractIntContent4['children'][0]["text"],
+                      int5 = contractIntContent5['children'][0]["text"],
+                      int6 = contractIntContent6['children'][0]["text"],
+                      wrong1 = contractWrongContent1['children'][0]["text"])
+        page = dict(money1 = part_money_content1['children'][0]["text"],
+                    money2 = part_money_content2['children'][0]["text"],
+                    money3 = part_money_content3['children'][0]["text"],
+                    money4 = part_money_content4['children'][0]["text"],
+                    money5 = part_money_content5['children'][0]["text"],
+                    money6 = part_money_content6['children'][0]["text"],
+                    money7 = partMoneyContent7['children'][0]["text"],
+                    money8 = partMoneyContent8['children'][0]["text"],
+                    money9 = partMoneyContent9['children'][0]["text"],
+                    money10 = partMoneyContent10['children'][0]["text"],
+                    money11 = partMoneyContent11['children'][0]["text"],
+                    money12 = partMoneyContent12['children'][0]["text"],
+                    money13 = partMoneyContent13['children'][0]["text"],
+                    money14 = partMoneyContent14['children'][0]["text"],
+                    money15 = partMoneyContent15['children'][0]["text"],
+                    float1 = partFloatContent1['children'][0]["text"],
+                    float2 = partFloatContent2['children'][0]["text"],
+                    float3 = partFloatContent3['children'][0]["text"],
+                    float4 = partFloatContent4['children'][0]["text"],
+                    float5 = partFloatContent5['children'][0]["text"],
+                    float6 = partFloatContent6['children'][0]["text"],
+                    float7 = partFloatContent7['children'][0]["text"],
+                    float8 = partFloatContent8['children'][0]["text"],
+                    float9 = partFloatContent9['children'][0]["text"],
+                    float10 = partFloatContent10['children'][0]["text"],
+                    float11 = partFloatContent11['children'][0]["text"],
+                    float12 = partFloatContent12['children'][0]["text"],
+                    float13 = partFloatContent13['children'][0]["text"],
+                    float14 = partFloatContent14['children'][0]["text"],
+                    float15 = partFloatContent15['children'][0]["text"],
+                    int1 = partIntContent1['children'][0]["text"],
+                    int2 = partIntContent2['children'][0]["text"],
+                    int3 = partIntContent3['children'][0]["text"],
+                    int4 = partIntContent4['children'][0]["text"],
+                    int5 = partIntContent5['children'][0]["text"],
+                    int6 = partIntContent6['children'][0]["text"],
+                    wrong1 = partWrongContent1['children'][0]["text"])
         self.uni.assertDictEqual(must_be, page, "calculate has problem!")
 
     def test_arrayToSource(self):
@@ -936,39 +935,39 @@ class TestPrototipo():
         content = self.check_page(contract["code"])
         part_content = content['tree'][0]
         contract_content = contract["content"]
-        must_be = dict(tag=part_content["tag"],
-                      data1=part_content["attr"]["data"][0],
-                      data2=part_content["attr"]["data"][1],
-                      data3=part_content["attr"]["data"][2],
-                      source=part_content["attr"]["source"])
-        page = dict(tag=contract_content["tag"],
-                    data1=contract_content["attr"]["data"][0],
-                    data2=contract_content["attr"]["data"][1],
-                    data3=contract_content["attr"]["data"][2],
-                    source=contract_content["attr"]["source"])
+        must_be = dict(tag = part_content["tag"],
+                      data1 = part_content["attr"]["data"][0],
+                      data2 = part_content["attr"]["data"][1],
+                      data3 = part_content["attr"]["data"][2],
+                      source = part_content["attr"]["source"])
+        page = dict(tag = contract_content["tag"],
+                    data1 = contract_content["attr"]["data"][0],
+                    data2 = contract_content["attr"]["data"][1],
+                    data3 = contract_content["attr"]["data"][2],
+                    source = contract_content["attr"]["source"])
         self.uni.assertDictEqual(must_be, page,
                                           "arrayToSource has problem: " + "\n" + str(content["tree"]))
 
     def test_getHistoryContract(self):
         # it test has not fixture
         # create contract
-        replacedString = "variable_for_replace"
+        replaced_string = "variable_for_replace"
         code = """
                 { 
                     data{}
                     conditions{}
                     action{ var %s int }
                 }
-                """ % replacedString
+                """ % replaced_string
         code, name = tools.generate_name_and_code(code)
         self.create_contract(code)
         # change contract
         id = actions.get_object_id(self.url, name, "contracts", self.token)
-        newCode = code.replace(replacedString, "new_var")
-        data = {"Id": id,
-                "Value": newCode}
+        new_code = code.replace(replaced_string, "new_var")
+        data = {"Id": id, "Value": new_code}
         self.call_contract("EditContract", data)
         # test
         content = self.check_page("GetHistory(src, contracts, " + str(id) + ")")
         part_content = content['tree'][0]["attr"]["data"][0]
-        self.uni.assertIn(replacedString, str(part_content), "getHistoryContract has problem: " + str(content["tree"]))
+        self.uni.assertIn(replaced_string, str(part_content),
+                          "getHistoryContract has problem: " + str(content["tree"]))
