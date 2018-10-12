@@ -4,7 +4,7 @@
 	{
 		"name": "dbFind",
 		"code": "{ \n data {}\n conditions {}\n action { \n var res array\n var val map\n res = DBFind(\"pages\").Columns(\"name\").Where({id: \"1\"}).Order(\"id\")\n val = res[0]\n $result = val[\"name\"]\n }\n }",
-		"result": "default"
+		"result": "admin_index"
 	},
 	{
 		"name": "toUpper",
@@ -34,16 +34,16 @@
 	{
 	    "name": "dbRow",
 		"code":"{\n data {}\n conditions {}\n action {\n var vals map\n vals = DBRow(\"pages\").Columns(\"name, menu\").Where({id: \"1\"})\n $result = vals[\"name\"]\n }\n }",
-		"result": "default_page"
+		"result": "admin_index"
 	},
 	{
 	 	"name": "evalCondition",
-		"code": "{\n data {}\n conditions {\n }\n action {\n EvalCondition(\"pages\", \"default_page\", 'conditions')\n }\n }",
+		"code": "{\n data {}\n conditions {\n }\n action {\n EvalCondition(\"pages\", \"default_page\", `conditions`)\n }\n }",
 		"result": ""
 	},
 	{
 	    "name": "validateCondition",
-		"code": "{\n data {}\n conditions {}\n action {\n ValidateCondition(\"ContractCondition('MainCondition')\", 1)\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n ValidateCondition(\"ContractConditions(`MainCondition`)\", 0)\n }\n }",
 		"result": ""
 	},
 	{
@@ -59,12 +59,12 @@
 	{
 		"name": "one",
 		"code": "{\n data {}\n conditions {}\n action {\n $result = DBFind(\"pages\").Columns(\"id,name\").WhereId(1).One(\"name\")\n } \n }",
-		"result": "default_page"
+		"result": "admin_index"
 	},
 	{
 		"name": "row",
 		"code": "{\n data {}\n conditions {}\n action {\n var ret map\n ret = DBFind(\"pages\").Columns(\"id,name\").WhereId(1).Row()\n $result = ret[\"name\"]\n } \n }",
-		"result": "default_page"
+		"result": "admin_index"
 	},
 	{
 	    "name": "contains",
@@ -152,14 +152,9 @@
 		"result": "50"
 	},
 	{
-		"name": "getContractById",
-		"code": "{\n data {}\n conditions {}\n action {$result = GetContractById(1)}\n }",
-		"result": "MainCondition"
-	},
-	{
 		"name": "getContractByName",
-		"code": "{\n data {}\n conditions {}\n action {$result = Str(GetContractByName(\"MainCondition\"))}\n }",
-		"result": "1"
+		"code": "{\n data { }\n conditions {}\n action {$result = Str(GetContractByName(\"MainCondition\"))}\n }",
+		"result": "3"
 	},
 	{
 		"name": "random",
@@ -231,11 +226,6 @@
 		"code": "{\n data {}\n conditions {}\n action {\n $my_str = \"Hello!\" \n $result = EncodeBase64($my_str) }\n }",
 		"result": "SGVsbG8h"
 	},
-	{
-		"name": "sys_var_roleID",
-		"code": "{\n data { }\n conditions {}\n action {\n $result = $role_id }\n }",
-		"result": "0"
-  	},
   	{
   		"name": "jsonEncode",
 		"code": "{\n data {}\n conditions {}\n  action {\n var a array, m map\n m[\"k1\"] = 1\n m[\"k2\"] = 2\n a[0] = m \n a[1] = m \n $result = JSONEncode(a)\n}\n }",
@@ -243,8 +233,8 @@
 	},
 	{
 		"name": "jsonDecode",
-		"code": "{\n data {}\n conditions {}\n  action {\n var mydata map \n mydata = JSONDecode('{\"name\": \"John Smith\", \"company\": \"Smiths company\"}')\n $result = mydata[\"name\"]}}",
-		"result": "John Smith"
+		"code": "{\n data {}\n conditions {}\n  action {\n var a string \n a = \"[{'k1':'1','k2':'2'},{'k1':'1','k2':'2'}]\" \n $result = JSONDecode(a)\n}\n }",
+		"result": ""
 	},
 	{
 		"name": "bytesToString",
@@ -273,7 +263,7 @@
   	}
 ],
   "langRes":{
-		"code": "{\n data {}\n conditions {}\n action {\n $result=LangRes(1, \"test\", \"de\")\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n $result=LangRes(\"test\", \"de\")\n }\n }",
 		"asert":"test_de",
 		"information":"needs to create language resourse with name - test and localisacions:en- test_en, de- test_de"
 	},		
@@ -287,7 +277,7 @@
 		"asert": ""
 	},
 	"dbSelectMetricsMin": {
-		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_tx\", \"1 month\", \"min\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n } \n $result = m[\"value\"] \n}\n }",
+		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_tx\", \"1 month\", \"min\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n i = i + 1 \n} \n $result = m[\"value\"] \n}\n }",
 		"asert": ""
 	},
 	 "dbUpdateExt": {
@@ -304,12 +294,16 @@
 		"asert": ""
 	},
 		"dbSelectMetricsMax": {
-		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_members\", \"1 days\", \"max\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n } \n $result = m[\"value\"] \n}\n }",
+		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_members\", \"1 days\", \"max\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n i = i + 1 \n} \n $result = m[\"value\"] \n}\n }",
 		"asert": ""
 	},
 		"dbSelectMetricsAvg": {
-		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_pages\", \"1 day\", \"avg\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n } \n $result = m[\"value\"] \n}\n }",
+		"code": "{\n data {}\n conditions {} \n action { \n var a array \n var m map \n var i, ecosysNum int \n ecosysNum = 1 \n a = DBSelectMetrics(\"ecosystem_pages\", \"1 day\", \"avg\") \n i = 0 \n  while i < Len(a){ \n m = a[i] \n if m[\"key\"] == ecosysNum {break} \n i = i + 1 \n} \n $result = m[\"value\"] \n}\n }",
 		"asert": ""
+	},
+		"getContractById": {
+		"code": "{\n data { ID int }\n conditions {}\n action {$result = GetContractById($ID)}\n }",
+		"asert": "MainCondition"
 	},
 	   	"getHistory": {
 		"code": "{\n data {\n Table string \n ID int \n }\n conditions {} \n action { \n var list array \n var item map \n list = GetHistory($Table, $ID) \n if Len(list)>0 { \n item = list[0] } \n $result = item[\"value\"] \n}\n }",
