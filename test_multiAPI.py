@@ -24,7 +24,7 @@ class TestMultiApi():
             self.unit.assertGreater(int(status["blockid"]), 0, "BlockID not generated")
 
     def call_multi(self, name, data):
-        resp = actions.call_multi_contract(self.url, self.pr_key, name, data, self.token)
+        resp = actions.call_multi_contract(self.url, self.pr_key, name, data, self.token, False)
         resp = self.assert_multi_tx_in_block(resp, self.token)
         return resp
 
@@ -49,7 +49,7 @@ class TestMultiApi():
         contract_name = "NewLang"
         name_lang = "Lang_" + tools.generate_random_name()
         data = [{"contract": contract_name,
-                 "params": {"ApplicationId": "1", "Name": name_lang,
+                 "params": {"Name": name_lang,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
                 "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}}]
         res = self.call_multi(contract_name, data)
