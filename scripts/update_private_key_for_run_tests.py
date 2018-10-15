@@ -2,38 +2,51 @@ import os
 import argparse
 import json
 
+
 parser = argparse.ArgumentParser()
-parser.add_argument('-privateKeyPath', default='D:\\genesis-go')
-parser.add_argument('-configPath', default='D:\\GitHub\\GenesisKernel\\genesis-tests\\')
-parser.add_argument('-dbName', default='gen1')
+parser.add_argument('-privateKeyPath', required=True)
+parser.add_argument('-configPath', required=True)
+parser.add_argument('-dbName', required=True)
 args = parser.parse_args()
 
-with open(os.path.join(args.privateKeyPath, 'PrivateKey'), 'r') as f:
-    priv_key1 = f.read()
 
-file = os.path.join(args.configPath, "nodesConfig.json")
-with open(file, 'r') as f:
-    data = f.read()
-    lines = json.loads(data)
-    print(lines)
+def get_private_key(filename):
+    with open(os.path.join(args.privateKeyPath, filename), 'r') as f:
+        return f.read()
 
-# Update private keys in config
-lines["1"]["private_key"] = priv_key1
-lines["2"]["private_key"] = priv_key1
-lines["3"]["private_key"] = priv_key1
 
-# Update url in config
-lines["2"]["url"] = lines["1"]["url"]
-lines["3"]["url"] = lines["1"]["url"]
+def read_nodes_config(file):
+    with open(file, 'r') as f:
+        data = f.read()
+        return json.loads(data)
 
-# Update DB name in config
-lines["1"]["dbName"] = args.dbName
-lines["2"]["dbName"] = args.dbName
-lines["3"]["dbName"] = args.dbName
 
-print(lines)
+def change_nodes_config(lines, priv_key, url, db_name):
+    i = 0
+    while i < len(lines):
+        # Update private keys in config
+        lines[i]['private_key'] = priv_key
+        # Update url in config
+        lines[i]['url'] = url
+        # Update DB name in config
+        lines[i]['db']['dbName'] = db_name
+        i += 1
 
-with open(file, 'w') as f:
-    json.dump(lines, f, indent=4)
 
-print("hostConfig.json is updated!")
+def save_nodes_config(file, lines):
+    with open(file, 'w') as f:
+        json.dump(lines, f, indent=4)
+
+
+if __name__ == '__main__':
+
+    config_filename = 'nodesConfig.json'
+    file = os.path.join(args.configPath, config_filename)
+    priv_key_path = os.path.join(args.privateKeyPath, 'PrivateKey')
+    lines = read_nodes_config(file)
+    priv_key = get_private_key(priv_key_path)
+    first_node_url = lines[0]['url']
+    db_name = args.dbName
+    change_nodes_config(lines, priv_key, first_node_url, db_name)
+    save_nodes_config(file, lines)
+    print('{} is updated!'.format(config_filename))
