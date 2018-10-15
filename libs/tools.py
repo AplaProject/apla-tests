@@ -49,12 +49,6 @@ def read_config(type):
         data = f.read()
     return json.loads(data)
 
-def get_keys():
-    path = os.path.join(os.getcwd(), "fixtures", "prKeys.json")
-    with open(path, 'r') as f:
-        data = f.read()
-    return json.loads(data)
-
 
 def read_fixtures(type):
     path = ""

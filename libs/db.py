@@ -67,7 +67,7 @@ def get_export_app_data(db, app_id, member_id):
 def get_import_app_data(db, member_id):
     request = "SELECT value FROM \"1_buffer_data\" WHERE key = 'import' AND member_id = " + str(member_id)
     result = submit_query(request, db)
-    return cursor.fetchall()[0][0]
+    return result[0][0]
 
 #done
 def get_count_DB_objects(url, token):

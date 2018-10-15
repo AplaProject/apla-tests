@@ -14,6 +14,7 @@ class TestSystemContracts():
     db = config[0]["db"]
     data = actions.login(url, pr_key, 0)
     token = data["jwtToken"]
+    keys = tools.read_fixtures("keys")
 
     @classmethod
     def setup_class(self):
@@ -21,11 +22,12 @@ class TestSystemContracts():
 
     def assert_tx_in_block(self, result, jwt_token):
         status = actions.tx_status(self.url, self.wait, result, jwt_token)
-        if len(status['blockid']) > 0:
+        if status['blockid'] > 0:
             self.unit.assertNotIn(json.dumps(status), 'errmsg')
             return {"blockid": int(status["blockid"]), "error": "0"}
         else:
-            return {"blockid": 0, "error": status["errmsg"]["error"]}
+            print(status)
+            return {"blockid": 0, "error": status["error"]}
 
     def call(self, name, data):
         resp = actions.call_contract(self.url, self.pr_key, name, data, self.token)
@@ -118,51 +120,55 @@ class TestSystemContracts():
 
     def test_edit_ecosystem_name_incorrect_id(self):
         id = 500
-        data = {"EcosystemID": id, "NewName": "ecosys_" + tools.generate_random_name()}
+        newName = "ecosys_" + tools.generate_random_name()
+        data = {"EcosystemID": id, "NewName": newName}
         res = self.call("EditEcosystemName", data)
         self.unit.assertEqual("Ecosystem " + str(id) + " does not exist", res["error"])
 
     def test_money_transfer(self):
-        data = {"Recipient": "0005-2070-2000-0006-0200", "Amount": "1000"}
-        res = self.call("MoneyTransfer", data)
+        ldata = actions.login(self.url, self.keys["key2"])
+        time.sleep(10)
+        data = {"Recipient_Account": ldata['address'],
+                "Amount": "1000"}
+        res = self.call("TokensSend", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
+        self.unit.assertTrue(db.is_commission_in_history(self.db, self.config[0]["keyID"],
+                                                         ldata['key_id'], "1000"),
+                                                         "No TokensSend resord in history")
 
 
     def test_money_transfer_incorrect_wallet(self):
         wallet = "0005-2070-2000-0006"
-        msg = "Recipient " + wallet + " is invalid"
-        data = {"Recipient": wallet, "Amount": "1000"}
-        ans = self.call("MoneyTransfer", data)
+        msg = 'Recipient ' + wallet + ' is not valid'
+        data = {"Recipient_Account": wallet,
+                "Amount": "1000"}
+        res = self.call("TokensSend", data)
+        self.unit.assertEqual(res["error"], msg, "Incorrect message" + msg)
+
+    def test_tokens_send_zero_amount(self):
+        ldata = actions.login(self.url, self.keys["key2"], 0)
+        time.sleep(10)
+        data = {"Recipient_Account": ldata['address'], "Amount": "0"}
+        ans = self.call("TokensSend", data)
+        msg = 'Amount equals zero'
+        self.unit.assertEqual(ans["error"], msg, "Incorrect message" + str(ans))
+
+    def test_tokens_send_negative_amount(self):
+        ldata = actions.login(self.url, self.keys["key2"], 0)
+        time.sleep(10)
+        msg = "Amount is less than zero"
+        data = {"Recipient_Account": ldata['address'], "Amount": "-1000"}
+        ans = self.call("TokensSend", data)
         self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
-    def test_money_transfer_zero_amount(self):
-        wallet = "0005-2070-2000-0006-0200"
-        msg = "Amount must be greater then zero"
-        data = {"Recipient": wallet, "Amount": "0"}
-        ans = self.call("MoneyTransfer", data)
+    def test_tokens_send_amount_as_string(self):
+        ldata = actions.login(self.url, self.keys["key2"], 0)
+        time.sleep(10)
+        msg = "Invalid param 'Amount': can't convert ttt to decimal"
+        data = {"Recipient_Account": ldata['address'], "Amount": "ttt"}
+        ans = self.call("TokensSend", data)
         self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
-
-    def test_money_transfer_negative_amount(self):
-        wallet = "0005-2070-2000-0006-0200"
-        msg = "Amount must be greater then zero"
-        data = {"Recipient": wallet, "Amount": "-1000"}
-        ans = self.call("MoneyTransfer", data)
-        self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
-
-    def test_money_transfer_amount_as_string(self):
-        wallet = "0005-2070-2000-0006-0200"
-        msg = "can't convert ttt to decimal"
-        data = {"Recipient": wallet, "Amount": "ttt"}
-        ans = self.call("MoneyTransfer", data)
-        self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
-
-    def test_money_transfer_with_comment(self):
-        wallet = "0005-2070-2000-0006-0200"
-        data = {"Recipient": wallet, "Amount": "1000", "Comment": "Test"}
-        res = self.call("MoneyTransfer", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
 
     def test_new_contract(self):
         code, name = tools.generate_name_and_code("")
@@ -188,7 +194,7 @@ class TestSystemContracts():
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         ans = self.call("NewContract", data)
-        self.unit.assertIn("must be the name", ans["error"],
+        self.unit.assertIn("Contract name is missing", ans["error"],
                       "Incorrect message: " + str(ans))
 
     def test_new_contract_incorrect_condition(self):
@@ -196,7 +202,7 @@ class TestSystemContracts():
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "condition"}
         ans = self.call("NewContract", data)
-        self.unit.assertEqual("unknown identifier condition",
+        self.unit.assertIn("Condition condition is not allowed",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract_incorrect_condition(self):
@@ -210,7 +216,7 @@ class TestSystemContracts():
                  "Value": code, "Conditions": "tryam",
                  "WalletId": "0005-2070-2000-0006-0200"}
         ans = self.call("EditContract", data2)
-        self.unit.assertEqual("unknown identifier tryam",
+        self.unit.assertIn("Condition tryam is not allowed",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract_incorrect_condition1(self):
@@ -225,7 +231,7 @@ class TestSystemContracts():
                  "Value": code, "Conditions": "true",
                  "WalletId": wallet}
         ans = self.call("EditContract", data2)
-        msg = "New contract owner " + wallet + " is invalid"
+        msg = "New owner " + wallet + " is invalid"
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract(self):
@@ -299,7 +305,7 @@ class TestSystemContracts():
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_parameter(self):
-        data = {"Name": "Par_" + tools.generate_random_name(), "Value": "test", "ApplicationId": 1,
+        data = {"Name": "Par_" + tools.generate_random_name(), "Value": "test",
                 "Conditions": "true"}
         res = self.call("NewParameter", data)
         self.unit.assertGreater(res["blockid"], 0,
@@ -307,8 +313,7 @@ class TestSystemContracts():
 
     def test_new_parameter_exist_name(self):
         name = "Par_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "test", "ApplicationId": 1,
-                "Conditions": "true"}
+        data = {"Name": name, "Value": "test", "Conditions": "true"}
         res = self.call("NewParameter", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -318,7 +323,7 @@ class TestSystemContracts():
 
     def test_new_parameter_incorrect_condition(self):
         condition = "tryam"
-        data = {"Name": "Par_" + tools.generate_random_name(), "Value": "test", "ApplicationId": 1,
+        data = {"Name": "Par_" + tools.generate_random_name(), "Value": "test",
                 "Conditions": condition}
         ans = self.call("NewParameter", data)
         self.unit.assertEqual("unknown identifier " + condition,
@@ -334,20 +339,20 @@ class TestSystemContracts():
     def test_edit_parameter_incorrect_condition(self):
         name = "Par_" + tools.generate_random_name()
         condition = "tryam"
-        id = actions.get_parameter_id(self.url, name, self.token)
         data = {"Name": name, "Value": "test", "Conditions": "true"}
         res = self.call("NewParameter", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
+        id = actions.get_parameter_id(self.url, name, self.token)
+        print('id', id)
         data2 = {"Id": id, "Value": "test_edited", "Conditions": condition}
         ans = self.call("EditParameter", data2)
-        self.unit.assertEqual("unknown identifier " + condition,
+        self.unit.assertEqual('Condition ' + condition + ' is not allowed',
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_menu(self):
         name = "Menu_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
-                "Conditions": "true"}
+        data = {"Name": name, "Value": "Item1", "Conditions": "true"}
         res = self.call("NewMenu", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -357,8 +362,7 @@ class TestSystemContracts():
 
     def test_new_menu_exist_name(self):
         name = "Menu_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
-                "Conditions": "true"}
+        data = {"Name": name, "Value": "Item1", "Conditions": "true"}
         res = self.call("NewMenu", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -369,10 +373,9 @@ class TestSystemContracts():
     def test_new_menu_incorrect_condition(self):
         name = "Menu_" + tools.generate_random_name()
         condition = "tryam"
-        data = {"Name": name, "Value": "Item1", "ApplicationId": 1,
-                "Conditions": condition}
+        data = {"Name": name, "Value": "Item1", "Conditions": condition}
         ans = self.call("NewMenu", data)
-        self.unit.assertEqual("unknown identifier " + condition,
+        self.unit.assertEqual('Condition ' + condition + ' is not allowed',
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_menu(self):
@@ -394,7 +397,7 @@ class TestSystemContracts():
         id = "99999"
         data_edit = {"Id": id, "Value": "ItemEdited", "Conditions": "true"}
         ans = self.call("EditMenu", data_edit)
-        msg = "Item " + id + " has not been found"
+        msg = "Item is not found"
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_menu_incorrect_condition(self):
@@ -407,7 +410,7 @@ class TestSystemContracts():
         count = actions.get_count(self.url, "menu", self.token)
         data_edit = {"Id": count, "Value": "ItemEdited", "Conditions": condition}
         ans = self.call("EditMenu", data_edit)
-        msg = "unknown identifier " + condition
+        msg = 'Condition ' + condition + ' is not allowed'
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_append_menu(self):
@@ -417,14 +420,14 @@ class TestSystemContracts():
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         count = actions.get_count(self.url, "menu", self.token)
-        data_edit = {"Id": count, "Value": "AppendedItem", "Conditions": "true"}
+        data_edit = {"Id": count, "Value": "AppendedItem"}
         res = self.call("AppendMenu", data_edit)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_append_incorrect_menu(self):
         id = "999"
-        data_edit = {"Id": id, "Value": "AppendedItem", "Conditions": "true"}
+        data_edit = {"Id": id, "Value": "AppendedItem"}
         ans = self.call("AppendMenu", data_edit)
         msg = "Item " + id + " has not been found"
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
@@ -457,7 +460,7 @@ class TestSystemContracts():
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": condition, "Menu": "default_menu"}
         ans = self.call("NewPage", data)
-        msg = "unknown identifier " + condition
+        msg = 'Condition ' + condition + ' is not allowed'
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_page(self):
@@ -500,7 +503,7 @@ class TestSystemContracts():
         data_edit = {"Id": id, "Value": "Good by page!",
                     "Conditions": "true", "Menu": "default_menu"}
         ans = self.call("EditPage", data_edit)
-        self.unit.assertEqual("Item " + id + " has not been found",
+        self.unit.assertEqual('Item is not found',
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_page_incorrect_condition(self):
@@ -516,7 +519,7 @@ class TestSystemContracts():
                     "Value": "Good by page!", "Conditions": condition,
                     "Menu": "default_menu"}
         ans = self.call("EditPage", data_edit)
-        self.unit.assertEqual("unknown identifier " + condition,
+        self.unit.assertEqual('Condition ' + condition + ' is not allowed',
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_append_page(self):
@@ -528,8 +531,7 @@ class TestSystemContracts():
                            "BlockId is not generated: " + str(res))
         count = actions.get_count(self.url, "pages", self.token)
         data_edit = {"Id": actions.get_count(self.url, "pages", self.token),
-                    "Value": "Good by!", "Conditions": "true",
-                    "Menu": "default_menu"}
+                    "Value": "Good by!"}
         res = self.call("AppendPage", data_edit)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -539,8 +541,7 @@ class TestSystemContracts():
 
     def test_append_page_incorrect_id(self):
         id = "9999"
-        data_edit = {"Id": id, "Value": "Good by!", "Conditions": "true",
-                    "Menu": "default_menu"}
+        data_edit = {"Id": id, "Value": "Good by!"}
         ans = self.call("AppendPage", data_edit)
         msg = "Item " + id + " has not been found"
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
@@ -561,7 +562,7 @@ class TestSystemContracts():
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         ans = self.call("NewBlock", data)
-        self.unit.assertEqual("Block " + name + " already exists",
+        self.unit.assertEqual("Block '" + name + "' is already exists",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_block_incorrect_condition(self):
@@ -570,14 +571,14 @@ class TestSystemContracts():
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": condition}
         ans = self.call("NewBlock", data)
-        msg = "unknown identifier " + condition
+        msg = 'Condition ' + condition + ' is not allowed'
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_block_incorrect_id(self):
         id = "9999"
         data_edit = {"Id": id, "Value": "Good by!", "Conditions": "true"}
         ans = self.call("EditBlock", data_edit)
-        msg = "Item " + id + " has not been found"
+        msg = "Item is not found"
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_block(self):
@@ -587,7 +588,7 @@ class TestSystemContracts():
         res = self.call("NewBlock", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = actions.get_count(self.url, "blocks", self.token)
+        count = actions.get_object_id(self.url, name, "blocks", self.token)
         data_edit = {"Id": count, "Value": "Good by!", "Conditions": "true"}
         res = self.call("EditBlock", data_edit)
         self.unit.assertGreater(res["blockid"], 0,
@@ -604,7 +605,7 @@ class TestSystemContracts():
         condition = "tryam"
         data_edit = {"Id": count, "Value": "Good by!", "Conditions": condition}
         ans = self.call("EditBlock", data_edit)
-        msg = "unknown identifier " + condition
+        msg = 'Condition ' + condition + ' is not allowed'
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table(self):
@@ -751,31 +752,7 @@ class TestSystemContracts():
         cont = actions.get_content(self.url, "page", name, "", 1, self.token)
         self.unit.assertEqual(cont['tree'][0]['attr']['data'], content)
 
-    def test_new_table_joint(self):
-        columns = ["varchar", "Myb", "MyD", "MyM", "MyT", "MyDouble", "MyC"]
-        types = ["varchar", "json", "datetime", "money", "text", "double", "character"]
-        dic_columns = {"ColumnsArr[]": len(columns), "ColumnsArr[0]": columns[0],
-                      "ColumnsArr[1]": columns[1], "ColumnsArr[2]": columns[2],
-                      "ColumnsArr[3]": columns[3], "ColumnsArr[4]": columns[4],
-                      "ColumnsArr[5]": columns[5], "ColumnsArr[6]": columns[6]}
-        dic_types = {"TypesArr[]": len(types), "TypesArr[0]": types[0],
-                    "TypesArr[1]": types[1], "TypesArr[2]": types[2],
-                    "TypesArr[3]": types[3], "TypesArr[4]": types[4],
-                    "TypesArr[5]": types[5], "TypesArr[6]": types[6]}
-        permission = """{"insert": "false", "update" : "true","new_column": "true"}"""
-        data = {"ApplicationId": 1,
-                "Name": "Tab_" + tools.generate_random_name(),
-                "ColumnsArr": dic_columns,
-                "TypesArr": dic_types,
-                "InsertPerm": "true",
-                "UpdatePerm": "true",
-                "ReadPerm": "true",
-                "NewColumnPerm": "true"}
-        data.update(dic_columns)
-        data.update(dic_types)
-        res = self.call("NewTableJoint", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+
 
     def test_new_table_incorrect_column_name_digit(self):
         column = """[{"name":"123","type":"varchar",
@@ -993,31 +970,28 @@ class TestSystemContracts():
         res = self.call("NewColumn", data_col)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        data_edit = {"TableName": name_tab, "Name": name, "Type": "number",
+        data_edit = {"TableName": name_tab, "Name": name,
                     "UpdatePerm": "false", "ReadPerm": "false"}
         res = self.call("EditColumn", data_edit)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_new_lang(self):
-        data = {"AppID": 1, "Name": "Lang_" + tools.generate_random_name(),
-                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}",
-                "ApplicationId": 1}
+        data = {"Name": "Lang_" + tools.generate_random_name(),
+                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("NewLang", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_new_lang_joint(self):
-        data = {"ApplicationId": 1,
-                "Name": "Lang_" + tools.generate_random_name(),
+        data = {"Name": "Lang_" + tools.generate_random_name(),
                 "ValueArr": ["en", "ru"], "LocaleArr": ["Hi", "Привет"]}
         res = self.call("NewLangJoint", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
     def test_edit_lang_joint(self):
-        data = {"ApplicationId": 1,
-                "Name": "Lang_" + tools.generate_random_name(),
+        data = {"Name": "Lang_" + tools.generate_random_name(),
                 "ValueArr": ["en", "ru"], "LocaleArr": ["Hi", "Привет"]}
         res = self.call("NewLangJoint", data)
         self.unit.assertGreater(res["blockid"], 0,
@@ -1031,75 +1005,13 @@ class TestSystemContracts():
 
     def test_edit_lang(self):
         name = "Lang_" + tools.generate_random_name()
-        data = {"AppID": 1, "Name": name, "ApplicationId": 1,
-                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
+        data = {"Name": name, "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("NewLang", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         count = actions.get_count(self.url, "languages", self.token)
-        data_edit = {"Id": count, "Name": name, "AppID": 1,
-                    "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
+        data_edit = {"Id": count, "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("EditLang", data_edit)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-
-    # off
-    def _new_sign(self):
-        name = "Sign_" + tools.generate_random_name()
-        value = "{\"forsign\":\"" + name + \
-                "\", \"field\": \"" + name + "\", \"title\": \"" + name + \
-                "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
-        data = {"Name": name, "Value": value, "Conditions": "true"}
-        res = self.call("NewSign", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-
-    # off
-    def _new_sign_joint(self):
-        name = "Sign_" + tools.generate_random_name()
-        params = [{"name": "test", "text": "test"},
-                  {"name": "test2", "text": "test2"}]
-        values = ["one", "two"]
-        data = {"Name": name, "Title": name, "ParamArr": params,
-                "ValueArr": values, "Conditions": "true"}
-        res = self.call("NewSignJoint", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-
-    # off
-    def _edit_sign_joint(self):
-        name = "Sign_" + tools.generate_random_name()
-        params = [{"name": "test", "text": "test"},
-                  {"name": "test2", "text": "test2"}]
-        values = ["one", "two"]
-        data = {"Name": name, "Title": name, "ParamArr": params,
-                "ValueArr": values, "Conditions": "true"}
-        res = self.call("NewSignJoint", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-        count = actions.get_count(self.url, "signatures", self.token)
-        data_e = {"Id": count, "Title": "NewTitle", "Parameter": str(params),
-                 "Conditions": "true"}
-        resE = self.call("EditSignJoint", data_e)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-
-    # off
-    def _edit_sign(self):
-        name = "Sign_" + tools.generate_random_name()
-        value = "{\"forsign\":\"" + name + \
-                "\", \"field\": \"" + name + "\", \"title\": \"" + name + \
-                "\", \"params\":[{\"name\": \"test\", \"text\": \"test\"}]}"
-        data = {"Name": name, "Value": value, "Conditions": "true"}
-        res = self.call("NewSign", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-        count = actions.get_count(self.url, "signatures", self.token)
-        value_e = "{\"forsign\": \"" + name + "\", \"field\": \"" + \
-                 name + "\", \"title\": \"" + name + \
-                 "\", \"params\":[{\"name\": \"test1\", \"text\": \"test2\"}]}"
-        data_edit = {"Id": count, "Value": value_e, "Conditions": "true"}
-        res = self.call("EditSign", data_edit)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
@@ -1116,7 +1028,7 @@ class TestSystemContracts():
         res = self.call("NewAppParam", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        data2 = {"Id": 1, "Name": name, "Value": "myParamEdited", "Conditions": "true"}
+        data2 = {"Id": 1, "Value": "myParamEdited", "Conditions": "true"}
         res = self.call("EditAppParam", data2)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -1270,77 +1182,6 @@ class TestSystemContracts():
         msg = "There is loop in @1" + contract_name + " contract"
         self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
 
-    def test_contract_recursive_call_contract_conditions(self):
-        contract_name = "recur_" + tools.generate_random_name()
-        body = """
-        {
-        data { }
-        conditions {
-         Println("hello1")
-            var par map
-            CallContract("%s", par)
-            }
-        action { }
-        }
-        """ % contract_name
-        code = tools.generate_code(contract_name, body)
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
-        res = self.call(contract_name, "")
-        msg = "There is loop in @1" + contract_name + " contract"
-        self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
-
-    def test_contract_recursive_call_contract_func_conditions(self):
-        contract_name = "recur_" + tools.generate_random_name()
-        body = """
-        {
-        func runContract() int {
-            var par map
-            CallContract("%s", par)
-            }
-        data { }
-        conditions {
-            runContract()
-            }
-        action { }
-        }
-        """ % contract_name
-        code = tools.generate_code(contract_name, body)
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
-        res = self.call(contract_name, "")
-        msg = "There is loop in @1" + contract_name + " contract"
-        self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
-
-    def test_contract_memory_limit(self):
-        # add contract with memory limit
-        body = """
-        {
-        data {
-            Count int "optional"
-            }
-        action {
-            var a array
-            while (true) {
-                $Count = $Count + 1
-                a[Len(a)] = JSONEncode(a)
-                }
-            }
-        }
-        """
-        code, contract_name = tools.generate_name_and_code(body)
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-        # test
-        data = ""
-        msg = "Memory limit exceeded"
-        res = self.call(contract_name, data)
-        self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
 
     def test_functions_recursive_limit(self):
         # add contract with recursive
