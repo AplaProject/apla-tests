@@ -348,9 +348,9 @@ class TestRollback1():
 
     def test_rollback1(self):
         # Install apps
-        self.imp_app("admin", self.url, self.pr_key,
+        self.imp_app("basic", self.url, self.pr_key,
                      self.token)
-        self.imp_app("system_parameters", self.url, self.pr_key,
+        self.imp_app("system", self.url, self.pr_key,
                      self.token)
         print("Start rollback test")
         self.add_notification()

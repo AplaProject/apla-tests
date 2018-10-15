@@ -33,6 +33,7 @@ def imp_app(app_name, url, pr_key, token):
             hashes = resp['hashes']
             result = actions.tx_status_multi(url, 30, hashes, token)
             for status in result.values():
+                print("status: ", status)
                 if int(status["blockid"]) < 1:
                     print("Import is failed")
                     exit(1)
