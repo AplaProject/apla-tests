@@ -251,13 +251,6 @@ class TestApi():
         answer_tree = {'tree': [{'tag': 'div', 'children': [{'tag': 'text', 'text': '100'}]}]}
         self.unit.assertEqual(answer_tree, res)
 
-    def test_get_content_from_template_empty(self):
-        data = {}
-        data["template"] = ""
-        asserts = []
-        res = self.check_post_api("/content", data, asserts)
-        self.unit.assertEqual(None, res)
-
     def test_get_content_from_template_source(self):
         data = {}
         data["template"] = "SetVar(mytest, 100) Div(Body: #mytest#)"
@@ -266,14 +259,6 @@ class TestApi():
         res = self.check_post_api("/content", data, asserts)
         answer_tree = {'tree': [{'tag': 'setvar', 'attr': {'name': 'mytest', 'value': '100'}}, {'tag': 'div', 'children': [{'tag': 'text', 'text': '#mytest#'}]}]}
         self.unit.assertEqual(answer_tree, res)
-
-    def test_get_content_from_template_source_empty(self):
-        data = {}
-        data["template"] = ""
-        data["source"] = "true"
-        asserts = []
-        res = self.check_post_api("/content", data, asserts)
-        self.unit.assertEqual(None, res)
 
     def test_get_content_source(self):
         # Create new page for test
