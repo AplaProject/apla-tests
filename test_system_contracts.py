@@ -326,8 +326,8 @@ class TestSystemContracts():
         data = {"Name": "Par_" + tools.generate_random_name(), "Value": "test",
                 "Conditions": condition}
         ans = self.call("NewParameter", data)
-        self.unit.assertEqual("unknown identifier " + condition,
-                         ans["error"], "Incorrect message: " + str(ans))
+        msg = 'Condition ' + condition + ' is not allowed'
+        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_incorrect_parameter(self):
         id = "99999"
@@ -384,7 +384,7 @@ class TestSystemContracts():
         res = self.call("NewMenu", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = actions.get_count(self.url, "menu", self.token)
+        count = actions.find_id_by_name(self.url, self.token, "menu", name)
         data_edit = {"Id": count, "Value": "ItemEdited", "Conditions": "true"}
         res = self.call("EditMenu", data_edit)
         self.unit.assertGreater(res["blockid"], 0,
@@ -407,7 +407,7 @@ class TestSystemContracts():
         res = self.call("NewMenu", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = actions.get_count(self.url, "menu", self.token)
+        count = actions.find_id_by_name(self.url, self.token, "menu", name)
         data_edit = {"Id": count, "Value": "ItemEdited", "Conditions": condition}
         ans = self.call("EditMenu", data_edit)
         msg = 'Condition ' + condition + ' is not allowed'
@@ -419,7 +419,7 @@ class TestSystemContracts():
         res = self.call("NewMenu", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = actions.get_count(self.url, "menu", self.token)
+        count = actions.find_id_by_name(self.url, self.token, "menu", name)
         data_edit = {"Id": count, "Value": "AppendedItem"}
         res = self.call("AppendMenu", data_edit)
         self.unit.assertGreater(res["blockid"], 0,
@@ -470,7 +470,8 @@ class TestSystemContracts():
         res = self.call("NewPage", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        data_edit = {"Id": actions.get_count(self.url, "pages", self.token),
+        count = actions.find_id_by_name(self.url, self.token, "pages", name)
+        data_edit = {"Id": count,
                     "Value": "Good by page!", "Conditions": "true",
                     "Menu": "default_menu"}
         res = self.call("EditPage", data_edit)
@@ -488,7 +489,8 @@ class TestSystemContracts():
         res = self.call("NewPage", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        data_edit = {"Id": actions.get_count(self.url, "pages", self.token),
+        count = actions.find_id_by_name(self.url, self.token, "pages", name)
+        data_edit = {"Id": count,
                     "Value": "Good by page!", "Conditions": "true",
                     "ValidateCount": 1, "Menu": "default_menu"}
         res = self.call("EditPage", data_edit)
@@ -515,7 +517,8 @@ class TestSystemContracts():
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         condition = "Tryam"
-        data_edit = {"Id": actions.get_count(self.url, "pages", self.token),
+        count = actions.find_id_by_name(self.url, self.token, "pages", name)
+        data_edit = {"Id": count,
                     "Value": "Good by page!", "Conditions": condition,
                     "Menu": "default_menu"}
         ans = self.call("EditPage", data_edit)
@@ -529,8 +532,8 @@ class TestSystemContracts():
         res = self.call("NewPage", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = actions.get_count(self.url, "pages", self.token)
-        data_edit = {"Id": actions.get_count(self.url, "pages", self.token),
+        count = actions.find_id_by_name(self.url, self.token, "pages", name)
+        data_edit = {"Id": count,
                     "Value": "Good by!"}
         res = self.call("AppendPage", data_edit)
         self.unit.assertGreater(res["blockid"], 0,
@@ -601,7 +604,7 @@ class TestSystemContracts():
         res = self.call("NewBlock", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = actions.get_count(self.url, "blocks", self.token)
+        count = actions.find_id_by_name(self.url, self.token, "blocks", name)
         condition = "tryam"
         data_edit = {"Id": count, "Value": "Good by!", "Conditions": condition}
         ans = self.call("EditBlock", data_edit)
