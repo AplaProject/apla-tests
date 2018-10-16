@@ -1,9 +1,0 @@
-{
- "url": "http://localhost:7079/api/v2",
-"private_key": "9725f5a832b05717045b501f39883344df2a53c5b9644b4824241b9e06cc5d32",
- "time_wait_tx_in_block": 30,
- "db": {"dbHost": "localhost",
- "dbName": "gen1",
- "login": "postgres",
- "pass": "postgres"}
-}
