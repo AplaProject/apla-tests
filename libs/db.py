@@ -85,7 +85,7 @@ def get_table_column_names(db, table):
     col = submit_query(query, db)
     return col
 
-#rollback1
+#rollback2
 def get_user_table_state(db, user_table):
     request = "SELECT * FROM \"" + user_table + "\""
     res = submit_query(request, db)
@@ -168,3 +168,31 @@ def is_commission_in_history_new(db_host, db_name, login, password, id_from, id_
         return True
     else:
         return False
+
+#rollback2
+def get_count_DB_objects_from_DB(dbHost, dbName, login, password):
+	tablesCount = {}
+	tables = get_ecosystem_tables_from_DB(dbHost, dbName, login, password)
+	for table in tables:
+		tablesCount[table[2:]] = get_count_table_from_DB(dbHost, dbName, login, password, table)
+	return tablesCount
+
+#rollback2
+def get_ecosystem_tables_from_DB(dbHost, dbName, login, password):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("select table_name from INFORMATION_SCHEMA.TABLES WHERE table_schema='public' AND table_name LIKE '1_%'")
+	tables = cursor.fetchall()
+	list = []
+	i = 0
+	while i < len(tables):
+		list.append(tables[i][0])
+		i = i + 1
+	return list
+
+#rollback2
+def get_count_table_from_DB(dbHost, dbName, login, password, table):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	cursor.execute("SELECT count(*) FROM \"" + table + "\"")
+	return cursor.fetchall()[0][0]
