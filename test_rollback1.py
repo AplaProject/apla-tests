@@ -18,34 +18,33 @@ class TestRollback1():
     def setup_class(self):
         self.unit = unittest.TestCase()
 
-    def imp_app(self, appName, url, pr_key, token):
-        path = os.path.join(os.getcwd(), "fixtures", "basic", appName + ".json")
-        resp = actions.call_contract(self.url, self.pr_key, "ImportUpload",
-                                     {'input_file': {'Path': path}}, self.token)
-        res_import_upload = actions.tx_status(self.url, 30, resp, self.token)
+    def imp_app(self, app_name, url, pr_key, token):
+        path = os.path.join(os.getcwd(), "fixtures", "basic", app_name + ".json")
+        resp = actions.call_contract(url, pr_key, "ImportUpload",
+                                     {'input_file': {'Path': path}}, token)
+        res_import_upload = actions.tx_status(url, 30, resp, token)
         if int(res_import_upload["blockid"]) > 0:
-            founder_id = actions.call_get_api(self.url + "/ecosystemparam/founder_account/",
-                                                 "", self.token)['value']
-            result = actions.call_get_api(self.url + "/list/buffer_data", "", self.token)
-            buffer_data_list = result['list']
-            for item in buffer_data_list:
+            founder_id = actions.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
+            result = actions.call_get_api(url + "/list/buffer_data", "", token)
+            bufer_data_list = result['list']
+            for item in bufer_data_list:
                 if item['key'] == "import" and item['member_id'] == founder_id:
-                    importAppData = json.loads(item['value'])['data']
+                    import_app_data = json.loads(item['value'])['data']
                     break
             contract_name = "Import"
             data = [{"contract": contract_name,
-                         "params": importAppData[i]} for i in range(len(importAppData))]
-            resp = actions.call_multi_contract(self.url, self.pr_key, contract_name,
-                                               data, self.token)
+                     "params": import_app_data[i]} for i in range(len(import_app_data))]
+            resp = actions.call_multi_contract(url, pr_key, contract_name, data, token)
             time.sleep(30)
             if "hashes" in resp:
                 hashes = resp['hashes']
-                result = actions.tx_status_multi(self.url, 30, hashes, self.token)
+                result = actions.tx_status_multi(url, 30, hashes, token)
                 for status in result.values():
-                    if status["blockid"] < 1:
+                    print("status: ", status)
+                    if int(status["blockid"]) < 1:
                         print("Import is failed")
                         exit(1)
-                print("App '" + appName + "' successfully installed")
+                print("App '" + app_name + "' successfully installed")
 
 
     def call(self, name, data):
@@ -59,9 +58,9 @@ class TestRollback1():
         code, name = tools.generate_name_and_code("")
         dataC = {}
         if data == "":
-            dataC = {"Wallet": '', "ApplicationId": 1,
+            dataC = {"ApplicationId": 1,
                      "Value": code,
-                     "Conditions": "ContractConditions(`MainCondition`)"}
+                     "Conditions": "ContractConditions(\"MainCondition\")"}
         else:
             dataC = data
         res = self.call("NewContract", dataC)
@@ -84,7 +83,7 @@ class TestRollback1():
         code, name = tools.generate_name_and_code(body)
         data = {"Wallet": '', "ApplicationId": 1,
                 "Value": code,
-                "Conditions": "ContractConditions(`MainCondition`)"}
+                "Conditions": "ContractConditions(\"MainCondition\")"}
         res = self.call("NewContract", data)
         self.unit.assertGreater(int(res["blockid"]), 0, "BlockId is not generated: " + str(res))
         # change permission for notifications table
@@ -105,9 +104,6 @@ class TestRollback1():
         data_edit["ReadPerm"] = "ContractConditions(\"MainCondition\")"
         data_edit["NewColumnPerm"] = "ContractConditions(\"MainCondition\")"
         res = self.call("EditTable", data_edit)
-
-    def get_count_table(self, name):
-        return db.get_count_table(self.db_node, name)
 
     def add_binary(self):
         name = "image_" + tools.generate_random_name()
@@ -155,6 +151,7 @@ class TestRollback1():
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         # call contarct, wich added record in created table
+        data = {}
         res = self.call(name, data)
 
     def update_user_table(self, table_name):
@@ -173,23 +170,23 @@ class TestRollback1():
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         # call contarct, wich added record in created table
+        data = {}
         res = self.call(name, data)
 
     def create_ecosystem(self):
         data = {"Name": "Ecosys" + tools.generate_random_name()}
         res = self.call("NewEcosystem", data)
 
-    def money_transfer(self):
-        data = {"Recipient": "0005-2070-2000-0006-0200",
+    def tokens_send(self):
+        data = {"Recipient_Account": "4544233900443112470",
                 "Amount": "1000"}
-        res = self.call("MoneyTransfer", data)
+        res = self.call("TokensSend", data)
 
     def edit_contract(self, contract, code):
         data2 = {"Id": actions.get_contract_id(self.url, contract,
                                                self.token),
-                 "Value": code,
-                 "Conditions": "true",
-                 "WalletId": "0005-2070-2000-0006-0200"}
+                 "Value": code.replace('action {    } ', 'action { var a map   } '),
+                 "Conditions": "true"}
         res = self.call("EditContract", data2)
 
     def activate_contract(self, name):
@@ -253,9 +250,7 @@ class TestRollback1():
     def append_page(self):
         count = actions.get_count(self.url, "pages", self.token)
         data_edit = {"Id": actions.get_count(self.url, "pages", self.token),
-                    "Value": "Good by!",
-                    "Conditions": "true",
-                    "Menu": "default_menu"}
+                    "Value": "Good by!",}
         res = self.call("AppendPage", data_edit)
 
     def new_block(self):
@@ -279,7 +274,7 @@ class TestRollback1():
                         "insert": "false",
                         "update" : "true",
                         "new_column": "true"}"""
-        data = {"Name": "Tab_" + tools.generate_random_name(),
+        data = {"Name": "tab_" + tools.generate_random_name(),
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
         res = self.call("NewTable", data)
@@ -296,7 +291,7 @@ class TestRollback1():
         res = self.call("EditTable", data_edit)
 
     def new_column(self, table):
-        name = "Col_" + tools.generate_random_name()
+        name = 'Col_' + tools.generate_random_name()
         data_col = {"TableName": table,
                    "Name": name,
                    "Type": "number",
@@ -314,7 +309,7 @@ class TestRollback1():
 
     def new_lang(self):
         name = "Lang_" + tools.generate_random_name()
-        data = {"Name": name, "ApplicationId": 1,
+        data = {"Name": name,
                 "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("NewLang", data)
         return name
@@ -347,15 +342,13 @@ class TestRollback1():
         res = self.call("EditSign", data_edit)
 
     def test_rollback1(self):
-        # Install apps
-        self.imp_app("basic", self.url, self.pr_key,
-                     self.token)
-        self.imp_app("system", self.url, self.pr_key,
-                     self.token)
         print("Start rollback test")
-        self.add_notification()
-        self.add_binary()
+        # Install apps
+        self.imp_app("system", self.url, self.pr_key, self.token)
+        self.imp_app("basic", self.url, self.pr_key, self.token)
+        print("1")
         table_name = self.add_user_table()
+        print("2")
         self.insert_to_user_table(table_name)
         # Save to file block id for rollback
         rollback_block_id = actions.get_max_block_id(self.url, self.token)
@@ -373,13 +366,15 @@ class TestRollback1():
         with open(file, 'w') as fconf:
             json.dump(db_user_table_info, fconf)
         # Save to file all tables state
-        db_information = db.get_count_DB_objects(self.db_node)
-        db_information = db.get_count_DB_objects(self.db_node)
+        db_information = db.get_count_DB_objects(self.url, self.token)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'w') as fconf:
             json.dump(db_information, fconf)
+        self.insert_to_user_table(table_name)
         self.update_user_table(table_name)
-        self.money_transfer()
+        self.add_notification()
+        self.add_binary()
+        self.tokens_send()
         contract, code = self.create_contract("")
         self.edit_contract(contract, code)
         self.activate_contract(contract)
@@ -401,7 +396,7 @@ class TestRollback1():
         lang = self.new_lang()
         langs = actions.call_get_api(self.url + "/list/languages", {}, self.token)
         self.edit_lang(langs["count"], lang)
-        sign = self.new_sign()
-        self.edit_sign(sign)
-        self.imp_app("basic", self.url, self.pr_key, self.token)
+        #sign = self.new_sign()
+        #self.edit_sign(sign)
+        self.imp_app("conditions", self.url, self.pr_key, self.token)
         time.sleep(20)
