@@ -394,14 +394,12 @@ class TestPrototipo():
 
     def test_page_langRes(self):
         lang = "lang_" + tools.generate_random_name()
-        data = {"ApplicationId": 1,
-                "Name": lang,
+        data = {"Name": lang,
                 "Trans": "{\"en\": \"Lang_en\", \"ru\" : \"Язык\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = actions.call_contract(self.url, self.pr_key, "NewLang", data, self.token)
         self.assert_tx_in_block(res, self.token)
         world = "world_" + tools.generate_random_name()
-        data = {"ApplicationId": 1,
-                "Name": world,
+        data = {"Name": world,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\", \"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = actions.call_contract(self.url, self.pr_key, "NewLang", data, self.token)
         self.assert_tx_in_block(res, self.token)
