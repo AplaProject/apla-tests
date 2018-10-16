@@ -346,9 +346,7 @@ class TestRollback1():
         # Install apps
         self.imp_app("system", self.url, self.pr_key, self.token)
         self.imp_app("basic", self.url, self.pr_key, self.token)
-        print("1")
         table_name = self.add_user_table()
-        print("2")
         self.insert_to_user_table(table_name)
         # Save to file block id for rollback
         rollback_block_id = actions.get_max_block_id(self.url, self.token)
