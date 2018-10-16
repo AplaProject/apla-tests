@@ -96,9 +96,15 @@ def get_user_table_state(db, user_table):
     return table
 
 #block_chain
-def get_user_token_amounts(db):
-    request = "select amount from \"1_keys\" ORDER BY amount"
-    return submit_query(request, db)
+def get_user_token_amounts(url, token):
+    keys = api.list(url, token, 'keys')
+    print(keys)
+    amounts = []
+    for item in keys['list']:
+        print('item: ', item['amount'])
+        amounts.append(int(item['amount']))
+    amounts.sort()
+    return amounts
 
 #block_chain
 def get_blockchain_hash(db, max_block_id):
