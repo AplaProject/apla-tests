@@ -188,10 +188,12 @@ class TestCost():
     def test_activated_contract_with_err(self):
         if actions.is_contract_activated(self.conf[1]["url"], "CostContract", self.token) == False:
             self.activate_contract()
-        wallet_id = actions.get_activated_wallet(self.conf[1]["url"], "CostContract", self.token)
+        wallet_id = actions.get_activated_wallet(self.conf[1]["url"], "CostContract",
+                                                 self.token)
         balance_contract_owner_b = db.get_balance_from_db(self.conf[0]["db"], wallet_id)
         balance_node_owner_b = db.get_balance_from_db(self.conf[0]["db"], self.conf[1]["keyID"])
-        commision_wallet = db.get_commission_wallet(self.conf[0]["db"], 1)
+        commision_wallet = actions.get_sysparam_value(self.conf[1]["url"], self.token,
+                                                      'commission_wallet')
         balance_commision_b = db.get_balance_from_db(self.conf[0]["db"], commision_wallet)
         token_runner, uid = actions.get_uid(self.conf[1]["url"])
         signature = sign(self.keys["key2"], uid)
@@ -231,9 +233,9 @@ class TestCost():
         wallet_id = actions.get_activated_wallet(self.conf[1]["url"], "CostContract", self.token)
         balance_contract_owner_b = db.get_balance_from_db(self.conf[0]["db"], wallet_id)
         balance_node_owner_b = db.get_balance_from_db(self.conf[0]["db"], self.conf[1]["keyID"])
-        commision_wallet = db.get_commission_wallet(self.conf[0]["db"], 1)
+        commision_wallet = actions.get_sysparam_value(self.conf[1]["url"], self.token, 'commission_wallet')
         balance_commision_b = db.get_balance_from_db(self.conf[0]["db"], commision_wallet)
-        commission = db.get_system_parameter(self.conf[0]["db"], "commission_size")
+        commission = actions.get_sysparam_value(self.conf[1]["url"], self.token, 'commission_size')
         token_runner, uid = actions.get_uid(self.conf[1]["url"])
         signature = sign(self.keys["key2"], uid)
         pub_runner = get_public_key(self.keys["key2"])

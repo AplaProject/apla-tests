@@ -130,7 +130,7 @@ def get_user_table_state(db, user_table):
         table[col[i][0]] = res[0][i]
     return table
 
-#block_chain
+#done
 def get_user_token_amounts(url, token):
     keys = api.list(url, token, 'keys')
     print(keys)
@@ -147,19 +147,6 @@ def get_blockchain_hash(db, max_block_id):
         max_block_id) + " ORDER BY id) AS t"
     return submit_query(request, db)
 
-#limits
-def get_system_parameter(db, parameter):
-    request = "select value from \"1_system_parameters\" WHERE name='" + parameter + "'"
-    value = submit_query(request, db)
-    return value[0][0]
-
-#cost
-#can be changed to api.systemparams
-def get_commission_wallet(db, ecosId):
-    request = "select value from \"1_system_parameters\" where name='commission_wallet'"
-    wallets = submit_query(request, db)
-    wallet = json.loads(wallets[0][0])[0][1]
-    return wallet
 
 #cost
 def get_balance_from_db(db, key_id):
