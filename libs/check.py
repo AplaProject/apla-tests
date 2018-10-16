@@ -8,9 +8,10 @@ def compare_nodes(config):
     max_block_id = []
     i = 0 
     while i < nodes:
-        amounts.append(db.get_user_token_amounts(config[i]["db"]))
-        data.append(actions.login(config[i]["url"], config[0]['private_key']))
-        max_block_id.append(actions.get_max_block_id(config[i]["url"], data[i]["jwtToken"]))
+        data = actions.login(config[i]["url"], config[i]['private_key'])
+        token = data["jwtToken"]
+        amounts.append(db.get_user_token_amounts(config[i]["url"], token))
+        max_block_id.append(actions.get_max_block_id(config[i]["url"], token))
         i += 1   
 
     max_block = max(max_block_id)
