@@ -465,7 +465,7 @@ class TestApi():
         data1 = actions.login(self.url, keys["key5"], 0)
         time.sleep(5)
         conf = tools.read_config("nodes")
-        res = db.is_wallet_created(conf[0]["db"], data1["key_id"])
+        res = db.is_wallet_created(self.url, self.token, data1["key_id"])
         self.unit.assertTrue(res, "Wallet for new user didn't created")
         
     def test_login2(self):
@@ -474,11 +474,11 @@ class TestApi():
         data1 = actions.login(self.url, keys["key3"], 0)
         time.sleep(5)
         conf = tools.read_config("nodes")
-        res = db.is_wallet_created(conf[0]["db"], data1["key_id"])
+        res = db.is_wallet_created(self.url, self.token, data1["key_id"])
         if res == True:
             data2 = actions.login(self.url, keys["key1"], 0)
             time.sleep(5)
-            is_one = db.is_wallet_created(conf[0]["db"], data2["key_id"])
+            is_one = db.is_wallet_created(self.url, self.token, data2["key_id"])
             self.unit.assertTrue(is_one, "Wallet for new user didn't created")
 
     def test_get_avatar_with_login(self):
