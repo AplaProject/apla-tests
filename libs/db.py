@@ -149,7 +149,6 @@ def get_blockchain_hash(db, max_block_id):
 #cost
 def get_balance_by_id(url, token, key_id, ecos=1):
     keys = api.list(url, token, 'keys')
-    amounts = []
     for item in keys['list']:
         if item['id'] == str(key_id) and item['ecosystem'] == str(ecos):
             return item['amount']
@@ -157,13 +156,12 @@ def get_balance_by_id(url, token, key_id, ecos=1):
 
 
 #API
-def is_wallet_created(db, pub):
-    request = "select amount from \"1_keys\" WHERE id='" + pub + "'"
-    wallet = submit_query(request, db)
-    if len(wallet) == 1 and wallet[0][0] == 1000000000000000000000:
-        return True
-    else:
-        return False
+def is_wallet_created(url, token, id):
+    keys = api.list(url, token, 'keys')
+    for item in keys['list']:
+        if item['id'] == str(id) and int(item['amount']) == 1000000000000000000000:
+            return True
+    return False
 
 #cost
 def get_block_gen_node(db, block):
