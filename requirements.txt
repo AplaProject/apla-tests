@@ -6,7 +6,6 @@ py-postgresql==1.2.1
 requests==2.18.4
 selenium==3.6.0
 urllib3==1.22
-virtualenv==15.1.0
 locustio==0.8.1
 pytest==3.7.1
 git+https://github.com/blitzstern5/genesis-blockchain-tools@feature/send-tx
