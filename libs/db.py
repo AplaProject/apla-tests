@@ -98,10 +98,8 @@ def get_user_table_state(db, user_table):
 #done
 def get_user_token_amounts(url, token):
     keys = api.list(url, token, 'keys')
-    print(keys)
     amounts = []
     for item in keys['list']:
-        print('item: ', item['amount'])
         amounts.append(int(item['amount']))
     amounts.sort()
     return amounts
@@ -114,17 +112,14 @@ def get_blockchain_hash(db, max_block_id):
 
 
 #cost
-def get_balance_from_db(db, key_id):
-    request = "select amount from \"1_keys\" WHERE id=" + key_id
-    amount = submit_query(request, db)
-    balance = amount[0][0]
-    return balance
+def get_balance_by_id(url, token, key_id, ecos=1):
+    keys = api.list(url, token, 'keys')
+    amounts = []
+    for item in keys['list']:
+        if item['id'] == str(key_id) and item['ecosystem'] == str(ecos):
+            return item['amount']
+    return None
 
-#cost
-def get_balance_from_db_by_pub(db, pub):
-    request = "select amount from \"1_keys\" WHERE pub='\\x" + pub + "'"
-    amount = submit_query(request, db)
-    return amount[0][0]
 
 #API
 def is_wallet_created(db, pub):
