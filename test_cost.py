@@ -109,24 +109,24 @@ class TestCost():
         in_history = self.is_commissions_in_history(node_commission, self.conf[0]["keyID"],
                                                    platforma_commission, node)
         if node == 0:
-            dict_valid = dict(balanceRunner=balance_runner_a,
-                             platformBalance=a_node_balance[0],
-                             summ=summ_after,
+            dict_valid = dict(balanceRunner=int(balance_runner_a),
+                             platformBalance=int(a_node_balance[0]),
+                             summ=int(summ_after),
                              history=in_history)
-            dict_expect = dict(balanceRunner=balance_runner_b,
-                              platformBalance=a_node_balance[0],
-                              summ=summ_before,
+            dict_expect = dict(balanceRunner=int(balance_runner_b),
+                              platformBalance=int(a_node_balance[0]),
+                              summ=int(summ_before),
                               history=True)
         else:
-            dict_valid = dict(balanceRunner=balance_runner_a,
-                             platformBalance=a_node_balance[0],
-                             nodeBalance=a_node_balance[node],
-                             summ=summ_before,
+            dict_valid = dict(balanceRunner=int(balance_runner_a),
+                             platformBalance=int(a_node_balance[0]),
+                             nodeBalance=int(a_node_balance[node]),
+                             summ=int(summ_before),
                              history=in_history)
-            dict_expect = dict(balanceRunner=balance_runner_b,
-                              platformBalance=b_node_balance[0] - node_commission,
-                              nodeBalance=b_node_balance[node] + node_commission,
-                              summ=summ_after,
+            dict_expect = dict(balanceRunner=int(balance_runner_b),
+                              platformBalance=int(b_node_balance[0]) - int(node_commission),
+                              nodeBalance=int(b_node_balance[node]) + int(node_commission),
+                              summ=int(summ_after),
                               history=True)
         self.u.assertDictEqual(dict_valid, dict_expect,
                                           "Error in comissions run activated contract")
