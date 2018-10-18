@@ -398,11 +398,6 @@
 		"menu": "default_menu",
 		"content": ""
 	},
-    "dbfindCount":{
-		"code": "DBFind(Name: contracts, Source: con).Count(cnt) Em(#cnt#)",
-		"menu": "default_menu",
-		"content": ""
-	},
     "dbfindWhereCount":{
 		"code": "DBFind(Name: contracts, Source: con).Where({\"$and\": [{id:{\"$gte\": 1}}, {id:{\"$lte\": 3}}]}).Count(cnt) Em(#cnt#)",
 		"menu": "default_menu",

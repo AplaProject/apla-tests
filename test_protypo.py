@@ -582,18 +582,6 @@ class TestPrototipo():
                                       "key_id has problem: " + contract["content"] + ". Content = " + str(
                                           content["tree"]))
 
-    def test_db_find_count(self):
-        asserts = ["count"]
-        data = {}
-        res = self.check_get_api("/contracts", data, asserts)
-        contracts_count = res["count"]
-        contract = self.pages["dbfindCount"]
-        content = self.check_page(contract["code"])
-        required_num = self.find_position_element_in_tree(content["tree"], "em")
-        page = content['tree'][required_num]["children"][0]["text"]
-        self.uni.assertEqual(contracts_count, page,
-                                      "dbfind_count has problem: " + contract["content"] + ". Content = " + str(
-                                          content["tree"]))
 
     def test_db_find_where_count(self):
         contract = self.pages["dbfindWhereCount"]
