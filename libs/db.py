@@ -33,17 +33,15 @@ def compare_node_positions(db, max_block_id, nodes):
     return True
 
 #limits
-def is_count_tx_in_block(db, max_block_id, count_tx):
-    min_block = max_block_id - 3
-    request = "SELECT id, tx FROM block_chain WHERE id>" + str(min_block) + " AND id<" + str(max_block_id)
-    tx = submit_query(request, db)
-    i = 0
-    while i < len(tx):
-        if tx[i][1] > count_tx:
-            print("Block " + str(tx[i][0]) + " contains " + \
-                  str(tx[i][1]) + " transactions")
-            return False
-        i = i + 1
+def is_count_tx_in_block(url, token, max_block_id, count_tx):
+    block = max_block_id - 3
+    while block < max_block_id:
+        info = api.block(url, token, block)
+        block += 1
+        if int(info['tx_count']) > count_tx:
+               print('Error in count_tx. Block ' + str(block) + ' has ' +\
+                      str(block['count_tx']) + ' transactions')
+               return False
     return True
 
 #api

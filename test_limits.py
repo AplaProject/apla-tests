@@ -82,7 +82,7 @@ class TestLimits():
         time.sleep(5)
         max_block = actions.get_max_block_id(self.conf[1]["url"], self.token)
         print("max_block = ", max_block)
-        is_one_or_two = db.is_count_tx_in_block(self.conf[1]["db"], max_block, 1)
+        is_one_or_two = db.is_count_tx_in_block(self.conf[1]['url'], self.token, max_block, 1)
         self.update_sys_param("max_block_user_tx ", str(max_block_user_tx ))
         time.sleep(30)
         self.unit.assertTrue(is_one_or_two,
@@ -103,6 +103,7 @@ class TestLimits():
             i = i + 1
         time.sleep(5)
         max_block = actions.get_max_block_id(self.conf[1]["url"], self.token)
-        self.unit.assertTrue(db.is_count_tx_in_block(self.conf[1]["db"], max_block, 2),
+        self.unit.assertTrue(db.is_count_tx_in_block(self.conf[1]["url"], self.token,
+                                                     max_block, 2),
                         "One of block contains more than 2 transaction")
         self.update_sys_param("max_tx_count ", str(max_tx_count))
