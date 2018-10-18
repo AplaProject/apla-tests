@@ -43,7 +43,7 @@
 	},
 	{
 	    "name": "validateCondition",
-		"code": "{\n data {}\n conditions {}\n action {\n ValidateCondition(\"ContractConditions(`MainCondition`)\", 0)\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n ValidateCondition(\"ContractConditions(\"MainCondition\")\", 1)\n }\n }",
 		"result": ""
 	},
 	{
@@ -233,7 +233,7 @@
 	},
 	{
 		"name": "jsonDecode",
-		"code": "{\n data {}\n conditions {}\n  action {\n var a string \n a = \"[{'k1':'1','k2':'2'},{'k1':'1','k2':'2'}]\" \n $result = JSONDecode(a)\n}\n }",
+		"code": "{\n data {}\n conditions {}\n  action {\n var a string \n a = \"[{\"k1\":\"1\",\"k2\":\"2\"},{\"k1\":\"1\",\"k2\":\"2\"}]\" \n $result = JSONDecode(a)\n}\n }",
 		"result": ""
 	},
 	{
