@@ -37,6 +37,9 @@ class TestLimits():
                            "Block is not generated for updating sysparam: " +\
                            str(res))
         
+    def test_pass(self):
+        self.unit.assertGreater(5, 0, "err")
+        
     def max_tx_size(self):
         max_tx_size = actions.get_sysparam_value(self.conf[1]["url"], self.token,
                                                  'max_tx_size')
