@@ -43,7 +43,7 @@
 	},
 	{
 	    "name": "validateCondition",
-		"code": "{\n data {}\n conditions {}\n action {\n ValidateCondition(\"ContractConditions(\"MainCondition\")\", 1)\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n ValidateCondition(`ContractConditions(\"@1MainCondition\")`, 1)\n }\n }",
 		"result": ""
 	},
 	{
