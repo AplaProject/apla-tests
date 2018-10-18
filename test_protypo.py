@@ -29,7 +29,7 @@ class TestPrototipo():
     def create_contract(self, code):
         data = {"Wallet": "", "ApplicationId": 1,
                 "Value": code,
-                "Conditions": "ContractConditions(`MainCondition`)"}
+                "Conditions": "ContractConditions(\"MainCondition\")"}
         result = actions.call_contract(self.url, self.pr_key, "NewContract",
                                        data, self.token)
         self.assert_tx_in_block(result, self.token)
