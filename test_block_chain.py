@@ -75,5 +75,4 @@ class TestBlockChain():
                 "isTheSameDB": check.compare_db(self.full_config, self.config1["url"], self.token),
                       "sumAmounts": sum(amounts_after)}   
         self.uni.assertDictEqual(expect, dict, "Error in test_block_chain_edit")
-        
     
