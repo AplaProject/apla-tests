@@ -233,8 +233,8 @@
 	},
 	{
 		"name": "jsonDecode",
-		"code": "{\n data {}\n conditions {}\n  action {\n var a string \n a = \"[{\"k1\":\"1\",\"k2\":\"2\"},{\"k1\":\"1\",\"k2\":\"2\"}]\" \n $result = JSONDecode(a)\n}\n }",
-		"result": ""
+		"code": "{\n data {}\n conditions {}\n  action {\n var a string \n a = `[{\"k1\":\"1\",\"k2\":\"2\"},{\"k1\":\"1\",\"k2\":\"2\"}]` \n $result = JSONDecode(a)\n}\n }",
+		"result": "[map[k1:1 k2:2] map[k1:1 k2:2]]"
 	},
 	{
 		"name": "bytesToString",
@@ -273,7 +273,7 @@
 		"information":"needs to create table \"test\" with \"name\" and \"test\" string columns"
 	},
 	    "dbUpdate": {
-		"code": "{\n data {}\n conditions {}\n action {\n $result=DBUpdate(\"test\", 1, {test: \"updated\"})\n }\n }",
+		"code": "{\n data {}\n conditions {}\n action {\n DBUpdate(\"test\", 1, {\"test\": \"updated\"})\n }\n }",
 		"asert": ""
 	},
 	"dbSelectMetricsMin": {

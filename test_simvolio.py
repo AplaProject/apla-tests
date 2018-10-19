@@ -74,6 +74,23 @@ class TestSimvolio():
                            'expected result: ' + str(e_result) + '\n' +\
                            'current result: ' + str(c_result))
 
+    def test_simple1(self):
+        test_name = 'jsonDecode'
+        con = self.contracts['simple']
+        for el in range(len(con)):
+            if con[el]['name'] == test_name:
+                name = con[el]['name']
+                sourse = con[el]['code']
+                e_result = con[el]['result']
+                break
+        code, c_name = self.generate_name_and_code(sourse)
+        self.create_contract(code)
+        res = actions.call_contract(self.url, self.pr_key, c_name, {}, self.token)
+        c_result = actions.tx_status(self.url, self.wait, res, self.token)
+        self.unit.assertIn(e_result, c_result["result"], "ERROR:\n name: " + name + '\n' +\
+                           'expected result: ' + str(e_result) + '\n' +\
+                           'current result: ' + str(c_result))
+
     def test_contract_langRes(self):
         data = {"Name": "test",
                 "Trans": "{\"en\": \"test_en\", \"de\" : \"test_de\"}"}
@@ -113,6 +130,12 @@ class TestSimvolio():
         self.check_contract(contract["code"], contract["asert"])
         contract = self.contracts["dbUpdate"]
         self.check_contract(contract["code"], contract["asert"])
+        list = actions.get_list(self.url, "test", self.token)['list']
+        for el in range(len(list)):
+            if int(list[el]['id']) == 1:
+                self.unit.assertEqual('updated', list[el]['test'], 'Failed. dbUpdate Error!')
+                break
+
         
 
     def test_contracts_dbUpdateExt(self):
