@@ -53,13 +53,6 @@ def get_ecosys_tables(url, token):
         list.append(table['name'])
     return list
 
-#simvolio api rollback
-#returns number of records in the table
-#can be changed to api.table
-def get_count_table(db, table):
-    request = "SELECT count(*) FROM \"" + table + "\""
-    return submit_query(request, db)
-
 
 #system_contracts
 def get_export_app_data(db, app_id, member_id):

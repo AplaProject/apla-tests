@@ -17,10 +17,7 @@ def call_get_api_with_full_response(url, data, token):
 
 def call_post_api(url, data, token):
     resp = requests.post(url, data=data, headers={"Authorization": token})
-    if resp.status_code == 200:
-        return resp.json()
-    else:
-        return None
+    return resp.json()
 
 
 def getuid(url):
