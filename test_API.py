@@ -114,7 +114,7 @@ class TestApi():
         dict_names = {}
         dict_names_api = {}
         data = {}
-        tables = db.get_ecosys_tables(self.url, self.token)
+        tables = actions.get_ecosys_tables(self.url, self.token)
         for table in tables:
             if "table" not in table:
                 table_info = actions.call_get_api(self.url + "/table/" + table, data, self.token)
@@ -139,7 +139,7 @@ class TestApi():
         dictCount = {}
         dictCountTable = {}
         data = {}
-        tables = db.get_ecosys_tables(self.url, self.token)
+        tables = actions.get_ecosys_tables(self.url, self.token)
         for table in tables:
             tableData = actions.call_get_api(self.url + "/list/" + table, data, self.token)
             msg = "Table " + table + " has not list"
@@ -465,7 +465,7 @@ class TestApi():
         data1 = actions.login(self.url, keys["key5"], 0)
         time.sleep(5)
         conf = tools.read_config("nodes")
-        res = db.is_wallet_created(self.url, self.token, data1["key_id"])
+        res = actions.is_wallet_created(self.url, self.token, data1["key_id"])
         self.unit.assertTrue(res, "Wallet for new user didn't created")
         
     def test_login2(self):
@@ -474,11 +474,11 @@ class TestApi():
         data1 = actions.login(self.url, keys["key3"], 0)
         time.sleep(5)
         conf = tools.read_config("nodes")
-        res = db.is_wallet_created(self.url, self.token, data1["key_id"])
+        res = actions.is_wallet_created(self.url, self.token, data1["key_id"])
         if res == True:
             data2 = actions.login(self.url, keys["key1"], 0)
             time.sleep(5)
-            is_one = db.is_wallet_created(self.url, self.token, data2["key_id"])
+            is_one = actions.is_wallet_created(self.url, self.token, data2["key_id"])
             self.unit.assertTrue(is_one, "Wallet for new user didn't created")
 
     def test_get_avatar_with_login(self):
