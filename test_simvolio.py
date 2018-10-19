@@ -22,7 +22,6 @@ class TestSimvolio():
 
     def assert_tx_in_block(self, result, jwt_token):
         status = actions.tx_status(self.url, self.wait, result, jwt_token)
-        print(status)
         self.unit.assertNotIn(json.dumps(status), 'errmsg')
         self.unit.assertGreater(status['blockid'], 0)
 
@@ -49,7 +48,7 @@ class TestSimvolio():
         self.create_contract(code)
         res = actions.call_contract(self.url, self.pr_key, name, {}, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertIn(check_point, result["result"], "ERROR: " +\
+        self.unit.assertIn(check_point, result["result"], "ERROR: " + \
                            str(result))
 
     def call(self, name, data):
@@ -64,32 +63,213 @@ class TestSimvolio():
         result = actions.tx_status(self.url, self.wait, res, self.token)
         self.unit.assertIn(check_point, result["result"], "error")
 
-    @pytest.mark.parametrize("name,sourse,e_result", tools.json_to_list(contracts["simple"]))
-    def test_simple(self, name, sourse, e_result):
-        code, c_name = self.generate_name_and_code(sourse)
-        self.create_contract(code)
-        res = actions.call_contract(self.url, self.pr_key, c_name, {}, self.token)
-        c_result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertIn(e_result, c_result["result"], "ERROR:\n name: " + name + '\n' +\
-                           'expected result: ' + str(e_result) + '\n' +\
-                           'current result: ' + str(c_result))
+    def test_contract_dbFind(self):
+        contract = self.contracts["dbFind"]
+        self.check_contract(contract["code"], contract["asert"])
 
-    def test_simple1(self):
-        test_name = 'jsonDecode'
-        con = self.contracts['simple']
-        for el in range(len(con)):
-            if con[el]['name'] == test_name:
-                name = con[el]['name']
-                sourse = con[el]['code']
-                e_result = con[el]['result']
-                break
-        code, c_name = self.generate_name_and_code(sourse)
-        self.create_contract(code)
-        res = actions.call_contract(self.url, self.pr_key, c_name, {}, self.token)
-        c_result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertIn(e_result, c_result["result"], "ERROR:\n name: " + name + '\n' +\
-                           'expected result: ' + str(e_result) + '\n' +\
-                           'current result: ' + str(c_result))
+    def test_contract_toUpper(self):
+        contract = self.contracts["toUpper"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_elseif(self):
+        contract = self.contracts["elseif"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_blockTime(self):
+        contract = self.contracts["blockTime"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_ecosysParam(self):
+        contract = self.contracts["ecosysParam"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_ifMap(self):
+        contract = self.contracts["ifMap"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_dbRow(self):
+        contract = self.contracts["dbRow"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_evalCondition(self):
+        contract = self.contracts["evalCondition"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_validateCondition(self):
+        contract = self.contracts["validateCondition"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_addressToId(self):
+        contract = self.contracts["addressToId"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_idToAddress(self):
+        contract = self.contracts["idToAddress"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_one(self):
+        contract = self.contracts["one"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_row(self):
+        contract = self.contracts["row"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_contains(self):
+        contract = self.contracts["contains"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_float(self):
+        contract = self.contracts["float"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_hasPrefix(self):
+        contract = self.contracts["hasPrefix"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_hexToBytes(self):
+        contract = self.contracts["hexToBytes"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_int(self):
+        contract = self.contracts["int"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_join(self):
+        contract = self.contracts["join"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_split(self):
+        contract = self.contracts["split"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_len(self):
+        contract = self.contracts["len"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_pubToID(self):
+        contract = self.contracts["pubToID"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_replace(self):
+        contract = self.contracts["replace"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_size(self):
+        contract = self.contracts["size"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_sha256(self):
+        contract = self.contracts["sha256"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_sprintf(self):
+        contract = self.contracts["sprintf"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_str(self):
+        contract = self.contracts["str"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_substr(self):
+        contract = self.contracts["substr"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_sysParamString(self):
+        contract = self.contracts["sysParamString"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_sysParamInt(self):
+        contract = self.contracts["sysParamInt"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_getContractByName(self):
+        contract = self.contracts["getContractByName"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_random(self):
+        contract = self.contracts["random"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_getBlock(self):
+        contract = self.contracts["getBlock"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_type_bool(self):
+        contract = self.contracts["type_bool"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_type_bytes(self):
+        contract = self.contracts["type_bytes"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_type_int(self):
+        contract = self.contracts["type_int"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_type_address(self):
+        contract = self.contracts["type_address"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_type_array(self):
+        contract = self.contracts["type_array"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_type_map(self):
+        contract = self.contracts["type_map"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_type_money(self):
+        contract = self.contracts["type_money"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_type_float(self):
+        contract = self.contracts["type_float"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_type_string(self):
+        contract = self.contracts["type_string"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_getColumnType(self):
+        contract = self.contracts["getColumnType"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_decodeBase64(self):
+        contract = self.contracts["decodeBase64"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_encodeBase64(self):
+        contract = self.contracts["encodeBase64"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_jsonEncode(self):
+        contract = self.contracts["jsonEncode"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_jsonDecode(self):
+        contract = self.contracts["jsonDecode"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_bytesToString(self):
+        contract = self.contracts["bytesToString"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_stringToBytes(self):
+        contract = self.contracts["stringToBytes"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_append(self):
+        contract = self.contracts["append"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_getMapKeys(self):
+        contract = self.contracts["getMapKeys"]
+        self.check_contract(contract["code"], contract["asert"])
+
+    def test_contract_sortedKeys(self):
+        contract = self.contracts["sortedKeys"]
+        self.check_contract(contract["code"], contract["asert"])
 
     def test_contract_langRes(self):
         data = {"Name": "test",
@@ -121,7 +301,7 @@ class TestSimvolio():
         "index": "0",  "conditions":"true"}]"""
         permission = """{"insert": "true",
         "update" : "true","new_column": "true"}"""
-        data = {"Name": "test", "ApplicationId":1,
+        data = {"Name": "test", "ApplicationId": 1,
                 "Columns": columns,
                 "Permissions": permission}
         result = actions.call_contract(self.url, self.pr_key, "NewTable", data, self.token)
@@ -135,8 +315,6 @@ class TestSimvolio():
             if int(list[el]['id']) == 1:
                 self.unit.assertEqual('updated', list[el]['test'], 'Failed. dbUpdate Error!')
                 break
-
-        
 
     def test_contracts_dbUpdateExt(self):
         columns = """[{"name":"name","type":"varchar",
@@ -160,33 +338,50 @@ class TestSimvolio():
         code = "contract MyContract" + contract["code"]
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
         res = actions.call_contract(self.url, self.pr_key, "NewContract", data, self.token)
-        time.sleep(10)
         contract = self.contracts["callContract"]
         self.check_contract(contract["code"], contract["asert"])
 
-    def test_sys_var_role_id_readonly(self):
-        sys_var_name = "$block"
-        contrac_name = tools.generate_random_name()
-        value = "contract con_" + contrac_name + " { data{ } conditions{ } action{ " + sys_var_name + " = 5 } }"
-        data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
-        result = actions.call_contract(self.url, self.pr_key, "NewContract", data, self.token)
-        tx = actions.tx_status(self.url, self.wait, result, self.token)
-        print("tx", tx)
-        exp_result = "system variable " + sys_var_name + " cannot be changed"
-        msg = "system variable " + sys_var_name + " was been changed!"
-        self.unit.assertEqual(tx["error"], exp_result, msg)
+    def test_sys_vars_readonly(self):
+        var_list = [
+            '$time',
+            '$ecosystem_id',
+            '$block',
+            '$key_id',
+            '$block_key_id',
+            '$block_time',
+            '$original_contract',
+            '$this_contract',
+            '$guest_key',
+            '$stack',
+        ]
+        expexted_dict = {}
+        actual_dict = {}
+        for i in range(len(var_list)):
+            sys_var_name = var_list[i]
+            print(sys_var_name)
+            contrac_name = tools.generate_random_name()
+            value = "contract con_" + contrac_name + " { data{ } conditions{ } action{ " + sys_var_name + " = 5 } }"
+            data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
+            result = actions.call_contract(self.url, self.pr_key, "NewContract", data, self.token)
+            tx = actions.tx_status(self.url, self.wait, result, self.token)
+            exp_result = "system variable " + sys_var_name + " cannot be changed"
+            expexted_dict[i] = exp_result
+            actual_dict[i] = tx["error"]
+        self.unit.assertDictEqual(expexted_dict, actual_dict, 'Dictionaries is different')
+
 
     def get_metrics(self, ecosystem_num, metric_name):
         # get metrics count
         res = actions.get_list(self.url, "metrics", self.token)
         i = 0
         while i < len(res['list']):
-            if (int(res['list'][i]['key']) == int(ecosystem_num)) and (str(res['list'][i]['metric']) == str(metric_name)):
+            if (int(res['list'][i]['key']) == int(ecosystem_num)) and (
+                    str(res['list'][i]['metric']) == str(metric_name)):
                 return res['list'][i]['value']
             i += 1
 
     def test_z1_db_select_metrics_min(self):
-         # func generate contract which return block_id and increment count blocks
+        # func generate contract which return block_id and increment count blocks
         def wait_block_id(old_block_id, limit):
             while True:
                 if old_block_id == limit:
@@ -198,14 +393,14 @@ class TestSimvolio():
                                                self.token)
                 tx = actions.tx_status(self.url, self.wait, result, self.token)
                 current_block_id = int(tx["blockid"])
-                self.unit.assertGreater(current_block_id, 0, "BlockId is not generated: " +\
+                self.unit.assertGreater(current_block_id, 0, "BlockId is not generated: " + \
                                         str(tx))
                 old_block_id = current_block_id
 
         # generate contract which return count blocks in blockchain
         contrac_name = tools.generate_random_name()
-        value = "contract con_" + contrac_name +\
-         " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
+        value = "contract con_" + contrac_name + \
+                " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
         data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
         result = actions.call_contract(self.url, self.pr_key, "NewContract", data, self.token)
         tx = actions.tx_status(self.url, self.wait, result, self.token)
@@ -308,7 +503,7 @@ class TestSimvolio():
         self.create_contract(outer_code)
         data = {}
         res = self.call(outer_name, data)
-        must_be = "[@1" + outer_name + " @1" + inner_name +"]"
+        must_be = "[@1" + outer_name + " @1" + inner_name + "]"
         self.unit.assertEqual(must_be, res["result"], "test_sys_var_stack is failed!")
 
     def test_get_history_row_menu(self):
