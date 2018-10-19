@@ -69,11 +69,11 @@ class TestCost():
         status = actions.tx_status(self.conf[0]["url"], self.wait, result, token_creater)
 
     def is_commissions_in_history(self, node_commision, id_from, platform_commission, node):
-        is_node_commission = db.is_commission_in_history(self.conf[0]["db"], id_from,
-                                                       self.conf[node]["keyID"],
+        is_node_commission = db.is_commission_in_history(self.conf[1]["url"], self.token,
+                                                         id_from, self.conf[node]["keyID"],
                                                        node_commision)
-        is_platform_commission = db.is_commission_in_history(self.conf[0]["db"], id_from,
-                                                           self.conf[0]["keyID"],
+        is_platform_commission = db.is_commission_in_history(self.conf[1]["url"], self.token,
+                                                             id_from, self.conf[0]["keyID"],
                                                            platform_commission)
         if is_node_commission and is_platform_commission:
             return True

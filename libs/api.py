@@ -6,10 +6,7 @@ from genesis_blockchain_tools.crypto import get_public_key
 
 def call_get_api(url, data, token):
     resp = requests.get(url, params=data, headers={"Authorization": token})
-    if resp.status_code == 200:
-        return resp.json()
-    else:
-        return None
+    return resp.json()
 
 
 def call_get_api_with_full_response(url, data, token):
@@ -166,11 +163,10 @@ def list(url, token, name, limit=25, offset=0, columns=''):
         'limit': limit,
         'offset': offset,
     }
+    print ('name', name)
     if columns:
         data['columns'] = columns
-    endpoint = '/list/{}'.format(
-        name,
-    )
+    endpoint = '/list/' + name
     url += endpoint
     return call_get_api(url, data, token)
 

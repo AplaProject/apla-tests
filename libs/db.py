@@ -44,19 +44,8 @@ def is_count_tx_in_block(url, token, max_block_id, count_tx):
                return False
     return True
 
-#api
-#Returns list of all ecosystem tables
-#can be changed to api.tables
-def get_ecosys_tables1(db):
-    request = "select table_name from INFORMATION_SCHEMA.TABLES WHERE table_schema='public' AND table_name LIKE '1_%'"
-    tables = submit_query(request, db)
-    list = []
-    i = 0
-    while i < len(tables):
-        list.append(tables[i][0])
-        i = i + 1
-    return list
 
+#api
 def get_ecosys_tables(url, token):
     tables = api.tables(url, token, 100)['list']
     list = []
@@ -71,12 +60,6 @@ def get_count_table(db, table):
     request = "SELECT count(*) FROM \"" + table + "\""
     return submit_query(request, db)
 
-#protypo
-#can be changed to actions.get_object_id
-def get_founder_id(db):
-    request = "SELECT value FROM \"1_parameters\" WHERE name = 'founder_account'"
-    result = submit_query(request, db)
-    return result[0][0]
 
 #system_contracts
 def get_export_app_data(db, app_id, member_id):
@@ -164,25 +147,14 @@ def get_max_id_from_table(db, table):
     return result[0][0]
 
 #cost
-def is_commission_in_history(db, id_from, id_to, summ):
-    request = "select * from \"1_history\" WHERE sender_id=" + id_from + \
-                   " AND recipient_id=" + str(id_to) + " AND amount=" + str(summ)
-    rec = submit_query(request, db)
-    if len(rec) > 0:
-        return True
-    else:
-        return False
-
-def is_commission_in_history_new(db_host, db_name, login, password, id_from, id_to, summ):
-    connect = psycopg2.connect(host=db_host, dbname=db_name, user=login, password=password)
-    cursor = connect.cursor()
-    cursor.execute("select * from \"1_history\" WHERE sender_id=" + id_from +\
-                 " AND recipient_id=" + str(id_to) + " AND amount=" + str(summ))
-    rec = cursor.fetchall()
-    if len(rec) > 0:
-        return True
-    else:
-        return False
+def is_commission_in_history(url, token, id_from, id_to, summ):
+    table = api.list(url, token, 'history')
+    print('table', table)
+    for item in table['list']:
+        if item['sender_id'] == str(id_from) and item['recipient_id'] == str(id_to):
+            if item['amount'] == str(summ):
+                return True
+    return False
 
 #rollback2
 def get_count_DB_objects_from_DB(dbHost, dbName, login, password):
