@@ -1227,7 +1227,7 @@ class TestSystemContracts():
         data = {}
         res_export = self.call("Export", data)
         founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
-        export_app_data = db.get_export_app_data(self.db, appID, founder_id)
+        export_app_data = db.get_export_app_data(self.url, self.token, appID, founder_id)
         json_app = str(export_app_data, encoding='utf-8')
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
         with open(path, 'w', encoding='UTF-8') as f:
@@ -1252,7 +1252,7 @@ class TestSystemContracts():
 
     def test_ei4_Import(self):
         founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
-        import_app_data = db.get_import_app_data(self.db, founder_id)
+        import_app_data = db.get_import_app_data(self.url, self.token, founder_id)
         import_app_data = import_app_data['data']
         contract_name = "Import"
         data = [{"contract": contract_name,

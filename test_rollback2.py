@@ -10,12 +10,8 @@ class TestRollback2():
         self.unit = unittest.TestCase()
         self.conf = tools.read_config("main")
         db_conf = self.conf["db"]
-        db_host = db_conf['dbHost']
-        db_name = db_conf['dbName']
-        db_login = db_conf['login']
-        db_password = db_conf['pass']
         # Get from file all tables state
-        db_information = db.get_count_DB_objects_from_DB(db_host, db_name, db_login, db_password)
+        db_information = db.get_count_DB_objects_from_DB(db_conf)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'r') as dbF:
             data = dbF.read()

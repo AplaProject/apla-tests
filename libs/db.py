@@ -55,17 +55,20 @@ def get_ecosys_tables(url, token):
 
 
 #system_contracts
-def get_export_app_data(db, app_id, member_id):
-    request = "SELECT data as TEXT FROM \"1_binaries\" WHERE name = 'export' AND app_id = " + str(
-        app_id) + " AND member_id = " + str(member_id)
-    result = submit_query(request, db)
-    return result[0][0]
+def get_export_app_data(url, token, app_id, member_id):
+    result = api.list(url, token, 'binaries')
+    for item in result['list']:
+        if item['name'] == 'export' and item['app_id'] == str(app_id) and item['member_id'] == str(member_id):
+            return True
+    return False
 
 #system_contracts
-def get_import_app_data(db, member_id):
-    request = "SELECT value FROM \"1_buffer_data\" WHERE key = 'import' AND member_id = " + str(member_id)
-    result = submit_query(request, db)
-    return result[0][0]
+def get_import_app_data(url, token, member_id):
+    result = api.list(url, token, 'buffer_data')
+    for item in result['list']:
+        if item['key'] == 'import' and item['member_id'] == str(member_id):
+            return True
+    return False
 
 #block_chain compare_nodes
 def get_count_DB_objects(url, token):
@@ -150,19 +153,17 @@ def is_commission_in_history(url, token, id_from, id_to, summ):
     return False
 
 #rollback2
-def get_count_DB_objects_from_DB(dbHost, dbName, login, password):
+def get_count_DB_objects_from_DB(db):
     tablesCount = {}
-    tables = get_ecosystem_tables_from_DB(dbHost, dbName, login, password)
+    tables = get_ecosystem_tables_from_DB(db)
     for table in tables:
-        tablesCount[table[2:]] = get_count_table_from_DB(dbHost, dbName, login, password, table)
+        tablesCount[table[2:]] = get_count_table_from_DB(db, table)
     return tablesCount
 
 #rollback2
-def get_ecosystem_tables_from_DB(dbHost, dbName, login, password):
-    connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
-    cursor = connect.cursor()
-    cursor.execute("select table_name from INFORMATION_SCHEMA.TABLES WHERE table_schema='public' AND table_name LIKE '1_%'")
-    tables = cursor.fetchall()
+def get_ecosystem_tables_from_DB(db):
+    query = "select table_name from INFORMATION_SCHEMA.TABLES WHERE table_schema='public' AND table_name LIKE '1_%'"
+    tables = submit_query(query, db)
     list = []
     i = 0
     while i < len(tables):
@@ -171,8 +172,6 @@ def get_ecosystem_tables_from_DB(dbHost, dbName, login, password):
     return list
 
 #rollback2
-def get_count_table_from_DB(dbHost, dbName, login, password, table):
-    connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
-    cursor = connect.cursor()
-    cursor.execute("SELECT count(*) FROM \"" + table + "\"")
-    return cursor.fetchall()[0][0]
+def get_count_table_from_DB(db, table):
+    query = "SELECT count(*) FROM \"" + table + "\""
+    return submit_query(query, db)[0][0]
