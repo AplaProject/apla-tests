@@ -386,7 +386,7 @@ class TestSimvolio():
             while True:
                 if old_block_id == limit:
                     break
-                contracName = tools.generate_random_name()
+                contrac_name = tools.generate_random_name()
                 value = "contract con_" + contrac_name + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
                 data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
                 result = actions.call_contract(self.url, self.pr_key, "NewContract", data,
