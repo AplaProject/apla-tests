@@ -133,7 +133,8 @@ class TestSystemContracts():
         res = self.call("TokensSend", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        self.unit.assertTrue(db.is_commission_in_history(self.db, self.config[0]["keyID"],
+        self.unit.assertTrue(db.is_commission_in_history(self.url, self.token,
+                                                         self.config[0]["keyID"],
                                                          ldata['key_id'], "1000"),
                                                          "No TokensSend resord in history")
 
