@@ -7,26 +7,17 @@ from genesis_blockchain_tools.crypto import get_public_key
 from genesis_blockchain_tools.contract import Contract
 from libs import api
 
-def get_uid(url):
-    resp = requests.get(url + '/getuid')
-    result = resp.json()
-    return result['token'], result['uid']
 
 def login(url, pr_key, role=0, ecosystem=1):
-    token, uid = get_uid(url)
-    signature = sign(pr_key, "LOGIN" + uid)
-    pubkey = get_public_key(pr_key)
-    full_token = 'Bearer ' + token
-    data = {'pubkey': pubkey, 'signature': signature, "role_id": role, "ecosystem": ecosystem}
-    head = {'Authorization': full_token}
-    resp = requests.post(url + '/login', params=data, headers=head)
-    res = resp.json()
-    result = {}
-    result["uid"] = uid
-    result["jwtToken"] = 'Bearer ' + res["token"]
-    result["pubkey"] = pubkey
-    result["address"] = res["address"]
-    result["key_id"] = res["key_id"]
+    token, uid = api.getuid(url)
+    result = api.login(
+        url=url,
+        token=token,
+        uid=uid,
+        private_key=pr_key,
+        role_id=role,
+        ecosystem=ecosystem
+    )
     return result
 
 
