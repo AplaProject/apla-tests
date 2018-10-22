@@ -121,9 +121,8 @@ def call_post_api(url, data, token):
     resp = requests.post(url, data=data,  headers={"Authorization": token})
     return resp.json()
 
-def get_count(url, type, token):
-    end_point = url + "/list/" + type
-    res = call_get_api(end_point, "", token)
+def get_count(url, name, token):
+    res = api.list(url, token, name, limit=1)
     return res["count"]
 
 def find_id_by_name(url, token, table, name):
@@ -211,7 +210,8 @@ def is_count_tx_in_block(url, token, max_block_id, count_tx):
 
 #api
 def get_ecosys_tables(url, token):
-    tables = api.tables(url, token, 100)['list']
+    count = get_count(url, 'tables', token)
+    tables = api.tables(url, token, limit=count)['list']
     list = []
     for table in tables:
         list.append(table['name'])
