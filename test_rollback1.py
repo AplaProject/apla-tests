@@ -364,7 +364,7 @@ class TestRollback1():
         with open(file, 'w') as fconf:
             json.dump(db_user_table_info, fconf)
         # Save to file all tables state
-        db_information = db.get_count_DB_objects(self.url, self.token)
+        db_information = actions.get_count_DB_objects(self.url, self.token)
         file = os.path.join(os.getcwd(), "dbState.json")
         with open(file, 'w') as fconf:
             json.dump(db_information, fconf)
