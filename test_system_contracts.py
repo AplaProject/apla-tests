@@ -1227,10 +1227,9 @@ class TestSystemContracts():
         res_export = self.call("Export", data)
         founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
         export_app_data = actions.get_export_app_data(self.url, self.token, appID, founder_id)
-        json_app = str(export_app_data, encoding='utf-8')
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
         with open(path, 'w', encoding='UTF-8') as f:
-            data = f.write(json_app)
+            data = f.write(export_app_data)
         if os.path.exists(path):
             file_exist = True
         else:
@@ -1252,7 +1251,6 @@ class TestSystemContracts():
     def test_ei4_Import(self):
         founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
         import_app_data = actions.get_import_app_data(self.url, self.token, founder_id)
-        import_app_data = import_app_data['data']
         contract_name = "Import"
         data = [{"contract": contract_name,
                  "params": import_app_data[i]} for i in range(len(import_app_data))]

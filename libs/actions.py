@@ -239,7 +239,8 @@ def get_export_app_data(url, token, app_id, member_id):
     result = api.list(url, token, 'binaries')
     for item in result['list']:
         if item['name'] == 'export' and item['app_id'] == str(app_id) and item['member_id'] == str(member_id):
-            return item['data']
+            print(item['data'])
+            return str(item['data'])
     return None
 
 #system_contracts
@@ -247,8 +248,9 @@ def get_import_app_data(url, token, member_id):
     result = api.list(url, token, 'buffer_data')
     for item in result['list']:
         if item['key'] == 'import' and item['member_id'] == str(member_id):
+            print(item['value'])
             return item['value']
-    return Nine
+    return None
 
 #block_chain compare_nodes
 def get_count_DB_objects(url, token):
