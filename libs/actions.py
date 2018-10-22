@@ -22,8 +22,7 @@ def login(url, pr_key, role=0, ecosystem=1):
 
 
 def get_schema(url, name, jvtToken):
-    resp = requests.get(url + '/contract/' + name, headers={"Authorization": jvtToken})
-    return resp.json()
+    return api.contract(url, jvtToken, name)
 
 
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
