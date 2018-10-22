@@ -160,7 +160,6 @@ def list(url, token, name, limit=25, offset=0, columns=''):
         'limit': limit,
         'offset': offset,
     }
-    print ('name', name)
     if columns:
         data['columns'] = columns
     endpoint = '/list/' + name

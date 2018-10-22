@@ -88,8 +88,13 @@ def get_block_gen_node(db, block):
     return nodes[0][0]
 
 #contract_func
-#may be it can be changed to db.table[count]
 def get_max_id_from_table(db, table):
     request = "SELECT MAX(id) FROM \"" + table + "\""
+    result = submit_query(request, db)
+    return result[0][0]
+
+#system_contracts
+def get_import_app_data(db, member_id):
+    request = "SELECT value FROM \"1_buffer_data\" WHERE key = 'import' AND member_id = " + str(member_id)
     result = submit_query(request, db)
     return result[0][0]

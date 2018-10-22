@@ -3,7 +3,7 @@ import json
 import os
 import time
 
-from libs import actions, tools
+from libs import actions, tools, db
 
 
 class TestSystemContracts():
@@ -1250,8 +1250,11 @@ class TestSystemContracts():
 
     def test_ei4_Import(self):
         founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
-        import_app_data = actions.get_import_app_data(self.url, self.token, founder_id)
+        import_app_data = db.get_import_app_data(self.db, founder_id)
+        print(import_app_data)
+        app_data = import_app_data['data']
+        print(app_data)
         contract_name = "Import"
         data = [{"contract": contract_name,
-                 "params": import_app_data[i]} for i in range(len(import_app_data))]
+                 "params": app_data[i]} for i in range(len(app_data))]
         self.callMulti(contract_name, data, 60)

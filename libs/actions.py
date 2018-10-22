@@ -239,7 +239,6 @@ def get_export_app_data(url, token, app_id, member_id):
     result = api.list(url, token, 'binaries')
     for item in result['list']:
         if item['name'] == 'export' and item['app_id'] == str(app_id) and item['member_id'] == str(member_id):
-            print(item['data'])
             return str(item['data'])
     return None
 
@@ -248,7 +247,6 @@ def get_import_app_data(url, token, member_id):
     result = api.list(url, token, 'buffer_data')
     for item in result['list']:
         if item['key'] == 'import' and item['member_id'] == str(member_id):
-            print(item['value'])
             return item['value']
     return None
 
@@ -292,7 +290,6 @@ def is_wallet_created(url, token, id):
 #cost
 def is_commission_in_history(url, token, id_from, id_to, summ):
     table = api.list(url, token, 'history')
-    print('table', table)
     for item in table['list']:
         if item['sender_id'] == str(id_from) and item['recipient_id'] == str(id_to):
             if item['amount'] == str(summ):
