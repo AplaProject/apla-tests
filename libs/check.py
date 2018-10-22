@@ -10,7 +10,7 @@ def compare_nodes(config):
     while i < nodes:
         data = actions.login(config[i]["url"], config[i]['private_key'])
         token = data["jwtToken"]
-        amounts.append(db.get_user_token_amounts(config[i]["url"], token))
+        amounts.append(actions.get_user_token_amounts(config[i]["url"], token))
         max_block_id.append(actions.get_max_block_id(config[i]["url"], token))
         i += 1   
 

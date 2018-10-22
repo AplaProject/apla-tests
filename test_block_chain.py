@@ -38,7 +38,7 @@ class TestBlockChain():
     def test_block_chain(self):
         ts_count = 30
         i = 1
-        amounts_b = db.get_user_token_amounts(self.config1["url"], self.token)
+        amounts_b = actions.get_user_token_amounts(self.config1["url"], self.token)
         print('amounts_b', amounts_b)
         sum_amounts_before = sum(amounts_b)
         while i < ts_count:
@@ -48,7 +48,7 @@ class TestBlockChain():
             time.sleep(1)
         time.sleep(120)
 
-        amounts_after = db.get_user_token_amounts(self.config1["url"], self.token)
+        amounts_after = actions.get_user_token_amounts(self.config1["url"], self.token)
         expect = {"isTheSameNodes": True, "isTheSameDB": True,
                       "sumAmounts": sum_amounts_before}
         dict = {"isTheSameNodes": check.compare_nodes(self.full_config),
@@ -61,14 +61,14 @@ class TestBlockChain():
         id = self.new_menu(self.config1["url"], self.config1['private_key'])
         time.sleep(10)
         i = 1
-        amounts_b = db.get_user_token_amounts(self.config1["url"], self.token)
+        amounts_b = actions.get_user_token_amounts(self.config1["url"], self.token)
         sum_amounts_before = sum(amounts_b)
         while i < ts_count:
             self.edit_menu(self.config1["url"], self.config1['private_key'], id)
             i = i + 1
         time.sleep(120)
         
-        amounts_after = db.get_user_token_amounts(self.config1["url"], self.token)
+        amounts_after = actions.get_user_token_amounts(self.config1["url"], self.token)
         expect = {"isTheSameNodes": True, "isTheSameDB": True,
                       "sumAmounts": sum_amounts_before}
         dict = {"isTheSameNodes": check.compare_nodes(self.full_config),

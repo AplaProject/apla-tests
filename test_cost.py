@@ -103,7 +103,7 @@ class TestCost():
         balance_runner_a = actions.get_balance_by_id(self.conf[1]["url"], self.token,
                                                  data_runner['key_id'])
         print('wallet_id', wallet_id)
-        balance_contract_owner_a = db.get_balance_by_id(self.conf[1]["url"], self.token,
+        balance_contract_owner_a = actions.get_balance_by_id(self.conf[1]["url"], self.token,
                                                         wallet_id)
         node_commission = NODE_COMISSION
         platforma_commission = PLATFORM_COMISSION
