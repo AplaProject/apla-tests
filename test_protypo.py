@@ -2,7 +2,7 @@ import unittest
 import json
 import os
 
-from libs import actions, tools, db
+from libs import actions, tools
 
 
 class TestPrototipo():
@@ -10,7 +10,6 @@ class TestPrototipo():
     pages = tools.read_fixtures("pages")
     url = conf[0]["url"]
     pr_key = conf[0]['private_key']
-    db2 = conf[0]["db"]
 
     @classmethod
     def setup_class(self):

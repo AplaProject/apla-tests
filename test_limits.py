@@ -2,7 +2,7 @@ import unittest
 import json
 import time
 
-from libs import actions, tools, db, api
+from libs import actions, tools, api
 
 class TestLimits():
     conf = tools.read_config("nodes")

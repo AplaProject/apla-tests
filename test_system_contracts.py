@@ -3,7 +3,7 @@ import json
 import os
 import time
 
-from libs import actions, db, tools
+from libs import actions, tools
 
 
 class TestSystemContracts():
@@ -11,7 +11,6 @@ class TestSystemContracts():
     url = config[0]["url"]
     wait = tools.read_config("test")["wait_tx_status"]
     pr_key = config[0]['private_key']
-    db = config[0]["db"]
     data = actions.login(url, pr_key, 0)
     token = data["jwtToken"]
     keys = tools.read_fixtures("keys")

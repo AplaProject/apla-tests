@@ -4,7 +4,7 @@ import json
 import os
 import time
 
-from libs import actions, tools, db
+from libs import actions, tools
 
 class TestApi():
     config = tools.read_config("nodes")

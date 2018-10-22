@@ -2,15 +2,13 @@ import unittest
 import time
 from builtins import sum
 
-from libs import actions, tools, db, check
+from libs import actions, tools, check
 
 class TestBlockChain():
     full_config = tools.read_config("nodes")
     nodes = len(full_config)
     config1 = full_config[0]
     config2 = full_config[1]
-    db1 = config1["db"]
-    db2 = config2["db"]
 
     def setup_class(self):
         self.uni = unittest.TestCase()
