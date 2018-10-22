@@ -9,6 +9,7 @@ from libs import actions, tools, db
 class TestSystemContracts():
     config = tools.read_config("nodes")
     url = config[0]["url"]
+    db = config[0]["db"]
     wait = tools.read_config("test")["wait_tx_status"]
     pr_key = config[0]['private_key']
     data = actions.login(url, pr_key, 0)
@@ -1251,10 +1252,8 @@ class TestSystemContracts():
     def test_ei4_Import(self):
         founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
         import_app_data = db.get_import_app_data(self.db, founder_id)
-        print(import_app_data)
-        app_data = import_app_data['data']
-        print(app_data)
+        import_app_data = import_app_data['data']
         contract_name = "Import"
         data = [{"contract": contract_name,
-                 "params": app_data[i]} for i in range(len(app_data))]
+                 "params": import_app_data[i]} for i in range(len(import_app_data))]
         self.callMulti(contract_name, data, 60)
