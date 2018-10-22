@@ -236,17 +236,12 @@ def contract(url, token, name):
 def send_tx(url, token, tx_bin_data):
     endpoint = '/sendTx'
     url += endpoint
-    print(url)
-    print('***')
     resp = requests.post(
         endpoint,
         files=tx_bin_data,
         headers={'Authorization': token}
     )
-    print('resp')
-    print(resp)
     result = resp.json()
-    print(result)
     return result
 
 
