@@ -4,7 +4,7 @@ import json
 import os
 import time
 
-from libs import actions, tools
+from libs import actions, tools, api
 
 class TestApi():
     config = tools.read_config("nodes")
@@ -39,10 +39,12 @@ class TestApi():
         for key in keys:
             self.unit.assertIn(key, result)
         return result
-            
+
+
     def get_error_api(self, end_point, data):
         end = self.url + end_point
         result = actions.call_get_api(end, data, self.token)
+        print(result)
         error = result["error"]
         message = result["msg"]
         return error, message
@@ -52,128 +54,143 @@ class TestApi():
         resp = self.assert_tx_in_block(resp, self.token)
         return resp
 
+    def check_result(self, result, keys, error='', msg=''):
+        for key in keys:
+            self.unit.assertIn(key, result)
+        if 'error' and 'msg' in result:
+            expected = dict(
+                error=error,
+                msg=msg,
+            )
+            actual = dict(
+                error=result['error'],
+                msg=result['msg']
+            )
+            self.unit.assertDictEqual(expected, actual, 'Incorrect error ' + str(result))
+        return result
+
+
+
     def test_balance(self):
-        asserts = ["amount", "money"]
-        self.check_get_api('/balance/' + self.data['address'], "", asserts)
-        
+        asserts = ['amount', 'money']
+        res = api.balance(self.url, self.token, self.data['address'])
+        self.check_result(res, asserts)
+
+
     def test_balance_incorrect_wallet(self):
-        wallet = "0000-0990-3244-5453-2310"
-        msg = "Wallet " + wallet + " is not valid"
-        error, message = self.get_error_api('/balance/' + wallet, "")
-        self.unit.assertEqual(error, "E_INVALIDWALLET", "Incorrect error")
+        wallet = '0000-0990-3244-5453-2310'
+        asserts = ['error', 'msg']
+        res = api.balance(self.url, self.token, wallet)
+        error = 'E_INVALIDWALLET'
+        msg = 'Wallet {} is not valid'.format(wallet)
+        self.check_result(res, asserts, error, msg)
+
 
     def test_get_ecosystem(self):
-        asserts = ["number"]
-        self.check_get_api("/ecosystems/", "", asserts)
+        asserts = ['number']
+        res = api.ecosystems(self.url, self.token)
+        self.check_result(res, asserts)
 
-    def test_get_param_ecosystem(self):
-        asserts = ["list"]
-        ecosys_num = "1"
-        self.check_get_api("/ecosystemparams/?ecosystem="+ecosys_num, "", asserts)
 
     def test_get_param_current_ecosystem(self):
-        asserts = ["list"]
-        self.check_get_api("/ecosystemparams/", "", asserts)
+        asserts = ['list']
+        res = api.ecosystemparams(self.url, self.token)
+        self.check_result(res, asserts)
+
 
     def test_get_params_ecosystem_with_names(self):
-        asserts = ["list"]
-        names = "founder_account,new_table,changing_tables"
-        res = self.check_get_api("/ecosystemparams/?names="+names, "", asserts)
+        asserts = ['list']
+        names = 'founder_account,new_table,changing_tables'
+        res = api.ecosystemparams(self.url, self.token, names=names)
+        self.check_result(res, asserts)
         must_be = [
-            "3",
-            "founder_account",
-            "new_table",
-            "changing_tables"
+            '3',
+            'founder_account',
+            'new_table',
+            'changing_tables',
         ]
         actual = [
-            str(len(res["list"])),
-            res["list"][0]["name"],
-            res["list"][1]["name"],
-            res["list"][2]["name"]
+            str(len(res['list'])),
+            res['list'][0]['name'],
+            res['list'][1]['name'],
+            res['list'][2]['name'],
         ]
         must_be.sort()
         actual.sort()
-        self.unit.assertEqual(actual, must_be, "test_get_params_ecosystem_with_names is failed!")
+        self.unit.assertEqual(actual, must_be, 'test_get_params_ecosystem_with_names is failed!')
+
 
     def test_get_parametr_of_current_ecosystem(self):
-        asserts = ["id", "name", "value", "conditions"]
-        data = {}
-        self.check_get_api("/ecosystemparam/founder_account/", data, asserts)
-        
+        asserts = ['id', 'name', 'value', 'conditions']
+        param = 'founder_account'
+        res = api.ecosystemparam(self.url, self.token, name=param)
+        self.check_result(res, asserts)
+
+
     def test_get_incorrect_ecosys_parametr(self):
-        asserts = ""
-        error, message = self.get_error_api("/ecosystemparam/incorrectParam/", asserts)
-        self.unit.assertEqual(error, "E_PARAMNOTFOUND", "Incorrect error: " + error + message)
+        param = 'incorrectParam'
+        asserts = ['error', 'msg']
+        res = api.ecosystemparam(self.url, self.token, name=param)
+        error = 'E_PARAMNOTFOUND'
+        msg = 'Parameter {} has not been found'.format(param)
+        self.check_result(res, asserts, error, msg)
 
     def test_get_tables_of_current_ecosystem(self):
-        asserts = ["list", "count"]
-        data = {}
-        self.check_get_api("/tables", data, asserts)
+        asserts = ['list', 'count']
+        res = api.tables(self.url, self.token)
+        self.check_result(res, asserts)
 
     def test_get_table_information(self):
         dict_names = {}
         dict_names_api = {}
-        data = {}
         tables = actions.get_ecosys_tables(self.url, self.token)
         for table in tables:
-            if "table" not in table:
-                table_info = actions.call_get_api(self.url + "/table/" + table, data, self.token)
-                if "name" in str(table_info):
+            if 'table' not in table:
+                table_info = api.table(self.url, self.token, table)
+                if 'name' in table_info:
                     dict_names[table] = table
-                    dict_names_api[table] = table_info["name"]
+                    dict_names_api[table] = table_info['name']
                 else:
-                    self.unit.fail("Answer from API /table/" + table + " is: " + str(table_info))
+                    self.unit.fail('Answer from API /table/' + table + ' is: ' + str(table_info))
         self.unit.assertDictEqual(dict_names_api, dict_names,
-                             "Any of API tableInfo gives incorrect data")
-        
+                             'Any of API tableInfo gives incorrect data')
+
     def test_get_incorrect_table_information(self):
-        table = "tab"
-        data = {}
-        error, message = self.get_error_api("/table/" + table, data)
-        err = "E_TABLENOTFOUND"
-        msg = "Table " + table + " has not been found"
-        self.unit.assertEqual(err, error, "Incorrect error")
-        self.unit.assertEqual(message, msg, "Incorrect error massege")
+        table = 'tab'
+        asserts = ['error', 'msg']
+        res = api.table(self.url, self.token, table)
+        error = 'E_TABLENOTFOUND'
+        msg = 'Table ' + table + ' has not been found'
+        self.check_result(res, asserts, error, msg)
+
 
     def test_get_table_data(self):
-        dictCount = {}
-        dictCountTable = {}
-        data = {}
+        asserts = ['count', 'list']
         tables = actions.get_ecosys_tables(self.url, self.token)
         for table in tables:
-            tableData = actions.call_get_api(self.url + "/list/" + table, data, self.token)
-            msg = "Table " + table + " has not list"
-            self.unit.assertIn('list', tableData, msg)      
-            
-        
-    def test_get_incorrect_table_data(self):
-        table = "tab"
-        data = {}
-        error, message = self.get_error_api("/list/" + table, data)
-        err = "E_TABLENOTFOUND"
-        msg = "Table " + table + " has not been found"
-        self.unit.assertEqual(err, error, "Incorrect error")
-        self.unit.assertEqual(message, msg, "Incorrect error massege")
+            table_data = api.list(self.url, self.token, table)
+            self.check_result(table_data, asserts)
+
 
     def test_get_table_data_row(self):
-        asserts = ["value"]
-        data = {}
-        self.check_get_api("/row/contracts/2", data, asserts)
-        
+        asserts = ['value']
+        res = api.row(self.url, self.token, 'contracts', 2)
+        self.check_result(res, asserts)
+
     def test_get_incorrect_table_data_row(self):
-        table = "tab"
-        data = {}
-        error, message = self.get_error_api("/row/" + table + "/2", data)
-        err = "E_QUERY"
-        msg = "DB query is wrong"
-        self.unit.assertEqual(err, error, "Incorrect errror")
-        self.unit.assertEqual(msg, message, "Incorrect error message")
+        table = 'tab'
+        row = 2
+        asserts = ['error', 'msg']
+        res = api.row(self.url, self.token, table, row)
+        error = 'E_QUERY'
+        msg = 'DB query is wrong'
+        self.check_result(res, asserts, error, msg)
 
     def test_get_contract_information(self):
-        asserts = ["name"]
-        data = {}
-        self.check_get_api("/contract/MainCondition", data, asserts)
-        
+        asserts = ['id', 'name', 'address']
+        res = api.contract(self.url, self.token, 'MainCondition')
+        self.check_result(res, asserts)
+
     def test_get_incorrect_contract_information(self):
         contract = "contract"
         data = {}
@@ -208,7 +225,7 @@ class TestApi():
         dict_cur = {"default" : p_content['tree'], "ru": ru_p_content['tree'],
                   "fr": fr_p_content['tree'], "de": de_p_content['tree'], "pe": pe_p_content['tree']}
         self.unit.assertDictEqual(dict_cur, dict_exp, "One of langRes is faild")
-        
+
     def test_content_lang_after_edit(self):
         name_lang = "Lang_" + tools.generate_random_name()
         data = {"Name": name_lang,
@@ -343,7 +360,7 @@ class TestApi():
         asserts = ["."]
         data = ""
         self.check_get_api("/version", data, asserts)
-        
+
     def test_get_systemparams_all_params(self):
         asserts = ["list"]
         res = self.check_get_api("/systemparams", "", asserts)
@@ -447,7 +464,7 @@ class TestApi():
         status = actions.tx_status(self.url, self.wait, resp, self.token)
         self.unit.assertGreater(int(status["blockid"]), 0,
                            "BlockId is not generated: " + str(status))
-        
+
     def is_node_owner_false(self):
         keys = tools.read_config("keys")
         pr_key2 = keys["key1"]
@@ -459,7 +476,7 @@ class TestApi():
         self.unit.assertEqual(status["errmsg"]["error"],
                          "Sorry, you do not have access to this action.",
                          "Incorrect message: " + str(status))
-        
+
     def test_login(self):
         keys = tools.read_fixtures("keys")
         data1 = actions.login(self.url, keys["key5"], 0)
@@ -467,7 +484,7 @@ class TestApi():
         conf = tools.read_config("nodes")
         res = actions.is_wallet_created(self.url, self.token, data1["key_id"])
         self.unit.assertTrue(res, "Wallet for new user didn't created")
-        
+
     def test_login2(self):
         is_one = False
         keys = tools.read_fixtures("keys")
