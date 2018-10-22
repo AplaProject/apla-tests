@@ -237,7 +237,7 @@ def send_tx(url, token, tx_bin_data):
     endpoint = '/sendTx'
     url += endpoint
     resp = requests.post(
-        endpoint,
+        url,
         files=tx_bin_data,
         headers={'Authorization': token}
     )
@@ -246,7 +246,7 @@ def send_tx(url, token, tx_bin_data):
 
 
 def tx_status(url, token, hashes):
-    hashes_data = json.dumps({'hashes': hashes})
+    hashes_data = json.dumps({'hashes': [hashes]})
     data = {'data': hashes_data}
     endpoint = '/txstatus'
     url += endpoint
