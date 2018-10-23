@@ -120,15 +120,6 @@ def get_count(url, name, token):
     res = api.list(url, token, name, limit=1)
     return res["count"]
 
-def find_id_by_name(url, token, table, name):
-    # get_list must have column 'name', else Error
-    answer_dict = get_list(url, table, token)['list']
-    for element in range(len(answer_dict)):
-        if answer_dict[element]['name'] == name:
-            return answer_dict[element]['id']
-        else:
-            return None
-
 def get_list(url, type, token):
     count = get_count(url, type, token)
     end_point = url + "/list/" + type + "?limit=" + count
