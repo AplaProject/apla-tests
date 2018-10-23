@@ -96,12 +96,14 @@ def tx_status_multi(url, sleep_time, hshs, jvt_token):
     return jresp
 
 def get_application_id(url, name, token):
+    table = 'applications'
     id = None
-    endPoint = url + "/list/applications"
-    res = call_get_api(endPoint, "", token)
+    count = get_count(url, table, token)
+    res = api.list(url, token, table, limit=count)
     for app in res["list"]:
         if app["name"] == name:
             id = app["id"]
+            break
     return id
 
 def call_get_api(url, data, token):
@@ -122,23 +124,21 @@ def get_count(url, name, token):
 
 def get_list(url, type, token):
     count = get_count(url, type, token)
-    end_point = url + "/list/" + type + "?limit=" + count
-    res = call_get_api(end_point, "", token)
+    res = api.list(url, token, type, limit=count)
     return res
 
 def get_contract_id(url, name, token):
-    end_point = url + "/contract/" + name
-    res = call_get_api(end_point, "", token)
+    res = api.contract(url, token, name)
     return res["tableid"]
 
 
 def get_object_id(url, name, object, token):
     id = None
-    end_point = url + "/list/" + object + "?limit=1000"
-    res = call_get_api(end_point, "", token)
+    res = get_list(url, object, token)
     for object in res["list"]:
         if object["name"] == name:
             id = object["id"]
+            break
     return id
     
 
