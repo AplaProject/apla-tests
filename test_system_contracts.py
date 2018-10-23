@@ -377,7 +377,7 @@ class TestSystemContracts():
         res = self.call("NewMenu", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = actions.find_id_by_name(self.url, self.token, "menu", name)
+        count = actions.get_object_id(self.url, name, "menu", self.token)
         data_edit = {"Id": count, "Value": "ItemEdited", "Conditions": "true"}
         res = self.call("EditMenu", data_edit)
         self.unit.assertGreater(res["blockid"], 0,
@@ -400,7 +400,7 @@ class TestSystemContracts():
         res = self.call("NewMenu", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = actions.find_id_by_name(self.url, self.token, "menu", name)
+        count = actions.get_object_id(self.url, name, "menu", self.token)
         data_edit = {"Id": count, "Value": "ItemEdited", "Conditions": condition}
         ans = self.call("EditMenu", data_edit)
         msg = 'Condition ' + condition + ' is not allowed'
@@ -412,7 +412,7 @@ class TestSystemContracts():
         res = self.call("NewMenu", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = actions.find_id_by_name(self.url, self.token, "menu", name)
+        count = actions.get_object_id(self.url, name, "menu", self.token)
         data_edit = {"Id": count, "Value": "AppendedItem"}
         res = self.call("AppendMenu", data_edit)
         self.unit.assertGreater(res["blockid"], 0,
@@ -463,7 +463,7 @@ class TestSystemContracts():
         res = self.call("NewPage", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = actions.find_id_by_name(self.url, self.token, "pages", name)
+        count = actions.get_object_id(self.url, name, "pages", self.token)
         data_edit = {"Id": count,
                     "Value": "Good by page!", "Conditions": "true",
                     "Menu": "default_menu"}
@@ -482,7 +482,7 @@ class TestSystemContracts():
         res = self.call("NewPage", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = actions.find_id_by_name(self.url, self.token, "pages", name)
+        count = actions.get_object_id(self.url, name, "pages", self.token)
         data_edit = {"Id": count,
                     "Value": "Good by page!", "Conditions": "true",
                     "ValidateCount": 1, "Menu": "default_menu"}
@@ -510,7 +510,7 @@ class TestSystemContracts():
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         condition = "Tryam"
-        count = actions.find_id_by_name(self.url, self.token, "pages", name)
+        count = actions.get_object_id(self.url, name, "pages", self.token)
         data_edit = {"Id": count,
                     "Value": "Good by page!", "Conditions": condition,
                     "Menu": "default_menu"}
@@ -525,7 +525,7 @@ class TestSystemContracts():
         res = self.call("NewPage", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = actions.find_id_by_name(self.url, self.token, "pages", name)
+        count = actions.get_object_id(self.url, name, "pages", self.token)
         data_edit = {"Id": count,
                     "Value": "Good by!"}
         res = self.call("AppendPage", data_edit)
@@ -597,7 +597,7 @@ class TestSystemContracts():
         res = self.call("NewBlock", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        count = actions.find_id_by_name(self.url, self.token, "blocks", name)
+        count = actions.get_object_id(self.url, name, "blocks", self.token)
         condition = "tryam"
         data_edit = {"Id": count, "Value": "Good by!", "Conditions": condition}
         ans = self.call("EditBlock", data_edit)
