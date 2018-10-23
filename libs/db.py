@@ -81,6 +81,20 @@ def get_blockchain_hash(db, max_block_id):
         max_block_id) + " ORDER BY id) AS t"
     return submit_query(request, db)
 
+#block_chain
+def get_table_hash(db, table):
+    query = "select column_name from INFORMATION_SCHEMA.COLUMNS WHERE table_schema='public' AND table_name='" + table + "'"
+    columns = submit_query(query, db)
+    print(columns)
+    print(columns[0][0])
+    print(columns[1][0])
+    s_col = ''
+    for colum in columns:
+        print(colum[0])
+        s_col += 't.' + colum[0] + ', '
+    request = "SELECT md5(array_agg(md5((" + s_col[:-2] + ")::varchar))::varchar)  FROM (SELECT * FROM \"" + table + "\") AS t"
+    return submit_query(request, db)[0][0]
+
 #cost  
 def get_block_gen_node(db, block):
     request = "select node_position from \"block_chain\" WHERE id=" + str(block)

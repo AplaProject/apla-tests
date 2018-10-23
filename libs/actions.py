@@ -5,7 +5,7 @@ import time
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
 from genesis_blockchain_tools.contract import Contract
-from libs import api
+from libs import api, db
 
 def get_uid(url):
     resp = requests.get(url + '/getuid')
@@ -256,6 +256,13 @@ def get_count_DB_objects(url, token):
     list = api.tables(url, token)['list']
     for table in list:
         tables[table['name']] = table['count']
+    return tables
+
+def get_table_hashes(url, token, db_inf, ecos="1"):
+    tables = {}
+    list = api.tables(url, token)['list']
+    for table in list:
+        tables[table['name']] = db.get_table_hash(db_inf, ecos + "_" + table['name'])
     return tables
 
 
