@@ -184,8 +184,8 @@
     "asert": "[{\"k1\":1,\"k2\":2},{\"k1\":1,\"k2\":2}]"
   },
   "jsonDecode": {
-    "code": "{\n data {}\n conditions {}\n  action {\n var a string \n a = `[{\"k1\":\"1\",\"k2\":\"2\"},{\"k1\":\"1\",\"k2\":\"2\"}]` \n $result = JSONDecode(a)\n}\n }",
-    "asert": "[map[k1:1 k2:2] map[k1:1 k2:2]]"
+    "code": "{\n data {}\n conditions {}\n  action {\n var a string \n a = `[{\"k1\":\"1\"},{\"k2\":\"2\"}]` \n $result = JSONDecode(a)\n}\n }",
+    "asert": "[map[k1:1] map[k2:2]]"
   },
   "bytesToString": {
     "code": "{\n data {}\n conditions {} \n action { \n var s string \n s = BytesToString(StringToBytes(\"Success test StringToBytes and BytesToString functions!\")) \n $result = s \n}\n }",
