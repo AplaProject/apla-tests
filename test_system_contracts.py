@@ -122,7 +122,7 @@ class TestSystemContracts():
         newName = "ecosys_" + tools.generate_random_name()
         data = {"EcosystemID": id, "NewName": newName}
         res = self.call("EditEcosystemName", data)
-        self.unit.assertEqual("Ecosystem " + str(id) + " does not exist", res["error"])
+        self.unit.assertEqual("The ecosystem " + str(id) + " is not exist", res["error"])
 
     def test_money_transfer(self):
         ldata = actions.login(self.url, self.keys["key2"])
@@ -140,7 +140,7 @@ class TestSystemContracts():
 
     def test_money_transfer_incorrect_wallet(self):
         wallet = "0005-2070-2000-0006"
-        msg = 'Recipient ' + wallet + ' is not valid'
+        msg = 'The recipient ' + wallet + ' is not valid'
         data = {"Recipient_Account": wallet,
                 "Amount": "1000"}
         res = self.call("TokensSend", data)
@@ -177,7 +177,7 @@ class TestSystemContracts():
                            "BlockId is not generated: " + str(status))
 
     def test_new_contract_exists_name(self):
-        cont_name = 'sameCont'
+        cont_name = "cont_" + tools.generate_random_name()
         hash1 = contract.new_contract(self.url, self.pr_key, self.token, name=cont_name)
         status1 = actions.tx_status(self.url, self.wait, hash1, self.token)
         hash2 = contract.new_contract(self.url, self.pr_key, self.token, name=cont_name)
@@ -188,7 +188,7 @@ class TestSystemContracts():
     def test_new_contract_without_name(self):
         hash = contract.new_contract(self.url, self.pr_key, self.token, name='  ')
         status = actions.tx_status(self.url, self.wait, hash, self.token)
-        self.unit.assertIn("Contract name is missing", status["error"],
+        self.unit.assertIn("The contract name is missing", status["error"],
                       "Incorrect message: " + str(status))
 
     def test_new_contract_incorrect_condition(self):
@@ -224,7 +224,7 @@ class TestSystemContracts():
                  "Value": code, "Conditions": "true",
                  "WalletId": wallet}
         ans = self.call("EditContract", data2)
-        msg = "New owner " + wallet + " is invalid"
+        msg = "New owner " + wallet + " is not valid"
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract(self):
@@ -276,7 +276,7 @@ class TestSystemContracts():
         id = "99999"
         data = {"Id": id}
         ans = self.call("ActivateContract", data)
-        msg = "Contract " + id + " does not exist"
+        msg = "The contract " + id + " is not exist"
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_deactivate_contract(self):
@@ -294,7 +294,7 @@ class TestSystemContracts():
         id = "99999"
         data = {"Id": id}
         ans = self.call("DeactivateContract", data)
-        self.unit.assertEqual("Contract " + id + " does not exist",
+        self.unit.assertEqual("The contract " + id + " is not exist",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_parameter(self):
@@ -310,7 +310,7 @@ class TestSystemContracts():
         res = self.call("NewParameter", data)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
-        msg = "Parameter " + name + " already exists"
+        msg = "The parameter " + name + " is already exist"
         ans = self.call("NewParameter", data)
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
@@ -360,7 +360,7 @@ class TestSystemContracts():
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         ans = self.call("NewMenu", data)
-        self.unit.assertEqual("Menu " + name + " already exists",
+        self.unit.assertEqual("The menu " + name + " is already exist",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_menu_incorrect_condition(self):
@@ -390,7 +390,7 @@ class TestSystemContracts():
         id = "99999"
         data_edit = {"Id": id, "Value": "ItemEdited", "Conditions": "true"}
         ans = self.call("EditMenu", data_edit)
-        msg = "Item is not found"
+        msg = "The item is not found"
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_menu_incorrect_condition(self):
@@ -444,7 +444,7 @@ class TestSystemContracts():
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         ans = self.call("NewPage", data)
-        msg = "Page " + name + " already exists"
+        msg = "The page " + name + " is already exist"
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_page_incorrect_condition(self):
@@ -498,7 +498,7 @@ class TestSystemContracts():
         data_edit = {"Id": id, "Value": "Good by page!",
                     "Conditions": "true", "Menu": "default_menu"}
         ans = self.call("EditPage", data_edit)
-        self.unit.assertEqual('Item is not found',
+        self.unit.assertEqual('The item is not found',
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_page_incorrect_condition(self):
@@ -558,7 +558,7 @@ class TestSystemContracts():
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         ans = self.call("NewBlock", data)
-        self.unit.assertEqual("Block '" + name + "' is already exists",
+        self.unit.assertEqual("The block '" + name + "' is already exist",
                          ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_block_incorrect_condition(self):
@@ -574,7 +574,7 @@ class TestSystemContracts():
         id = "9999"
         data_edit = {"Id": id, "Value": "Good by!", "Conditions": "true"}
         ans = self.call("EditBlock", data_edit)
-        msg = "Item is not found"
+        msg = 'The item is not found'
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_block(self):
