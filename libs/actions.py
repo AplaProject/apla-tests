@@ -38,7 +38,6 @@ def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
 def call_multi_contract(url, prKey, name, data, jvtToken, withData=True):
     full_bindata = {}
     i = 1
-    print(data)
     for inf in data:
         if withData == True and inf['params']['Data'] == '[]':
             continue
@@ -61,19 +60,15 @@ def tx_status(url, sleep_time, hsh, jvt_token):
         time.sleep(1)
         resp = api.tx_status(url, jvt_token, hsh)
         jresp = resp["results"][hsh]
-        print(jresp)
         if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
             break
         else:
             sec = sec + 1  
     if 'errmsg' not in jresp and jresp['blockid'] == '':
-        print("block id is empty: " , jresp)
         return {"blockid": None, "result": None, "error": None}     
     if 'errmsg' not in jresp and int(jresp['blockid']) > 0:
-        print("block id is generated: " , jresp)
         return {"blockid": int(jresp['blockid']), "result": jresp['result'], "error": None}
     else:
-        print("error: " , jresp)
         return {"blockid": 0, "error": jresp['errmsg']['error'], "result": None}
 
 
