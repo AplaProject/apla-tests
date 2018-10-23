@@ -1,3 +1,11 @@
 /nodesConfig.json
 /config.json
 /testConfig.json
+.idea/
+.pytest_cache/
+__pycache__/
+data/
+libs/__pycache__/
+scripts/.pytest_cache/
+scripts/__pycache__/
+scripts/data/
