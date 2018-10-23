@@ -7,44 +7,28 @@ from genesis_blockchain_tools.crypto import get_public_key
 from genesis_blockchain_tools.contract import Contract
 from libs import api, db
 
-def get_uid(url):
-    resp = requests.get(url + '/getuid')
-    result = resp.json()
-    return result['token'], result['uid']
 
 def login(url, pr_key, role=0, ecosystem=1):
-    token, uid = get_uid(url)
-    signature = sign(pr_key, "LOGIN" + uid)
-    pubkey = get_public_key(pr_key)
-    full_token = 'Bearer ' + token
-    data = {'pubkey': pubkey, 'signature': signature, "role_id": role, "ecosystem": ecosystem}
-    head = {'Authorization': full_token}
-    resp = requests.post(url + '/login', params=data, headers=head)
-    res = resp.json()
-    result = {}
-    result["uid"] = uid
-    result["jwtToken"] = 'Bearer ' + res["token"]
-    result["pubkey"] = pubkey
-    result["address"] = res["address"]
-    result["key_id"] = res["key_id"]
+    token, uid = api.getuid(url)
+    result = api.login(
+        url=url,
+        token=token,
+        uid=uid,
+        private_key=pr_key,
+        role_id=role,
+        ecosystem=ecosystem
+    )
     return result
 
 
-def get_schema(url, name, jvtToken):
-    resp = requests.get(url + '/contract/' + name, headers={"Authorization": jvtToken})
-    return resp.json()
-
-
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
-    schema = get_schema(url, name, jvtToken)
+    schema = api.contract(url, jvtToken, name)
     contract = Contract(schema=schema,
                         private_key=prKey,
                         ecosystem_id=ecosystem,
                         params=data)
-    tx_bin_data = contract.concat()
-    resp = requests.post(url + '/sendTx', files={'call1': tx_bin_data},
-                        headers={"Authorization": jvtToken})
-    result = resp.json()
+    tx_bin_data = {'call1': contract.concat()}
+    result = api.send_tx(url, jvtToken, tx_bin_data)
     if 'hashes' in result:
         return result['hashes']['call1']
     else:
@@ -54,30 +38,30 @@ def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
 def call_multi_contract(url, prKey, name, data, jvtToken, withData=True):
     full_bindata = {}
     i = 1
+    print(data)
     for inf in data:
         if withData == True and inf['params']['Data'] == '[]':
             continue
-        schema = get_schema(url, inf['contract'], jvtToken)
-        contract = Contract(schema=schema, private_key=prKey,
-                    params=inf['params'])
+        schema = api.contract(url, jvtToken, inf['contract'])
+        contract = Contract(
+            schema=schema,
+            private_key=prKey,
+            params=inf['params']
+        )
         tx_bin_data = contract.concat()
         full_bindata.update({'call' + str(i): tx_bin_data})
         i += 1
-    resp = requests.post(url + '/sendTx', files=full_bindata,
-                        headers={"Authorization": jvtToken})
-    result = resp.json()
+    result = api.send_tx(url, jvtToken, full_bindata)
     return result
 
 
 def tx_status(url, sleep_time, hsh, jvt_token):
     sec = 0
-    url_end = url + '/txstatus'
     while sec < sleep_time:
         time.sleep(1)
-        resp = requests.post(url_end, params={"data": json.dumps({"hashes": [hsh]})},
-                             headers={'Authorization': jvt_token})
-        jresp = resp.json()["results"][hsh]
-        status = {}
+        resp = api.tx_status(url, jvt_token, hsh)
+        jresp = resp["results"][hsh]
+        print(jresp)
         if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
             break
         else:
@@ -137,9 +121,8 @@ def call_post_api(url, data, token):
     resp = requests.post(url, data=data,  headers={"Authorization": token})
     return resp.json()
 
-def get_count(url, type, token):
-    end_point = url + "/list/" + type
-    res = call_get_api(end_point, "", token)
+def get_count(url, name, token):
+    res = api.list(url, token, name, limit=1)
     return res["count"]
 
 def find_id_by_name(url, token, table, name):
@@ -227,7 +210,8 @@ def is_count_tx_in_block(url, token, max_block_id, count_tx):
 
 #api
 def get_ecosys_tables(url, token):
-    tables = api.tables(url, token, 100)['list']
+    count = get_count(url, 'tables', token)
+    tables = api.tables(url, token, limit=count)['list']
     list = []
     for table in tables:
         list.append(table['name'])

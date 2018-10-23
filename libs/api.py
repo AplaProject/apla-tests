@@ -1,22 +1,34 @@
 import requests
+import json
 
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
 
 
 def call_get_api(url, data, token):
-    resp = requests.get(url, params=data, headers={"Authorization": token})
+    resp = requests.get(
+        url,
+        params=data,
+        headers={'Authorization': token}
+    )
     return resp.json()
 
 
 def call_get_api_with_full_response(url, data, token):
-    resp = requests.get(url, params=data, headers={"Authorization": token})
+    resp = requests.get(
+        url,
+        params=data,
+        headers={'Authorization': token}
+    )
     return resp
 
 
-
 def call_post_api(url, data, token):
-    resp = requests.post(url, data=data, headers={"Authorization": token})
+    resp = requests.post(
+        url,
+        data=data,
+        headers={'Authorization': token}
+    )
     return resp.json()
 
 
@@ -24,19 +36,14 @@ def getuid(url):
     endpoint = '/getuid'
     url += endpoint
     response = requests.get(url)
-    if response.status_code == 200:
-        result = response.json()
-        token = result['token']
-        uid = result['uid']
-        return token, uid
-    else:
-        return None
+    result = response.json()
+    token = result['token']
+    uid = result['uid']
+    return token, uid
 
 
-def login(url, private_key, role_id=0, ecosystem=1, expire=3600):
-    token, uid = getuid(url)
-    data_signature = 'LOGIN' + uid
-    signature = sign(private_key, data_signature)
+def login(url, token, uid, private_key, role_id=0, ecosystem=1, expire=3600):
+    signature = sign(private_key, 'LOGIN' + uid)
     pubkey = get_public_key(private_key)
     full_token = 'Bearer ' + token
     data = {
@@ -47,31 +54,16 @@ def login(url, private_key, role_id=0, ecosystem=1, expire=3600):
         'signature': signature,
         # key_id # not use with parameter 'pubkey'
     }
-    head = {'Authorization': full_token}
     endpoint = '/login'
     url += endpoint
-    response = requests.post(url, data=data, headers=head)
-    res = response.json()
+    res = call_post_api(url, data, full_token)
     result = {
         'uid': uid,
-        'timeToken': res['refresh'],
         'jwtToken': 'Bearer ' + res['token'],
         'pubkey': pubkey,
         'address': res['address'],
         'key_id': res['key_id'],
     }
-    return result
-
-
-def refresh(url, token, expire=36000):
-    data = {
-        'token': token,
-        'expire': expire,
-    }
-    endpoint = '/refresh'
-    url += endpoint
-    response = requests.post(url, data=data)
-    result = response.json()
     return result
 
 
@@ -84,7 +76,9 @@ def version(url, token):
 
 def balance(url, token, key_id):
     data = {}
-    endpoint = '/balance/{}'.format(key_id)
+    endpoint = '/balance/{key_id}'.format(
+        key_id=key_id
+    )
     url += endpoint
     return call_get_api(url, data, token)
 
@@ -96,13 +90,20 @@ def ecosystemname(url, token, id=1):
     return call_get_api(url, data, token)
 
 
+def ecosystems(url, token):
+    data = {}
+    endpoint = '/ecosystems'
+    url += endpoint
+    return call_get_api(url, data, token)
+
+
 def appparams(url, token, appid, ecosystem=1, names=''):
     data = {}
     data['ecosystem'] = ecosystem
     if names:
         data['names'] = names
-    endpoint = '/appparams/{}'.format(
-        appid,
+    endpoint = '/appparams/{appid}'.format(
+        appid=appid
     )
     url += endpoint
     return call_get_api(url, data, token)
@@ -110,9 +111,9 @@ def appparams(url, token, appid, ecosystem=1, names=''):
 
 def appparam(url, token, appid, name, ecosystem=1):
     data = {'ecosystem': ecosystem}
-    endpoint = '/appparam/{}/{}'.format(
-        appid,
-        name,
+    endpoint = '/appparam/{appid}/{name}'.format(
+        appid=appid,
+        name=name
     )
     url += endpoint
     return call_get_api(url, data, token)
@@ -129,8 +130,8 @@ def ecosystemparams(url, token, ecosystem=1, names=''):
 
 def ecosystemparam(url, token, name, ecosystem=1):
     data = {'ecosystem': ecosystem}
-    endpoint = '/ecosystemparam/{}'.format(
-        name,
+    endpoint = '/ecosystemparam/{name}'.format(
+        name=name
     )
     url += endpoint
     return call_get_api(url, data, token)
@@ -148,8 +149,8 @@ def tables(url, token, limit=25, offset=0):
 
 def table(url, token, name):
     data = {}
-    endpoint = '/table/{}'.format(
-        name,
+    endpoint = '/table/{name}'.format(
+        name=name
     )
     url += endpoint
     return call_get_api(url, data, token)
@@ -167,13 +168,24 @@ def list(url, token, name, limit=25, offset=0, columns=''):
     return call_get_api(url, data, token)
 
 
+def sections(url, token, limit=25, offset=0, lang='en-US'):
+    data = {
+        'limit': limit,
+        'offset': offset,
+        'lang': lang,
+    }
+    endpoint = '/sections'
+    url += endpoint
+    return call_get_api(url, data, token)
+
+
 def row(url, token, tablename, id, columns=''):
     data = {}
     if columns:
         data['columns'] = columns
-    endpoint = '/row/{}/{}'.format(
-        tablename,
-        id,
+    endpoint = '/row/{tablename}/{id}'.format(
+        tablename=tablename,
+        id=id
     )
     url += endpoint
     return call_get_api(url, data, token)
@@ -190,9 +202,9 @@ def systemparams(url, token, names=''):
 
 def history(url, token, name, id):
     data = {}
-    endpoint = '/history/{}/{}'.format(
-        name,
-        id,
+    endpoint = '/history/{name}/{id}'.format(
+        name=name,
+        id=id
     )
     url += endpoint
     return call_get_api(url, data, token)
@@ -201,9 +213,9 @@ def history(url, token, name, id):
 def interface(url, token, entity, name):
     """ Parameter entity must be 'page', 'menu' or 'block' """
     data = {}
-    endpoint = '/interface/{}/{}'.format(
-        entity,
-        name,
+    endpoint = '/interface/{entity}/{name}'.format(
+        entity=entity,
+        name=name
     )
     url += endpoint
     return call_get_api(url, data, token)
@@ -221,19 +233,51 @@ def contracts(url, token, limit=25, offset=0):
 
 def contract(url, token, name):
     data = {}
-    endpoint = '/contract/{}'.format(
-        name,
+    endpoint = '/contract/{name}'.format(
+        name=name
     )
     url += endpoint
     return call_get_api(url, data, token)
 
 
-# contract/{request_id}
-# contractMultiple/{request_id}
-# prepare/{name}
-# prepareMultiple
-# txstatus/{hash}
-# txstatusMultiple
+def send_tx(url, token, tx_bin_data):
+    endpoint = '/sendTx'
+    url += endpoint
+    resp = requests.post(
+        url,
+        files=tx_bin_data,
+        headers={'Authorization': token}
+    )
+    result = resp.json()
+    return result
+
+
+def tx_status(url, token, hashes):
+    hashes_data = json.dumps({'hashes': [hashes]})
+    data = {'data': hashes_data}
+    endpoint = '/txstatus'
+    url += endpoint
+    res = call_post_api(url, data, token)
+    return res
+
+
+def tx_info(url, token, hash, contract_info=False):
+    data = {'contractinfo': contract_info}
+    endpoint = '/txinfo/{hash}'.format(
+        hash=hash
+    )
+    url += endpoint
+    return call_get_api(url, data, token)
+
+
+def tx_info_multiple(url, token, hashes, contract_info=False):
+    data = {
+        'data': hashes,
+        'contractinfo': contract_info,
+    }
+    endpoint = '/txinfoMultiple'
+    url += endpoint
+    return call_get_api(url, data, token)
 
 
 def content(url, token, entity, name, lang='en-US', app_id=1):
@@ -242,9 +286,9 @@ def content(url, token, entity, name, lang='en-US', app_id=1):
         'lang': lang,
         'app_id': app_id,
     }
-    endpoint = '/content/{}/{}'.format(
-        entity,
-        name,
+    endpoint = '/content/{entity}/{name}'.format(
+        entity=entity,
+        name=name
     )
     url += endpoint
     return call_post_api(url, data, token)
@@ -252,8 +296,8 @@ def content(url, token, entity, name, lang='en-US', app_id=1):
 
 def content_source(url, token, name):
     data = {}
-    endpoint = 'content/source/{}'.format(
-        name,
+    endpoint = '/content/source/{name}'.format(
+        name=name
     )
     url += endpoint
     return call_post_api(url, data, token)
@@ -261,8 +305,8 @@ def content_source(url, token, name):
 
 def content_hash(url, token, name):
     data = {}
-    endpoint = 'content/hash/{}'.format(
-        name,
+    endpoint = '/content/hash/{name}'.format(
+        name=name
     )
     url += endpoint
     return call_post_api(url, data, token)
@@ -290,8 +334,8 @@ def maxblockid(url, token):
 
 def block(url, token, id):
     data = {}
-    endpoint = '/block/{}'.format(
-        id,
+    endpoint = '/block/{id}'.format(
+        id=id
     )
     url += endpoint
     return call_get_api(url, data, token)
@@ -299,9 +343,9 @@ def block(url, token, id):
 
 def avatar(url, token, member, ecosystem=1):
     data = {}
-    endpoint = '/avatar/{}/{}'.format(
-        ecosystem,
-        member,
+    endpoint = '/avatar/{ecosystem}/{member}'.format(
+        ecosystem=ecosystem,
+        member=member
     )
     url += endpoint
     return call_get_api_with_full_response(url, data, token)
