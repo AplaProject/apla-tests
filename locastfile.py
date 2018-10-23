@@ -12,79 +12,86 @@ class WebsiteTasks(TaskSet):
         self.token = self.data["jwtToken"]
         keys = tools.read_fixtures('keys')
         self.ldata = actions.login(self.config[1]["url"],keys["key2"], 0)
-    
+
+
     @task
     def NewContract(self):
+        contract_name = 'NewContract'
         code, name = tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
-        schema = api.contract(self.url, self.token, "NewContract")
+        schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
-                         headers={"Authorization": self.token}, name="NewContract")
-        
+                         headers={"Authorization": self.token}, name=contract_name)
+
     @task
     def MoneyTransfer(self):
+        contract_name = 'TokensSend'
         data = {"Recipient_Account": self.ldata['address'],
                 "Amount": "1000"}
-        schema = api.contract(self.url, self.token, "TokensSend")
+        schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
-                         headers={"Authorization": self.token}, name="MoneyTransfer")
+                         headers={"Authorization": self.token}, name=contract_name)
 
-     
     @task   
     def NewParameter(self):
+        contract_name = 'NewParameter'
         name = "Par_" + tools.generate_random_name()
         data = {"Name": name, "Value": "test", "Conditions": "true"}
-        schema = api.contract(self.url, self.token, "NewParameter")
+        schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
-                         headers={"Authorization": self.token}, name="NewParameter")
+                         headers={"Authorization": self.token}, name=contract_name)
         
     @task   
     def NewMenu(self):
+        contract_name = 'NewMenu'
         name = "Menu_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Item1",
                 "Conditions": "true"}
-        schema = api.contract(self.url, self.token, "NewMenu")
+        schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
-                         headers={"Authorization": self.token}, name="NewMenu")
+                         headers={"Authorization": self.token}, name=contract_name)
         
     @task   
     def NewPage(self):
+        contract_name = 'NewPage'
         name = "Page_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
-        schema = api.contract(self.url, self.token, "NewPage")
+        schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
-                         headers={"Authorization": self.token}, name="NewPage")
+                         headers={"Authorization": self.token}, name=contract_name)
         
     @task   
     def NewBlock(self):
+        contract_name = 'NewBlock'
         name = "Block_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true"}
-        schema = api.contract(self.url, self.token, "NewBlock")
+        schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
-                         headers={"Authorization": self.token}, name="NewBlock")
+                         headers={"Authorization": self.token}, name=contract_name)
         
     @task   
     def NewTable(self):
+        contract_name = 'NewTable'
         column = """[{"name":"MyName","type":"varchar",
         "index": "1",  "conditions":"true"}]"""
         permission = """{"insert": "false",
@@ -92,25 +99,25 @@ class WebsiteTasks(TaskSet):
         data = {"Name": "Tab_" + tools.generate_random_name(),
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
-        schema = api.contract(self.url, self.token, "NewTable")
+        schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
-                         headers={"Authorization": self.token}, name="NewTable")
+                         headers={"Authorization": self.token}, name=contract_name)
         
     @task   
     def NewLang(self):
+        contract_name = 'NewLang'
         data = {"Name": "Lang_" + tools.generate_random_name(),
                 "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
-        schema = api.contract(self.url, self.token, "NewLang")
+        schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
-                         headers={"Authorization": self.token}, name="NewLang")
-        
-        
+                         headers={"Authorization": self.token}, name=contract_name)
+
 
 class WebsiteUser(HttpLocust):
     task_set = WebsiteTasks
