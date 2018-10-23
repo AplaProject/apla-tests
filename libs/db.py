@@ -92,7 +92,7 @@ def get_table_hash(db, table):
     for colum in columns:
         print(colum[0])
         s_col += 't.' + colum[0] + ', '
-    request = "SELECT md5(array_agg(md5((" + s_col[:-2] + ")::varchar))::varchar)  FROM (SELECT * FROM \"" + table + "\") AS t"
+    request = "SELECT md5(array_agg(md5((" + s_col[:-2] + ")::varchar))::varchar)  FROM (SELECT * FROM \"" + table + "\" ORDER BY id) AS t"
     return submit_query(request, db)[0][0]
 
 #cost  
