@@ -1,5 +1,5 @@
 from locust import HttpLocust, TaskSet, task
-from libs import actions, tools
+from libs import actions, tools, api
 from genesis_blockchain_tools.contract import Contract
 
 class WebsiteTasks(TaskSet):
@@ -17,7 +17,7 @@ class WebsiteTasks(TaskSet):
     def NewContract(self):
         code, name = tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
-        schema = actions.get_schema(self.url, "NewContract", self.token)
+        schema = api.contract(self.url, self.token, "NewContract")
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
@@ -27,8 +27,8 @@ class WebsiteTasks(TaskSet):
     @task
     def MoneyTransfer(self):
         data = {"Recipient_Account": self.ldata['address'],
-                "Amount": "1000"}        
-        schema = actions.get_schema(self.url, "TokensSend", self.token)
+                "Amount": "1000"}
+        schema = api.contract(self.url, self.token, "TokensSend")
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
@@ -39,8 +39,8 @@ class WebsiteTasks(TaskSet):
     @task   
     def NewParameter(self):
         name = "Par_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "test", "Conditions": "true"}        
-        schema = actions.get_schema(self.url, "NewParameter", self.token)
+        data = {"Name": name, "Value": "test", "Conditions": "true"}
+        schema = api.contract(self.url, self.token, "NewParameter")
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
@@ -52,7 +52,7 @@ class WebsiteTasks(TaskSet):
         name = "Menu_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Item1",
                 "Conditions": "true"}
-        schema = actions.get_schema(self.url, "NewMenu", self.token)
+        schema = api.contract(self.url, self.token, "NewMenu")
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
@@ -64,7 +64,7 @@ class WebsiteTasks(TaskSet):
         name = "Page_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
-        schema = actions.get_schema(self.url, "NewPage", self.token)
+        schema = api.contract(self.url, self.token, "NewPage")
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
@@ -76,7 +76,7 @@ class WebsiteTasks(TaskSet):
         name = "Block_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
                 "Conditions": "true"}
-        schema = actions.get_schema(self.url, "NewBlock", self.token)
+        schema = api.contract(self.url, self.token, "NewBlock")
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
@@ -92,7 +92,7 @@ class WebsiteTasks(TaskSet):
         data = {"Name": "Tab_" + tools.generate_random_name(),
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
-        schema = actions.get_schema(self.url, "NewTable", self.token)
+        schema = api.contract(self.url, self.token, "NewTable")
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
@@ -103,7 +103,7 @@ class WebsiteTasks(TaskSet):
     def NewLang(self):
         data = {"Name": "Lang_" + tools.generate_random_name(),
                 "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
-        schema = actions.get_schema(self.url, "NewLang", self.token)
+        schema = api.contract(self.url, self.token, "NewLang")
         contract = Contract(schema=schema, private_key=self.pr_key,
                     params=data)
         tx_bin_data = contract.concat()
