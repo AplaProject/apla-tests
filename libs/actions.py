@@ -95,7 +95,6 @@ def tx_status_multi(url, sleep_time, hshs, jvt_token):
             sec = sec + 1
     return jresp
 
-def get_application_id(url, name, token):
     table = 'applications'
     id = None
     count = get_count(url, table, token)
