@@ -95,15 +95,6 @@ def tx_status_multi(url, sleep_time, hshs, jvt_token):
             sec = sec + 1
     return jresp
 
-    table = 'applications'
-    id = None
-    count = get_count(url, table, token)
-    res = api.list(url, token, table, limit=count)
-    for app in res['list']:
-        if app['name'] == name:
-            id = app['id']
-            break
-    return id
 
 def call_get_api(url, data, token):
     resp = requests.get(url, params=data,  headers={'Authorization': token})
