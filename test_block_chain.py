@@ -33,11 +33,6 @@ class TestBlockChain():
         res = actions.call_contract(url, pr_key, "NewMenu", data, self.token)
         return actions.get_count(url, "menu", self.token)
     
-    def test_ee(self):
-        res = db.get_table_hash(self.config1['db'], "1_pages")
-        print(res)
-        ans = db.get_table_hash(db22, "1_pages")
-    
     def test_block_chain(self):
         ts_count = 30
         i = 1
