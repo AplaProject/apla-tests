@@ -280,12 +280,14 @@ def tx_info_multiple(url, token, hashes, contract_info=False):
     return call_get_api(url, data, token)
 
 
-def content(url, token, entity, name, lang='en-US', app_id=1):
+def content(url, token, entity, name, lang='en-US', app_id=1, page_params={}):
     """ Parameter entity must be 'page' or 'menu' """
     data = {
         'lang': lang,
         'app_id': app_id,
     }
+    for key, value in page_params.items():
+        data.update({key: value})
     endpoint = '/content/{entity}/{name}'.format(
         entity=entity,
         name=name
