@@ -85,10 +85,16 @@ def get_blockchain_hash(db, max_block_id):
 def get_table_hash(db, table):
     query = "select column_name from INFORMATION_SCHEMA.COLUMNS WHERE table_schema='public' AND table_name='" + table + "'"
     columns = submit_query(query, db)
+    is_ecos_present = False
     s_col = ''
     for colum in columns:
-        s_col += 't.' + colum[0] + ', '
-    request = "SELECT md5(array_agg(md5((" + s_col[:-2] + ")::varchar))::varchar)  FROM (SELECT * FROM \"" + table + "\" ORDER BY id) AS t"
+        if str(colum[0]) == 'ecosystem':
+            is_ecos_present = True
+        s_col += 't.' + colum[0] + ', '  
+    if is_ecos_present == True:
+        request = "SELECT md5(array_agg(md5((" + s_col[:-2] + ")::varchar))::varchar)  FROM (SELECT * FROM \"" + table + "\" ORDER BY id, ecosystem) AS t"
+    else:
+        request = "SELECT md5(array_agg(md5((" + s_col[:-2] + ")::varchar))::varchar)  FROM (SELECT * FROM \"" + table + "\" ORDER BY id) AS t"
     return submit_query(request, db)[0][0]
 
 #cost  

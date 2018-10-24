@@ -2,7 +2,7 @@ import unittest
 import time
 from builtins import sum
 
-from libs import actions, tools, check, db
+from libs import actions, tools, check, db, api
 
 class TestBlockChain():
     full_config = tools.read_config("nodes")
@@ -32,6 +32,8 @@ class TestBlockChain():
         data = {"Name": name, "Value": "Item1", "Conditions": "true"}
         res = actions.call_contract(url, pr_key, "NewMenu", data, self.token)
         return actions.get_count(url, "menu", self.token)
+    
+    
     
     def test_block_chain(self):
         ts_count = 30
