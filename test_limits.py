@@ -41,7 +41,7 @@ class TestLimits():
         self.unit.assertGreater(5, 0, "err")
         
     def max_tx_size(self):
-        max_tx_size = actions.get_sysparam_value(self.conf[1]["url"], self.token,
+        max_tx_size = actions.get_sysparams_value(self.conf[1]["url"], self.token,
                                                  'max_tx_size')
         print(max_tx_size)
         self.update_sys_param("max_tx_size", "500")
@@ -54,7 +54,7 @@ class TestLimits():
         self.update_sys_param("max_tx_size", str(max_tx_size))
         
     def max_block_size(self):
-        max_block_size = actions.get_sysparam_value(self.conf[1]["url"], self.token, 'max_block_size')
+        max_block_size = actions.get_sysparams_value(self.conf[1]["url"], self.token, 'max_block_size')
         self.update_sys_param("max_block_size", "500")
         name = "cont" + tools.generate_random_name()
         code = "contract " + name + self.contracts["limits"]["code"]
@@ -66,8 +66,8 @@ class TestLimits():
         time.sleep(30)
       
     def max_block_user_tx(self):
-        max_block_user_tx = actions.get_sysparam_value(self.conf[1]["url"],
-                                             self.token, 'max_block_user_tx')
+        max_block_user_tx = actions.get_sysparams_value(self.conf[1]["url"],
+                                                        self.token, 'max_block_user_tx')
         self.update_sys_param("max_block_user_tx", "1")
         time.sleep(30)
         i = 1
@@ -90,7 +90,7 @@ class TestLimits():
         
         
     def max_tx_count (self):
-        max_tx_count = actions.get_sysparam_value(self.conf[0]["url"], self.token, 'max_tx_count')
+        max_tx_count = actions.get_sysparams_value(self.conf[0]["url"], self.token, 'max_tx_count')
         self.update_sys_param("max_tx_count", "2")
         i = 1
         while i < 10: 

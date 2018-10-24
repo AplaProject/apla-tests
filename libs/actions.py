@@ -59,17 +59,17 @@ def tx_status(url, sleep_time, hsh, jvt_token):
     while sec < sleep_time:
         time.sleep(1)
         resp = api.tx_status(url, jvt_token, hsh)
-        jresp = resp["results"][hsh]
+        jresp = resp['results'][hsh]
         if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
             break
         else:
             sec = sec + 1  
     if 'errmsg' not in jresp and jresp['blockid'] == '':
-        return {"blockid": None, "result": None, "error": None}     
+        return {'blockid': None, 'result': None, 'error': None}     
     if 'errmsg' not in jresp and int(jresp['blockid']) > 0:
-        return {"blockid": int(jresp['blockid']), "result": jresp['result'], "error": None}
+        return {'blockid': int(jresp['blockid']), 'result': jresp['result'], 'error': None}
     else:
-        return {"blockid": 0, "error": jresp['errmsg']['error'], "result": None}
+        return {'blockid': 0, 'error': jresp['errmsg']['error'], 'result': None}
 
 
 def tx_status_multi(url, sleep_time, hshs, jvt_token):
@@ -81,9 +81,9 @@ def tx_status_multi(url, sleep_time, hshs, jvt_token):
         list.append(hshs[hash])
     while sec < sleep_time:
         time.sleep(1)
-        resp = requests.post(url_end, params={"data": json.dumps({"hashes": list})},
+        resp = requests.post(url_end, params={'data': json.dumps({'hashes': list})},
                              headers={'Authorization': jvt_token})
-        jresp = resp.json()["results"]
+        jresp = resp.json()['results']
         for status in jresp.values():
             if (len(status['blockid']) > 0 and 'errmsg' not in json.dumps(status)):
                 allTxInBlocks = True
@@ -96,99 +96,77 @@ def tx_status_multi(url, sleep_time, hshs, jvt_token):
     return jresp
 
 def get_application_id(url, name, token):
+    table = 'applications'
     id = None
-    endPoint = url + "/list/applications"
-    res = call_get_api(endPoint, "", token)
-    for app in res["list"]:
-        if app["name"] == name:
-            id = app["id"]
+    count = get_count(url, table, token)
+    res = api.list(url, token, table, limit=count)
+    for app in res['list']:
+        if app['name'] == name:
+            id = app['id']
+            break
     return id
 
 def call_get_api(url, data, token):
-    resp = requests.get(url, params=data,  headers={"Authorization": token})
+    resp = requests.get(url, params=data,  headers={'Authorization': token})
     return resp.json()
 
 def call_get_api_with_full_response(url, data, token):
-    resp = requests.get(url, params=data,  headers={"Authorization": token})
+    resp = requests.get(url, params=data,  headers={'Authorization': token})
     return resp
 
 def call_post_api(url, data, token):
-    resp = requests.post(url, data=data,  headers={"Authorization": token})
+    resp = requests.post(url, data=data,  headers={'Authorization': token})
     return resp.json()
 
 def get_count(url, name, token):
     res = api.list(url, token, name, limit=1)
-    return res["count"]
-
-def find_id_by_name(url, token, table, name):
-    # get_list must have column 'name', else Error
-    answer_dict = get_list(url, table, token)['list']
-    for element in range(len(answer_dict)):
-        if answer_dict[element]['name'] == name:
-            return answer_dict[element]['id']
-        else:
-            return None
+    return res['count']
 
 def get_list(url, type, token):
     count = get_count(url, type, token)
-    end_point = url + "/list/" + type + "?limit=" + count
-    res = call_get_api(end_point, "", token)
+    res = api.list(url, token, type, limit=count)
     return res
 
 def get_contract_id(url, name, token):
-    end_point = url + "/contract/" + name
-    res = call_get_api(end_point, "", token)
-    return res["tableid"]
-
+    res = api.contract(url, token, name)
+    return res['tableid']
 
 def get_object_id(url, name, object, token):
     id = None
-    end_point = url + "/list/" + object + "?limit=1000"
-    res = call_get_api(end_point, "", token)
-    for object in res["list"]:
-        if object["name"] == name:
-            id = object["id"]
+    res = get_list(url, object, token)
+    for object in res['list']:
+        if object['name'] == name:
+            id = object['id']
+            break
     return id
-    
 
 def is_contract_activated(url, name, token):
-    end_point = url + "/contract/" + name
-    res = call_get_api(end_point, "", token)
-    return res["active"]
+    res = api.contract(url, token, name)
+    return res['active']
 
 def get_activated_wallet(url, name, token):
-    end_point = url + "/contract/" + name
-    res = call_get_api(end_point, "", token)
-    return res["walletid"]
+    res = api.contract(url, token, name)
+    return res['walletid']
 
 def get_parameter_id(url, name, token):
-    end_point = url + "/ecosystemparam/" + name
-    res = call_get_api(end_point, "", token)
-    return res["id"]
+    res = api.ecosystemparam(url, token, name)
+    return res['id']
 
 def get_parameter_value(url, name, token):
-    end_point = url + "/ecosystemparam/" + name
-    res = call_get_api(end_point, "", token)
-    return res["value"]
+    res = api.ecosystemparam(url, token, name)
+    return res['value']
 
-def get_sysparam_value(url, token, name):
+def get_sysparams_value(url, token, name):
     list = api.systemparams(url, token, name)
     return list['list'][0]['value']
 
-def get_content(url, type, name, lang, appId, token):
-    if(lang != ""):
-        data = {"lang": lang, "app_id": appId}
-    else:
-        data = ""
-    end_point = url + "/content/" + type + "/" + name
-    res = call_post_api(end_point, data, token)
+def get_content(url, type, name, lang, app_id, token):
+    res = api.content(url, token, type, name, lang, app_id)
     return res
 
 def get_max_block_id(url, token):
-    data = ""
-    end_point = url + "/maxblockid"
-    result = call_get_api(end_point, data, token)
-    return result["max_block_id"]
+    res = api.maxblockid(url, token)
+    return res['max_block_id']
 
 #limits
 def is_count_tx_in_block(url, token, max_block_id, count_tx):
@@ -217,7 +195,9 @@ def get_ecosys_tables(url, token):
 def get_export_app_data(url, token, app_id, member_id):
     result = api.list(url, token, 'binaries')
     for item in result['list']:
-        if item['name'] == 'export' and item['app_id'] == str(app_id) and item['member_id'] == str(member_id):
+        if item['name'] == 'export' \
+                and item['app_id'] == str(app_id) \
+                and item['member_id'] == str(member_id):
             return str(item['data'])
     return None
 
@@ -225,29 +205,31 @@ def get_export_app_data(url, token, app_id, member_id):
 def get_import_app_data(url, token, member_id):
     result = api.list(url, token, 'buffer_data')
     for item in result['list']:
-        if item['key'] == 'import' and item['member_id'] == str(member_id):
+        if item['key'] == 'import' \
+                and item['member_id'] == str(member_id):
             return item['value']
     return None
 
 #block_chain compare_nodes
 def get_count_DB_objects(url, token):
     tables = {}
-    list = api.tables(url, token)['list']
+    list = api.tables(url, token, limit=1000)['list']
     for table in list:
         tables[table['name']] = table['count']
     return tables
 
-def get_table_hashes(url, token, db_inf, ecos="1"):
+def get_table_hashes(url, token, db_inf, ecos='1'):
     tables = {}
-    list = api.tables(url, token)['list']
+    list = api.tables(url, token, limit=1000)['list']
     for table in list:
-        tables[table['name']] = db.get_table_hash(db_inf, ecos + "_" + table['name'])
+        tables[table['name']] = db.get_table_hash(db_inf, ecos + '_' + table['name'])
     return tables
 
 
 #done
 def get_user_token_amounts(url, token):
-    keys = api.list(url, token, 'keys')
+    count = get_count(url, 'keys', token)
+    keys = api.list(url, token, 'keys', limit=count)
     amounts = []
     for item in keys['list']:
         amounts.append(int(item['amount']))
@@ -257,29 +239,33 @@ def get_user_token_amounts(url, token):
 
 #cost
 def get_balance_by_id(url, token, key_id, ecos=1):
-    keys = api.list(url, token, 'keys')
+    count = get_count(url, 'keys', token)
+    keys = api.list(url, token, 'keys', limit=count)
     for item in keys['list']:
-        if item['id'] == str(key_id) and item['ecosystem'] == str(ecos):
+        if item['id'] == str(key_id) \
+                and item['ecosystem'] == str(ecos):
             return item['amount']
     return None
 
 
 #API
 def is_wallet_created(url, token, id):
-    keys = api.list(url, token, 'keys')
+    count = get_count(url, 'keys', token)
+    keys = api.list(url, token, 'keys', limit=count)
     for item in keys['list']:
-        if item['id'] == str(id) and int(item['amount']) == 1000000000000000000000:
+        if item['id'] == str(id) \
+                and int(item['amount']) == 1000000000000000000000:
             return True
     return False
 
 
 #cost
 def is_commission_in_history(url, token, id_from, id_to, summ):
-    table = api.list(url, token, 'history')
+    count = get_count(url, 'history', token)
+    table = api.list(url, token, 'history', limit=count)
     for item in table['list']:
-        if item['sender_id'] == str(id_from) and item['recipient_id'] == str(id_to):
+        if item['sender_id'] == str(id_from) \
+                and item['recipient_id'] == str(id_to):
             if item['amount'] == str(summ):
                 return True
     return False
-
-

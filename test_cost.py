@@ -188,7 +188,7 @@ class TestCost():
                                                         wallet_id)
         balance_node_owner_b = actions.get_balance_by_id(self.conf[1]["url"], self.token,
                                                     self.conf[1]["keyID"])
-        commision_wallet = actions.get_sysparam_value(self.conf[1]["url"], self.token,
+        commision_wallet = actions.get_sysparams_value(self.conf[1]["url"], self.token,
                                                       'commission_wallet')
         balance_commision_b = actions.get_balance_by_id(self.conf[1]["url"], self.token,
                                                    commision_wallet)
@@ -226,7 +226,7 @@ class TestCost():
                                                         wallet_id)
         balance_node_owner_b = actions.get_balance_by_id(self.conf[1]["url"], self.token,
                                                     self.conf[1]["keyID"])
-        commision_wallet = actions.get_sysparam_value(self.conf[1]["url"], self.token, 'commission_wallet')
+        commision_wallet = actions.get_sysparams_value(self.conf[1]["url"], self.token, 'commission_wallet')
         balance_commision_b = actions.get_balance_by_id(self.conf[1]["url"], self.token,
                                                    commision_wallet)
         data_runner = actions.login(self.conf[1]["url"], self.keys["key2"], 0)
