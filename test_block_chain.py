@@ -18,7 +18,7 @@ class TestBlockChain():
 
     def create_contract(self, url, pr_key):
         code, name = tools.generate_name_and_code("")
-        data = {'Wallet': '', 'Value': code, "ApplicationId": 1,
+        data = {"ApplicationId": 1, 'Value': code,
                 'Conditions': "ContractConditions(\"MainCondition\")"}
         resp = actions.call_contract(url, pr_key, "NewContract", data, self.token)
         return name
