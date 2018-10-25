@@ -124,10 +124,10 @@ class TestSystemContracts():
         res = self.call("EditEcosystemName", data)
         self.unit.assertEqual("The ecosystem " + str(id) + " is not exist", res["error"])
 
-    def test_money_transfer(self):
+    def test_tokens_send(self):
         ldata = actions.login(self.url, self.keys["key2"])
         time.sleep(10)
-        data = {"Recipient_Account": ldata['address'],
+        data = {"Recipient": ldata['address'],
                 "Amount": "1000"}
         res = self.call("TokensSend", data)
         self.unit.assertGreater(res["blockid"], 0,
@@ -138,10 +138,10 @@ class TestSystemContracts():
                                                          "No TokensSend resord in history")
 
 
-    def test_money_transfer_incorrect_wallet(self):
+    def test_tokens_send_incorrect_wallet(self):
         wallet = "0005-2070-2000-0006"
         msg = 'The recipient ' + wallet + ' is not valid'
-        data = {"Recipient_Account": wallet,
+        data = {"Recipient": wallet,
                 "Amount": "1000"}
         res = self.call("TokensSend", data)
         self.unit.assertEqual(res["error"], msg, "Incorrect message" + msg)
@@ -149,7 +149,7 @@ class TestSystemContracts():
     def test_tokens_send_zero_amount(self):
         ldata = actions.login(self.url, self.keys["key2"], 0)
         time.sleep(10)
-        data = {"Recipient_Account": ldata['address'], "Amount": "0"}
+        data = {"Recipient": ldata['address'], "Amount": "0"}
         ans = self.call("TokensSend", data)
         msg = 'Amount equals zero'
         self.unit.assertEqual(ans["error"], msg, "Incorrect message" + str(ans))
@@ -158,7 +158,7 @@ class TestSystemContracts():
         ldata = actions.login(self.url, self.keys["key2"], 0)
         time.sleep(10)
         msg = "Amount is less than zero"
-        data = {"Recipient_Account": ldata['address'], "Amount": "-1000"}
+        data = {"Recipient": ldata['address'], "Amount": "-1000"}
         ans = self.call("TokensSend", data)
         self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
@@ -166,7 +166,7 @@ class TestSystemContracts():
         ldata = actions.login(self.url, self.keys["key2"], 0)
         time.sleep(10)
         msg = "Invalid param 'Amount': can't convert ttt to decimal"
-        data = {"Recipient_Account": ldata['address'], "Amount": "ttt"}
+        data = {"Recipient": ldata['address'], "Amount": "ttt"}
         ans = self.call("TokensSend", data)
         self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
@@ -206,26 +206,10 @@ class TestSystemContracts():
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
         data2 = {"Id": actions.get_contract_id(self.url, name, self.token),
-                 "Value": code, "Conditions": "tryam",
-                 "WalletId": "0005-2070-2000-0006-0200"}
+                 "Value": code, "Conditions": "tryam"}
         ans = self.call("EditContract", data2)
         self.unit.assertIn("Condition tryam is not allowed",
                          ans["error"], "Incorrect message: " + str(ans))
-
-    def test_edit_contract_incorrect_condition1(self):
-        wallet = "0005"
-        code, name = tools.generate_name_and_code("")
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-        data2 = {"Id": actions.get_contract_id(self.url, name, self.token),
-                 "Value": code, "Conditions": "true",
-                 "WalletId": wallet}
-        ans = self.call("EditContract", data2)
-        msg = "New owner " + wallet + " is not valid"
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract(self):
         wallet = "0005-2070-2000-0006-0200"  # ??
@@ -245,8 +229,7 @@ class TestSystemContracts():
                            "BlockId is not generated: " + str(res))
         code1, name1 = tools.generate_name_and_code("")
         data2 = {"Id": actions.get_contract_id(self.url, name, self.token),
-                 "Value": code1, "Conditions": "true",
-                 "WalletId": "0005-2070-2000-0006-0200"}
+                 "Value": code1, "Conditions": "true"}
         ans = self.call("EditContract", data2)
         self.unit.assertEqual("Contracts or functions names cannot be changed",
                          ans["error"], "Incorrect message: " + str(ans))
@@ -254,13 +237,12 @@ class TestSystemContracts():
     def test_edit_incorrect_contract(self):
         code, name = tools.generate_name_and_code("")
         id = "9999"
-        data2 = {"Id": id, "Value": code, "Conditions": "true",
-                 "WalletId": "0005-2070-2000-0006-0200"}
+        data2 = {"Id": id, "Value": code, "Conditions": "true"}
         ans = self.call("EditContract", data2)
         self.unit.assertEqual("Item " + id + " has not been found",
                          ans["error"], "Incorrect message: " + str(ans))
 
-    def test_activate_contract(self):
+    def test_bind_wallet(self):
         code, name = tools.generate_name_and_code("")
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
         res = self.call("NewContract", data)
@@ -268,34 +250,56 @@ class TestSystemContracts():
                            "BlockId is not generated: " + str(res))
         id = actions.get_contract_id(self.url, name, self.token)
         data2 = {"Id": id}
-        res = self.call("ActivateContract", data2)
+        res = self.call("BindWallet", data2)
         self.unit.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
 
-    def test_activate_incorrect_contract(self):
+    def test_bind_wallet_incorrect_contract(self):
+        code, name = tools.generate_name_and_code("")
+        data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
+        res = self.call("NewContract", data)
+        self.unit.assertGreater(res["blockid"], 0,
+                           "BlockId is not generated: " + str(res))
+        id = actions.get_contract_id(self.url, name, self.token)
+        data2 = {"Id": id}
+        res = self.call("BindWallet", data2)
+        self.unit.assertGreater(res["blockid"], 0,
+                           "BlockId is not generated: " + str(res))
+
+    def test_bind_wallet_incorrect_wallet(self):
+        code, name = tools.generate_name_and_code("")
+        data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
+        res = self.call("NewContract", data)
+        self.unit.assertGreater(res["blockid"], 0,
+                                "BlockId is not generated: " + str(res))
+        id = actions.get_contract_id(self.url, name, self.token)
+        data2 = {"Id": id,
+                 "WalletId": "0005-2070-2000-0006-0200"}
+        res = self.call("BindWallet", data2)
+        msg = 'The key ID is not found'
+        self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
+
+    def test_unbind_wallet(self):
+        code, name = tools.generate_name_and_code("")
+        data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
+        res = self.call("NewContract", data)
+        self.unit.assertGreater(res["blockid"], 0,
+                           "BlockId is not generated: " + str(res))
+        id = actions.get_contract_id(self.url, name, self.token)
+        data2 = {"Id": id}
+        res = self.call("BindWallet", data2)
+        self.unit.assertGreater(res["blockid"], 0,
+                                "BlockId is not generated: " + str(res))
+        res = self.call("UnbindWallet", data2)
+        self.unit.assertGreater(res["blockid"], 0,
+                                "BlockId is not generated: " + str(res))
+
+    def test_unbind_wallet_incorrect_wallet(self):
         id = "99999"
         data = {"Id": id}
-        ans = self.call("ActivateContract", data)
-        msg = "The contract " + id + " is not exist"
+        ans = self.call("UnbindWallet", data)
+        msg = 'Contract {id} does not exist'.format(id=id)
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
-    def test_deactivate_contract(self):
-        code, name = tools.generate_name_and_code("")
-        data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
-        res = self.call("NewContract", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-        id = actions.get_contract_id(self.url, name, self.token)
-        data2 = {"Id": id}
-        res = self.call("ActivateContract", data2)
-        # self.unit.assertGreater(res["blockid"], 0,        self.conf = self.config.readMainConfig()
-
-    def test_deactivate_incorrect_contract(self):
-        id = "99999"
-        data = {"Id": id}
-        ans = self.call("DeactivateContract", data)
-        self.unit.assertEqual("The contract " + id + " is not exist",
-                         ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_parameter(self):
         data = {"Name": "Par_" + tools.generate_random_name(), "Value": "test",
