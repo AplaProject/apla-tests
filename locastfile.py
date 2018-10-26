@@ -27,9 +27,9 @@ class WebsiteTasks(TaskSet):
                          headers={"Authorization": self.token}, name=contract_name)
 
     @task
-    def TokensSend(self):
+    def MoneyTransfer(self):
         contract_name = 'TokensSend'
-        data = {"Recipient": self.ldata['address'],
+        data = {"Recipient_Account": self.ldata['address'],
                 "Amount": "1000"}
         schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,

@@ -41,7 +41,7 @@ class TestCost():
         token_creater = data_creater["jwtToken"]
         contract = tools.read_fixtures("contracts")
         code = "contract CostContract" + contract["for_cost"]["code"]
-        data = {"Value": code, "ApplicationId": 1,
+        data = {"Wallet": "", "Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         print("wait: ", TestCost.wait)
         result = actions.call_contract(TestCost.conf[0]["url"], TestCost.conf[0]["private_key"],
@@ -49,13 +49,13 @@ class TestCost():
         status = actions.tx_status(TestCost.conf[0]["url"], TestCost.wait,
                                    result, token_creater)
 
-    def bind_wallet(self):
+    def activate_contract(self):
         data_creater = actions.login(self.conf[1]["url"], self.conf[0]["private_key"], 0)
         token_creater = data_creater["jwtToken"]
         id = actions.get_contract_id(self.conf[1]["url"], "CostContract", token_creater)
         data = {"Id": id}
         result = actions.call_contract(self.conf[1]["url"], self.conf[0]["private_key"],
-                                       "BindWallet", data, token_creater)
+                                       "ActivateContract", data, token_creater)
 
         status = actions.tx_status(self.conf[1]["url"], self.wait,
                                    result, token_creater)
@@ -66,7 +66,7 @@ class TestCost():
         id = actions.get_contract_id(self.conf[0]["url"], "CostContract", token_creater)
         data = {"Id": id}
         result = actions.call_contract(self.conf[0]["url"], self.conf[0]["private_key"],
-                                       "UnbindWallet", data, token_creater)
+                                       "DeactivateContract", data, token_creater)
         status = actions.tx_status(self.conf[0]["url"], self.wait, result, token_creater)
 
     def is_commissions_in_history(self, node_commision, id_from, platform_commission, node):
@@ -81,9 +81,9 @@ class TestCost():
         else:
             return False
 
-    def test_bind_wallet(self):
+    def test_activated_contract(self):
         if actions.is_contract_activated(self.conf[1]["url"], "CostContract", self.token) == False:
-            self.bind_wallet()
+            self.activate_contract()
         time.sleep(10)
         wallet_id = actions.get_activated_wallet(self.conf[1]["url"],
                                                 "CostContract", self.token)
@@ -133,7 +133,7 @@ class TestCost():
                                           "Error in comissions run activated contract")
 
 
-    def test_unbind_wallet(self):
+    def test_deactive_contract(self):
         if actions.is_contract_activated(self.conf[1]["url"], "CostContract", self.token) == True:
             self.deactivate_contract()
         wallet_id = actions.get_activated_wallet(self.conf[1]["url"],
@@ -179,9 +179,9 @@ class TestCost():
         self.u.assertDictEqual(dict_valid, dict_expect,
                              "Error in comissions run deactivated contract")
 
-    def test_bind_wallet_with_err(self):
+    def test_activated_contract_with_err(self):
         if actions.is_contract_activated(self.conf[1]["url"], "CostContract", self.token) == False:
-            self.bind_wallet()
+            self.activate_contract()
         wallet_id = actions.get_activated_wallet(self.conf[1]["url"], "CostContract",
                                                  self.token)
         balance_contract_owner_b = actions.get_balance_by_id(self.conf[1]["url"], self.token,
