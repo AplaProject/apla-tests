@@ -3,7 +3,7 @@ import json
 import os
 import time
 
-from libs import actions, tools, db, contract
+from libs import actions, tools, db, contract, check
 
 
 class TestSystemContracts():
@@ -171,42 +171,39 @@ class TestSystemContracts():
         self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
     def test_new_contract(self):
-        hash = contract.new_contract(self.url, self.pr_key, self.token)
-        status = actions.tx_status(self.url, self.wait, hash, self.token)
+        tx = contract.new_contract(self.url, self.pr_key, self.token)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         self.unit.assertGreater(status["blockid"], 0,
                            "BlockId is not generated: " + str(status))
 
     def test_new_contract_exists_name(self):
         cont_name = "cont_" + tools.generate_random_name()
-        hash1 = contract.new_contract(self.url, self.pr_key, self.token, name=cont_name)
-        status1 = actions.tx_status(self.url, self.wait, hash1, self.token)
-        hash2 = contract.new_contract(self.url, self.pr_key, self.token, name=cont_name)
-        status2 = actions.tx_status(self.url, self.wait, hash2, self.token)
+        tx1 = contract.new_contract(self.url, self.pr_key, self.token, name=cont_name)
+        status1 = actions.tx_status(self.url, self.wait, tx1['hash'], self.token)
+        tx2 = contract.new_contract(self.url, self.pr_key, self.token, name=cont_name)
+        status2 = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "Contract " + cont_name + " already exists"
         self.unit.assertEqual(status2["error"], msg, "Incorrect message: " + str(status2))
 
     def test_new_contract_without_name(self):
-        hash = contract.new_contract(self.url, self.pr_key, self.token, name='  ')
-        status = actions.tx_status(self.url, self.wait, hash, self.token)
+        tx = contract.new_contract(self.url, self.pr_key, self.token, name='  ')
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         self.unit.assertIn("The contract name is missing", status["error"],
                       "Incorrect message: " + str(status))
 
     def test_new_contract_incorrect_condition(self):
         cond = 'condition'
-        hash = contract.new_contract(self.url, self.pr_key, self.token, condition=cond)
-        status = actions.tx_status(self.url, self.wait, hash, self.token)
+        tx = contract.new_contract(self.url, self.pr_key, self.token, condition=cond)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         self.unit.assertIn('Condition ' + cond + ' is not allowed',
                          status["error"], "Incorrect message: " + str(status))
 
     def test_edit_contract_incorrect_condition(self):
-        code, name = tools.generate_name_and_code("")
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-        data2 = {"Id": actions.get_contract_id(self.url, name, self.token),
-                 "Value": code, "Conditions": "tryam",
+        tx = contract.new_contract(self.url, self.pr_key, self.token)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
+        check.is_tx_in_block(status)
+        data2 = {"Id": actions.get_contract_id(self.url, tx['name'], self.token),
+                 "Value": tx['code'], "Conditions": "tryam",
                  "WalletId": "0005-2070-2000-0006-0200"}
         ans = self.call("EditContract", data2)
         self.unit.assertIn("Condition tryam is not allowed",
@@ -214,42 +211,38 @@ class TestSystemContracts():
 
     def test_edit_contract_incorrect_condition1(self):
         wallet = "0005"
-        code, name = tools.generate_name_and_code("")
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-        data2 = {"Id": actions.get_contract_id(self.url, name, self.token),
-                 "Value": code, "Conditions": "true",
+        tx = contract.new_contract(self.url, self.pr_key, self.token)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
+        check.is_tx_in_block(status)
+        data2 = {"Id": actions.get_contract_id(self.url, tx['name'], self.token),
+                 "Value": tx['code'], "Conditions": "true",
                  "WalletId": wallet}
         ans = self.call("EditContract", data2)
         msg = "New owner " + wallet + " is not valid"
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract(self):
-        wallet = "0005-2070-2000-0006-0200"  # ??
-        code, name = tools.generate_name_and_code("")
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-
-    def test_edit_name_of_contract(self):
-        code, name = tools.generate_name_and_code("")
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-        code1, name1 = tools.generate_name_and_code("")
-        data2 = {"Id": actions.get_contract_id(self.url, name, self.token),
-                 "Value": code1, "Conditions": "true",
+        tx = contract.new_contract(self.url, self.pr_key, self.token)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
+        check.is_tx_in_block(status)
+        data2 = {"Id": actions.get_contract_id(self.url, tx['name'], self.token),
+                 "Value": tx['code'], "Conditions": "true",
                  "WalletId": "0005-2070-2000-0006-0200"}
         ans = self.call("EditContract", data2)
-        self.unit.assertEqual("Contracts or functions names cannot be changed",
+        self.unit.assertIn("Condition tryam is not allowed",
                          ans["error"], "Incorrect message: " + str(ans))
+
+    def test_edit_name_of_contract(self):
+        tx = contract.new_contract(self.url, self.pr_key, self.token)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
+        check.is_tx_in_block(status)
+        code1, name1 = tools.generate_name_and_code("")
+        data2 = {"Id": actions.get_contract_id(self.url, tx['name'], self.token),
+                     "Value": code1, "Conditions": "true",
+                     "WalletId": "0005-2070-2000-0006-0200"}
+        ans = self.call("EditContract", data2)
+        self.unit.assertEqual("Contracts or functions names cannot be changed",
+                             ans["error"], "Incorrect message: " + str(ans))
 
     def test_edit_incorrect_contract(self):
         code, name = tools.generate_name_and_code("")

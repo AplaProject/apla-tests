@@ -10,6 +10,10 @@ def new_contract(url, pr_key, token, source='', name='', app=1, condition='true'
             source = '{data { }    conditions {    }    action {    }    }'
         code = 'contract ' + name + source
     data = {"Value": code, "ApplicationId": app, "Conditions": condition}
-    return actions.call_contract(url, pr_key, "NewContract", data, token)
+    result = {"hash": actions.call_contract(url, pr_key, "NewContract", data, token),
+              "name": name, "code": code}
+    return result
+
+
 
 

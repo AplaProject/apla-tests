@@ -1,4 +1,5 @@
 from libs import db, actions
+import unittest
 
 
 def compare_nodes(config):
@@ -35,6 +36,13 @@ def compare_nodes(config):
         else:
             i += 1
     return True
+
+def is_tx_in_block(status):
+    if status["blockid"] > 0:
+        return True
+    else:
+        unittest.TestCase.fail("Transaction not in block. Status: " + str(status))
+        return False
 
 
 def compare_db(config, url, token):
