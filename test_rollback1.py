@@ -81,7 +81,7 @@ class TestRollback1():
         }
         """
         code, name = tools.generate_name_and_code(body)
-        data = {"Wallet": '', "ApplicationId": 1,
+        data = {"ApplicationId": 1,
                 "Value": code,
                 "Conditions": "ContractConditions(\"MainCondition\")"}
         res = self.call("NewContract", data)
@@ -178,7 +178,7 @@ class TestRollback1():
         res = self.call("NewEcosystem", data)
 
     def tokens_send(self):
-        data = {"Recipient_Account": "4544233900443112470",
+        data = {"Recipient": "4544233900443112470",
                 "Amount": "1000"}
         res = self.call("TokensSend", data)
 
@@ -189,13 +189,13 @@ class TestRollback1():
                  "Conditions": "true"}
         res = self.call("EditContract", data2)
 
-    def activate_contract(self, name):
+    def bind_wallet(self, name):
         data = {"Id": actions.get_contract_id(self.url, name, self.token)}
-        res = self.call("ActivateContract", data)
+        res = self.call("BindWallet", data)
 
-    def deactivate_contract(self, name):
+    def unbind_wallet(self, name):
         data = {"Id": actions.get_contract_id(self.url, name, self.token)}
-        res = self.call("DeactivateContract", data)
+        res = self.call("UnbindWallet", data)
 
     def new_parameter(self):
         name = "Par_" + tools.generate_random_name()
@@ -375,8 +375,8 @@ class TestRollback1():
         self.tokens_send()
         contract, code = self.create_contract("")
         self.edit_contract(contract, code)
-        self.activate_contract(contract)
-        self.deactivate_contract(contract)
+        self.bind_wallet(contract)
+        self.unbind_wallet(contract)
         param = self.new_parameter()
         self.edit_parameter(param)
         menu = self.new_menu()

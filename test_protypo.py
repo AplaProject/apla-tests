@@ -26,7 +26,7 @@ class TestPrototipo():
         self.uni.assertGreater(status['blockid'], 0)
 
     def create_contract(self, code):
-        data = {"Wallet": "", "ApplicationId": 1,
+        data = {"ApplicationId": 1,
                 "Value": code,
                 "Conditions": "ContractConditions(\"MainCondition\")"}
         result = actions.call_contract(self.url, self.pr_key, "NewContract",
