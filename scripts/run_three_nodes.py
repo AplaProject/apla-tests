@@ -214,74 +214,83 @@ startThirdNode = subprocess.Popen([
 time.sleep(3)
 
 with open(os.path.join(workDir1, 'PrivateKey'), 'r') as f:
-	privKey1 = f.read()
+	priv_key1 = f.read()
 with open(os.path.join(workDir1, 'PublicKey'), 'r') as f:
 	pubKey1 = f.read()
 with open(os.path.join(workDir2, 'PrivateKey'), 'r') as f:
-	privKey2 = f.read()
+	priv_key2= f.read()
 with open(os.path.join(workDir3, 'PrivateKey'), 'r') as f:
-	privKey3 = f.read()
+	priv_key3 = f.read()
 with open(os.path.join(workDir1, 'KeyID'), 'r') as f:
-	keyID1 = f.read()
+	key_id1 = f.read()
 with open(os.path.join(workDir1, 'NodePublicKey'), 'r') as f:
-	nodePubKey1 = f.read()
+	node_pub_key1 = f.read()
 with open(os.path.join(workDir2, 'KeyID'), 'r') as f:
-	keyID2 = f.read()
+	key_id2 = f.read()
 with open(os.path.join(workDir2, 'NodePublicKey'), 'r') as f:
-	nodePubKey2 = f.read()
+	node_pub_key2 = f.read()
 with open(os.path.join(workDir2, 'PublicKey'), 'r') as f:
 	pubKey2 = f.read()
 with open(os.path.join(workDir3, 'KeyID'), 'r') as f:
-	keyID3 = f.read()
+	key_id3 = f.read()
 with open(os.path.join(workDir3, 'NodePublicKey'), 'r') as f:
-	nodePubKey3 = f.read()
+	node_pub_key3 = f.read()
 with open(os.path.join(workDir3, 'PublicKey'), 'r') as f:
 	pubKey3 = f.read()
 
-#-------------------------
-config = {
-    "1": {
-        "url": "http://localhost:" + args.httpPort1 + "/api/v2",
-		"private_key": privKey1,
-        "keyID": keyID1,
-		"pubKey": nodePubKey1,
-		"tcp_address": "localhost:" + args.tcpPort1,
-		"api_address": "http://localhost:" + args.httpPort1,
-		"dbHost": args.dbHost,
-        "dbName": args.dbName1,
-        "login": args.dbUser,
-		"pass": args.dbPassword,
-        "time_wait_tx_in_block": 30
-    },
-    "2": {
-        "url": "http://localhost:" + args.httpPort2 + "/api/v2",
-        "private_key": privKey2,
-        "keyID": keyID2,
-        "pubKey": nodePubKey2,
-		"tcp_address": "localhost:" + args.tcpPort2,
-		"api_address": "http://localhost:" + args.httpPort2,
-        "dbHost": args.dbHost,
-        "dbName": args.dbName2,
-        "login": args.dbUser,
-        "pass": args.dbPassword,
-        "time_wait_tx_in_block": 30
-    },
-    "3": {
-        "url": "http://localhost:" + args.httpPort3 + "/api/v2",
-		"private_key": privKey3,
-		"keyID": keyID3,
-        "pubKey": nodePubKey3,
-		"tcp_address": "localhost:" + args.tcpPort3,
-		"api_address": "http://localhost:" + args.httpPort3,
-        "dbHost": args.dbHost,
-        "dbName": args.dbName3,
-        "login": args.dbUser,
-        "pass": args.dbPassword,
-        "time_wait_tx_in_block": 30
-    }}
+	#-------------------------
 
-# Update config for tests
-confPath = os.path.join(curDir+ '/../', 'hostConfig.json')
+
+
+	config = [
+		{
+			"url": "http://localhost:" + args.httpPort1 + "/api/v2",
+			"private_key": priv_key1,
+			"keyID": key_id1,
+			"pubKey": node_pub_key1,
+			"tcp_address": "localhost:" + args.tcpPort1,
+			"api_address": "http://localhost:" + args.httpPort1,
+			"db":
+			{
+				"dbHost": args.dbHost,
+				"dbName": args.dbName1,
+				"login": args.dbUser,
+				"pass": args.dbPassword
+				}
+		},
+		{
+			"url": "http://localhost:" + args.httpPort2 + "/api/v2",
+			"private_key": priv_key2,
+			"keyID": key_id2,
+			"pubKey": node_pub_key2,
+			"tcp_address": "localhost:" + args.tcpPort2,
+			"api_address": "http://localhost:" + args.httpPort2,
+			"db":
+			{
+				"dbHost": args.dbHost,
+				"dbName": args.dbName2,
+				"login": args.dbUser,
+				"pass": args.dbPassword
+				}
+		},
+		{
+			"url": "http://localhost:" + args.httpPort3 + "/api/v2",
+			"private_key": priv_key3,
+			"keyID": key_id3,
+			"pubKey": node_pub_key3,
+			"tcp_address": "localhost:" + args.tcpPort3,
+			"api_address": "http://localhost:" + args.httpPort3,
+			"db":
+			{
+				"dbHost": args.dbHost,
+				"dbName": args.dbName3,
+				"login": args.dbUser,
+				"pass": args.dbPassword
+			}
+		}]
+
+	# Update config for tests
+confPath = os.path.join(curDir+ '/../', 'nodesConfig.json')
 
 with open(confPath, 'w') as fconf:
 	fconf.write(json.dumps(config, indent=4))

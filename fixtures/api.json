@@ -1,0 +1,27 @@
+{
+"check_get_api":
+[
+	{"endPoint": "/ecosystems/", "asserts": ["number"], "error": "null"},
+	{"endPoint": "/ecosystemparams/?ecosystem=1", "asserts": ["list"], "error": "null"},
+	{"endPoint": "/ecosystemparams/", "asserts": ["list"], "error": "null"},
+	{"endPoint": "/ecosystemparam/founder_account/", "asserts": ["id", "name", "value", "conditions"], "error": "null"},
+	{"endPoint": "/tables", "asserts": ["list", "count"], "error": "null"},
+	{"endPoint": "/row/contracts/2", "asserts": ["value"], "error": "null"},
+	{"endPoint": "/contract/MainCondition", "asserts": ["name"], "error": "null"},
+	{"endPoint": "/version", "asserts": ["."], "error": "null"},
+	{"endPoint": "/config/centrifugo", "asserts": ["ws://"], "error": "null"},
+	{"endPoint": "/ecosystemname?id=1", "asserts": ["ecosystem_name"], "error": "null"},
+	{"endPoint": "/ecosystemname?id=99999", "asserts": ["error"], "error": "null"}
+],
+"get_error_api":
+[
+{"endPoint": "/balance/0000-0990-3244-5453-2310", "asserts": "null", "error": "E_INVALIDWALLET", "msg": "Invalid wallet"},
+{"endPoint": "/ecosystemparam/incorrectParam/", "asserts": "null", "error": "E_PARAMNOTFOUND", "msg": "Parameter incorrectParam has not been found"},
+{"endPoint": "/table/tab", "asserts": "null", "error": "E_TABLENOTFOUND", "msg": "Table tab has not been found"},
+{"endPoint": "/row/tab/2", "asserts": "null", "error": "E_QUERY", "msg": "DB query is wrong"},
+{"endPoint": "/contract/contract", "asserts": "null", "error": "E_CONTRACT", "msg": "There is not contract contract"}
+]
+}
+	
+	
+	
