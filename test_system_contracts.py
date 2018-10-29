@@ -208,28 +208,14 @@ class TestSystemContracts():
         self.unit.assertIn("Condition tryam is not allowed",
                          ans["error"], "Incorrect message: " + str(ans))
 
-    def test_edit_contract_incorrect_wallet(self):
-        wallet = "0005"
-        tx = contract.new_contract(self.url, self.pr_key, self.token)
-        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        check.is_tx_in_block(status)
-        data2 = {"Id": actions.get_contract_id(self.url, tx['name'], self.token),
-                 "Value": tx['code'], "Conditions": "true",
-                 "WalletId": wallet}
-        ans = self.call("EditContract", data2)
-        msg = "New owner " + wallet + " is not valid"
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
     def test_edit_contract(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         check.is_tx_in_block(status)
         data2 = {"Id": actions.get_contract_id(self.url, tx['name'], self.token),
-                 "Value": tx['code'], "Conditions": "true",
-                 "WalletId": "0005-2070-2000-0006-0200"}
+                 "Value": tx['code'], "Conditions": "false"}
         ans = self.call("EditContract", data2)
-        self.unit.assertGreater(ans["blockid"], 0,
-                           "BlockId is not generated: " + str(status))
+        check.is_tx_in_block(ans)
 
     def test_edit_name_of_contract(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
@@ -237,8 +223,7 @@ class TestSystemContracts():
         check.is_tx_in_block(status)
         code1, name1 = tools.generate_name_and_code("")
         data2 = {"Id": actions.get_contract_id(self.url, tx['name'], self.token),
-                     "Value": code1, "Conditions": "true",
-                     "WalletId": "0005-2070-2000-0006-0200"}
+                     "Value": code1, "Conditions": "true"}
         ans = self.call("EditContract", data2)
         self.unit.assertEqual("Contracts or functions names cannot be changed",
                              ans["error"], "Incorrect message: " + str(ans))
@@ -246,8 +231,7 @@ class TestSystemContracts():
     def test_edit_incorrect_contract(self):
         code, name = tools.generate_name_and_code("")
         id = "9999"
-        data2 = {"Id": id, "Value": code, "Conditions": "true",
-                 "WalletId": "0005-2070-2000-0006-0200"}
+        data2 = {"Id": id, "Value": code, "Conditions": "true"}
         ans = self.call("EditContract", data2)
         self.unit.assertEqual("Item " + id + " has not been found",
                          ans["error"], "Incorrect message: " + str(ans))
