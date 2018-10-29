@@ -3,6 +3,7 @@ import json
 import os
 import time
 
+
 from libs import actions, tools, db, contract, check
 
 
@@ -16,9 +17,11 @@ class TestSystemContracts():
     token = data["jwtToken"]
     keys = tools.read_fixtures("keys")
 
+
     @classmethod
     def setup_class(self):
         self.unit = unittest.TestCase()
+
 
     def assert_tx_in_block(self, result, jwt_token):
         status = actions.tx_status(self.url, self.wait, result, jwt_token)
@@ -28,10 +31,12 @@ class TestSystemContracts():
         else:
             return {"blockid": 0, "error": status["error"]}
 
+
     def call(self, name, data):
         resp = actions.call_contract(self.url, self.pr_key, name, data, self.token)
         resp = self.assert_tx_in_block(resp, self.token)
         return resp
+
 
     def assert_multi_tx_in_block(self, result, jwt_token):
         self.unit.assertIn("hashes", result)
@@ -41,12 +46,15 @@ class TestSystemContracts():
             self.unit.assertNotIn('errmsg', status)
             self.unit.assertGreater(int(status["blockid"]), 0,
                                "BlockID not generated")
+            #check.is_tx_in_block(status)
+
 
     def callMulti(self, name, data, sleep):
         resp = actions.call_multi_contract(self.url, self.pr_key, name, data, self.token)
         time.sleep(sleep)
         resp = self.assert_multi_tx_in_block(resp, self.token)
         return resp
+
 
     def wait_block_id(self, old_block_id, limit):
         while True:
@@ -56,147 +64,141 @@ class TestSystemContracts():
             data = {"Value": code, "ApplicationId": 1,
                     "Conditions": "true"}
             res = self.call("NewContract", data)
-            self.unit.assertGreater(res["blockid"], 0, "BlockId is not generated: " + str(res))
+            check.is_tx_in_block(res)
             currrent_block_id = res["blockid"]
             expected_block_id = old_block_id + limit + 1  # +1 spare block
             if currrent_block_id == expected_block_id:
                 break
 
-    def test_create_ecosystem(self):
-        data = {"Name": "Ecosys_" + tools.generate_random_name()}
-        res = self.call("NewEcosystem", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
 
-    # !!!
+    def test_create_ecosystem(self):
+        name = "Ecosys_" + tools.generate_random_name()
+        data = {"Name": name}
+        res = self.call("NewEcosystem", data)
+        check.is_tx_in_block(res)
+
+
     def test_edit_application(self):
         name = "App" + tools.generate_random_name()
         data = {"Name": name, "Conditions": "true"}
         res = self.call("NewApplication", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         id = actions.get_object_id(self.url, name, "applications", self.token)
         data = {"ApplicationId": id, "Conditions": "false"}
         res = self.call("EditApplication", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
 
     def test_activate_application(self):
         name = "App" + tools.generate_random_name()
         data = {"Name": name, "Conditions": "true"}
         res = self.call("NewApplication", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         id = actions.get_object_id(self.url, name, "applications", self.token)
         data_deact = {"ApplicationId": id, "Value": 0}
         res = self.call("DelApplication", data_deact)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         data_act = {"ApplicationId": id, "Value": 1}
         res = self.call("DelApplication", data_act)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
 
-    def test_export_application(self):
-        name = "App" + tools.generate_random_name()
-        data = {"Name": name, "Conditions": "true"}
-        res = self.call("NewApplication", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-        id = actions.get_object_id(self.url, name, "applications", self.token)
-        data_deact = {"ApplicationId": id}
-        res = self.call("ExportNewApp", data_deact)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
 
-    # !!!
     def test_edit_ecosystem_name(self):
         id = 1
-        data = {"EcosystemID": id, "NewName": "Ecosys_" + tools.generate_random_name()}
-        res_block_id = self.call("EditEcosystemName", data)
-        self.unit.assertGreater(res_block_id["blockid"], 0,
-                           "BlockId is not generated: " + str(res_block_id))
+        name = "Ecosys_" + tools.generate_random_name()
+        data = {"EcosystemID": id, "NewName": name}
+        res = self.call("EditEcosystemName", data)
+        check.is_tx_in_block(res)
 
     def test_edit_ecosystem_name_incorrect_id(self):
         id = 500
         newName = "ecosys_" + tools.generate_random_name()
         data = {"EcosystemID": id, "NewName": newName}
         res = self.call("EditEcosystemName", data)
-        self.unit.assertEqual("The ecosystem " + str(id) + " is not exist", res["error"])
+        msg = "The ecosystem {id} is not exist".format(id=id)
+        self.unit.assertEqual(msg, res["error"], "Is not equals")
 
     def test_tokens_send(self):
         ldata = actions.login(self.url, self.keys["key2"])
-        time.sleep(10)
         data = {"Recipient": ldata['address'],
                 "Amount": "1000"}
         res = self.call("TokensSend", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-        self.unit.assertTrue(actions.is_commission_in_history(self.url, self.token,
-                                                         self.config[0]["keyID"],
-                                                         ldata['key_id'], "1000"),
-                                                         "No TokensSend resord in history")
+        check.is_tx_in_block(res)
+        is_commission_in_history = actions.is_commission_in_history(
+            self.url, self.token,
+            self.config[0]["keyID"],
+            ldata['key_id'], "1000"
+        )
+        self.unit.assertTrue(is_commission_in_history, "No TokensSend resord in history")
 
 
     def test_tokens_send_incorrect_wallet(self):
         wallet = "0005-2070-2000-0006"
-        msg = 'The recipient ' + wallet + ' is not valid'
+        msg = "The recipient {wallet} is not valid".format(wallet=wallet)
         data = {"Recipient": wallet,
                 "Amount": "1000"}
         res = self.call("TokensSend", data)
         self.unit.assertEqual(res["error"], msg, "Incorrect message" + msg)
 
+
     def test_tokens_send_zero_amount(self):
         ldata = actions.login(self.url, self.keys["key2"], 0)
-        time.sleep(10)
-        data = {"Recipient": ldata['address'], "Amount": "0"}
+        data = {"Recipient": ldata['address'],
+                "Amount": "0"}
         ans = self.call("TokensSend", data)
         msg = 'Amount equals zero'
         self.unit.assertEqual(ans["error"], msg, "Incorrect message" + str(ans))
 
+
     def test_tokens_send_negative_amount(self):
         ldata = actions.login(self.url, self.keys["key2"], 0)
-        time.sleep(10)
         msg = "Amount is less than zero"
-        data = {"Recipient": ldata['address'], "Amount": "-1000"}
+        data = {"Recipient": ldata['address'],
+                "Amount": "-1000"}
         ans = self.call("TokensSend", data)
         self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
 
+
     def test_tokens_send_amount_as_string(self):
         ldata = actions.login(self.url, self.keys["key2"], 0)
-        time.sleep(10)
-        msg = "Invalid param 'Amount': can't convert ttt to decimal"
-        data = {"Recipient": ldata['address'], "Amount": "ttt"}
+        amount = "ttt"
+        msg = "Invalid param 'Amount': can't convert {amount} to decimal".format(amount=amount)
+        data = {"Recipient": ldata['address'],
+                "Amount": amount}
         ans = self.call("TokensSend", data)
         self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
+
 
     def test_new_contract(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        self.unit.assertGreater(status["blockid"], 0,
-                           "BlockId is not generated: " + str(status))
+        check.is_tx_in_block(status)
+
 
     def test_new_contract_exists_name(self):
         cont_name = "cont_" + tools.generate_random_name()
         tx1 = contract.new_contract(self.url, self.pr_key, self.token, name=cont_name)
         status1 = actions.tx_status(self.url, self.wait, tx1['hash'], self.token)
+        check.is_tx_in_block(status1)
         tx2 = contract.new_contract(self.url, self.pr_key, self.token, name=cont_name)
         status2 = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "Contract " + cont_name + " already exists"
         self.unit.assertEqual(status2["error"], msg, "Incorrect message: " + str(status2))
 
+
     def test_new_contract_without_name(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token, name='  ')
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        self.unit.assertIn("The contract name is missing", status["error"],
-                      "Incorrect message: " + str(status))
+        msg = "The contract name is missing"
+        self.unit.assertEqual(status["error"], msg, "Incorrect message: " + str(status))
+
 
     def test_new_contract_incorrect_condition(self):
         cond = 'condition'
         tx = contract.new_contract(self.url, self.pr_key, self.token, condition=cond)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        self.unit.assertIn('Condition ' + cond + ' is not allowed',
-                         status["error"], "Incorrect message: " + str(status))
+        msg = 'Condition {cond} is not allowed'.format(cond=cond)
+        self.unit.assertIn(msg,  status["error"], "Incorrect message: " + str(status))
+
 
     def test_edit_contract_incorrect_condition(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
