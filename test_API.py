@@ -440,11 +440,12 @@ class TestApi():
 
 
     def test_get_systemparams_incorrect_param(self):
-        asserts = ["list"]
+        asserts = ['error', 'msg']
         param = "not_exist_parameter"
         res = api.systemparams(self.url, self.token, param)
-        self.check_result(res, asserts)
-        self.unit.assertEqual(0, len(res["list"]))
+        error = 'E_PARAMNOTFOUND'
+        msg = 'Parameter {param} has not been found'.format(param=param)
+        self.check_result(res, asserts, error, msg)
 
 
     def test_get_contracts(self):
