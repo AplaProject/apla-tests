@@ -119,6 +119,7 @@ class TestSystemContracts():
 
     def test_tokens_send(self):
         ldata = actions.login(self.url, self.keys["key2"])
+        time.sleep(10)
         data = {"Recipient": ldata['address'],
                 "Amount": "1000"}
         res = self.call("TokensSend", data)
@@ -206,7 +207,7 @@ class TestSystemContracts():
         check.is_tx_in_block(status)
         cond = "tryam"
         id = actions.get_contract_id(self.url, tx['name'], self.token)
-        data2 = {"Id": id, "Value": tx['code'], "Conditions": "cond"}
+        data2 = {"Id": id, "Value": tx['code'], "Conditions": cond}
         ans = self.call("EditContract", data2)
         msg = "Condition {cond} is not allowed".format(cond=cond)
         self.unit.assertIn(msg, ans["error"], "Incorrect message: " + str(ans))
@@ -257,8 +258,8 @@ class TestSystemContracts():
     def test_bind_wallet_incorrect_contract(self):
         id = "99999"
         data = {"Id": id}
-        ans = self.call("ActivateContract", data)
-        msg = "The contract {id} is not exist".format(id=id)
+        ans = self.call("BindWallet", data)
+        msg = "Contract {id} does not exist".format(id=id)
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
 
@@ -402,7 +403,7 @@ class TestSystemContracts():
         count = actions.get_object_id(self.url, name, "menu", self.token)
         data_edit = {"Id": count, "Value": "ItemEdited", "Conditions": condition}
         ans = self.call("EditMenu", data_edit)
-        msg = 'Condition {condition}  is not allowed'.format(condition=condition)
+        msg = 'Condition {condition} is not allowed'.format(condition=condition)
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
 
