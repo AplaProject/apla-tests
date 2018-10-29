@@ -209,7 +209,7 @@ class TestSystemContracts():
         self.unit.assertIn("Condition tryam is not allowed",
                          ans["error"], "Incorrect message: " + str(ans))
 
-    def test_edit_contract_incorrect_condition1(self):
+    def test_edit_contract_incorrect_wallet(self):
         wallet = "0005"
         tx = contract.new_contract(self.url, self.pr_key, self.token)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
@@ -229,8 +229,8 @@ class TestSystemContracts():
                  "Value": tx['code'], "Conditions": "true",
                  "WalletId": "0005-2070-2000-0006-0200"}
         ans = self.call("EditContract", data2)
-        self.unit.assertIn("Condition tryam is not allowed",
-                         ans["error"], "Incorrect message: " + str(ans))
+        self.unit.assertGreater(ans["blockid"], 0,
+                           "BlockId is not generated: " + str(status))
 
     def test_edit_name_of_contract(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
