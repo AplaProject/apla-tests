@@ -83,6 +83,15 @@ def balance(url, token, key_id):
     return call_get_api(url, data, token)
 
 
+def keyinfo(url, token, key_id):
+    data = {}
+    endpoint = '/keyinfo/{key_id}'.format(
+        key_id=key_id
+    )
+    url += endpoint
+    return call_get_api(url, data, token)
+
+
 def ecosystemname(url, token, id=1):
     data = {'id': id}
     endpoint = '/ecosystemname'

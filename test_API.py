@@ -67,6 +67,26 @@ class TestApi():
         self.check_result(res, asserts, error, msg)
 
 
+    def test_keyinfo_by_address(self):
+        res = api.keyinfo(self.url, token='', key_id=self.data['address'])
+        for item in res:
+            if len(item) > 2:
+                asserts = {'ecosystem', 'name', 'roles'}
+            else:
+                asserts = {'ecosystem', 'name'}
+            self.check_result(item, asserts)
+
+
+    def test_keyinfo_by_keyid(self):
+        res = api.keyinfo(self.url, token='', key_id=self.data['key_id'])
+        for item in res:
+            if len(item) > 2:
+                asserts = {'ecosystem', 'name', 'roles'}
+            else:
+                asserts = {'ecosystem', 'name'}
+            self.check_result(item, asserts)
+
+
     def test_get_ecosystem(self):
         asserts = ['number']
         res = api.ecosystems(self.url, self.token)
