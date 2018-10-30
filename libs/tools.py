@@ -66,5 +66,8 @@ def read_fixtures(type):
         data = f.read()
     return json.loads(data)
 
-def generate_pr_key():
-    return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(64))
+
+def generate_private_key():
+    hex_symbols = 'abcdef' + string.digits
+    return ''.join(random.choice(hex_symbols) for _ in range(64))
+
