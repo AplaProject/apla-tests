@@ -4,7 +4,7 @@ import os
 import time
 
 
-from libs import actions, tools, api
+from libs import actions, tools, api, check
 
 
 class TestApi():
@@ -71,7 +71,7 @@ class TestApi():
         asserts = {'ecosystem', 'name'}
         new_pr_key = tools.generate_private_key()
         new_user_data = actions.login(self.url, new_pr_key)
-        time.sleep(10)
+        check.is_new_key_in_keys(self.url, self.token, new_user_data['key_id'], self.wait)
         data = {'Name': tools.generate_random_name()}
         resp = actions.call_contract(self.url, new_pr_key, 'NewEcosystem', data, new_user_data['jwtToken'])
         resp = self.assert_tx_in_block(resp, new_user_data['jwtToken'])
@@ -86,7 +86,7 @@ class TestApi():
         asserts = {'ecosystem', 'name', 'roles'}
         new_pr_key = tools.generate_private_key()
         new_user_data = actions.login(self.url, new_pr_key)
-        time.sleep(10)
+        check.is_new_key_in_keys(self.url, self.token, new_user_data['key_id'], self.wait)
         data = {'rid': 2, 'member_id': new_user_data['key_id']}
         self.call('RolesAssign', data)
         # test
@@ -606,7 +606,7 @@ class TestApi():
     def test_login(self):
         keys = tools.read_fixtures("keys")
         data1 = actions.login(self.url, keys["key5"], 0)
-        time.sleep(5)
+        check.is_new_key_in_keys(self.url, self.token, data1['key_id'], self.wait)
         res = actions.is_wallet_created(self.url, self.token, data1["key_id"])
         self.unit.assertTrue(res, "Wallet for new user didn't created")
 
@@ -615,11 +615,11 @@ class TestApi():
         is_one = False
         keys = tools.read_fixtures("keys")
         data1 = actions.login(self.url, keys["key3"], 0)
-        time.sleep(5)
+        check.is_new_key_in_keys(self.url, self.token, data1['key_id'], self.wait)
         res = actions.is_wallet_created(self.url, self.token, data1["key_id"])
         if res == True:
             data2 = actions.login(self.url, keys["key1"], 0)
-            time.sleep(5)
+            check.is_new_key_in_keys(self.url, self.token, data2['key_id'], self.wait)
             is_one = actions.is_wallet_created(self.url, self.token, data2["key_id"])
             self.unit.assertTrue(is_one, "Wallet for new user didn't created")
 
