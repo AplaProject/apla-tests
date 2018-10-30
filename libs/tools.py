@@ -65,3 +65,6 @@ def read_fixtures(type):
     with open(path, 'r', encoding='UTF-8') as f:
         data = f.read()
     return json.loads(data)
+
+def generate_pr_key():
+    c = a+b

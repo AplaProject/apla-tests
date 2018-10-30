@@ -1,101 +1,71 @@
-import unittest
-import utils
-import config
-import requests
-import json
-import funcs
-import os
-import time
 import argparse
 
+from libs import actions
 
-def new_ecosystem(url, prKey, token, times):
-    i = 1
-    while i < times:
-        data = {"Name": "Ecosys_" + utils.generate_random_name()}
-        utils.call_contract(url, prKey,
-                            "NewEcosystem", data, token)
-        i = i + 1
-        time.sleep(5)
-            
-def new_table(url, prKey, token, times):
-    column = """[{"name":"MyName","type":"varchar",
-        "index": "1",  "conditions":"true"},{"name":"Myb","type":"json",
-        "index": "0",  "conditions":"true"}, {"name":"MyD","type":"datetime",
-        "index": "0",  "conditions":"true"}, {"name":"MyM","type":"money",
-        "index": "0",  "conditions":"true"},{"name":"MyT","type":"text",
-        "index": "0",  "conditions":"true"}]"""
-    permission = """{"insert": "false",
-        "update" : "true","new_column": "true"}"""
-    i = 1
-    while i < times:
-        data = {"Name": "Tab_" + utils.generate_random_name(),
-                "Columns": column, "ApplicationId": 1, "Permissions": permission}
-        utils.call_contract(url, prKey,
-                                "NewTable", data, token)
-        i = i + 1
-        time.sleep(5)
-            
-def new_page(url, prKey, token, times):
-    i = 1
-    while i < times:
-        data = {"Name": "Page_" + utils.generate_random_name(),
-                    "Value": "Hello page!", "ApplicationId": 1,
-                    "Conditions": "true", "Menu": "default_menu"}
-        utils.call_contract(url, prKey,
-                                "NewPage", data, token)
-        i = i + 1
-        time.sleep(5)
-
-def new_contract(url, prKey, token, times):
-    i = 1
-    while i < times:
-        code, name = utils.generate_name_and_code("")
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        utils.call_contract(url, prKey,
-                                "NewContract", data, token)
-        i = i + 1
-        time.sleep(5)
-
-def edit_page(url, prKey, token, times):
-    name = "Page_" + utils.generate_random_name()
-    data = {"Name": name, "Value": "Hello page!", "ApplicationId": 1,
-                "Conditions": "true", "Menu": "default_menu"}
-    utils.call_contract(url, prKey,
-                                "NewPage", data, token)
-    status = utils.txstatus(url, 30, hash, token)
-    if len(status['blockid']) > 0:
-        i = 1
-        while i < times:
-            dataEdit = {"Id": funcs.get_count(url, "pages", token),
-                    "Value": "Good by page!", "Conditions": "true",
-                    "Menu": "default_menu"}
-            utils.call_contract(url, prKey,
-                                    "EditPage", dataEdit, token)
-            i = i + 1
-            time.sleep(5)
+def get_contract(func):
+    dict = {'CreateColumn': 'NewColumn',
+            'CompileContract': 'NewContract',
+            'CreateEcosystem': 'NewEcosystem',
+            'FlushContract': 'NewContract',
+            'CreateTable': 'NewTable',
+            'ColumnCondition': 'NewColumn',
+            'PermColumn': 'EditColumn',
+            'TableConditions': 'NewTable',
+            'PermTable': 'EditTable',
+            'NewMoney': 'NewUser',
+            'EditEcosysName': 'EditEcosystemName',
+            'CreateContract': 'NewContract',
+            'EditLanguage': 'EditLang',
+            'CreateLanguage': 'NewLang',
+            'UpdateContract': 'EditContract',
+            'SetPubKey': 'NewUser'}
+    return dict.get(func)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-url', default='http://localhost:7079/api/v2')
     parser.add_argument('-prKey', required=True)
-    parser.add_argument('-type', required=True)
+    parser.add_argument('-firstBoot', default=False)
+    parser.add_argument('-function', required=False)
+    parser.add_argument('-n', required=False)
+    parser.add_argument('-threads', required=False)
+    
     args = parser.parse_args()
-    times = 120
-    data = utils.login(args.url,
-                            args.prKey, 0)
-    token = data["jwtToken"] 
-    if args.type == 'NewEcosystem':
-        new_ecosystem(args.url, args.prKey, token, times)
-    elif args.type == 'NewTable':
-        new_table(args.url, args.prKey, token, times)
-    elif args.type == 'NewPage':
-        new_page(args.url, args.prKey, token, times)
-    elif args.type == 'NewContract':
-        new_contract(args.url, args.prKey, token, times)
-    elif args.type == 'EditPage':
-        edit_page(args.url, args.prKey, token, times)
+    data = actions.login(args.url, args.prKey, 0)
+    token = data["jwtToken"]
+    
+    if args.firstBoot == True:
+        actions.imp_app("system", args.url, args.prKey, token)
+        actions.imp_app("bench", args.url, args.prKey, token)
     else:
-        print("There is no contract with name " + args.type)
+        is_present = actions.is_contract_present(args.url, token, 'bench_' + name)
+        if is_present == True:
+            cont_data = [{"contract": args.function,
+                          "params": {"n": args.n}} for _ in range(args.threads)]
+            actions.call_multi_contract(args.url, args.prKey, args.function, cont_data, token, False)
+        else:
+            contract = get_contract(func)
+            if contract == None:
+                print("Contract for the function isn't present")
+                exit(1)
+            if contract == "NewContract":
+                i = 0
+                while i < args.n:
+                    code = 'contract ' + name + source
+                    data = [{"contract": contract,
+                            "params": {"Value": 'contract ' + "cont_" + tools.generate_random_name() + '{data { }    conditions {    }    action {    }    }',
+                                    "ApplicationId": 1, "Conditions": 'true'}} for _ in range(args.threads)]
+                    actions.call_multi_contract(args.url, args.prKey, contract, data, token, False)
+                    i +=1
+            if contract == "NewTable":
+                perms = """{"insert": "false", "update": "true", "new_column": "true"}"""
+                columns = """[{"name": "MyName", "type":"varchar", "index": "1", "conditions": "true"}]""" 
+                i = 0
+                while i < args.n:
+                    name = "Tab_" + tools.generate_random_name()
+                    data = [{"contract": contract,
+                         "params": {"ApplicationId": 1, "Name": name,
+                                    "Columns": columns, "Permissions": perms}} for _ in range(args.threads)]
+                    actions.call_multi_contract(args.url, args.prKey, contract, data, token, False)
+                    i +=1

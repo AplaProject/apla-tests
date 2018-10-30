@@ -262,3 +262,38 @@ def is_commission_in_history(url, token, id_from, id_to, summ):
             if item['amount'] == str(summ):
                 return True
     return False
+
+def is_contract_present(url, token, name):
+    ans = api.contract(url, token, name)
+    if ans['error'] == 'E_CONTRACT':
+        return False
+    else:
+        return True
+
+def imp_app(app_name, url, pr_key, token):
+    path = os.path.join(os.getcwd(), "fixtures", "basic", app_name + ".json")
+    resp = actions.call_contract(url, pr_key, "ImportUpload",
+                                 {'input_file': {'Path': path}}, token)
+    res_import_upload = actions.tx_status(url, 30, resp, token)
+    if int(res_import_upload["blockid"]) > 0:
+        founder_id = actions.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
+        result = actions.call_get_api(url + "/list/buffer_data", "", token)
+        bufer_data_list = result['list']
+        for item in bufer_data_list:
+            if item['key'] == "import" and item['member_id'] == founder_id:
+                import_app_data = json.loads(item['value'])['data']
+                break
+        contract_name = "Import"
+        data = [{"contract": contract_name,
+                 "params": import_app_data[i]} for i in range(len(import_app_data))]
+        resp = actions.call_multi_contract(url, pr_key, contract_name, data, token)
+        time.sleep(30)
+        if "hashes" in resp:
+            hashes = resp['hashes']
+            result = actions.tx_status_multi(url, 30, hashes, token)
+            for status in result.values():
+                print("status: ", status)
+                if int(status["blockid"]) < 1:
+                    print("Import is failed")
+                    exit(1)
+            print("App '" + app_name + "' successfully installed")
