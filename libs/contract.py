@@ -1,7 +1,8 @@
 import requests
 
-
+from genesis_blockchain_tools.crypto import get_public_key
 from libs import api, tools, actions
+
 
 def new_contract(url, pr_key, token, source='', name='', app=1, condition='true'):
     if name == '':
@@ -52,11 +53,11 @@ def edit_column(url, pr_key, token, table, column, up_perm="true",
                read_perm="true"):
     data_edit = {"TableName": table, "Name": column,
                  "UpdatePerm": "false", "ReadPerm": "false"}
-    result = {"hash": actions.call_contract(url, pr_key, "EditColumn", data, token),
-              'name': name}
+    result = {"hash": actions.call_contract(url, pr_key, "EditColumn", data_edit, token),
+              'name': table}
     return result
 
-def new_user(url, pr_key, token, pub_key='', pr_key=''):
+def new_user(url, token, pub_key='', pr_key=''):
     if pr_key == '':
         pr_key = tools.generate_pr_key()
     if pub_key == '':
@@ -87,7 +88,7 @@ def new_lang(url, pr_key, token, name='', trans=''):
 def edit_contract(url, pr_key, token, name, new_source='', condition='true', wallet=''):
     if new_source == '':
         new_source = '{data { }    conditions {    }    action {    }    }'
-    code = 'contract ' + name + source
+    code = 'contract ' + name + new_source
     if wallet == '':
         wallet = "0005-2070-2000-0006-0200"
     data = {"Id": actions.get_contract_id(url, name, token),
