@@ -68,7 +68,7 @@ class TestApi():
 
 
     def test_keyinfo_by_address(self):
-        res = api.keyinfo(self.url, self.token, self.data['address'])
+        res = api.keyinfo(self.url, token='', key_id=self.data['address'])
         for item in res:
             if len(item) > 2:
                 asserts = {'ecosystem', 'name', 'roles'}
@@ -78,7 +78,7 @@ class TestApi():
 
 
     def test_keyinfo_by_keyid(self):
-        res = api.keyinfo(self.url, self.token, self.data['key_id'])
+        res = api.keyinfo(self.url, token='', key_id=self.data['key_id'])
         for item in res:
             if len(item) > 2:
                 asserts = {'ecosystem', 'name', 'roles'}
