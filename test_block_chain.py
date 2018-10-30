@@ -31,12 +31,7 @@ class TestBlockChain():
         name = "Menu_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Item1", "Conditions": "true"}
         res = actions.call_contract(url, pr_key, "NewMenu", data, self.token)
-        return actions.get_count(url, "menu", self.token)
-    
-    def test_ee(self):
-        actions.is_contract_present(self.config1["url"], self.token, "NewbMenu")
-        a = b + c
-        
+        return actions.get_count(url, "menu", self.token)      
     
     def test_block_chain(self):
         ts_count = 30

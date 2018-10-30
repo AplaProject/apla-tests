@@ -1,6 +1,7 @@
 import requests
 import json
 import time
+import os
 
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
@@ -272,12 +273,12 @@ def is_contract_present(url, token, name):
 
 def imp_app(app_name, url, pr_key, token):
     path = os.path.join(os.getcwd(), "fixtures", "basic", app_name + ".json")
-    resp = actions.call_contract(url, pr_key, "ImportUpload",
-                                 {'input_file': {'Path': path}}, token)
-    res_import_upload = actions.tx_status(url, 30, resp, token)
+    resp = call_contract(url, pr_key, "ImportUpload",
+                         {'input_file': {'Path': path}}, token)
+    res_import_upload = tx_status(url, 30, resp, token)
     if int(res_import_upload["blockid"]) > 0:
-        founder_id = actions.call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
-        result = actions.call_get_api(url + "/list/buffer_data", "", token)
+        founder_id = call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
+        result = call_get_api(url + "/list/buffer_data", "", token)
         bufer_data_list = result['list']
         for item in bufer_data_list:
             if item['key'] == "import" and item['member_id'] == founder_id:
@@ -286,11 +287,11 @@ def imp_app(app_name, url, pr_key, token):
         contract_name = "Import"
         data = [{"contract": contract_name,
                  "params": import_app_data[i]} for i in range(len(import_app_data))]
-        resp = actions.call_multi_contract(url, pr_key, contract_name, data, token)
+        resp = call_multi_contract(url, pr_key, contract_name, data, token)
         time.sleep(30)
         if "hashes" in resp:
             hashes = resp['hashes']
-            result = actions.tx_status_multi(url, 30, hashes, token)
+            result = tx_status_multi(url, 30, hashes, token)
             for status in result.values():
                 print("status: ", status)
                 if int(status["blockid"]) < 1:
