@@ -59,7 +59,7 @@ def edit_column(url, pr_key, token, table, column, up_perm="true",
 
 def new_user(url, token, pub_key='', pr_key=''):
     if pr_key == '':
-        pr_key = tools.generate_pr_key()
+        pr_key = tools.generate_private_key()
     if pub_key == '':
         pub_key = get_public_key(pr_key)
     data = {"NewPubkey": pub_key}
