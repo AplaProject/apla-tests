@@ -63,6 +63,7 @@ def login(url, token, uid, private_key, role_id=0, ecosystem=1, expire=3600):
         'pubkey': pubkey,
         'address': res['address'],
         'key_id': res['key_id'],
+        'ecosystem_id': res['ecosystem_id']
     }
     return result
 
