@@ -625,13 +625,12 @@ class TestSystemContracts():
         data = {"Name": name, "Value": "Hello block!", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewBlock", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         count = actions.get_object_id(self.url, name, "blocks", self.token)
         condition = "tryam"
         data_edit = {"Id": count, "Value": "Good by!", "Conditions": condition}
         ans = self.call("EditBlock", data_edit)
-        msg = 'Condition ' + condition + ' is not allowed'
+        msg = 'Condition {condition} is not allowed'.format(condition=condition)
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
     def test_new_table(self):
