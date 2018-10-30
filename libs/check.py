@@ -1,5 +1,6 @@
 from libs import db, actions
 import unittest
+import time
 
 
 def compare_nodes(config):
@@ -62,3 +63,17 @@ def compare_db(config, url, token):
             return False
         i += 1
     return True
+
+
+def is_new_key_in_keys(url, token, key_id, attempts, ecosystem=1):
+    i = 0
+    while i < attempts:
+        keys_list = actions.get_list(url, 'keys', token)['list']
+        for item in keys_list:
+            if item['id'] == key_id \
+                    and int(item['ecosystem']) == int(ecosystem):
+                return True
+        time.sleep(1)
+        i += 1
+    unittest.TestCase.fail('Key_id is not find in keys table.')
+    return False
