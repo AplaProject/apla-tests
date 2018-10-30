@@ -1,6 +1,6 @@
 {
     "name": "Basic",
-    "conditions": "ContractConditions(\"MainCondition\")",
+    "conditions": "ContractConditions(\"@1DeveloperCondition\")",
     "data": [
         {
             "Name": "APL_not_required",
@@ -229,7 +229,7 @@
         },
         {
             "Name": "application_lang_res",
-            "Trans": "{\"en\": \"This page is used to manage the language resources\", \"ru\": \"Эта страница используется для управления языковыми ресурсами\"}",
+            "Trans": "{\"en\": \"This page is used to manage language resources\", \"ru\": \"Эта страница используется для управления языковыми ресурсами\"}",
             "Type": "languages"
         },
         {
@@ -403,8 +403,18 @@
             "Type": "languages"
         },
         {
+            "Name": "binded",
+            "Trans": "{\"en\": \"binded\", \"ru\": \"привязан\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "birthdate",
             "Trans": "{\"en\": \"Birthdate\", \"ru\": \"Дата рождения\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "block",
+            "Trans": "{\"en\": \"Block\", \"ru\": \"Блок\"}",
             "Type": "languages"
         },
         {
@@ -524,7 +534,7 @@
         },
         {
             "Name": "candidates_404",
-            "Trans": "{\"en\": \"Candidates are not found\", \"ru\": \"Кандидаты не найдены\"}",
+            "Trans": "{\"en\": \"Candidates not found\", \"ru\": \"Кандидаты не найдены\"}",
             "Type": "languages"
         },
         {
@@ -733,6 +743,26 @@
             "Type": "languages"
         },
         {
+            "Name": "contract_binding_accept",
+            "Trans": "{\"en\": \"Bind contract\", \"ru\": \"Привязать контракт\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "contract_binding_another_user_desc",
+            "Trans": "{\"en\": \"In case you want to bind contract to someone's wallet, contract binding request will be send to its owner\", \"ru\": \"В случае, если вы хотите привязать контракт к кошельку другого пользователя, этому пользователю будет отправлен запрос на привязку контракта\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "contract_binding_des",
+            "Trans": "{\"en\": \"New offer for binding contract to your wallet from user\", \"ru\": \"Новое предложение привязать контракт к вашему кошельку от пользователя\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "contract_cannot_unbind",
+            "Trans": "{\"en\": \"You cannot unbind this contract\", \"ru\": \"Вы не можете отвязать этот контракт\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "contract_chain_distorted",
             "Trans": "{\"en\": \"The contract chain is distorted\", \"ru\": \"Искажена цепочка контрактов\"}",
             "Type": "languages"
@@ -795,6 +825,21 @@
         {
             "Name": "contract_unknown",
             "Trans": "{\"en\": \"Unknown contract\", \"ru\": \"Неизвестный контракт\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "contract_x_binded_already",
+            "Trans": "{\"en\": \"The contract %d has been already binded\", \"ru\": \"Контракт %d уже был привязан ранее\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "contract_x_not_exist",
+            "Trans": "{\"en\": \"Contract %d does not exist\", \"ru\": \"Контракта %d не существует\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "contract_x_unbinded_already",
+            "Trans": "{\"en\": \"The contract %d has been already unbinded\", \"ru\": \"Контракт %d уже был отвязан ранее\"}",
             "Type": "languages"
         },
         {
@@ -983,6 +1028,11 @@
             "Type": "languages"
         },
         {
+            "Name": "developer_menu_not_found",
+            "Trans": "{\"en\": \"The developer menu is not found\", \"ru\": \"Меню разработчика не найдено\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "did_not_vote",
             "Trans": "{\"en\": \"Did not vote\", \"ru\": \"Не голосовал\"}",
             "Type": "languages"
@@ -1023,6 +1073,11 @@
             "Type": "languages"
         },
         {
+            "Name": "ecosystem_add_members",
+            "Trans": "{\"en\":\"Add members to the ecosystem \",\"ru\":\"Добавить пользователей в экосистему\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "ecosystem_can_not_add",
             "Trans": "{\"en\": \"Sorry, you cannot add this ecosystem\", \"ru\": \"Вы не можете добавить эту экосистему\"}",
             "Type": "languages"
@@ -1030,6 +1085,11 @@
         {
             "Name": "ecosystem_members",
             "Trans": "{\"en\": \"Ecosystem members\", \"ru\": \"Участники экосистемы\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "ecosystem_members_list_desc",
+            "Trans": "{\"en\": \"А complete list of all ecosystem members\", \"ru\": \"Полный список всех членов экосистемы\"}",
             "Type": "languages"
         },
         {
@@ -1075,6 +1135,11 @@
         {
             "Name": "ecosystems_list",
             "Trans": "{\"en\": \"Ecosystems list\", \"ru\": \"Список экосистем\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "ecosystems_list_desc",
+            "Trans": "{\"en\": \"А complete list of all ecosystems\", \"ru\": \"Полный список всех экосистем\"}",
             "Type": "languages"
         },
         {
@@ -1134,7 +1199,7 @@
         },
         {
             "Name": "editing_profile",
-            "Trans": "{\"en\": \"Editing the profile\", \"ru\": \"Редактирование профиля\"}",
+            "Trans": "{\"en\": \"Edit profile\", \"ru\": \"Редактирование профиля\"}",
             "Type": "languages"
         },
         {
@@ -1149,7 +1214,7 @@
         },
         {
             "Name": "elective_roles_not_found",
-            "Trans": "{\"en\": \"Elective roles are not found\", \"ru\": \"Избирательные роли не найдены\"}",
+            "Trans": "{\"en\": \"Elective roles not found\", \"ru\": \"Избирательные роли не найдены\"}",
             "Type": "languages"
         },
         {
@@ -1333,6 +1398,11 @@
             "Type": "languages"
         },
         {
+            "Name": "impossible_for_platform_ecosystem",
+            "Trans": "{\"en\":\"Action is impossible for Platform ecosystem\",\"ru\":\"Действие невозможно для Платформенной экосистемы\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "inactive_warning",
             "Trans": "{\"en\": \"You don't have any inactive applications\", \"ru\": \"У вас нет ни одного неактивного приложения\"}",
             "Type": "languages"
@@ -1408,6 +1478,11 @@
             "Type": "languages"
         },
         {
+            "Name": "invalid_expiration_date",
+            "Trans": "{\"en\": \"Invalid expiration date\", \"ru\": \"Неверная дата истечения\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "invalid_full_nodes",
             "Trans": "{\"en\": \"The system parameter is incorrect: full_nodes\", \"ru\": \"Неверный параметр системы: full_nodes\"}",
             "Type": "languages"
@@ -1473,6 +1548,11 @@
             "Type": "languages"
         },
         {
+            "Name": "key_already_exists",
+            "Trans": "{\"en\":\"This key already exists\",\"ru\":\"Данный ключ уже существует\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "key_id",
             "Trans": "{\"en\": \"ID\", \"ru\": \"Идентификатор\"}",
             "Type": "languages"
@@ -1510,6 +1590,21 @@
         {
             "Name": "key_not_found",
             "Trans": "{\"en\": \"The key ID is not found\", \"ru\": \"Идентификатор ключа не найден\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "key_too_long",
+            "Trans": "{\"en\":\"The key is too long\",\"ru\":\"Длина ключа превышает необходимую\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "key_too_short",
+            "Trans": "{\"en\":\"The key is too short\",\"ru\":\"Ключ слишком короткий\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "keys_must_be_separated",
+            "Trans": "{\"en\":\"Keys must be separated by a comma\",\"ru\":\"Ключи должны быть перечислены через запятую\"}",
             "Type": "languages"
         },
         {
@@ -1628,6 +1723,11 @@
             "Type": "languages"
         },
         {
+            "Name": "members_add",
+            "Trans": "{\"en\":\"Add members\",\"ru\":\"Добавить пользователей\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "membership",
             "Trans": "{\"en\": \"Membership\", \"ru\": \"Членство\"}",
             "Type": "languages"
@@ -1679,7 +1779,7 @@
         },
         {
             "Name": "menu_section",
-            "Trans": "{\"en\": \"This page is used to manage the menus\", \"ru\": \"Эта страница используется для управления меню\"}",
+            "Trans": "{\"en\": \"This page is used to manage menus\", \"ru\": \"Эта страница используется для управления меню\"}",
             "Type": "languages"
         },
         {
@@ -1839,12 +1939,12 @@
         },
         {
             "Name": "not_found",
-            "Trans": "{\"en\": \"is not found\", \"ru\": \"Не найдено\"}",
+            "Trans": "{\"en\": \"is not found\", \"ru\": \"не найдено\"}",
             "Type": "languages"
         },
         {
             "Name": "not_founded",
-            "Trans": "{\"en\": \"is not found\", \"ru\": \"не найдены\"}",
+            "Trans": "{\"en\": \"not found\", \"ru\": \"не найдены\"}",
             "Type": "languages"
         },
         {
@@ -1930,6 +2030,16 @@
         {
             "Name": "notifications_broadcast",
             "Trans": "{\"en\": \"Notifications broadcast\", \"ru\": \"Широковещательная рассылка\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "notifications_install_needed",
+            "Trans": "{\"en\": \"You should install application which contain contract for sending notifications first\", \"ru\": \"Необходимо установить приложение, содержащее контракт для отправки уведомлений\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "notifications_list_desc",
+            "Trans": "{\"en\": \"This page is used to create and manage notifications\", \"ru\": \"Эта страница используется для создания и управления уведомлениями\"}",
             "Type": "languages"
         },
         {
@@ -2098,6 +2208,71 @@
             "Type": "languages"
         },
         {
+            "Name": "poa",
+            "Trans": "{\"en\": \"Power of attorney\", \"ru\": \"Доверенность\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "poa_add",
+            "Trans": "{\"en\": \"Add power of attorney\", \"ru\": \"Добавить доверенность\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "poa_exceeded_daily_limit",
+            "Trans": "{\"en\": \"Exceeded daily transfer limit\", \"ru\": \"Превышен дневной лимит перевода\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "poa_exceeded_monthly_limit",
+            "Trans": "{\"en\": \"Exceeded monthly transfer limit\", \"ru\": \"Превышен месячный лимит перевода\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "poa_exceeded_single_limit",
+            "Trans": "{\"en\": \"Exceeded singly transfer limit\", \"ru\": \"Превышен разовый лимит перевода\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "poa_expired",
+            "Trans": "{\"en\": \"Power of attorney expired\", \"ru\": \"Доверенность просрочена\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "poa_list",
+            "Trans": "{\"en\": \"Power of attorney\", \"ru\": \"Доверенности\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "poa_not_found",
+            "Trans": "{\"en\": \"Power of attorney not found\", \"ru\": \"Доверенность не найдена\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "poa_not_rights_to_create",
+            "Trans": "{\"en\": \"Not enough rights to create. You are not the admin of this ecosystem.\", \"ru\": \"Недостаточно прав на создание. Вы не админ этой экосистемы.\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "poa_not_rights_to_delete",
+            "Trans": "{\"en\": \"Not enough rights to delete. You are not the creator of this power of attorney.\", \"ru\": \"Недостаточно прав на удаление. Вы не создатель этой доверенности.\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "poa_not_rights_to_edit",
+            "Trans": "{\"en\": \"Not enough rights to change. You are not the creator of this power of attorney.\", \"ru\": \"Недостаточно прав на изменение. Вы не создатель этой доверенности.\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "poa_template_list",
+            "Trans": "{\"en\": \"Power of attorney Templates\", \"ru\": \"Шаблоны доверенностей\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "poa_template_not_found",
+            "Trans": "{\"en\": \"Power of attorney Template not found\", \"ru\": \"Шаблон доверенности не найден\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "possible",
             "Trans": "{\"en\": \"Possible\", \"ru\": \"Возможно\"}",
             "Type": "languages"
@@ -2263,6 +2438,11 @@
             "Type": "languages"
         },
         {
+            "Name": "request_contract_binding",
+            "Trans": "{\"en\": \"Contract binding request\", \"ru\": \"Запрос на привязку кошелька к контракту\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "request_info",
             "Trans": "{\"en\": \"Request info\", \"ru\": \"Информация о запросе\"}",
             "Type": "languages"
@@ -2285,6 +2465,11 @@
         {
             "Name": "request_refund",
             "Trans": "{\"en\": \"Request the refund\", \"ru\": \"Запросить возмещение средств\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "request_reject",
+            "Trans": "{\"en\": \"Reject request\", \"ru\": \"Отклонить запрос\"}",
             "Type": "languages"
         },
         {
@@ -2413,6 +2598,16 @@
             "Type": "languages"
         },
         {
+            "Name": "role_not_involved",
+            "Trans": "{\"en\": \"Your role is not involved in this vote\", \"ru\": \"Ваша роль не участвует в этом голосовании\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "role_not_selected",
+            "Trans": "{\"en\": \"You should log in as a role member to view role notifications\", \"ru\": \"Войдите под какой-либо ролью, чтобы увидеть ролевые уведомления\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "role_not_set_application_parameter",
             "Trans": "{\"en\": \"The role is not set in the application parameter %v\", \"ru\": \"Роль не задана в параметре приложения %v\"}",
             "Type": "languages"
@@ -2483,13 +2678,18 @@
             "Type": "languages"
         },
         {
+            "Name": "roles_list_desc",
+            "Trans": "{\"en\": \"This page is used to manage roles\", \"ru\": \"Эта страница используется для управления ролями\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "roles_managers",
             "Trans": "{\"en\": \"Roles Managers\"}",
             "Type": "languages"
         },
         {
             "Name": "roles_participants_not_found",
-            "Trans": "{\"en\": \"Roles participants are not found\", \"ru\": \"Участники роли не найдены\"}",
+            "Trans": "{\"en\": \"Roles participants not found\", \"ru\": \"Участники роли не найдены\"}",
             "Type": "languages"
         },
         {
@@ -2569,7 +2769,7 @@
         },
         {
             "Name": "sections_manage_page",
-            "Trans": "{\"en\": \"This page is used to manage the sections\", \"ru\": \"Эта страница используется для управления секциями\"}",
+            "Trans": "{\"en\": \"This page is used to manage sections\", \"ru\": \"Эта страница используется для управления секциями\"}",
             "Type": "languages"
         },
         {
@@ -2635,6 +2835,16 @@
         {
             "Name": "send_to_check",
             "Trans": "{\"en\": \"Send for checking\", \"ru\": \"Отправить на проверку\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "send_tokens_by_poa",
+            "Trans": "{\"en\": \"Send tokens by Power of attorney\", \"ru\": \"Отправить токены по доверенности\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "send_tokens_my_balance",
+            "Trans": "{\"en\": \"Send tokens from my balance\", \"ru\": \"Отправить токены с моего баланса\"}",
             "Type": "languages"
         },
         {
@@ -2738,6 +2948,11 @@
             "Type": "languages"
         },
         {
+            "Name": "started_by",
+            "Trans": "{\"en\": \"Started by\", \"ru\": \"Начато\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "started_voting_not_found",
             "Trans": "{\"en\": \"Started voting is not found\", \"ru\": \"Начавшееся голосование не найдено\"}",
             "Type": "languages"
@@ -2810,6 +3025,11 @@
         {
             "Name": "sysparams_candidates",
             "Trans": "{\"en\": \"Candidates for the validators\", \"ru\": \"Кандидаты в валидаторы\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "sysparams_candidates_list_desc",
+            "Trans": "{\"en\": \"This page is used to create and manage candidate for the validators requests\", \"ru\": \"Эта страница используется для создания и управления запросами кандидатов в валидаторы\"}",
             "Type": "languages"
         },
         {
@@ -2903,6 +3123,11 @@
             "Type": "languages"
         },
         {
+            "Name": "template_add",
+            "Trans": "{\"en\": \"Add template\", \"ru\": \"Добавить шаблон\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "template_app_exists",
             "Trans": "{\"en\": \"The application %s is already exist\", \"ru\": \"Приложение %s уже существует\"}",
             "Type": "languages"
@@ -2915,16 +3140,6 @@
         {
             "Name": "template_block_exists",
             "Trans": "{\"en\": \"The block '%s' is already exist\", \"ru\": \"Блок %s уже существует\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "template_contract_already_activated",
-            "Trans": "{\"en\": \"The contract %d has been already activated\", \"ru\": \"Контракт %d уже активирован\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "template_contract_already_deactivated",
-            "Trans": "{\"en\": \"The contract %d has been already deactivated\", \"ru\": \"Контракт %d уже деактивирован\"}",
             "Type": "languages"
         },
         {
@@ -2963,6 +3178,11 @@
             "Type": "languages"
         },
         {
+            "Name": "template_edit",
+            "Trans": "{\"en\": \"Edit template\", \"ru\": \"Редактировать шаблон\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "template_id",
             "Trans": "{\"en\": \"Template ID\", \"ru\": \"Идентификатор шаблона\"}",
             "Type": "languages"
@@ -2970,6 +3190,11 @@
         {
             "Name": "template_id_not_found",
             "Trans": "{\"en\": \"The template ID is not found\", \"ru\": \"Идентификатор шаблона не найден\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "template_id_set",
+            "Trans": "{\"en\": \"Set the template ID\", \"ru\": \"Задать идентификатор шаблона\"}",
             "Type": "languages"
         },
         {
@@ -3028,6 +3253,11 @@
             "Type": "languages"
         },
         {
+            "Name": "template_set",
+            "Trans": "{\"en\": \"Set the template\", \"ru\": \"Задать шаблон\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "template_unknown_contract",
             "Trans": "{\"en\": \"Unknown contract %v\", \"ru\": \"Неизвестный контракт %v\"}",
             "Type": "languages"
@@ -3040,16 +3270,6 @@
         {
             "Name": "template_user_not_found",
             "Trans": "{\"en\": \"The user '%v' is not found\", \"ru\": \"Пользователь %v не найден\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "template_wallet_cannot_activate_contract",
-            "Trans": "{\"en\": \"The wallet %v cannot activate the contract\", \"ru\": \"Кошелёк %v не может активировать контракт\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "template_wallet_cannot_deactivate_contract",
-            "Trans": "{\"en\": \"The wallet %d cannot deactivate the contract\", \"ru\": \"Кошелёк %d не может деактивировать контракт\"}",
             "Type": "languages"
         },
         {
@@ -3160,6 +3380,16 @@
         {
             "Name": "tokens_refunds_list_allowed_role",
             "Trans": "{\"en\": \"Creating the tokens refund request is allowed only for the role members of \", \"ru\": \"Создание запроса на возмещение средств разрешено только для пользователей роли \"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "tokens_refunds_list_desc",
+            "Trans": "{\"en\": \"This page is used to create and manage tokens refunds requests\", \"ru\": \"Эта страница используется для создания и управления запросами на возврат средств\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "tokens_send",
+            "Trans": "{\"en\": \"Send tokens\", \"ru\": \"Отправить токены\"}",
             "Type": "languages"
         },
         {
@@ -3684,7 +3914,7 @@
         },
         {
             "Name": "voting_not_started",
-            "Trans": "{\"en\": \"the voting has not started yet. Try again later, please\", \"ru\": \"Голосование ещё не началось. Попробуйте немного позднее\"}",
+            "Trans": "{\"en\": \"The voting has not started yet. Try again later, please\", \"ru\": \"Голосование ещё не началось. Попробуйте немного позднее\"}",
             "Type": "languages"
         },
         {
@@ -3784,7 +4014,7 @@
         },
         {
             "Name": "voting_templates_not_found",
-            "Trans": "{\"en\": \"Voting templates are not found\", \"ru\": \"Шаблоны голосований не найдены\"}",
+            "Trans": "{\"en\": \"Voting templates not found\", \"ru\": \"Шаблоны голосований не найдены\"}",
             "Type": "languages"
         },
         {
@@ -3828,8 +4058,13 @@
             "Type": "languages"
         },
         {
+            "Name": "votings_list_desc",
+            "Trans": "{\"en\": \"This page is used to manage votings\", \"ru\": \"Эта страница используется для управления голосованиями\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "votings_not_found",
-            "Trans": "{\"en\": \"Votings are not found\", \"ru\": \"Голосования не найдены\"}",
+            "Trans": "{\"en\": \"Votings not found\", \"ru\": \"Голосования не найдены\"}",
             "Type": "languages"
         },
         {
@@ -3855,6 +4090,11 @@
         {
             "Name": "wallet_address",
             "Trans": "{\"en\": \"Wallet Address\", \"ru\": \"Адрес кошелька\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "wallet_not_found",
+            "Trans": "{\"en\": \"Wallet is not found\", \"ru\": \"Адрес кошелька не найден\"}",
             "Type": "languages"
         },
         {
@@ -3885,6 +4125,11 @@
         {
             "Name": "want_assign_member_to_role",
             "Trans": "{\"en\": \"Do you really want to assign this member of the ecosystem to the role?\", \"ru\": \"Вы уверены, что хотите назначить этого члена экосистемы на роль?\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "want_bind_contract",
+            "Trans": "{\"en\": \"Do you want to bind contract to this wallet?\", \"ru\": \"Вы хотите привязать контракт к этому кошельку?\"}",
             "Type": "languages"
         },
         {
@@ -4050,6 +4295,11 @@
         {
             "Name": "want_start_processing_notification",
             "Trans": "{\"en\": \"Do you want to start processing the notification?\", \"ru\": \"Вы хотите начать обработку уведомления?\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "want_unbind_contract",
+            "Trans": "{\"en\": \"Do you really want to unbind this contract?\", \"ru\": \"Вы действительно хотите отвязать этот контракт?\"}",
             "Type": "languages"
         },
         {
