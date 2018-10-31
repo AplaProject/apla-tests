@@ -266,6 +266,8 @@ def is_commission_in_history(url, token, id_from, id_to, summ):
 
 def is_contract_present(url, token, name):
     ans = api.contract(url, token, name)
+    if "error" not in ans:
+       return True 
     if ans['error'] == 'E_CONTRACT':
         return False
     else:
