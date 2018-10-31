@@ -3,7 +3,6 @@ import json
 import os
 import time
 
-
 from libs import actions, tools, db, contract, check
 
 
@@ -602,12 +601,14 @@ class TestSystemContracts():
         msg = 'Condition {cond} is not allowed'.format(cond=condition)
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
+
     def test_edit_block_incorrect_id(self):
         id = "9999"
         data_edit = {"Id": id, "Value": "Good by!", "Conditions": "true"}
         ans = self.call("EditBlock", data_edit)
         msg = 'The item is not found'
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+
 
     def test_edit_block(self):
         name = "Block_" + tools.generate_random_name()
@@ -620,19 +621,20 @@ class TestSystemContracts():
         res = self.call("EditBlock", data_edit)
         check.is_tx_in_block(res)
 
+
     def test_edit_block_incorrect_condition(self):
         name = "Block_" + tools.generate_random_name()
         data = {"Name": name, "Value": "Hello block!", "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewBlock", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         count = actions.get_object_id(self.url, name, "blocks", self.token)
         condition = "tryam"
         data_edit = {"Id": count, "Value": "Good by!", "Conditions": condition}
         ans = self.call("EditBlock", data_edit)
-        msg = 'Condition ' + condition + ' is not allowed'
+        msg = 'Condition {condition} is not allowed'.format(condition=condition)
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+
 
     def test_new_table(self):
         # create new table
@@ -648,18 +650,18 @@ class TestSystemContracts():
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
         res = self.call("NewTable", data)
-        self.unit.assertGreater(int(res["blockid"]), 0, "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         # create new page
         name = "Page_" + tools.generate_random_name()
         data = {"Name": name, "Value": "DBFind(" + table_name + ",src)", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         res = self.call("NewPage", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         # test
         content = [{'tag': 'text', 'text': 'Access denied'}]
         cont = actions.get_content(self.url, "page", name, "", 1, self.token)
         self.unit.assertEqual(cont['tree'], content)
+
 
     def test_new_table_not_readable(self):
         # create new table
@@ -675,7 +677,7 @@ class TestSystemContracts():
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
         res = self.call("NewTable", data)
-        self.unit.assertGreater(int(res["blockid"]), 0, "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         # create new contract, which added record in table
         code = """{
         data {}    
@@ -688,23 +690,21 @@ class TestSystemContracts():
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         # call contract
         res = self.call(name, "")
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         # create new page
         name = "Page_" + tools.generate_random_name()
         data = {"Name": name, "Value": "DBFind(" + table_name + ",src)", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         res = self.call("NewPage", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         # test
         content = [['num1', '1']]
         cont = actions.get_content(self.url, "page", name, "", 1, self.token)
         self.unit.assertEqual(cont['tree'][0]['attr']['data'], content)
+
 
     def test_new_table_not_readable_all_columns(self):
         # create new table
@@ -720,18 +720,18 @@ class TestSystemContracts():
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
         res = self.call("NewTable", data)
-        self.unit.assertGreater(int(res["blockid"]), 0, "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         # create new page
         name = "Page_" + tools.generate_random_name()
         data = {"Name": name, "Value": "DBFind(" + table_name + ",src)", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         res = self.call("NewPage", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         # test
         content = [{'tag': 'text', 'text': 'Access denied'}]
         cont = actions.get_content(self.url, "page", name, "", 1, self.token)
         self.unit.assertEqual(cont['tree'], content)
+
 
     def test_new_table_not_readable_one_column(self):
         # create new table
@@ -747,7 +747,7 @@ class TestSystemContracts():
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
         res = self.call("NewTable", data)
-        self.unit.assertGreater(int(res["blockid"]), 0, "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         # create new contract, which added record in table
         code = """{
         data {}    
@@ -764,20 +764,17 @@ class TestSystemContracts():
                            "BlockId is not generated: " + str(res))
         # call contract
         res = self.call(name, "")
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         # create new page
         name = "Page_" + tools.generate_random_name()
         data = {"Name": name, "Value": "DBFind(" + table_name + ",src)", "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
         res = self.call("NewPage", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         # test
         content = [['num1', '1']]
         cont = actions.get_content(self.url, "page", name, "", 1, self.token)
         self.unit.assertEqual(cont['tree'][0]['attr']['data'], content)
-
 
 
     def test_new_table_incorrect_column_name_digit(self):
@@ -792,6 +789,7 @@ class TestSystemContracts():
         msg = "Column name cannot begin with digit"
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
+
     def test_new_table_incorrect_column_name_cyrillic(self):
         word = "привет"
         column = """[{"name":"%s","type":"varchar",
@@ -802,8 +800,9 @@ class TestSystemContracts():
                 "Columns": column, "ApplicationId": 1,
                 "Permissions": permission}
         ans = self.call("NewTable", data)
-        msg = "Name " + word + " must only contain latin, digit and '_', '-' characters"
+        msg = "Name {word} must only contain latin, digit and '_', '-' characters".format(word=word)
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+
 
     def test_new_table_incorrect_condition1(self):
         columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
@@ -815,8 +814,9 @@ class TestSystemContracts():
                 "Columns": columns, "Permissions": permissions,
                 "ApplicationId": 1}
         ans = self.call("NewTable", data)
-        msg = "Condition " + condition + " is not allowed"
+        msg = "Condition {condition} is not allowed".format(condition=condition)
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+
 
     def test_new_table_incorrect_condition2(self):
         columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
@@ -828,8 +828,9 @@ class TestSystemContracts():
                 "Columns": columns, "Permissions": permissions,
                 "ApplicationId": 1}
         ans = self.call("NewTable", data)
-        msg = "Condition " + condition + " is not allowed"
+        msg = "Condition {condition} is not allowed".format(condition=condition)
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+
 
     def test_new_table_incorrect_condition3(self):
         columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
@@ -841,8 +842,9 @@ class TestSystemContracts():
                 "Columns": columns, "Permissions": permissions,
                 "ApplicationId": 1}
         ans = self.call("NewTable", data)
-        msg = "Condition " + condition + " is not allowed"
+        msg = "Condition {condition} is not allowed".format(condition=condition)
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+
 
     def test_new_table_exist_name(self):
         name = "tab_" + tools.generate_random_name()
@@ -853,11 +855,11 @@ class TestSystemContracts():
         data = {"Name": name, "Columns": columns,
                 "Permissions": permissions, "ApplicationId": 1}
         res = self.call("NewTable", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         ans = self.call("NewTable", data)
-        msg = "table " + name + " exists"
+        msg = "table {name} exists".format(name=name)
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+
 
     def test_new_table_incorrect_name_cyrillic(self):
         name = "таблица"
@@ -868,8 +870,9 @@ class TestSystemContracts():
         data = {"Name": name, "Columns": columns,
                 "Permissions": permissions, "ApplicationId": 1}
         ans = self.call("NewTable", data)
-        msg = "Name " + name + " must only contain latin, digit and '_', '-' characters"
+        msg = "Name {name} must only contain latin, digit and '_', '-' characters".format(name=name)
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+
 
     def test_new_table_identical_columns(self):
         name = "tab_" + tools.generate_random_name()
@@ -885,6 +888,7 @@ class TestSystemContracts():
         self.unit.assertEqual("There are the same columns", ans["error"],
                          "Incorrect message: " + str(ans))
 
+
     def test_edit_table(self):
         name = "Tab_" + tools.generate_random_name()
         columns = """[{"name": "MyName", "type": "varchar", "index": "1", "conditions": "true"}]"""
@@ -892,16 +896,15 @@ class TestSystemContracts():
         data = {"Name": name, "Columns": columns,
                 "Permissions": permissions, "ApplicationId": 1}
         res = self.call("NewTable", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         data_edit = {"Name": name,
                     "InsertPerm": "true",
                     "UpdatePerm": "true",
                     "ReadPerm": "true",
                     "NewColumnPerm": "true"}
         res = self.call("EditTable", data_edit)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
+
 
     def test_new_column(self):
         name_tab = "Tab_" + tools.generate_random_name()
@@ -912,72 +915,64 @@ class TestSystemContracts():
                 "Columns": columns,
                 "Permissions": permissions, }
         res = self.call("NewTable", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         data_col1 = {"TableName": name_tab,
                     "Name": "var",
                     "Type": "varchar",
                     "UpdatePerm": "true",
                     "ReadPerm": "true"}
         res1 = self.call("NewColumn", data_col1)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         data_col2 = {"TableName": name_tab,
                     "Name": "json",
                     "Type": "json",
                     "UpdatePerm": "true",
                     "ReadPerm": "true"}
         res2 = self.call("NewColumn", data_col2)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         data_col3 = {"TableName": name_tab,
                     "Name": "num",
                     "Type": "number",
                     "UpdatePerm": "true",
                     "ReadPerm": "true"}
         res3 = self.call("NewColumn", data_col3)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         data_col4 = {"TableName": name_tab,
                     "Name": "date",
                     "Type": "datetime",
                     "UpdatePerm": "true",
                     "ReadPerm": "true"}
         res4 = self.call("NewColumn", data_col4)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         data_col5 = {"TableName": name_tab,
                     "Name": "sum",
                     "Type": "money",
                     "UpdatePerm": "true",
                     "ReadPerm": "true"}
         res5 = self.call("NewColumn", data_col5)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         data_col6 = {"TableName": name_tab,
                     "Name": "name",
                     "Type": "text",
                     "UpdatePerm": "true",
                     "ReadPerm": "true"}
         res6 = self.call("NewColumn", data_col6)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         data_col7 = {"TableName": name_tab,
                     "Name": "length",
                     "Type": "double",
                     "UpdatePerm": "true",
                     "ReadPerm": "true"}
         res7 = self.call("NewColumn", data_col7)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         data_col8 = {"TableName": name_tab,
                     "Name": "code",
                     "Type": "character",
                     "UpdatePerm": "true",
                     "ReadPerm": "true"}
         res8 = self.call("NewColumn", data_col8)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
+
 
     def test_edit_column(self):
         name_tab = "tab_" + tools.generate_random_name()
@@ -988,76 +983,71 @@ class TestSystemContracts():
         data = {"Name": name_tab, "Columns": columns,
                 "Permissions": permissions, "ApplicationId": 1}
         res = self.call("NewTable", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         name = "Col_" + tools.generate_random_name()
         data_col = {"TableName": name_tab, "Name": name, "Type": "number",
                    "UpdatePerm": "true", "ReadPerm": "true"}
         res = self.call("NewColumn", data_col)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         data_edit = {"TableName": name_tab, "Name": name,
                     "UpdatePerm": "false", "ReadPerm": "false"}
         res = self.call("EditColumn", data_edit)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
+
 
     def test_new_lang(self):
         data = {"Name": "Lang_" + tools.generate_random_name(),
                 "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("NewLang", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
+
 
     def test_new_lang_joint(self):
         data = {"Name": "Lang_" + tools.generate_random_name(),
                 "ValueArr": ["en", "ru"], "LocaleArr": ["Hi", "Привет"]}
         res = self.call("NewLangJoint", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
+
 
     def test_edit_lang_joint(self):
         data = {"Name": "Lang_" + tools.generate_random_name(),
                 "ValueArr": ["en", "ru"], "LocaleArr": ["Hi", "Привет"]}
         res = self.call("NewLangJoint", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         count = actions.get_count(self.url, "languages", self.token)
         data_e = {"Id": count, "ValueArr": ["en", "de"],
                  "LocaleArr": ["Hi", "Hallo"]}
         res = self.call("EditLangJoint", data_e)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
+
 
     def test_edit_lang(self):
         name = "Lang_" + tools.generate_random_name()
         data = {"Name": name, "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("NewLang", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         count = actions.get_count(self.url, "languages", self.token)
         data_edit = {"Id": count, "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         res = self.call("EditLang", data_edit)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
+
 
     def test_new_app_param(self):
         name = "param_" + tools.generate_random_name()
         data = {"ApplicationId": 1, "Name": name, "Value": "myParam", "Conditions": "true"}
         res = self.call("NewAppParam", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
+
 
     def test_edit_app_param(self):
         name = "param_" + tools.generate_random_name()
         data = {"ApplicationId": 1, "Name": name, "Value": "myParam", "Conditions": "true"}
         res = self.call("NewAppParam", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         data2 = {"Id": 1, "Value": "myParamEdited", "Conditions": "true"}
         res = self.call("EditAppParam", data2)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
+
 
     def test_delayed_contracts(self):
         # add table for test
@@ -1067,8 +1057,7 @@ class TestSystemContracts():
         data = {"Name": table_name, "Columns": column,
                 "ApplicationId": 1, "Permissions": permission}
         res = self.call("NewTable", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         # add contract which insert records in table in progress CallDelayedContract
         body = """
         {
@@ -1082,39 +1071,30 @@ class TestSystemContracts():
         code, contract_name = tools.generate_name_and_code(body)
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
         res = self.call("NewContract", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         # NewDelayedContract
         new_limit = 3
         data = {"Contract": contract_name, "EveryBlock": "1",
                 "Conditions": "true", "Limit": new_limit}
         res = self.call("NewDelayedContract", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-        old_block_id = int(res["blockid"])
+        check.is_tx_in_block(res)
+        old_block_id = res["blockid"]
         # get record id of 'delayed_contracts' table for run EditDelayedContract
-        res = actions.call_get_api(self.url + "/list/delayed_contracts", "", self.token)
-        count = len(res["list"])
-        id = res["list"][0]["id"]
-        i = 1
-        while i < count:
-            if res["list"][i]["id"] > id:
-                id = res["list"][i]["id"]
-            i = i + 1
+        id = actions.get_count(self.url, 'delayed_contracts', self.token)
         # wait block_id until run CallDelayedContract
         self.wait_block_id(old_block_id, new_limit)
         # EditDelayedContract
         editLimit = 2
         data = {"Id": id, "Contract": contract_name, "EveryBlock": "1", "Conditions": "true", "Limit": editLimit}
         res = self.call("EditDelayedContract", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         old_block_id = res["blockid"]
         # wait block_id until run CallDelayedContract
         self.wait_block_id(old_block_id, editLimit)
         # verify records count in table
         count = actions.get_count(self.url, table_name, self.token)
         self.unit.assertEqual(int(count), new_limit + editLimit)
+
 
     def test_upload_binary(self):
         name = "image_" + tools.generate_random_name()
@@ -1125,8 +1105,8 @@ class TestSystemContracts():
         resp = actions.call_contract(self.url, self.pr_key, "UploadBinary",
                                                 data, self.token)
         res = self.assert_tx_in_block(resp, self.token)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
+
 
     def test_contract_recursive_call_by_name_action(self):
         contract_name = "recur_" + tools.generate_random_name()
@@ -1147,6 +1127,7 @@ class TestSystemContracts():
         msg = "The contract can't call itself recursively"
         self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
 
+
     def test_contract_recursive_call_by_name_conditions(self):
         contract_name = "recur_" + tools.generate_random_name()
         body = """
@@ -1165,6 +1146,7 @@ class TestSystemContracts():
         res = self.call("NewContract", data)
         msg = "The contract can't call itself recursively"
         self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
+
 
     def test_contract_recursive_call_by_name_func_action(self):
         contract_name = "recur_" + tools.generate_random_name()
@@ -1187,6 +1169,7 @@ class TestSystemContracts():
         msg = "The contract can't call itself recursively"
         self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
 
+
     def test_contract_recursive_call_contract_action(self):
         contract_name = "recur_" + tools.generate_random_name()
         body = """
@@ -1205,7 +1188,7 @@ class TestSystemContracts():
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         res = self.call(contract_name, "")
-        msg = "There is loop in @1" + contract_name + " contract"
+        msg = "There is loop in @1{con} contract".format(con=contract_name)
         self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
 
 
@@ -1229,30 +1212,39 @@ class TestSystemContracts():
         data = {"Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
         res = self.call("NewContract", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        check.is_tx_in_block(res)
         # test
         data = ""
         msg = "max call depth"
         res = self.call(contract_name, data)
         self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
 
-    def test_ei1_ExportNewApp(self):
+
+    def test_ImportExport(self):
+        # Import
+        path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
+        data = {'input_file': {'Path': path}}
+        res = self.call("ImportUpload", data)
+        check.is_tx_in_block(res)
+        founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
+        import_app_data = db.get_import_app_data(self.db, founder_id)
+        import_app_data = import_app_data['data']
+        contract_name = "Import"
+        data = [{"contract": contract_name,
+                 "params": import_app_data[i]} for i in range(len(import_app_data))]
+        self.callMulti(contract_name, data, 60)
+        # Export
         appID = 1
         data = {"ApplicationId": appID}
         res = self.call("ExportNewApp", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
-
-    def test_ei2_Export(self):
-        appID = 1
+        check.is_tx_in_block(res)
         data = {}
         res_export = self.call("Export", data)
         founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
         export_app_data = actions.get_export_app_data(self.url, self.token, appID, founder_id)
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
         with open(path, 'w', encoding='UTF-8') as f:
-            data = f.write(export_app_data)
+            f.write(export_app_data)
         if os.path.exists(path):
             file_exist = True
         else:
@@ -1263,19 +1255,4 @@ class TestSystemContracts():
                       resultFile=file_exist)
         self.unit.assertDictEqual(must_be, actual, "test_Export is failed!")
 
-    def test_ei3_ImportUpload(self):
-        path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
-        resp = actions.call_contract(self.url, self.pr_key, "ImportUpload",
-                                     {'input_file': {'Path': path}}, self.token)
-        res_import_upload = self.assert_tx_in_block(resp, self.token)
-        self.unit.assertGreater(res_import_upload["blockid"], 0,
-                           "BlockId is not generated: " + str(res_import_upload))
 
-    def test_ei4_Import(self):
-        founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
-        import_app_data = db.get_import_app_data(self.db, founder_id)
-        import_app_data = import_app_data['data']
-        contract_name = "Import"
-        data = [{"contract": contract_name,
-                 "params": import_app_data[i]} for i in range(len(import_app_data))]
-        self.callMulti(contract_name, data, 60)

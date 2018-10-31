@@ -36,6 +36,7 @@ parser.add_argument('-gapBetweenBlocks', default='2')
 parser.add_argument('-centrifugo', required=True)
 parser.add_argument('-test', default='true')
 
+
 args = parser.parse_args()
 
 binary = os.path.abspath(args.binary)
@@ -127,7 +128,8 @@ time.sleep(3)
 startFirstNode = subprocess.Popen([
 	binary,
 	'start',
-	'--config='+workDir1+'/config.toml'
+	'--config='+workDir1+'/config.toml',
+	'--funcBench'
 ])
 time.sleep(3)
 
@@ -193,7 +195,8 @@ time.sleep(3)
 startFirstNode = subprocess.Popen([
 	binary,
 	'start',
-	'--config='+workDir2+'/config.toml'
+	'--config='+workDir2+'/config.toml',
+	'--funcBench'
 ])
 time.sleep(3)
 
@@ -209,7 +212,8 @@ time.sleep(3)
 startThirdNode = subprocess.Popen([
 	binary,
 	'start',
-	'--config='+workDir3+'/config.toml'
+	'--config='+workDir3+'/config.toml',
+	'--funcBench'
 ])
 time.sleep(3)
 
