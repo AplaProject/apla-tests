@@ -1,98 +1,107 @@
 import time
-import os
 import json
 
-from libs import actions, tools
+
+from libs import actions, tools, loger
+
+
+log = loger.create_loger(__name__)
 
 def is_in_block(call, url, token):
     status = actions.tx_status(url, 30, call, token)
     if "blockid" not in status or int(status["blockid"]) < 0:
-        print(status)
         return False 
     return True
-        
 
                 
 def roles_install(url, pr_key, token):
     data = {}
-    print("RolesInstall started")
+    log.info("RolesInstall started")
     call = actions.call_contract(url, pr_key, "RolesInstall",
                                  data, token)
     if not is_in_block(call, url, token):
-        print("RolesInstall is failed")
+        log.error("RolesInstall is failed")
         exit(1)
-        
-def voiting_install(url, pr_key, token):
+
+
+def voting_templates_install(url, pr_key, token):
     data = {}
-    print("voiting_install started")
+    log.info("VotingTemplatesInstall started")
     call = actions.call_contract(url, pr_key, "VotingTemplatesInstall",
                                data, token)
     if not is_in_block(call, url, token):
-        print("VoitingInstall is failed")
+        log.error("VotingTemplatesInstall is failed")
         exit(1)
 
     
 def edit_app_param(name, val, url, pr_key, token):
+    log.info("EditAppParam started")
     id = actions.get_object_id(url, name, "app_params", token)
-    print("id", id)
     data = {"Id": id, "Value": val, "Conditions": "true"}
     call = actions.call_contract(url, pr_key, "EditAppParam",
                                data, token)
     if not is_in_block(call, url, token):
-        print("EditAppParam " + name + " is failed")
+        log.error("EditAppParam " + name + " is failed")
         exit(1)
-    
+
+
 def update_profile(name, url, pr_key, token):
+    log.info("UpdateProfile started")
     time.sleep(5)
     data = {"member_name": name}
     resp = actions.call_contract(url, pr_key, "ProfileEdit",
                                           data, token)
     if not is_in_block(resp, url, token):
-        print("UpdateProfile " + name + " is failed")
+        log.error("UpdateProfile " + name + " is failed")
         exit(1)
-        
+
+
 def set_apla_consensus(id, url, pr_key, token):
+    log.info("setAplaconsensus started")
     data = {"member_id": id, "rid": 3}
     call = actions.call_contract(url, pr_key, "RolesAssign",
                                data, token)
-    print("--------------------------------------------------------------------------")
-    print("setAplaconsensus block: ", call)
     if not is_in_block(call, url, token):
-        print("RolesAssign " + id + " is failed")
+        log.error("RolesAssign " + id + " is failed")
         exit(1)
-        
+
+
 def create_voiting(tcp_address, api_address, key_id, pub_key, url, pr_key, token):
+    log.info("VotingNodeAdd started")
     data = {"TcpAddress": tcp_address, "ApiAddress": api_address,
             "KeyId": key_id, "PubKey": pub_key, "Duration": 1}
-    print(str(data))
     call = actions.call_contract(url, pr_key, "VotingNodeAdd",
                                data, token)
     if not is_in_block(call, url, token):
-        print("VotingNodeAdd  is failed")
+        log.error("VotingNodeAdd is failed")
         exit(1)
 
+
 def voting_status_update(url, pr_key, token):
+    log.info("VotingStatusUpdate started")
     data = {}
     call = actions.call_contract(url, pr_key, "VotingStatusUpdate",
                                data, token)
     if not is_in_block(call, url, token):
-        print("VoitingStatusUpdate is failed")
+        log.error("VoitingStatusUpdate is failed")
         exit(1)
-        
+
+
 def voiting(id, url, pr_key, token):
+    log.info("VotingDecisionAccept started")
     data = {"votingID": id,
             "RoleId": 3}
     call = actions.call_contract(url, pr_key, "VotingDecisionAccept",
                                data, token)
-
     if not is_in_block(call, url, token):
-        print("VotingDecisionAccept " + id + " is failed")
+        log.error("VotingDecisionAccept " + id + " is failed")
         exit(1)
         return False
     return True
     
 
 if __name__ == "__main__":
+    log.info('Start ' + __name__)
     conf = tools.read_config("nodes")
     url = conf[0]["url"]
     pr_key1 = conf[0]['private_key']
@@ -107,7 +116,7 @@ if __name__ == "__main__":
     
     roles_install(url, pr_key1, token1)
     
-    voiting_install(url, pr_key1, token1)
+    voting_templates_install(url, pr_key1, token1)
     edit_app_param("voting_sysparams_template_id", 2, url, pr_key1, token1)
     node1 = json.dumps({"tcp_address": conf[0]["tcp_address"],
                       "api_address": conf[0]["api_address"],
@@ -129,8 +138,7 @@ if __name__ == "__main__":
     set_apla_consensus(conf[2]['keyID'], url, pr_key1, token1)
     set_apla_consensus(conf[0]['keyID'], url, pr_key1, token1)
     
-    print("Start create voting 1")
-    
+    log.info("Start create voting 1")
     data = actions.login(url, pr_key2, 3)
     token2 = data["jwtToken"]
     create_voiting(conf[1]["tcp_address"], conf[1]["api_address"],
@@ -147,8 +155,8 @@ if __name__ == "__main__":
     data = actions.login(url, pr_key2, 3)
     token2 = data["jwtToken"]
     voiting(1, url, pr_key2, token2)
-    
-    print("Start create voting 2")
+
+    log.info("Start create voting 2")
     data = actions.login(url, pr_key3, 3)
     token3 = data["jwtToken"]
     create_voiting(conf[2]["tcp_address"], conf[2]["api_address"],
@@ -165,5 +173,8 @@ if __name__ == "__main__":
     data = actions.login(url, pr_key2, 3)
     token2 = data["jwtToken"]
     if voiting(2, url, pr_key2, token2) == True:
-        print("Nodes successfully linked")
+        log.info("Nodes successfully linked")
         exit(0)
+    else:
+        log.error("Nodes is not linked")
+        exit(1)
