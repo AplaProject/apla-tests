@@ -67,7 +67,7 @@ class TestApi():
 
     def test_keyinfo_by_address(self):
         asserts = {'ecosystem', 'name'}
-        new_pr_key = tools.generate_private_key()
+        new_pr_key = tools.generate_pr_key()
         new_user_data = actions.login(self.url, new_pr_key)
         check.is_new_key_in_keys(self.url, self.token, new_user_data['key_id'], self.wait)
         data = {'Name': tools.generate_random_name()}
@@ -82,7 +82,7 @@ class TestApi():
 
     def test_keyinfo_by_keyid(self):
         asserts = {'ecosystem', 'name', 'roles'}
-        new_pr_key = tools.generate_private_key()
+        new_pr_key = tools.generate_pr_key()
         new_user_data = actions.login(self.url, new_pr_key)
         check.is_new_key_in_keys(self.url, self.token, new_user_data['key_id'], self.wait)
         data = {'rid': 2, 'member_id': new_user_data['key_id']}
