@@ -140,8 +140,7 @@ time.sleep(3)
 startFirstNode = subprocess.Popen([
 	binary,
 	'start',
-	'--config='+workDir1+'/config.toml',
-	'--funcBench'
+	'--config='+workDir1+'/config.toml'
 ])
 log.info('First node started')
 time.sleep(3)
@@ -213,8 +212,7 @@ time.sleep(3)
 startFirstNode = subprocess.Popen([
 	binary,
 	'start',
-	'--config='+workDir2+'/config.toml',
-	'--funcBench'
+	'--config='+workDir2+'/config.toml'
 ])
 log.info('Third node started')
 time.sleep(3)
@@ -232,8 +230,7 @@ time.sleep(3)
 startThirdNode = subprocess.Popen([
 	binary,
 	'start',
-	'--config='+workDir3+'/config.toml',
-	'--funcBench'
+	'--config='+workDir3+'/config.toml'
 ])
 log.info('Third node started')
 time.sleep(3)
