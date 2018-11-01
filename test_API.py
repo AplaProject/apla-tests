@@ -4,7 +4,7 @@ import os
 import time
 
 
-from libs import actions, tools, api, check
+from libs import actions, tools, api, check, loger
 
 
 class TestApi():
@@ -14,7 +14,10 @@ class TestApi():
     pr_key = config[0]['private_key']
     data = actions.login(url, pr_key, 0)
     token = data["jwtToken"]
+    log = loger.create_loger(__name__)
 
+    def setup_method(self, method):
+        self.log.info('Run - ' + method.__name__)
 
     @classmethod
     def setup_class(self):
@@ -37,19 +40,24 @@ class TestApi():
 
 
     def check_result(self, result, keys, error='', msg=''):
-        for key in keys:
-            self.unit.assertIn(key, result)
-        if 'error' and 'msg' in result:
-            expected = dict(
-                error=error,
-                msg=msg,
-            )
-            actual = dict(
-                error=result['error'],
-                msg=result['msg']
-            )
-            self.unit.assertDictEqual(expected, actual, 'Incorrect error ' + str(result))
-        return result
+        try:
+            for key in keys:
+                self.unit.assertIn(key, result)
+            if 'error' and 'msg' in result:
+                expected = dict(
+                    error=error,
+                    msg=msg,
+                )
+                actual = dict(
+                    error=result['error'],
+                    msg=result['msg']
+                )
+                self.unit.assertDictEqual(expected, actual, 'Incorrect error ' + str(result))
+                return result
+        except AssertionError as e:
+            self.log.error('{e}  -> {m}'.format(e=e, m=loger.stack()[2][3]))
+            raise
+            return result
 
 
     def test_balance(self):

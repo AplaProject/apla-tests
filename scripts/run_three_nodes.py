@@ -1,12 +1,17 @@
 import subprocess
-import signal
 import time
 import os
-import ctypes
 import json
 import argparse
 import shutil
 import sys
+module_dir = os.path.dirname(os.path.abspath(__file__))
+loger_path = os.path.join(module_dir, '..', 'libs')
+sys.path.insert(0, loger_path)
+import loger
+
+log = loger.create_loger(__name__)
+log.info('Start '+ __file__)
 
 curDir = os.path.dirname(os.path.abspath(__file__))
 
@@ -46,18 +51,19 @@ workDir2 = os.path.join(workDir, 'node2')
 workDir3 = os.path.join(workDir, 'node3')
 firstBlockPath = os.path.join(workDir, '1block')
 
-
 if os.path.exists(workDir):
 	shutil.rmtree(workDir)
 os.makedirs(workDir1)
 os.makedirs(workDir2)
 os.makedirs(workDir3)
+log.info('Work dirs created')
 
 # Set centrifugo variables
 centrifugo_secret = '4597e75c-4376-42a6-8c1f-7e3fc7eb2114'
 centrifugo_url = 'http://127.0.0.1:8000'
 cenConfig = os.path.join(args.centrifugo, "config.json")
 cenPath = os.path.join(args.centrifugo, "centrifugo")
+log.info('Setted centrifugo variables')
 
 # Create config for centrifugo
 cen_config_string = {
@@ -66,6 +72,7 @@ cen_config_string = {
 	}
 with open(cenConfig, 'w') as cen_conf_file:
 	json.dump(cen_config_string, cen_conf_file, indent=4)
+log.info('Created centrifugo config')
 
 # Run centrifugo
 if sys.platform == 'win32':
@@ -83,6 +90,7 @@ else:
 		'--admin',
 		'--admin_insecure'
 	])
+log.info('Runned centrifugo')
 
 time.sleep(3)
 
@@ -97,6 +105,7 @@ config1 = subprocess.Popen([
 	'--centSecret='+centrifugo_secret,
 	'--dbName='+args.dbName1
 ])
+log.info('Generated config for first node')
 time.sleep(3)
 
 #Generate keys for first block
@@ -105,6 +114,7 @@ keys1 = subprocess.Popen([
 	'generateKeys',
 	'--config='+workDir1+'/config.toml'
 ])
+log.info('Generate keys for first block')
 time.sleep(3)
 
 #Generate first block
@@ -114,6 +124,7 @@ firstBlock = subprocess.Popen([
 	'--config='+workDir1+'/config.toml',
 	'--test='+args.test
 ])
+log.info('First block generated')
 time.sleep(3)
 
 #Init data base
@@ -122,6 +133,7 @@ firstBlock = subprocess.Popen([
 	'initDatabase',
 	'--config='+workDir1+'/config.toml'
 ])
+log.info('DB for first node is initialized')
 time.sleep(3)
 
 #Start first node
@@ -131,6 +143,7 @@ startFirstNode = subprocess.Popen([
 	'--config='+workDir1+'/config.toml',
 	'--funcBench'
 ])
+log.info('First node started')
 time.sleep(3)
 
 #Generate config for second node
@@ -148,6 +161,7 @@ generateConfig2 = subprocess.Popen([
 	'--centSecret='+centrifugo_secret,
 	'--nodesAddr='+"127.0.0.1:"+args.tcpPort1
 ])
+log.info('Generated config for second node')
 time.sleep(3)
 
 #Generate keys for second node
@@ -156,6 +170,7 @@ generateKeys = subprocess.Popen([
 	'generateKeys',
 	'--config='+workDir2+'/config.toml'
 ])
+log.info('Generated keys for second node')
 time.sleep(3)
 
 #Generate config for third node
@@ -173,6 +188,7 @@ generateConfig3 = subprocess.Popen([
 	'--centSecret='+centrifugo_secret,
 	'--nodesAddr='+"127.0.0.1:"+args.tcpPort1
 ])
+log.info('Generated config for third node')
 time.sleep(3)
 
 #Generate keys for third node
@@ -181,6 +197,7 @@ generateKeys = subprocess.Popen([
 	'generateKeys',
 	'--config='+workDir3+'/config.toml'
 ])
+log.info('Generated keys for third node')
 time.sleep(3)
 
 #Init database
@@ -189,6 +206,7 @@ startFirstNode = subprocess.Popen([
 	'initDatabase',
 	'--config='+workDir2+'/config.toml'
 ])
+log.info('DB for second node is initialized')
 time.sleep(3) 
 
 #Start third node
@@ -198,6 +216,7 @@ startFirstNode = subprocess.Popen([
 	'--config='+workDir2+'/config.toml',
 	'--funcBench'
 ])
+log.info('Third node started')
 time.sleep(3)
 
 #Init database
@@ -206,6 +225,7 @@ startThirdNode = subprocess.Popen([
 	'initDatabase',
 	'--config='+workDir3+'/config.toml'
 ])
+log.info('DB for third node is initialized')
 time.sleep(3) 
 
 #Start third node
@@ -215,6 +235,7 @@ startThirdNode = subprocess.Popen([
 	'--config='+workDir3+'/config.toml',
 	'--funcBench'
 ])
+log.info('Third node started')
 time.sleep(3)
 
 with open(os.path.join(workDir1, 'PrivateKey'), 'r') as f:
@@ -241,62 +262,61 @@ with open(os.path.join(workDir3, 'NodePublicKey'), 'r') as f:
 	node_pub_key3 = f.read()
 with open(os.path.join(workDir3, 'PublicKey'), 'r') as f:
 	pubKey3 = f.read()
+log.info('Saved nodes files in work directories')
 
-	#-------------------------
-
-
-
-	config = [
+config = [
+	{
+		"url": "http://localhost:" + args.httpPort1 + "/api/v2",
+		"private_key": priv_key1,
+		"keyID": key_id1,
+		"pubKey": node_pub_key1,
+		"tcp_address": "localhost:" + args.tcpPort1,
+		"api_address": "http://localhost:" + args.httpPort1,
+		"db":
 		{
-			"url": "http://localhost:" + args.httpPort1 + "/api/v2",
-			"private_key": priv_key1,
-			"keyID": key_id1,
-			"pubKey": node_pub_key1,
-			"tcp_address": "localhost:" + args.tcpPort1,
-			"api_address": "http://localhost:" + args.httpPort1,
-			"db":
-			{
-				"dbHost": args.dbHost,
-				"dbName": args.dbName1,
-				"login": args.dbUser,
-				"pass": args.dbPassword
-				}
-		},
-		{
-			"url": "http://localhost:" + args.httpPort2 + "/api/v2",
-			"private_key": priv_key2,
-			"keyID": key_id2,
-			"pubKey": node_pub_key2,
-			"tcp_address": "localhost:" + args.tcpPort2,
-			"api_address": "http://localhost:" + args.httpPort2,
-			"db":
-			{
-				"dbHost": args.dbHost,
-				"dbName": args.dbName2,
-				"login": args.dbUser,
-				"pass": args.dbPassword
-				}
-		},
-		{
-			"url": "http://localhost:" + args.httpPort3 + "/api/v2",
-			"private_key": priv_key3,
-			"keyID": key_id3,
-			"pubKey": node_pub_key3,
-			"tcp_address": "localhost:" + args.tcpPort3,
-			"api_address": "http://localhost:" + args.httpPort3,
-			"db":
-			{
-				"dbHost": args.dbHost,
-				"dbName": args.dbName3,
-				"login": args.dbUser,
-				"pass": args.dbPassword
+			"dbHost": args.dbHost,
+			"dbName": args.dbName1,
+			"login": args.dbUser,
+			"pass": args.dbPassword
 			}
-		}]
+	},
+	{
+		"url": "http://localhost:" + args.httpPort2 + "/api/v2",
+		"private_key": priv_key2,
+		"keyID": key_id2,
+		"pubKey": node_pub_key2,
+		"tcp_address": "localhost:" + args.tcpPort2,
+		"api_address": "http://localhost:" + args.httpPort2,
+		"db":
+		{
+			"dbHost": args.dbHost,
+			"dbName": args.dbName2,
+			"login": args.dbUser,
+			"pass": args.dbPassword
+			}
+	},
+	{
+		"url": "http://localhost:" + args.httpPort3 + "/api/v2",
+		"private_key": priv_key3,
+		"keyID": key_id3,
+		"pubKey": node_pub_key3,
+		"tcp_address": "localhost:" + args.tcpPort3,
+		"api_address": "http://localhost:" + args.httpPort3,
+		"db":
+		{
+			"dbHost": args.dbHost,
+			"dbName": args.dbName3,
+			"login": args.dbUser,
+			"pass": args.dbPassword
+		}
+	}]
 
-	# Update config for tests
+# Update config for tests
 confPath = os.path.join(curDir+ '/../', 'nodesConfig.json')
 
 with open(confPath, 'w') as fconf:
 	fconf.write(json.dumps(config, indent=4))
+log.info('Updated file nodesConfig.json')
 
-print("Nodes successfully started")
+log.info('Nodes successfully started')
+
