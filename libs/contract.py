@@ -26,6 +26,14 @@ def new_ecosystem(url, pr_key, token, name=''):
               "name": name}
     return result
 
+def new_application(url, pr_key, token, name='', condition='true'):
+    if name == '':
+        name = "App" + tools.generate_random_name()
+    data = {"Name": name, "Conditions": condition}
+    result = {"hash": actions.call_contract(url, pr_key, "NewApplication", data, token),
+              "name": name}
+    return result
+
 def new_table(url, pr_key, token, name='', columns='', perms='', appId=1):
     if name == '':
         name = "Tab_" + tools.generate_random_name()
@@ -57,16 +65,6 @@ def edit_column(url, pr_key, token, table, column, up_perm="true",
               'name': table}
     return result
 
-def new_user(url, token, pub_key='', pr_key=''):
-    if pr_key == '':
-        pr_key = tools.generate_private_key()
-    if pub_key == '':
-        pub_key = get_public_key(pr_key)
-    data = {"NewPubkey": pub_key}
-    result = {"hash": actions.call_contract(url, pr_key, "NewUser", data, token),
-              'pr_key': pr_key}
-    return result
-
 def edit_ecosystem_name(url, pr_key, token, id=1, name=''):
     if name == '':
         name = "Ecosys_" + tools.generate_random_name()
@@ -85,29 +83,98 @@ def new_lang(url, pr_key, token, name='', trans=''):
               'name': name}
     return result
 
-def edit_contract(url, pr_key, token, name, new_source='', condition='true', wallet=''):
+def edit_contract(url, pr_key, token, id, new_source='', condition='true', wallet=''):
     if new_source == '':
         new_source = '{data { }    conditions {    }    action {    }    }'
     code = 'contract ' + name + new_source
     if wallet == '':
         wallet = "0005-2070-2000-0006-0200"
-    data = {"Id": actions.get_contract_id(url, name, token),
-             "Value": code, "Conditions": condition, "WalletId": wallet}
+    data = {"Id": id, "Value": code, "Conditions": condition, "WalletId": wallet}
     result = {"hash": actions.call_contract(url, pr_key, "EditContract", data, token)}
     return result
 
-def edit_lang(url, pr_key, token, name, trans=''):
+def edit_lang(url, pr_key, token, id, trans=''):
     if trans == '':
         trans = "{\"en\": \"false\", \"ru\" : \"true\"}"
-    id = actions.get_object_id(url, name, "languages", token)
     data = {"Id": id, "Trans": trans}
     result = {"hash": actions.call_contract(url, pr_key, "EditLang", data, token)}
     return result
 
-  
-    
-        
+def edit_application(url, pr_key, token, id, condition="true"):
+    data = {"ApplicationId": id, "Conditions": condition}
+    result = {"hash": actions.call_contract(url, pr_key, "EditApplication", data, token)}
+    return result
 
+def del_application(url, pr_key, token, id, val):
+    data = {"ApplicationId": id, "Value": val}
+    result = {"hash": actions.call_contract(url, pr_key, "DelApplication", data, token)}
+    return result
 
+def tokens_send(url, pr_key, token, wall, amount):
+    data = {"Recipient": wall, "Amount": amount}
+    result = {"hash": actions.call_contract(url, pr_key, "TokensSend", data, token)}
+    return result
+
+def bind_wallet(url, pr_key, token, id, wallet=''):
+    if wallet == '':
+        data = {"Id": id}
+    else:
+        {"Id": id, "WalletId": wallet}
+    result = {"hash": actions.call_contract(url, pr_key, "BindWallet", data, token)}
+    return result
+
+def unbind_wallet(url, pr_key, token, id):
+    data = {"Id": id}
+    result = {"hash": actions.call_contract(url, pr_key, "UnbindWallet", data, token)}
+    return result
+
+def new_parameter(url, pr_key, token, name='', val="test", condition="true"):
+    if name == '':
+        name = "Par_" + tools.generate_random_name()
+    data = {"Name": name, "Value": val,"Conditions": condition}
+    result = {"hash": actions.call_contract(url, pr_key, "NewParameter", data, token),
+              "name": name}
+    return result
+
+def edit_parameter(url, pr_key, token, id, value="test_edited", condition="true"):
+    data = {"Id": id, "Value": value, "Conditions": condition}
+    result = {"hash": actions.call_contract(url, pr_key, "EditParameter", data, token)}
+    return result
+
+def new_menu(url, pr_key, token, name='', value="Item1", condition="true"):
+    if name == '':
+        name = "Menu_" + tools.generate_random_name()
+    data = {"Name": name, "Value": value, "Conditions": condition}
+    result = {"hash": actions.call_contract(url, pr_key, "NewMenu", data, token),
+              "name": name}
+    return result
+
+def edit_menu(url, pr_key, token, id, value="ItemEdited", condition="true"):
+    data = {"Id": id, "Value": value, "Conditions": condition}
+    result = {"hash": actions.call_contract(url, pr_key, "EditMenu", data, token)}
+    return result
+
+def append_item(url, pr_key, token, id, value='AppendedItem'):
+    data = {"Id": id, "Value": value}
+    result = {"hash": actions.call_contract(url, pr_key, "AppendedItem", data, token)}
+    return result
+
+def new_page(url, pr_key, token, name='', value='', app_id=1, condition='true', menu='default_menu'):
+    if name == '':
+        name = "Page_" + tools.generate_random_name() 
+    if value == '':
+        value = "Hello page!"
+    data = {"Name": name, "Value": value, "ApplicationId": app_id,
+            "Conditions": condition, "Menu": menu}
+    result = {"hash": actions.call_contract(url, pr_key, "NewPage", data, token),
+              "name": name}
+    return result
+
+def edit_page(url, pr_key, token, id, condition='true', menu='default_menu', value=''):
+    if value == '':
+        value = "Good by page!"
+    data_edit = {"Id": id, "Value": value, "Conditions": condition, "Menu": menu}
+    result = {"hash": actions.call_contract(url, pr_key, "EditPage", data, token)}
+    return result
 
 

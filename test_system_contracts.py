@@ -59,138 +59,103 @@ class TestSystemContracts():
         while True:
             # add contract, which get block_id
             body = "{\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
-            code, name = tools.generate_name_and_code(body)
-            data = {"Value": code, "ApplicationId": 1,
-                    "Conditions": "true"}
-            res = self.call("NewContract", data)
-            check.is_tx_in_block(res)
+            tx = contract.new_contract(self.url, self.pr_key, self.token, source=body)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
             currrent_block_id = res["blockid"]
             expected_block_id = old_block_id + limit + 1  # +1 spare block
             if currrent_block_id == expected_block_id:
                 break
 
-
     def test_create_ecosystem(self):
-        name = "Ecosys_" + tools.generate_random_name()
-        data = {"Name": name}
-        res = self.call("NewEcosystem", data)
-        check.is_tx_in_block(res)
-
+        tx = contract.new_ecosystem(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_edit_application(self):
-        name = "App" + tools.generate_random_name()
-        data = {"Name": name, "Conditions": "true"}
-        res = self.call("NewApplication", data)
-        check.is_tx_in_block(res)
-        id = actions.get_object_id(self.url, name, "applications", self.token)
-        data = {"ApplicationId": id, "Conditions": "false"}
-        res = self.call("EditApplication", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_application(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        id = actions.get_object_id(self.url, tx['name'], "applications", self.token)
+        tx = contract.edit_application(self.url, self.pr_key, self.token, id)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_activate_application(self):
-        name = "App" + tools.generate_random_name()
-        data = {"Name": name, "Conditions": "true"}
-        res = self.call("NewApplication", data)
-        check.is_tx_in_block(res)
-        id = actions.get_object_id(self.url, name, "applications", self.token)
-        data_deact = {"ApplicationId": id, "Value": 0}
-        res = self.call("DelApplication", data_deact)
-        check.is_tx_in_block(res)
-        data_act = {"ApplicationId": id, "Value": 1}
-        res = self.call("DelApplication", data_act)
-        check.is_tx_in_block(res)
-
+        tx = contract.new_application(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        id = actions.get_object_id(self.url, tx['name'], "applications", self.token)
+        tx_del0 = contract.del_application(self.url, self.pr_key, self.token, id, 0)
+        check.is_tx_in_block(self.url, self.wait, tx_del0, self.token)
+        tx_del1 = contract.del_application(self.url, self.pr_key, self.token, id, 1)
+        check.is_tx_in_block(self.url, self.wait, tx_del1, self.token)
 
     def test_edit_ecosystem_name(self):
-        id = 1
-        name = "Ecosys_" + tools.generate_random_name()
-        data = {"EcosystemID": id, "NewName": name}
-        res = self.call("EditEcosystemName", data)
-        check.is_tx_in_block(res)
+        tx = contract.edit_ecosystem_name(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_edit_ecosystem_name_incorrect_id(self):
         id = 500
-        newName = "ecosys_" + tools.generate_random_name()
-        data = {"EcosystemID": id, "NewName": newName}
-        res = self.call("EditEcosystemName", data)
+        tx = contract.edit_ecosystem_name(self.url, self.pr_key, self.token, id=id)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "The ecosystem {id} is not exist".format(id=id)
-        self.unit.assertEqual(msg, res["error"], "Is not equals")
+        self.unit.assertEqual(msg, status["error"], "Is not equals")
 
     def test_tokens_send(self):
         ldata = actions.login(self.url, self.keys["key2"])
         time.sleep(10)
-        data = {"Recipient": ldata['address'],
-                "Amount": "1000"}
-        res = self.call("TokensSend", data)
-        check.is_tx_in_block(res)
+        sum = "1000"
+        tx = contract.tokens_send(self.url, self.pr_key, self.token, ldata['address'], sum)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         is_commission_in_history = actions.is_commission_in_history(
             self.url, self.token,
             self.config[0]["keyID"],
-            ldata['key_id'], "1000"
+            ldata['key_id'], sum
         )
         self.unit.assertTrue(is_commission_in_history, "No TokensSend resord in history")
-
 
     def test_tokens_send_incorrect_wallet(self):
         wallet = "0005-2070-2000-0006"
         msg = "The recipient {wallet} is not valid".format(wallet=wallet)
-        data = {"Recipient": wallet,
-                "Amount": "1000"}
-        res = self.call("TokensSend", data)
-        self.unit.assertEqual(res["error"], msg, "Incorrect message" + msg)
-
+        tx = contract.tokens_send(self.url, self.pr_key, self.token, wallet, "1000")
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
+        self.unit.assertEqual(status["error"], msg, "Incorrect message" + msg)
 
     def test_tokens_send_zero_amount(self):
         ldata = actions.login(self.url, self.keys["key2"], 0)
-        data = {"Recipient": ldata['address'],
-                "Amount": "0"}
-        ans = self.call("TokensSend", data)
+        tx = contract.tokens_send(self.url, self.pr_key, self.token, ldata['address'], "0")
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'Amount equals zero'
-        self.unit.assertEqual(ans["error"], msg, "Incorrect message" + str(ans))
-
+        self.unit.assertEqual(status["error"], msg, "Incorrect message" + str(ans))
 
     def test_tokens_send_negative_amount(self):
         ldata = actions.login(self.url, self.keys["key2"], 0)
         msg = "Amount is less than zero"
-        data = {"Recipient": ldata['address'],
-                "Amount": "-1000"}
-        ans = self.call("TokensSend", data)
-        self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
-
+        tx = contract.tokens_send(self.url, self.pr_key, self.token, ldata['address'], "-1000")
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
+        self.unit.assertEqual(status["error"], msg, "Incorrect message" + msg)
 
     def test_tokens_send_amount_as_string(self):
         ldata = actions.login(self.url, self.keys["key2"], 0)
-        amount = "ttt"
         msg = "Invalid param 'Amount': can't convert {amount} to decimal".format(amount=amount)
-        data = {"Recipient": ldata['address'],
-                "Amount": amount}
-        ans = self.call("TokensSend", data)
+        tx = contract.tokens_send(self.url, self.pr_key, self.token, ldata['address'], "tttt")
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
-
 
     def test_new_contract(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
-        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        check.is_tx_in_block(status)
-
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_new_contract_exists_name(self):
         cont_name = "cont_" + tools.generate_random_name()
         tx1 = contract.new_contract(self.url, self.pr_key, self.token, name=cont_name)
-        status1 = actions.tx_status(self.url, self.wait, tx1['hash'], self.token)
-        check.is_tx_in_block(status1)
+        check.is_tx_in_block(self.url, self.wait, tx1, self.token)
         tx2 = contract.new_contract(self.url, self.pr_key, self.token, name=cont_name)
-        status2 = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
+        status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "Contract " + cont_name + " already exists"
-        self.unit.assertEqual(status2["error"], msg, "Incorrect message: " + str(status2))
-
+        self.unit.assertEqual(status["error"], msg, "Incorrect message: " + str(status2))
 
     def test_new_contract_without_name(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token, name='  ')
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "The contract name is missing"
         self.unit.assertEqual(status["error"], msg, "Incorrect message: " + str(status))
-
 
     def test_new_contract_incorrect_condition(self):
         cond = 'condition'
@@ -199,293 +164,217 @@ class TestSystemContracts():
         msg = 'Condition {cond} is not allowed'.format(cond=cond)
         self.unit.assertIn(msg,  status["error"], "Incorrect message: " + str(status))
 
-
     def test_edit_contract_incorrect_condition(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
-        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        check.is_tx_in_block(status)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         cond = "tryam"
         id = actions.get_contract_id(self.url, tx['name'], self.token)
-        data2 = {"Id": id, "Value": tx['code'], "Conditions": cond}
-        ans = self.call("EditContract", data2)
+        tx2 = contract.edit_contract(self.url, self.pr_key, self.token,
+                                     id, new_source=tx['code'], condition=cond)
+        status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "Condition {cond} is not allowed".format(cond=cond)
-        self.unit.assertIn(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertIn(msg, status["error"], "Incorrect message: " + str(ans))
 
     def test_edit_contract(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
-        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        check.is_tx_in_block(status)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         id = actions.get_contract_id(self.url, tx['name'], self.token)
-        data2 = {"Id": id, "Value": tx['code'], "Conditions": "false"}
-        ans = self.call("EditContract", data2)
-        check.is_tx_in_block(ans)
-
+        tx2 = contract.edit_contract(self.url, self.pr_key, self.token,
+                                     id, new_source=tx['code'], condition="false")
+        check.is_tx_in_block(self.url, self.wait, tx2, self.token)
 
     def test_edit_name_of_contract(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
-        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        check.is_tx_in_block(status)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         code1, name1 = tools.generate_name_and_code("")
         id = actions.get_contract_id(self.url, tx['name'], self.token)
-        data2 = {"Id": id, "Value": code1, "Conditions": "true"}
-        ans = self.call("EditContract", data2)
+        tx2 = contract.edit_contract(self.url, self.pr_key, self.token,
+                                     id, new_source=code1)
+        status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "Contracts or functions names cannot be changed"
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(ans))
 
     def test_edit_incorrect_contract(self):
-        code, name = tools.generate_name_and_code("")
         id = "9999"
-        data2 = {"Id": id, "Value": code, "Conditions": "true"}
-        ans = self.call("EditContract", data2)
+        tx2 = contract.edit_contract(self.url, self.pr_key, self.token, id)
+        status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "Item {id} has not been found".format(id=id)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(ans))
 
     def test_bind_wallet(self):
-        code, name = tools.generate_name_and_code("")
-        data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
-        res = self.call("NewContract", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_contract(self.url, self.pr_key, self.token)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
+        check.is_tx_in_block(status)
         id = actions.get_contract_id(self.url, name, self.token)
-        data2 = {"Id": id}
-        res = self.call("BindWallet", data2)
-        check.is_tx_in_block(res)
-
+        tx = contract.bind_wallet(self.url, self.pr_key, self.token, id)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_bind_wallet_incorrect_contract(self):
         id = "99999"
-        data = {"Id": id}
-        ans = self.call("BindWallet", data)
+        tx = contract.bind_wallet(self.url, self.pr_key, self.token, id)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "Contract {id} does not exist".format(id=id)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(ans))
 
     def test_bind_wallet_incorrect_wallet(self):
-        code, name = tools.generate_name_and_code("")
-        data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
-        res = self.call("NewContract", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_contract(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         id = actions.get_contract_id(self.url, name, self.token)
-        data2 = {"Id": id, "WalletId": "0005-2070-2000-0006-0200"}
-        res = self.call("BindWallet", data2)
+        wallet = "0005-2070-2000-0006-0200"
+        tx = contract.bind_wallet(self.url, self.pr_key, self.token, id, wallet = wallet)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'The key ID is not found'
-        self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(res))
 
     def test_unbind_wallet(self):
-        code, name = tools.generate_name_and_code("")
-        data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
-        res = self.call("NewContract", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_contract(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         id = actions.get_contract_id(self.url, name, self.token)
-        data2 = {"Id": id}
-        res = self.call("BindWallet", data2)
-        check.is_tx_in_block(res)
-        res = self.call("UnbindWallet", data2)
-        check.is_tx_in_block(res)
-
+        tx = contract.bind_wallet(self.url, self.pr_key, self.token, id)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tx = contract.unbind_wallet(self.url, self.pr_key, self.token, id)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_unbind_wallet_incorrect_wallet(self):
         id = "99999"
-        data = {"Id": id}
-        ans = self.call("UnbindWallet", data)
+        tx = contract.unbind_wallet(self.url, self.pr_key, self.token, id)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'Contract {id} does not exist'.format(id=id)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(ans))
 
     def test_new_parameter(self):
-        name = "Par_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "test","Conditions": "true"}
-        res = self.call("NewParameter", data)
-        check.is_tx_in_block(res)
-
+        tx = contract.new_parameter(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_new_parameter_exist_name(self):
         name = "Par_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "test", "Conditions": "true"}
-        res = self.call("NewParameter", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_parameter(self.url, self.pr_key, self.token, name=name)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tx2 = contract.new_parameter(self.url, self.pr_key, self.token, name=name)
+        status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "The parameter {name} is already exist".format(name=name)
-        ans = self.call("NewParameter", data)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(ans))
 
     def test_new_parameter_incorrect_condition(self):
         condition = "tryam"
-        name = "Par_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "test", "Conditions": condition}
-        ans = self.call("NewParameter", data)
+        tx = contract.new_parameter(self.url, self.pr_key, self.token, condition=condition)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'Condition {cond} is not allowed'.format(cond=condition)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(ans))
 
     def test_edit_incorrect_parameter(self):
         id = "99999"
-        data2 = {"Id": id, "Value": "test_edited", "Conditions": "true"}
-        ans = self.call("EditParameter", data2)
+        tx = contract.edit_parameter(self.url, self.pr_key, self.token, id)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "Item {id} has not been found".format(id=id)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(ans))
 
     def test_edit_parameter_incorrect_condition(self):
-        name = "Par_" + tools.generate_random_name()
-        condition = "tryam"
-        data = {"Name": name, "Value": "test", "Conditions": "true"}
-        res = self.call("NewParameter", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_parameter(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         id = actions.get_parameter_id(self.url, name, self.token)
-        data2 = {"Id": id, "Value": "test_edited", "Conditions": condition}
-        ans = self.call("EditParameter", data2)
+        condition = "tryam"
+        tx = contract.edit_parameter(self.url, self.pr_key, self.token,
+                                     id, condition=condition)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'Condition {cond} is not allowed'.format(cond=condition)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_menu(self):
-        name = "Menu_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "Item1", "Conditions": "true"}
-        res = self.call("NewMenu", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_menu(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         content = {'tree': [{'tag': 'text', 'text': 'Item1'}]}
         m_content = actions.get_content(self.url, "menu", name, "", 1, self.token)
         self.unit.assertEqual(m_content, content)
 
-
     def test_new_menu_exist_name(self):
         name = "Menu_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "Item1", "Conditions": "true"}
-        res = self.call("NewMenu", data)
-        check.is_tx_in_block(res)
-        ans = self.call("NewMenu", data)
+        tx = contract.new_menu(self.url, self.pr_key, self.token, name=name)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tx = contract.new_menu(self.url, self.pr_key, self.token, name=name)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "The menu {name} is already exist".format(name=name)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(status))
 
     def test_new_menu_incorrect_condition(self):
-        name = "Menu_" + tools.generate_random_name()
         condition = "tryam"
-        data = {"Name": name, "Value": "Item1", "Conditions": condition}
-        ans = self.call("NewMenu", data)
+        tx = contract.new_menu(self.url, self.pr_key, self.token, condition=condition)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'Condition {cond} is not allowed'.format(cond=condition)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_edit_menu(self):
-        name = "Menu_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "Item1", "Conditions": "true"}
-        res = self.call("NewMenu", data)
-        check.is_tx_in_block(res)
-        count = actions.get_object_id(self.url, name, "menu", self.token)
-        data_edit = {"Id": count, "Value": "ItemEdited", "Conditions": "true"}
-        res = self.call("EditMenu", data_edit)
-        check.is_tx_in_block(res)
+        tx = contract.new_menu(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        id = actions.get_object_id(self.url, tx['name'], "menu", self.token)
+        tx2 = contract.edit_menu(self.url, self.pr_key, self.token, id)
+        check.is_tx_in_block(self.url, self.wait, tx2, self.token)
         content = {'tree': [{'tag': 'text', 'text': 'ItemEdited'}]}
         m_content = actions.get_content(self.url, "menu", name, "", 1, self.token)
         self.unit.assertEqual(m_content, content)
 
-
     def test_edit_incorrect_menu(self):
         id = "99999"
-        data_edit = {"Id": id, "Value": "ItemEdited", "Conditions": "true"}
-        ans = self.call("EditMenu", data_edit)
+        tx = contract.edit_menu(self.url, self.pr_key, self.token, id)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "The item is not found"
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_edit_menu_incorrect_condition(self):
-        name = "Menu_" + tools.generate_random_name()
         condition = "tryam"
-        data = {"Name": name, "Value": "Item1", "Conditions": "true"}
-        res = self.call("NewMenu", data)
-        check.is_tx_in_block(res)
-        count = actions.get_object_id(self.url, name, "menu", self.token)
-        data_edit = {"Id": count, "Value": "ItemEdited", "Conditions": condition}
-        ans = self.call("EditMenu", data_edit)
+        tx = contract.new_menu(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        id = actions.get_object_id(self.url, tx['name'], "menu", self.token)
+        tx2 = contract.edit_menu(self.url, self.pr_key, self.token, id, condition=condition)
+        status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = 'Condition {condition} is not allowed'.format(condition=condition)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_append_menu(self):
-        name = "Menu_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "Item1", "Conditions": "true"}
-        res = self.call("NewMenu", data)
-        check.is_tx_in_block(res)
-        count = actions.get_object_id(self.url, name, "menu", self.token)
-        data_edit = {"Id": count, "Value": "AppendedItem"}
-        res = self.call("AppendMenu", data_edit)
-        check.is_tx_in_block(res)
-
+        tx = contract.new_menu(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        id = actions.get_object_id(self.url, name, "menu", self.token)
+        tx = contract.append_item(self.url, self.pr_key, self.token, id)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_append_incorrect_menu(self):
         id = "999"
-        data_edit = {"Id": id, "Value": "AppendedItem"}
-        ans = self.call("AppendMenu", data_edit)
+        tx = contract.append_item(self.url, self.pr_key, self.token, id)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "Item {id} has not been found".format(id=id)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_page(self):
-        name = "Page_" + tools.generate_random_name()
-        data = {"Name": name,
-                "Value": "Hello page!",
-                "ApplicationId": 1,
-                "Conditions": "true",
-                "Menu": "default_menu"}
-        res = self.call("NewPage", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_page(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         content = [{'tag': 'text', 'text': 'Hello page!'}]
         cont = actions.get_content(self.url, "page", name, "", 1, self.token)
         self.unit.assertEqual(cont['tree'], content)
 
-
     def test_new_page_exist_name(self):
         name = "Page_" + tools.generate_random_name()
-        data = {"Name": name,
-                "Value": "Hello page!",
-                "ApplicationId": 1,
-                "Conditions": "true",
-                "Menu": "default_menu"}
-        res = self.call("NewPage", data)
-        check.is_tx_in_block(res)
-        ans = self.call("NewPage", data)
+        tx = contract.new_page(self.url, self.pr_key, self.token, name=name)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tx2 = contract.new_page(self.url, self.pr_key, self.token, name=name)
+        status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "The page {name} is already exist".format(name=name)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_page_incorrect_condition(self):
-        name = "Page_" + tools.generate_random_name()
-        condition = "tryam"
-        data = {"Name": name,
-                "Value": "Hello page!",
-                "ApplicationId": 1,
-                "Conditions": condition,
-                "Menu": "default_menu"}
-        ans = self.call("NewPage", data)
+        tx = contract.new_page(self.url, self.pr_key, self.token, condition=condition)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'Condition {cond} is not allowed'.format(cond=condition)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_edit_page(self):
-        name = "Page_" + tools.generate_random_name()
-        data = {"Name": name,
-                "Value": "Hello page!",
-                "ApplicationId": 1,
-                "Conditions": "true",
-                "Menu": "default_menu"}
-        res = self.call("NewPage", data)
-        check.is_tx_in_block(res)
-        count = actions.get_object_id(self.url, name, "pages", self.token)
-        data_edit = {"Id": count,
-                    "Value": "Good by page!",
-                     "Conditions": "true",
-                    "Menu": "default_menu"}
-        res = self.call("EditPage", data_edit)
-        check.is_tx_in_block(res)
+        tx = contract.new_page(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        id = actions.get_object_id(self.url, name, "pages", self.token)
+        tx2 = contract.edit_page(self.url, self.pr_key, self.token, id)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         content = [{'tag': 'text', 'text': 'Good by page!'}]
         p_content = actions.get_content(self.url, "page", name, "", 1, self.token)
         self.unit.assertEqual(p_content['tree'], content)
-
 
     def test_edit_page_with_validate_count(self):
         name = "Page_" + tools.generate_random_name()
