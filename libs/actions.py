@@ -134,6 +134,15 @@ def get_object_id(url, name, object, token):
             break
     return id
 
+def get_object_name(url, id, object, token):
+    name = None
+    res = get_list(url, object, token)
+    for object in res['list']:
+        if object['id'] == id:
+            name = object['name']
+            break
+    return name
+
 def is_contract_activated(url, name, token):
     res = api.contract(url, token, name)
     return res['active']
