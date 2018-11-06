@@ -2,7 +2,7 @@ import unittest
 import json
 import os
 
-from libs import actions, tools, api, check
+from libs import actions, tools, api, check, contract
 
 
 class TestApi():
@@ -70,9 +70,11 @@ class TestApi():
         new_pr_key = tools.generate_pr_key()
         new_user_data = actions.login(self.url, new_pr_key)
         check.is_new_key_in_keys(self.url, self.token, new_user_data['key_id'], self.wait)
-        data = {'Name': tools.generate_random_name()}
-        resp = actions.call_contract(self.url, new_pr_key, 'NewEcosystem', data, new_user_data['jwtToken'])
-        resp = self.assert_tx_in_block(resp, new_user_data['jwtToken'])
+        tx = contract.new_ecosystem(self.url,
+                                      new_pr_key,
+                                      new_user_data['jwtToken'],
+                                      tools.generate_random_name())
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # test
         res = api.keyinfo(self.url, token='', key_id=new_user_data['address'])
         for item in res:
@@ -97,7 +99,6 @@ class TestApi():
     def test_keyinfo_by_address_incorrect(self):
         asserts = ['error', 'msg']
         address = '0000-0990-3244-5453-2310'
-        # test
         error = 'E_INVALIDWALLET'
         msg = 'Wallet {adr} is not valid'.format(adr=address)
         res = api.keyinfo(self.url, token='', key_id=address)
@@ -234,23 +235,21 @@ class TestApi():
             "de": "Welt_de"
         }
         """
-        data = {
-            "Name": name_lang,
-            "Trans": trans,
-        }
-        res = self.call("NewLang", data)
-        self.unit.assertGreater(res, 0, "BlockId is not generated: " + str(res))
+        res = contract.new_lang(self.url,
+                                self.pr_key,
+                                self.token,
+                                name_lang,
+                                trans)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
         name_page = "Page_" + tools.generate_random_name()
         value_page = "Hello, LangRes({})".format(name_lang)
-        data_page = {
-            "ApplicationId": 1,
-            "Name": name_page,
-            "Value": value_page,
-            "Conditions": "true",
-            "Menu": "default_menu"
-        }
-        res = self.call("NewPage", data_page)
-        self.unit.assertGreater(res, 0, "BlockId is not generated: " + str(res))
+        res = contract.new_page(self.url,
+                                self.pr_key,
+                                self.token,
+                                name_page,
+                                value_page)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        # test
         content = [{'tag': 'text', 'text': 'Hello, World_en'}]
         content_ru = [{'tag': 'text', 'text': 'Hello, Мир_ru'}]
         content_fr = [{'tag': 'text', 'text': 'Hello, Monde_fr-FR'}]
@@ -287,23 +286,20 @@ class TestApi():
             "de": "Welt_de"
         }
         """
-        data = {
-            "Name": name_lang,
-            "Trans": trans
-        }
-        res = self.call("NewLang", data)
-        self.unit.assertGreater(res, 0, "BlockId is not generated: " + str(res))
+        res = contract.new_lang(self.url,
+                                self.pr_key,
+                                self.token,
+                                name_lang,
+                                trans)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
         name_page = "Page_" + tools.generate_random_name()
         value_page = "Hello, LangRes({})".format(name_lang)
-        data_page = {
-            "Name": name_page,
-            "Value": value_page,
-            "Conditions": "true",
-            "Menu": "default_menu",
-            "ApplicationId": 1
-        }
-        res = self.call("NewPage", data_page)
-        self.unit.assertGreater(res, 0, "BlockId is not generated: " + str(res))
+        res = contract.new_page(self.url,
+                                self.pr_key,
+                                self.token,
+                                name_page,
+                                value_page)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
         count = actions.get_count(self.url, 'languages', self.token)
         trans_edit = """
         {
@@ -313,12 +309,13 @@ class TestApi():
             "de": "Welt_de_ed"
         }
         """
-        data_edit = {
-            "Id": count,
-            "Trans": trans_edit
-        }
-        res = self.call("EditLang", data_edit)
-        self.unit.assertGreater(res, 0, "BlockId is not generated: " + str(res))
+        res = contract.edit_lang(self.url,
+                                self.pr_key,
+                                self.token,
+                                count,
+                                trans_edit)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        # test
         content = [{'tag': 'text', 'text': 'Hello, World_en_ed'}]
         content_ru = [{'tag': 'text', 'text': 'Hello, Мир_ru_ed'}]
         content_fr = [{'tag': 'text', 'text': 'Hello, Monde_fr-FR_ed'}]
@@ -363,14 +360,13 @@ class TestApi():
     def test_get_content_source(self):
         # Create new page for test
         name = "Page_" + tools.generate_random_name()
-        data = {}
-        data["Name"] = name
-        data["Value"] = "SetVar(a,\"Hello\") \n Div(Body: #a#)"
-        data["Conditions"] = "true"
-        data["Menu"] = "default_menu"
-        data["ApplicationId"] = 1
-        res = self.call("NewPage", data)
-        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + str(res))
+        value = "SetVar(a,\"Hello\") \n Div(Body: #a#)"
+        res = contract.new_page(self.url,
+                                self.pr_key,
+                                self.token,
+                                name,
+                                value)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
         # Test
         res = api.content_source(self.url, self.token, name)
         childrenText = res["tree"][1]["children"][0]["text"]
@@ -380,14 +376,13 @@ class TestApi():
     def test_get_content_with_param_from_address_string(self):
         # Create new page for test
         name = "Page_" + tools.generate_random_name()
-        data = {}
-        data["Name"] = name
-        data["Value"] = "#test#"
-        data["Conditions"] = "true"
-        data["Menu"] = "default_menu"
-        data["ApplicationId"] = 1
-        res = self.call("NewPage", data)
-        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + str(res))
+        value = "#test#"
+        res = contract.new_page(self.url,
+                                self.pr_key,
+                                self.token,
+                                name,
+                                value)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
         # Test
         value = "hello123"
         page_params = {"test": value}
@@ -398,9 +393,11 @@ class TestApi():
     def test_get_content_from_another_ecosystem(self):
         # create new ecosystem
         ecosys_name = "Ecosys_" + tools.generate_random_name()
-        data = {"Name": ecosys_name}
-        res = self.call("NewEcosystem", data)
-        self.unit.assertGreater(res, 0, "BlockId is not generated: " + str(res))
+        res = contract.new_ecosystem(self.url,
+                                     self.pr_key,
+                                     self.token,
+                                     ecosys_name)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
         ecosys_num = api.ecosystems(self.url, self.token)["number"]
         # login founder in new ecosystem
         data2 = actions.login(self.url, self.pr_key, 0, ecosys_num)
@@ -409,32 +406,24 @@ class TestApi():
         page_name = "Page_" + tools.generate_random_name()
         page_text = "Page in {} ecosystem".format(ecosys_num)
         page_value = "Span({})".format(page_text)
-        data = {
-            "Name": page_name,
-            "Value": page_value,
-            'ApplicationId': 1,
-            "Conditions": "true",
-            "Menu": "default_menu"
-        }
-        resp = actions.call_contract(self.url, self.pr_key, "@1NewPage",
-                                     data, token2, ecosystem=ecosys_num)
-        status = actions.tx_status(self.url, self.wait, resp, token2)
-        self.unit.assertGreater(status["blockid"], 0,
-                                "BlockId is not generated: " + str(status))
+        res = contract.new_page(self.url,
+                                self.pr_key,
+                                token2,
+                                page_name,
+                                page_value,
+                                ecosystem=ecosys_num)
+        check.is_tx_in_block(self.url, self.wait, res, token2)
         # create menu in new ecosystem
         menu_name = "Menu_" + tools.generate_random_name()
         menu_title = "Test menu"
-        value = 'MenuItem(Title:"{}")'.format(menu_title)
-        data = {
-            "Name": menu_name,
-            "Value": value,
-            "Conditions": "true"
-        }
-        resp = actions.call_contract(self.url, self.pr_key, "@1NewMenu",
-                                   data, token2, ecosystem=ecosys_num)
-        status = actions.tx_status(self.url, self.wait, resp, token2)
-        self.unit.assertGreater(status["blockid"], 0,
-                                "BlockId is not generated: " + str(status))
+        menu_value = 'MenuItem(Title:"{}")'.format(menu_title)
+        res = contract.new_menu(self.url,
+                                self.pr_key,
+                                token2,
+                                menu_name,
+                                menu_value,
+                                ecosystem=ecosys_num)
+        check.is_tx_in_block(self.url, self.wait, res, token2)
         # test
         p_name = '@{ecosys_num}{page_name}'.format(
             ecosys_num=ecosys_num,
@@ -555,20 +544,17 @@ class TestApi():
 
     def test_get_interface_block(self):
         # Add new block
-        block = "Block_" + tools.generate_random_name()
-        data = {
-            "Name": block,
-            "Value": "Hello page!",
-            "ApplicationId": 1,
-            "Conditions": "true"
-        }
-        res = self.call("NewBlock", data)
-        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + str(res))
+        block_name = "Block_" + tools.generate_random_name()
+        res = contract.new_block(self.url,
+                                 self.pr_key,
+                                 self.token,
+                                 block_name)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
         # Test
         asserts = ["id"]
-        res = api.interface(self.url, self.token, 'block', block)
+        res = api.interface(self.url, self.token, 'block', block_name)
         self.check_result(res, asserts)
-        self.unit.assertEqual(block, res["name"])
+        self.unit.assertEqual(block_name, res["name"])
 
 
     def test_get_interface_block_incorrect(self):
@@ -584,8 +570,7 @@ class TestApi():
         data = {}
         resp = actions.call_contract(self.url, self.pr_key, "NodeOwnerCondition", data, self.token)
         status = actions.tx_status(self.url, self.wait, resp, self.token)
-        self.unit.assertGreater(int(status["blockid"]), 0,
-                           "BlockId is not generated: " + str(status))
+        check.is_tx_in_block(self.url, self.wait, status, self.token)
 
 
     def is_node_owner_false(self):
@@ -596,6 +581,7 @@ class TestApi():
         data = {}
         resp = actions.call_contract(self.url, pr_key2, "NodeOwnerCondition", data, token2)
         status = actions.tx_status(self.url, self.wait, resp, token2)
+        print(status)
         self.unit.assertEqual(status["errmsg"]["error"],
                          "Sorry, you do not have access to this action.",
                          "Incorrect message: " + str(status))
@@ -626,6 +612,7 @@ class TestApi():
         # add file in binaries
         name = "file_" + tools.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
+        '''
         with open(path, 'rb') as f:
             file = f.read()
         data = {
@@ -636,6 +623,13 @@ class TestApi():
         }
         res = self.call("UploadBinary", data)
         self.unit.assertGreater(res, 0, "BlockId is not generated: " + str(res))
+        '''
+        res = contract.upload_binary(self.url,
+                                     self.pr_key,
+                                     self.token,
+                                     path,
+                                     name)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
         last_rec = actions.get_count(self.url, 'binaries', self.token)
         founder_id = actions.get_object_id(self.url, 'founder', 'members', self.token)
         # change column permissions
@@ -647,6 +641,8 @@ class TestApi():
         self.unit.assertGreater(res, 0, "BlockId is not generated: " + str(res))
         # test
         resp = api.avatar(self.url, token='', member=founder_id, ecosystem=1)
+        for r in resp:
+            print(r)
         msg = "Content-Length is different!"
         self.unit.assertIn("71926", str(resp.headers["Content-Length"]), msg)
 
