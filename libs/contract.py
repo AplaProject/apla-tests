@@ -119,7 +119,8 @@ def new_lang(url, pr_key, token, name='', trans='', ecosystem=1):
     return result
 
 
-def new_lang_joint(url, pr_key, token, name='', value=["en", "ru"], local=["Hi", "Привет"]):
+def new_lang_joint(url, pr_key, token, name='',
+                   value=["en", "ru"], local=["Hi", "Привет"], ecosystem=1):
     if name == '':
         name = "Lang_" + tools.generate_random_name()
     data = {"Name": name, "ValueArr": value, "LocaleArr": local}
@@ -153,7 +154,8 @@ def edit_lang(url, pr_key, token, id, trans='', ecosystem=1):
     result = {"hash": res}
     return result
 
-def edit_lang_joint(url, pr_key, token, id, value=["en", "de"], local=["Hi", "Hallo"]):
+def edit_lang_joint(url, pr_key, token, id,
+                    value=["en", "de"], local=["Hi", "Hallo"], ecosystem=1):
     data = {"Id": id, "ValueArr": value, "LocaleArr": local}
     res = actions.call_contract(url, pr_key, "@1EditLangJoint",
                                 data, token, ecosystem=ecosystem)
@@ -263,7 +265,8 @@ def append_item(url, pr_key, token, id, value='AppendedItem', ecosystem=1):
     result = {"hash": res}
     return result
 
-def new_page(url, pr_key, token, name='', value='', app_id=1, condition='true', validate_count='', menu='default_menu'):
+def new_page(url, pr_key, token, name='', value='', app_id=1,
+             condition='true', validate_count='', menu='default_menu', ecosystem=1):
     if name == '':
         name = "Page_" + tools.generate_random_name() 
     if not value:
@@ -272,98 +275,99 @@ def new_page(url, pr_key, token, name='', value='', app_id=1, condition='true', 
             "Conditions": condition, "Menu": menu}
     if validate_count != '':
         data["ValidateCount"] = validate_count
-    result = {"hash": actions.call_contract(url, pr_key, "@1NewPage", data, token),
+    result = {"hash": actions.call_contract(url, pr_key, "@1NewPage", data, token, ecosystem=ecosystem),
               "name": name}
     return result
 
 
-def edit_page(url, pr_key, token, id, condition='true', menu='default_menu', value='', validate_count=''):
+def edit_page(url, pr_key, token, id, condition='true',
+              menu='default_menu', value='', validate_count='', ecosystem=1):
     if value == '':
         value = "Good by page!"
     data = {"Id": id, "Value": value, "Conditions": condition, "Menu": menu}
     if validate_count != '':
         data["ValidateCount"] = validate_count
-    result = {"hash": actions.call_contract(url, pr_key, "@1EditPage", data, token)}
+    result = {"hash": actions.call_contract(url, pr_key, "@1EditPage", data, token, ecosystem=ecosystem)}
     return result
 
 
-def append_page(url, pr_key, token, id, value="Good by!"):
+def append_page(url, pr_key, token, id, value="Good by!", ecosystem=1):
     data = {"Id": id, "Value": value}
     result = {"hash": actions.call_contract(url, pr_key, "@1AppendPage", data, token)}
     return result
 
 
-def new_block(url, pr_key, token, name='', value="Hello page!", app_id=1, condition="true"):
+def new_block(url, pr_key, token, name='', value="Hello page!", app_id=1, condition="true", ecosystem=1):
     if name == '':
         name = "Block_" + tools.generate_random_name()
     data = {"Name": name, "Value": value, "ApplicationId": app_id, "Conditions": condition}
-    result = {"hash": actions.call_contract(url, pr_key, "@1NewBlock", data, token),
+    result = {"hash": actions.call_contract(url, pr_key, "@1NewBlock", data, token, ecosystem=ecosystem),
               "name": name}
     return result
 
 
-def edit_block(url, pr_key, token, id, value="Good by!", condition="true"):
+def edit_block(url, pr_key, token, id, value="Good by!", condition="true", ecosystem=1):
     data = {"Id": id, "Value": value, "Conditions": condition}
-    result = {"hash": actions.call_contract(url, pr_key, "@1EditBlock", data, token)}
+    result = {"hash": actions.call_contract(url, pr_key, "@1EditBlock", data, token, ecosystem=ecosystem)}
     return result
 
 
 def edit_table(url, pr_key, token, name, insert="true",
-               update="true", read="true", column="true"):
+               update="true", read="true", column="true", ecosystem=1):
     data = {"Name": name, "InsertPerm": insert, "UpdatePerm": update,
             "ReadPerm": read, "NewColumnPerm": column}
-    result = {"hash": actions.call_contract(url, pr_key, "@1EditTable", data, token)}
+    result = {"hash": actions.call_contract(url, pr_key, "@1EditTable", data, token, ecosystem=ecosystem)}
     return result
 
 
-def new_app_param(url, pr_key, token, name='', app_id=1, val="myParam", condition="true"):
+def new_app_param(url, pr_key, token, name='', app_id=1, val="myParam", condition="true", ecosystem=1):
     if name == '':
         name = "param_" + tools.generate_random_name()
     data = {"ApplicationId": app_id, "Name": name, "Value": val, "Conditions": condition}
-    result = {"hash": actions.call_contract(url, pr_key, "@1EditTable", data, token),
+    result = {"hash": actions.call_contract(url, pr_key, "@1EditTable", data, token, ecosystem=ecosystem),
               "name": name}
     return result
     
     
-def edit_app_param(url, pr_key, token, id, value="myParamEdited", condition="true"):
+def edit_app_param(url, pr_key, token, id, value="myParamEdited", condition="true", ecosystem=1):
     data = {"Id": 1, "Value": value, "Conditions": condition}
-    result = {"hash": actions.call_contract(url, pr_key, "@1EditAppParam", data, token)}
+    result = {"hash": actions.call_contract(url, pr_key, "@1EditAppParam", data, token, ecosystem=ecosystem)}
     return result
 
 
-def new_delayed_contract(url, pr_key, token, name='', block=1, condition="true", limit=3):
+def new_delayed_contract(url, pr_key, token, name='', block=1, condition="true", limit=1, ecosystem=1):
     if name == '':
         name = "DelContr_" + tools.generate_random_name()
     data = {"Contract": name, "EveryBlock": block, "Conditions": condition, "Limit": limit}
-    result = {"hash": actions.call_contract(url, pr_key, "@1NewDelayedContract", data, token),
+    result = {"hash": actions.call_contract(url, pr_key, "@1NewDelayedContract", data, token, ecosystem=ecosystem),
               "name": name}
     return result
 
 
-def edit_delayed_contract(url, pr_key, token, id, name, block="1",
-                          condition="true", limit=2):
+def edit_delayed_contract(url, pr_key, token, id, name, block=1,
+                          condition="true", limit=1, ecosystem=1):
     data = {"Id": id, "Contract": name, "EveryBlock": block,
             "Conditions": condition, "Limit": limit}
-    result = {"hash": actions.call_contract(url, pr_key, "@1EditDelayedContract", data, token)}
+    result = {"hash": actions.call_contract(url, pr_key, "@1EditDelayedContract", data, token, ecosystem=ecosystem)}
     return result
 
 
-def upload_binary(url, pr_key, token, path, name='', app_id='1'):
     if name == '':
         name = "image_" + tools.generate_random_name()
+def upload_binary(url, pr_key, token, path, name, app_id='1', ecosystem=1):
     with open(path, 'rb') as f:
             file = f.read()
     data = {'Name': name, 'ApplicationId': app_id, 'Data': file}
-    result = {"hash": actions.call_contract(url, pr_key, "@1UploadBinary", data, token),
+    result = {"hash": actions.call_contract(url, pr_key, "@1UploadBinary", data, token, ecosystem=ecosystem),
               "name": name}
     return result
 
-def import_upload(url, pr_key, token, path):
+def import_upload(url, pr_key, token, path, ecosystem=1):
     data = {'input_file': {'Path': path}}
-    result = {"hash": actions.call_contract(url, pr_key, "@1ImportUpload", data, token)}
+    result = {"hash": actions.call_contract(url, pr_key, "@1ImportUpload", data, token, ecosystem=ecosystem)}
     return result
 
-def export_new_app(url, pr_key, token, app_id=1):
+def export_new_app(url, pr_key, token, app_id=1, ecosystem=1):
     data = {"ApplicationId": app_id}
-    result = {"hash": actions.call_contract(url, pr_key, "@1ExportNewApp", data, token)}
+    result = {"hash": actions.call_contract(url, pr_key, "@1ExportNewApp", data, token, ecosystem=ecosystem)}
     return result
