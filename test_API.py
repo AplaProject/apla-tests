@@ -19,21 +19,6 @@ class TestApi():
         self.unit = unittest.TestCase()
 
 
-    def assert_tx_in_block(self, result, jwt_token):
-        status = actions.tx_status(self.url, self.wait, result, jwt_token)
-        if status['blockid'] > 0:
-            self.unit.assertNotIn(json.dumps(status), 'errmsg')
-            return status["blockid"]
-        else:
-            return status["errmsg"]["error"]
-
-
-    def call(self, name, data):
-        resp = actions.call_contract(self.url, self.pr_key, name, data, self.token)
-        resp = self.assert_tx_in_block(resp, self.token)
-        return resp
-
-
     def check_result(self, result, keys, error='', msg=''):
         for key in keys:
             self.unit.assertIn(key, result)
@@ -87,8 +72,15 @@ class TestApi():
         new_pr_key = tools.generate_pr_key()
         new_user_data = actions.login(self.url, new_pr_key)
         check.is_new_key_in_keys(self.url, self.token, new_user_data['key_id'], self.wait)
-        data = {'rid': 2, 'member_id': new_user_data['key_id']}
-        self.call('RolesAssign', data)
+        data = {'rid': 2,
+                'member_id': new_user_data['key_id']}
+        res = actions.call_contract(self.url,
+                                    self.pr_key,
+                                    'RolesAssign',
+                                    data,
+                                    self.token)
+        status = {'hash': res}
+        check.is_tx_in_block(self.url, self.wait, status, self.token)
         # test
         res = api.keyinfo(self.url, token='', key_id=new_user_data['key_id'])
         for item in res:
@@ -566,27 +558,6 @@ class TestApi():
         self.check_result(res, asserts, error, msg)
 
 
-    def is_node_owner_true(self):
-        data = {}
-        resp = actions.call_contract(self.url, self.pr_key, "NodeOwnerCondition", data, self.token)
-        status = actions.tx_status(self.url, self.wait, resp, self.token)
-        check.is_tx_in_block(self.url, self.wait, status, self.token)
-
-
-    def is_node_owner_false(self):
-        keys = tools.read_config("keys")
-        pr_key2 = keys["key1"]
-        data2 = actions.login(self.url, pr_key2, 0)
-        token2 = data2["jwtToken"]
-        data = {}
-        resp = actions.call_contract(self.url, pr_key2, "NodeOwnerCondition", data, token2)
-        status = actions.tx_status(self.url, self.wait, resp, token2)
-        print(status)
-        self.unit.assertEqual(status["errmsg"]["error"],
-                         "Sorry, you do not have access to this action.",
-                         "Incorrect message: " + str(status))
-
-
     def test_login(self):
         keys = tools.read_fixtures("keys")
         data1 = actions.login(self.url, keys["key5"], 0)
@@ -612,18 +583,6 @@ class TestApi():
         # add file in binaries
         name = "file_" + tools.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
-        '''
-        with open(path, 'rb') as f:
-            file = f.read()
-        data = {
-            "Name": name,
-            "ApplicationId": 1,
-            "DataMimeType":"image/jpeg",
-            'Data': file
-        }
-        res = self.call("UploadBinary", data)
-        self.unit.assertGreater(res, 0, "BlockId is not generated: " + str(res))
-        '''
         res = contract.upload_binary(self.url,
                                      self.pr_key,
                                      self.token,
@@ -637,12 +596,15 @@ class TestApi():
             'member_name': 'founder',
             'image_id': last_rec
         }
-        res = self.call("ProfileEdit", data)
-        self.unit.assertGreater(res, 0, "BlockId is not generated: " + str(res))
+        res = actions.call_contract(self.url,
+                                    self.pr_key,
+                                    "ProfileEdit",
+                                    data,
+                                    self.token)
+        status = {'hash': res}
+        check.is_tx_in_block(self.url, self.wait, status, self.token)
         # test
         resp = api.avatar(self.url, token='', member=founder_id, ecosystem=1)
-        for r in resp:
-            print(r)
         msg = "Content-Length is different!"
         self.unit.assertIn("71926", str(resp.headers["Content-Length"]), msg)
 
@@ -655,15 +617,13 @@ class TestApi():
 
     def test_content_hash(self):
         name = "Page_" + tools.generate_random_name()
-        data = {
-            "Name": name,
-            "Value": "Div(,Hello page!)",
-            "ApplicationId": 1,
-            "Conditions": "true",
-            "Menu": "default_menu"
-        }
-        res = self.call("NewPage", data)
-        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + str(res))
+        value = "Div(,Hello page!)"
+        res = contract.new_page(self.url,
+                                self.pr_key,
+                                self.token,
+                                name,
+                                value)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
         res = api.content_hash(self.url, self.token, name)
         asserts = ['hash']
         self.check_result(res, asserts)
@@ -686,9 +646,11 @@ class TestApi():
 
     def test_get_ecosystem_name_new(self):
         name = "ecos_" + tools.generate_random_name()
-        data = {"Name": name}
-        res = self.call("NewEcosystem", data)
-        self.unit.assertGreater(int(res), 0, "BlockId is not generated: " + str(res))
+        res = contract.new_ecosystem(self.url,
+                                self.pr_key,
+                                self.token,
+                                name)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
         id = actions.get_count(self.url, 'ecosystems', self.token)
         asserts = ["ecosystem_name"]
         res = api.ecosystemname(self.url, self.token, id=id)
