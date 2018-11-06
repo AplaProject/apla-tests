@@ -159,21 +159,25 @@ def append_item(url, pr_key, token, id, value='AppendedItem'):
     result = {"hash": actions.call_contract(url, pr_key, "AppendedItem", data, token)}
     return result
 
-def new_page(url, pr_key, token, name='', value='', app_id=1, condition='true', menu='default_menu'):
+def new_page(url, pr_key, token, name='', value='', app_id=1, condition='true', validate_count='', menu='default_menu'):
     if name == '':
         name = "Page_" + tools.generate_random_name() 
     if value == '':
         value = "Hello page!"
     data = {"Name": name, "Value": value, "ApplicationId": app_id,
             "Conditions": condition, "Menu": menu}
+    if validate_count != '':
+        data["ValidateCount"] = validate_count
     result = {"hash": actions.call_contract(url, pr_key, "NewPage", data, token),
               "name": name}
     return result
 
-def edit_page(url, pr_key, token, id, condition='true', menu='default_menu', value=''):
+def edit_page(url, pr_key, token, id, condition='true', menu='default_menu', value='', validate_count=''):
     if value == '':
         value = "Good by page!"
-    data_edit = {"Id": id, "Value": value, "Conditions": condition, "Menu": menu}
+    data = {"Id": id, "Value": value, "Conditions": condition, "Menu": menu}
+    if validate_count != '':
+        data["ValidateCount"] = validate_count
     result = {"hash": actions.call_contract(url, pr_key, "EditPage", data, token)}
     return result
 
