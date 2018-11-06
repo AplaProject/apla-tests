@@ -119,6 +119,15 @@ def new_lang(url, pr_key, token, name='', trans='', ecosystem=1):
     return result
 
 
+def new_lang_joint(url, pr_key, token, name='', value=["en", "ru"], local=["Hi", "Привет"]):
+    if name == '':
+        name = "Lang_" + tools.generate_random_name()
+    data = {"Name": name, "ValueArr": value, "LocaleArr": local}
+    res = actions.call_contract(url, pr_key, "@1NewLangJoint",
+                                data, token, ecosystem=ecosystem)
+    return {"hash": res, "name": name}
+
+
 def edit_contract(url, pr_key, token, id, new_source='',
                   condition='true', ecosystem=1):
     name = actions.get_object_name(url, id, object, token)
@@ -144,6 +153,11 @@ def edit_lang(url, pr_key, token, id, trans='', ecosystem=1):
     result = {"hash": res}
     return result
 
+def edit_lang_joint(url, pr_key, token, id, value=["en", "de"], local=["Hi", "Hallo"]):
+    data = {"Id": id, "ValueArr": value, "LocaleArr": local}
+    res = actions.call_contract(url, pr_key, "@1EditLangJoint",
+                                data, token, ecosystem=ecosystem)
+    return {"hash": res}
 
 def edit_application(url, pr_key, token, id, condition="true", ecosystem=1):
     data = {"ApplicationId": id,
@@ -258,9 +272,10 @@ def new_page(url, pr_key, token, name='', value='', app_id=1, condition='true', 
             "Conditions": condition, "Menu": menu}
     if validate_count != '':
         data["ValidateCount"] = validate_count
-    result = {"hash": actions.call_contract(url, pr_key, "NewPage", data, token),
+    result = {"hash": actions.call_contract(url, pr_key, "@1NewPage", data, token),
               "name": name}
     return result
+
 
 def edit_page(url, pr_key, token, id, condition='true', menu='default_menu', value='', validate_count=''):
     if value == '':
@@ -268,6 +283,87 @@ def edit_page(url, pr_key, token, id, condition='true', menu='default_menu', val
     data = {"Id": id, "Value": value, "Conditions": condition, "Menu": menu}
     if validate_count != '':
         data["ValidateCount"] = validate_count
-    result = {"hash": actions.call_contract(url, pr_key, "EditPage", data, token)}
+    result = {"hash": actions.call_contract(url, pr_key, "@1EditPage", data, token)}
     return result
 
+
+def append_page(url, pr_key, token, id, value="Good by!"):
+    data = {"Id": id, "Value": value}
+    result = {"hash": actions.call_contract(url, pr_key, "@1AppendPage", data, token)}
+    return result
+
+
+def new_block(url, pr_key, token, name='', value="Hello page!", app_id=1, condition="true"):
+    if name == '':
+        name = "Block_" + tools.generate_random_name()
+    data = {"Name": name, "Value": value, "ApplicationId": app_id, "Conditions": condition}
+    result = {"hash": actions.call_contract(url, pr_key, "@1NewBlock", data, token),
+              "name": name}
+    return result
+
+
+def edit_block(url, pr_key, token, id, value="Good by!", condition="true"):
+    data = {"Id": id, "Value": value, "Conditions": condition}
+    result = {"hash": actions.call_contract(url, pr_key, "@1EditBlock", data, token)}
+    return result
+
+
+def edit_table(url, pr_key, token, name, insert="true",
+               update="true", read="true", column="true"):
+    data = {"Name": name, "InsertPerm": insert, "UpdatePerm": update,
+            "ReadPerm": read, "NewColumnPerm": column}
+    result = {"hash": actions.call_contract(url, pr_key, "@1EditTable", data, token)}
+    return result
+
+
+def new_app_param(url, pr_key, token, name='', app_id=1, val="myParam", condition="true"):
+    if name == '':
+        name = "param_" + tools.generate_random_name()
+    data = {"ApplicationId": app_id, "Name": name, "Value": val, "Conditions": condition}
+    result = {"hash": actions.call_contract(url, pr_key, "@1EditTable", data, token),
+              "name": name}
+    return result
+    
+    
+def edit_app_param(url, pr_key, token, id, value="myParamEdited", condition="true"):
+    data = {"Id": 1, "Value": value, "Conditions": condition}
+    result = {"hash": actions.call_contract(url, pr_key, "@1EditAppParam", data, token)}
+    return result
+
+
+def new_delayed_contract(url, pr_key, token, name='', block=1, condition="true", limit=3):
+    if name == '':
+        name = "DelContr_" + tools.generate_random_name()
+    data = {"Contract": name, "EveryBlock": block, "Conditions": condition, "Limit": limit}
+    result = {"hash": actions.call_contract(url, pr_key, "@1NewDelayedContract", data, token),
+              "name": name}
+    return result
+
+
+def edit_delayed_contract(url, pr_key, token, id, name, block="1",
+                          condition="true", limit=2):
+    data = {"Id": id, "Contract": name, "EveryBlock": block,
+            "Conditions": condition, "Limit": limit}
+    result = {"hash": actions.call_contract(url, pr_key, "@1EditDelayedContract", data, token)}
+    return result
+
+
+def upload_binary(url, pr_key, token, path, name='', app_id='1'):
+    if name == '':
+        name = "image_" + tools.generate_random_name()
+    with open(path, 'rb') as f:
+            file = f.read()
+    data = {'Name': name, 'ApplicationId': app_id, 'Data': file}
+    result = {"hash": actions.call_contract(url, pr_key, "@1UploadBinary", data, token),
+              "name": name}
+    return result
+
+def import_upload(url, pr_key, token, path):
+    data = {'input_file': {'Path': path}}
+    result = {"hash": actions.call_contract(url, pr_key, "@1ImportUpload", data, token)}
+    return result
+
+def export_new_app(url, pr_key, token, app_id=1):
+    data = {"ApplicationId": app_id}
+    result = {"hash": actions.call_contract(url, pr_key, "@1ExportNewApp", data, token)}
+    return result

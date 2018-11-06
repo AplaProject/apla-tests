@@ -41,10 +41,10 @@ def compare_nodes(config):
 def is_tx_in_block(url, wait, tx, token):
     status = actions.tx_status(url, wait, tx['hash'], token)
     if status["blockid"] > 0:
-        return True
+        return status["blockid"]
     else:
         unittest.TestCase.fail("Transaction not in block. Status: " + str(status))
-        return False
+        return None
 
 
 def compare_db(config, url, token):

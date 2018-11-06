@@ -143,10 +143,9 @@ class TestSystemContracts():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_new_contract_exists_name(self):
-        cont_name = "cont_" + tools.generate_random_name()
-        tx1 = contract.new_contract(self.url, self.pr_key, self.token, name=cont_name)
+        tx1 = contract.new_contract(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx1, self.token)
-        tx2 = contract.new_contract(self.url, self.pr_key, self.token, name=cont_name)
+        tx2 = contract.new_contract(self.url, self.pr_key, self.token, name=tx1["name"])
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "Contract " + cont_name + " already exists"
         self.unit.assertEqual(status["error"], msg, "Incorrect message: " + str(status2))
@@ -247,12 +246,11 @@ class TestSystemContracts():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_new_parameter_exist_name(self):
-        name = "Par_" + tools.generate_random_name()
-        tx = contract.new_parameter(self.url, self.pr_key, self.token, name=name)
+        tx = contract.new_parameter(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        tx2 = contract.new_parameter(self.url, self.pr_key, self.token, name=name)
+        tx2 = contract.new_parameter(self.url, self.pr_key, self.token, name=tx["name"])
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
-        msg = "The parameter {name} is already exist".format(name=name)
+        msg = "The parameter {name} is already exist".format(name=tx["name"])
         self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(ans))
 
     def test_new_parameter_incorrect_condition(self):
@@ -288,12 +286,11 @@ class TestSystemContracts():
         self.unit.assertEqual(m_content, content)
 
     def test_new_menu_exist_name(self):
-        name = "Menu_" + tools.generate_random_name()
-        tx = contract.new_menu(self.url, self.pr_key, self.token, name=name)
+        tx = contract.new_menu(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        tx = contract.new_menu(self.url, self.pr_key, self.token, name=name)
+        tx = contract.new_menu(self.url, self.pr_key, self.token, name=tx["name"])
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        msg = "The menu {name} is already exist".format(name=name)
+        msg = "The menu {name} is already exist".format(name=tx["name"])
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(status))
 
     def test_new_menu_incorrect_condition(self):
@@ -352,12 +349,11 @@ class TestSystemContracts():
         self.unit.assertEqual(cont['tree'], content)
 
     def test_new_page_exist_name(self):
-        name = "Page_" + tools.generate_random_name()
-        tx = contract.new_page(self.url, self.pr_key, self.token, name=name)
+        tx = contract.new_page(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        tx2 = contract.new_page(self.url, self.pr_key, self.token, name=name)
+        tx2 = contract.new_page(self.url, self.pr_key, self.token, name=tx["name"])
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
-        msg = "The page {name} is already exist".format(name=name)
+        msg = "The page {name} is already exist".format(name=tx["name"])
         self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_page_incorrect_condition(self):
@@ -377,180 +373,104 @@ class TestSystemContracts():
         self.unit.assertEqual(p_content['tree'], content)
 
     def test_edit_page_with_validate_count(self):
-        name = "Page_" + tools.generate_random_name()
-        data = {"Name": name,
-                "Value": "Hello page!",
-                "Conditions": "true",
-                "ValidateCount": 6,
-                "Menu": "default_menu",
-                "ApplicationId": 1}
-        res = self.call("NewPage", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_page(self.url, self.pr_key, self.token, validate_count=6)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         count = actions.get_object_id(self.url, name, "pages", self.token)
-        data_edit = {"Id": count,
-                    "Value": "Good by page!",
-                     "Conditions": "true",
-                    "ValidateCount": 1,
-                     "Menu": "default_menu"}
-        res = self.call("EditPage", data_edit)
-        check.is_tx_in_block(res)
+        tx2 = contract.edit_page(self.url, self.pr_key, self.token, id, validate_count=1)
+        check.is_tx_in_block(self.url, self.wait, tx2, self.token)
         content = [{'tag': 'text', 'text': 'Good by page!'}]
         p_content = actions.get_content(self.url, "page", name, "", 1, self.token)
         self.unit.assertEqual(p_content['tree'], content)
 
-
     def test_edit_incorrect_page(self):
         id = "99999"
-        data_edit = {"Id": id,
-                     "Value": "Good by page!",
-                    "Conditions": "true",
-                     "Menu": "default_menu"}
-        ans = self.call("EditPage", data_edit)
+        tx = contract.edit_page(self.url, self.pr_key, self.token, id)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'The item is not found'
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_edit_page_incorrect_condition(self):
-        name = "Page_" + tools.generate_random_name()
-        data = {"Name": name,
-                "Value": "Hello page!",
-                "Conditions": "true",
-                "Menu": "default_menu",
-                "ApplicationId": 1}
-        res = self.call("NewPage", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_page(self.url, self.pr_key, self.token, validate_count=6)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         condition = "Tryam"
-        count = actions.get_object_id(self.url, name, "pages", self.token)
-        data_edit = {"Id": count,
-                    "Value": "Good by page!",
-                     "Conditions": condition,
-                    "Menu": "default_menu"}
-        ans = self.call("EditPage", data_edit)
+        id = actions.get_object_id(self.url, name, "pages", self.token)
+        tx2 = contract.edit_page(self.url, self.pr_key, self.token, id, condition=condition)
+        status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = 'Condition {cond} is not allowed'.format(cond=condition)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_append_page(self):
-        name = "Page_" + tools.generate_random_name()
-        data = {"Name": name,
-                "Value": "Hello!",
-                "Conditions": "true",
-                "Menu": "default_menu",
-                "ApplicationId": 1}
-        res = self.call("NewPage", data)
-        check.is_tx_in_block(res)
-        count = actions.get_object_id(self.url, name, "pages", self.token)
-        data_edit = {"Id": count, "Value": "Good by!"}
-        res = self.call("AppendPage", data_edit)
-        check.is_tx_in_block(res)
+        tx = contract.new_page(self.url, self.pr_key, self.token, validate_count=6)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        id = actions.get_object_id(self.url, name, "pages", self.token)
+        tx2 = contract.append_page(self.url, self.pr_key, self.token, id)
+        check.is_tx_in_block(self.url, self.wait, tx2, self.token)
         content = [{'tag': 'text', 'text': 'Hello!\r\nGood by!'}]
         p_content = actions.get_content(self.url, "page", name, "", 1, self.token)
         self.unit.assertEqual(p_content['tree'], content)
 
-
     def test_append_page_incorrect_id(self):
         id = "9999"
-        data_edit = {"Id": id, "Value": "Good by!"}
-        ans = self.call("AppendPage", data_edit)
+        tx = contract.append_page(self.url, self.pr_key, self.token, id)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "Item {id} has not been found".format(id=id)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_block(self):
-        name = "Block_" + tools.generate_random_name()
-        data = {"Name": name,
-                "Value": "Hello page!",
-                "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewBlock", data)
-        check.is_tx_in_block(res)
-
+        tx = contract.new_block(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_new_block_exist_name(self):
-        name = "Block_" + tools.generate_random_name()
-        data = {"Name": name,
-                "Value": "Hello page!",
-                "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewBlock", data)
-        check.is_tx_in_block(res)
-        ans = self.call("NewBlock", data)
-        msg = "The block '{name}' is already exist".format(name=name)
+        tx = contract.new_block(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tx2 = contract.new_block(self.url, self.pr_key, self.token, name=tx["name"])
+        status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
+        msg = "The block '{name}' is already exist".format(name=tx["name"])
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
 
     def test_new_block_incorrect_condition(self):
-        name = "Block_" + tools.generate_random_name()
         condition = "tryam"
-        data = {"Name": name,
-                "Value": "Hello page!",
-                "ApplicationId": 1,
-                "Conditions": condition}
-        ans = self.call("NewBlock", data)
+        tx = contract.new_block(self.url, self.pr_key, self.token, condition=condition)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'Condition {cond} is not allowed'.format(cond=condition)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_edit_block_incorrect_id(self):
         id = "9999"
-        data_edit = {"Id": id, "Value": "Good by!", "Conditions": "true"}
-        ans = self.call("EditBlock", data_edit)
+        tx = contract.edit_block(self.url, self.pr_key, self.token, id)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'The item is not found'
         self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
 
-
     def test_edit_block(self):
-        name = "Block_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "Hello block!", "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewBlock", data)
-        check.is_tx_in_block(res)
-        count = actions.get_object_id(self.url, name, "blocks", self.token)
-        data_edit = {"Id": count, "Value": "Good by!", "Conditions": "true"}
-        res = self.call("EditBlock", data_edit)
-        check.is_tx_in_block(res)
-
+        tx = contract.new_block(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        id = actions.get_object_id(self.url, name, "blocks", self.token)
+        tx2 = contract.edit_block(self.url, self.pr_key, self.token, id)
+        check.is_tx_in_block(self.url, self.wait, tx2, self.token)
 
     def test_edit_block_incorrect_condition(self):
-        name = "Block_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "Hello block!", "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewBlock", data)
-        check.is_tx_in_block(res)
-        count = actions.get_object_id(self.url, name, "blocks", self.token)
+        tx = contract.new_block(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        id = actions.get_object_id(self.url, name, "blocks", self.token)
         condition = "tryam"
-        data_edit = {"Id": count, "Value": "Good by!", "Conditions": condition}
-        ans = self.call("EditBlock", data_edit)
+        tx2 = contract.edit_block(self.url, self.pr_key, self.token, id, condition=condition)
+        status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = 'Condition {condition} is not allowed'.format(condition=condition)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_table(self):
         # create new table
-        column = """[
-        {"name":"Text","type":"varchar", "index": "1",  "conditions": {"update":"true", "read": "true"}},
-        {"name":"num","type":"varchar", "index": "0",  "conditions":{"update":"true", "read": "true"}}
-        ]"""
-        permission = """
-        {"read" : "false", "insert": "true", "update" : "true",  "new_column": "true"}
-        """
-        table_name = "tab_" + tools.generate_random_name()
-        data = {"Name": table_name,
-                "Columns": column, "ApplicationId": 1,
-                "Permissions": permission}
-        res = self.call("NewTable", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_table(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # create new page
-        name = "Page_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "DBFind(" + table_name + ",src)", "ApplicationId": 1,
-                "Conditions": "true", "Menu": "default_menu"}
-        res = self.call("NewPage", data)
-        check.is_tx_in_block(res)
+        val = "DBFind(" + table_name + ",src)"
+        tx_page = contract.new_page(self.url, self.pr_key, self.token, value=val)
+        check.is_tx_in_block(self.url, self.wait, tx_page, self.token)
         # test
         content = [{'tag': 'text', 'text': 'Access denied'}]
-        cont = actions.get_content(self.url, "page", name, "", 1, self.token)
+        cont = actions.get_content(self.url, "page", tx_page["name"], "", 1, self.token)
         self.unit.assertEqual(cont['tree'], content)
-
 
     def test_new_table_not_readable(self):
         # create new table
@@ -558,15 +478,8 @@ class TestSystemContracts():
         {"name":"Text","type":"varchar", "index": "1",  "conditions": {"update":"true", "read": "false"}},
         {"name":"num","type":"varchar", "index": "0",  "conditions":{"update":"true", "read": "true"}}
         ]"""
-        permission = """
-        {"read" : "true", "insert": "true", "update" : "true",  "new_column": "true"}
-        """
-        table_name = "tab_" + tools.generate_random_name()
-        data = {"Name": table_name,
-                "Columns": column, "ApplicationId": 1,
-                "Permissions": permission}
-        res = self.call("NewTable", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_table(self.url, self.pr_key, self.token, columns=column)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # create new contract, which added record in table
         code = """{
         data {}    
@@ -575,25 +488,19 @@ class TestSystemContracts():
             DBInsert("%s", {text: "text1", num: "num1"})    
         }
         }""" % table_name
-        code, name = tools.generate_name_and_code(code)
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
-        check.is_tx_in_block(res)
+        tx_cont = contract.new_contract(self.url, self.pr_key, self.token, source=code)
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
         # call contract
-        res = self.call(name, "")
-        check.is_tx_in_block(res)
+        tx_call = actions.call_contract(url, pr_key, tokentx_cont["name"], {})
+        check.is_tx_in_block(self.url, self.wait, {"hash": tx_call}, self.token)
         # create new page
-        name = "Page_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "DBFind(" + table_name + ",src)", "ApplicationId": 1,
-                "Conditions": "true", "Menu": "default_menu"}
-        res = self.call("NewPage", data)
-        check.is_tx_in_block(res)
+        val = "DBFind(" + table_name + ",src)"
+        tx_page = contract.new_page(self.url, self.pr_key, self.token, value=val)
+        check.is_tx_in_block(self.url, self.wait, tx_page, self.token)
         # test
         content = [['num1', '1']]
-        cont = actions.get_content(self.url, "page", name, "", 1, self.token)
+        cont = actions.get_content(self.url, "page", tx_page["name"], "", 1, self.token)
         self.unit.assertEqual(cont['tree'][0]['attr']['data'], content)
-
 
     def test_new_table_not_readable_all_columns(self):
         # create new table
@@ -601,26 +508,16 @@ class TestSystemContracts():
         {"name":"Text","type":"varchar", "index": "1",  "conditions": {"update":"true", "read": "false"}},
         {"name":"num","type":"varchar", "index": "0",  "conditions":{"update":"true", "read": "false"}}
         ]"""
-        permission = """
-        {"read" : "true", "insert": "true", "update" : "true",  "new_column": "true"}
-        """
-        table_name = "tab_" + tools.generate_random_name()
-        data = {"Name": table_name,
-                "Columns": column, "ApplicationId": 1,
-                "Permissions": permission}
-        res = self.call("NewTable", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_table(self.url, self.pr_key, self.token, columns=column)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # create new page
-        name = "Page_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "DBFind(" + table_name + ",src)", "ApplicationId": 1,
-                "Conditions": "true", "Menu": "default_menu"}
-        res = self.call("NewPage", data)
-        check.is_tx_in_block(res)
+        val = "DBFind(" + table_name + ",src)"
+        tx_page = contract.new_page(self.url, self.pr_key, self.token, value=val)
+        check.is_tx_in_block(self.url, self.wait, tx_page, self.token)
         # test
         content = [{'tag': 'text', 'text': 'Access denied'}]
-        cont = actions.get_content(self.url, "page", name, "", 1, self.token)
+        cont = actions.get_content(self.url, "page", tx_page["name"], "", 1, self.token)
         self.unit.assertEqual(cont['tree'], content)
-
 
     def test_new_table_not_readable_one_column(self):
         # create new table
@@ -628,15 +525,8 @@ class TestSystemContracts():
         {"name":"Text","type":"varchar", "index": "1",  "conditions": {"update":"true", "read": "false"}},
         {"name":"num","type":"varchar", "index": "0",  "conditions":{"update":"true", "read": "true"}}
         ]"""
-        permission = """
-        {"read" : "true", "insert": "true", "update" : "true",  "new_column": "true"}
-        """
-        table_name = "tab_" + tools.generate_random_name()
-        data = {"Name": table_name,
-                "Columns": column, "ApplicationId": 1,
-                "Permissions": permission}
-        res = self.call("NewTable", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_table(self.url, self.pr_key, self.token, columns=column)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # create new contract, which added record in table
         code = """{
         data {}    
@@ -645,308 +535,169 @@ class TestSystemContracts():
             DBInsert("%s", {text: "text1", num: "num1"})    
         }
         }""" % table_name
-        code, name = tools.generate_name_and_code(code)
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
-        self.unit.assertGreater(res["blockid"], 0,
-                           "BlockId is not generated: " + str(res))
+        tx_cont = contract.new_contract(self.url, self.pr_key, self.token, source=code)
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
         # call contract
-        res = self.call(name, "")
-        check.is_tx_in_block(res)
+        tx_call = actions.call_contract(url, pr_key, tokentx_cont["name"], {})
+        check.is_tx_in_block(self.url, self.wait, {"hash": tx_call}, self.token)
         # create new page
-        name = "Page_" + tools.generate_random_name()
-        data = {"Name": name, "Value": "DBFind(" + table_name + ",src)", "ApplicationId": 1,
-                "Conditions": "true", "Menu": "default_menu"}
-        res = self.call("NewPage", data)
-        check.is_tx_in_block(res)
+        val = "DBFind(" + table_name + ",src)"
+        tx_page = contract.new_page(self.url, self.pr_key, self.token, value=val)
+        check.is_tx_in_block(self.url, self.wait, tx_page, self.token)
         # test
         content = [['num1', '1']]
-        cont = actions.get_content(self.url, "page", name, "", 1, self.token)
+        cont = actions.get_content(self.url, "page", tx_page["name"], "", 1, self.token)
         self.unit.assertEqual(cont['tree'][0]['attr']['data'], content)
-
 
     def test_new_table_incorrect_column_name_digit(self):
         column = """[{"name":"123","type":"varchar",
         "index": "1",  "conditions":"true"}]"""
-        permission = """{"insert": "false",
-        "update" : "true","new_column": "true"}"""
-        data = {"Name": "Tab_" + tools.generate_random_name(),
-                "Columns": column, "ApplicationId": 1,
-                "Permissions": permission}
-        ans = self.call("NewTable", data)
+        tx = contract.new_table(self.url, self.pr_key, self.token, columns=column)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "Column name cannot begin with digit"
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_table_incorrect_column_name_cyrillic(self):
         word = "привет"
         column = """[{"name":"%s","type":"varchar",
         "index": "1",  "conditions":"true"}]""" % word
-        permission = """{"insert": "false",
-        "update" : "true","new_column": "true"}"""
-        data = {"Name": "Tab_" + tools.generate_random_name(),
-                "Columns": column, "ApplicationId": 1,
-                "Permissions": permission}
-        ans = self.call("NewTable", data)
+        tx = contract.new_table(self.url, self.pr_key, self.token, columns=column)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "Name {word} must only contain latin, digit and '_', '-' characters".format(word=word)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_table_incorrect_condition1(self):
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
-                  "\"index\": \"1\",  \"conditions\":\"true\"}]"
         condition = "tryam"
         permissions = "{\"insert\": \"" + condition + \
                       "\", \"update\" : \"true\", \"new_column\": \"true\"}"
-        data = {"Name": "Tab_" + tools.generate_random_name(),
-                "Columns": columns, "Permissions": permissions,
-                "ApplicationId": 1}
-        ans = self.call("NewTable", data)
+        tx = contract.new_table(self.url, self.pr_key, self.token, perms=permissions)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "Condition {condition} is not allowed".format(condition=condition)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_table_incorrect_condition2(self):
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
-                  "\"index\": \"1\",  \"conditions\":\"true\"}]"
         condition = "tryam"
         permissions = "{\"insert\": \"true\", \"update\" : \"" + \
                       condition + "\", \"new_column\": \"true\"}"
-        data = {"Name": "Tab_" + tools.generate_random_name(),
-                "Columns": columns, "Permissions": permissions,
-                "ApplicationId": 1}
-        ans = self.call("NewTable", data)
+        tx = contract.new_table(self.url, self.pr_key, self.token, perms=permissions)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "Condition {condition} is not allowed".format(condition=condition)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_table_incorrect_condition3(self):
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
-                  "\"index\": \"1\",  \"conditions\":\"true\"}]"
         condition = "tryam"
         permissions = "{\"insert\": \"true\", \"update\" : \"true\"," + \
                       " \"new_column\": \"" + condition + "\"}"
-        data = {"Name": "Tab_" + tools.generate_random_name(),
-                "Columns": columns, "Permissions": permissions,
-                "ApplicationId": 1}
-        ans = self.call("NewTable", data)
+        tx = contract.new_table(self.url, self.pr_key, self.token, perms=permissions)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "Condition {condition} is not allowed".format(condition=condition)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_table_exist_name(self):
-        name = "tab_" + tools.generate_random_name()
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
-                  "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        permissions = "{\"insert\": \"false\", \"update\" : \"true\"," + \
-                      " \"new_column\": \"true\"}"
-        data = {"Name": name, "Columns": columns,
-                "Permissions": permissions, "ApplicationId": 1}
-        res = self.call("NewTable", data)
-        check.is_tx_in_block(res)
-        ans = self.call("NewTable", data)
+        tx = contract.new_table(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        tx2 = contract.new_table(self.url, self.pr_key, self.token, name=tx["name"])
+        status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "table {name} exists".format(name=name)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_table_incorrect_name_cyrillic(self):
         name = "таблица"
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
-                  "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        permissions = "{\"insert\": \"false\", \"update\" : \"true\"," + \
-                      " \"new_column\": \"true\"}"
-        data = {"Name": name, "Columns": columns,
-                "Permissions": permissions, "ApplicationId": 1}
-        ans = self.call("NewTable", data)
+        tx = contract.new_table(self.url, self.pr_key, self.token, name=name)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "Name {name} must only contain latin, digit and '_', '-' characters".format(name=name)
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
-
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_table_identical_columns(self):
-        name = "tab_" + tools.generate_random_name()
         columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
                   "\"index\": \"1\",  \"conditions\":\"true\"}," + \
                   "{\"name\":\"MyName\",\"type\":\"varchar\"," + \
                   "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        permissions = "{\"insert\": \"false\", \"update\": \"true\"," + \
-                      " \"new_column\": \"true\"}"
-        data = {"Name": name, "Columns": columns,
-                "Permissions": permissions, "ApplicationId": 1}
-        ans = self.call("NewTable", data)
-        self.unit.assertEqual("There are the same columns", ans["error"],
-                         "Incorrect message: " + str(ans))
-
+        tx = contract.new_table(self.url, self.pr_key, self.token, columns=column)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
+        self.unit.assertEqual("There are the same columns", status["error"],
+                         "Incorrect message: " + str(status))
 
     def test_edit_table(self):
-        name = "Tab_" + tools.generate_random_name()
-        columns = """[{"name": "MyName", "type": "varchar", "index": "1", "conditions": "true"}]"""
-        permissions = """{"insert": "false", "update": "true", "new_column": "true"}"""
-        data = {"Name": name, "Columns": columns,
-                "Permissions": permissions, "ApplicationId": 1}
-        res = self.call("NewTable", data)
-        check.is_tx_in_block(res)
-        data_edit = {"Name": name,
-                    "InsertPerm": "true",
-                    "UpdatePerm": "true",
-                    "ReadPerm": "true",
-                    "NewColumnPerm": "true"}
-        res = self.call("EditTable", data_edit)
-        check.is_tx_in_block(res)
-
+        tx = contract.new_table(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tx2 = contract.new_table(self.url, self.pr_key, self.token, tx["name"])
+        check.is_tx_in_block(self.url, self.wait, tx2, self.token)
 
     def test_new_column(self):
-        name_tab = "Tab_" + tools.generate_random_name()
-        columns = """[{"name": "MyName", "type":"varchar", "index": "1", "conditions": "true"}]"""
-        permissions = """{"insert": "false", "update": "true", "new_column": "true"}"""
-        data = {"ApplicationId": 1,
-                "Name": name_tab,
-                "Columns": columns,
-                "Permissions": permissions, }
-        res = self.call("NewTable", data)
-        check.is_tx_in_block(res)
-        data_col1 = {"TableName": name_tab,
-                    "Name": "var",
-                    "Type": "varchar",
-                    "UpdatePerm": "true",
-                    "ReadPerm": "true"}
-        res1 = self.call("NewColumn", data_col1)
-        check.is_tx_in_block(res)
-        data_col2 = {"TableName": name_tab,
-                    "Name": "json",
-                    "Type": "json",
-                    "UpdatePerm": "true",
-                    "ReadPerm": "true"}
-        res2 = self.call("NewColumn", data_col2)
-        check.is_tx_in_block(res)
-        data_col3 = {"TableName": name_tab,
-                    "Name": "num",
-                    "Type": "number",
-                    "UpdatePerm": "true",
-                    "ReadPerm": "true"}
-        res3 = self.call("NewColumn", data_col3)
-        check.is_tx_in_block(res)
-        data_col4 = {"TableName": name_tab,
-                    "Name": "date",
-                    "Type": "datetime",
-                    "UpdatePerm": "true",
-                    "ReadPerm": "true"}
-        res4 = self.call("NewColumn", data_col4)
-        check.is_tx_in_block(res)
-        data_col5 = {"TableName": name_tab,
-                    "Name": "sum",
-                    "Type": "money",
-                    "UpdatePerm": "true",
-                    "ReadPerm": "true"}
-        res5 = self.call("NewColumn", data_col5)
-        check.is_tx_in_block(res)
-        data_col6 = {"TableName": name_tab,
-                    "Name": "name",
-                    "Type": "text",
-                    "UpdatePerm": "true",
-                    "ReadPerm": "true"}
-        res6 = self.call("NewColumn", data_col6)
-        check.is_tx_in_block(res)
-        data_col7 = {"TableName": name_tab,
-                    "Name": "length",
-                    "Type": "double",
-                    "UpdatePerm": "true",
-                    "ReadPerm": "true"}
-        res7 = self.call("NewColumn", data_col7)
-        check.is_tx_in_block(res)
-        data_col8 = {"TableName": name_tab,
-                    "Name": "code",
-                    "Type": "character",
-                    "UpdatePerm": "true",
-                    "ReadPerm": "true"}
-        res8 = self.call("NewColumn", data_col8)
-        check.is_tx_in_block(res)
-
+        tx = contract.new_table(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tx2 = contract.new_column(self.url, self.pr_key, self.token,
+                                  tx["name"], type="varchar")
+        check.is_tx_in_block(self.url, self.wait, tx2, self.token)
+        tx3 = contract.new_column(self.url, self.pr_key, self.token,
+                                  tx["name"], type="json")
+        check.is_tx_in_block(self.url, self.wait, tx3, self.token)
+        tx4 = contract.new_column(self.url, self.pr_key, self.token,
+                                  tx["name"], type="number")
+        check.is_tx_in_block(self.url, self.wait, tx4, self.token)
+        tx5 = contract.new_column(self.url, self.pr_key, self.token,
+                                  tx["name"], type="datetime")
+        check.is_tx_in_block(self.url, self.wait, tx5, self.token)
+        tx6 = contract.new_column(self.url, self.pr_key, self.token,
+                                  tx["name"], type="money")
+        check.is_tx_in_block(self.url, self.wait, tx6, self.token)
+        tx7 = contract.new_column(self.url, self.pr_key, self.token,
+                                  tx["name"], type="text")
+        check.is_tx_in_block(self.url, self.wait, tx7, self.token)
+        tx8 = contract.new_column(self.url, self.pr_key, self.token,
+                                  tx["name"], type="double")
+        check.is_tx_in_block(self.url, self.wait, tx8, self.token)
+        tx9 = contract.new_column(self.url, self.pr_key, self.token,
+                                  tx["name"], type="character")
+        check.is_tx_in_block(self.url, self.wait, tx9, self.token)
 
     def test_edit_column(self):
-        name_tab = "tab_" + tools.generate_random_name()
-        columns = "[{\"name\":\"MyName\",\"type\":\"varchar\"," + \
-                  "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        permissions = "{\"insert\": \"false\", \"update\": \"true\"," + \
-                      " \"new_column\": \"true\"}"
-        data = {"Name": name_tab, "Columns": columns,
-                "Permissions": permissions, "ApplicationId": 1}
-        res = self.call("NewTable", data)
-        check.is_tx_in_block(res)
-        name = "Col_" + tools.generate_random_name()
-        data_col = {"TableName": name_tab, "Name": name, "Type": "number",
-                   "UpdatePerm": "true", "ReadPerm": "true"}
-        res = self.call("NewColumn", data_col)
-        check.is_tx_in_block(res)
-        data_edit = {"TableName": name_tab, "Name": name,
-                    "UpdatePerm": "false", "ReadPerm": "false"}
-        res = self.call("EditColumn", data_edit)
-        check.is_tx_in_block(res)
-
+        tx = contract.new_table(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tx2 = contract.new_column(self.url, self.pr_key, self.token, tx["name"])
+        check.is_tx_in_block(self.url, self.wait, tx2, self.token)
+        tx3 = contract.edit_column(self.url, self.pr_key, self.token,
+                                   tx["name"], tx2["name"])
+        check.is_tx_in_block(self.url, self.wait, tx3, self.token)
 
     def test_new_lang(self):
-        data = {"Name": "Lang_" + tools.generate_random_name(),
-                "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
-        res = self.call("NewLang", data)
-        check.is_tx_in_block(res)
-
+        tx = contract.new_lang(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_new_lang_joint(self):
-        data = {"Name": "Lang_" + tools.generate_random_name(),
-                "ValueArr": ["en", "ru"], "LocaleArr": ["Hi", "Привет"]}
-        res = self.call("NewLangJoint", data)
-        check.is_tx_in_block(res)
-
+        tx = contract.new_lang_joint(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_edit_lang_joint(self):
-        data = {"Name": "Lang_" + tools.generate_random_name(),
-                "ValueArr": ["en", "ru"], "LocaleArr": ["Hi", "Привет"]}
-        res = self.call("NewLangJoint", data)
-        check.is_tx_in_block(res)
-        count = actions.get_count(self.url, "languages", self.token)
-        data_e = {"Id": count, "ValueArr": ["en", "de"],
-                 "LocaleArr": ["Hi", "Hallo"]}
-        res = self.call("EditLangJoint", data_e)
-        check.is_tx_in_block(res)
-
+        tx = contract.new_lang_joint(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        id = actions.get_count(self.url, "languages", self.token)
+        tx2 = contract.edit_lang_joint(self.url, self.pr_key, self.token, id)
+        check.is_tx_in_block(self.url, self.wait, tx2, self.token)
 
     def test_edit_lang(self):
-        name = "Lang_" + tools.generate_random_name()
-        data = {"Name": name, "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
-        res = self.call("NewLang", data)
-        check.is_tx_in_block(res)
-        count = actions.get_count(self.url, "languages", self.token)
-        data_edit = {"Id": count, "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
-        res = self.call("EditLang", data_edit)
-        check.is_tx_in_block(res)
-
+        tx = contract.new_lang(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        id = actions.get_count(self.url, "languages", self.token)
+        tx2 = contract.edit_lang(self.url, self.pr_key, self.token, id)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_new_app_param(self):
-        name = "param_" + tools.generate_random_name()
-        data = {"ApplicationId": 1, "Name": name, "Value": "myParam", "Conditions": "true"}
-        res = self.call("NewAppParam", data)
-        check.is_tx_in_block(res)
-
+        tx = contract.new_app_param(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_edit_app_param(self):
-        name = "param_" + tools.generate_random_name()
-        data = {"ApplicationId": 1, "Name": name, "Value": "myParam", "Conditions": "true"}
-        res = self.call("NewAppParam", data)
-        check.is_tx_in_block(res)
-        data2 = {"Id": 1, "Value": "myParamEdited", "Conditions": "true"}
-        res = self.call("EditAppParam", data2)
-        check.is_tx_in_block(res)
-
+        tx = contract.new_app_param(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tx2 = contract.edit_app_param(self.url, self.pr_key, self.token, 1)
+        check.is_tx_in_block(self.url, self.wait, tx2, self.token)
 
     def test_delayed_contracts(self):
         # add table for test
         column = """[{"name":"id_block","type":"number", "index": "1",  "conditions":"true"}]"""
-        permission = """{"insert": "true", "update" : "true","new_column": "true"}"""
-        table_name = "tab_delayed_" + tools.generate_random_name()
-        data = {"Name": table_name, "Columns": column,
-                "ApplicationId": 1, "Permissions": permission}
-        res = self.call("NewTable", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_table(self.url, self.pr_key, self.token, columns=column)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # add contract which insert records in table in progress CallDelayedContract
         body = """
         {
@@ -956,46 +707,32 @@ class TestSystemContracts():
                 DBInsert("%s", {id_block: $block})
             }
         }
-        """ % table_name
-        code, contract_name = tools.generate_name_and_code(body)
-        data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
-        res = self.call("NewContract", data)
-        check.is_tx_in_block(res)
+        """ % tx["name"]
+        tx_cont = contract.new_contract(self.url, self.pr_key, self.token, source=body)
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
         # NewDelayedContract
         new_limit = 3
-        data = {"Contract": contract_name, "EveryBlock": "1",
-                "Conditions": "true", "Limit": new_limit}
-        res = self.call("NewDelayedContract", data)
-        check.is_tx_in_block(res)
-        old_block_id = res["blockid"]
+        tx2 = contract.new_delayed_contract(self.url, self.pr_key, self.token)
+        old_block_id = check.is_tx_in_block(self.url, self.wait, tx2, self.token)
         # get record id of 'delayed_contracts' table for run EditDelayedContract
         id = actions.get_count(self.url, 'delayed_contracts', self.token)
         # wait block_id until run CallDelayedContract
         self.wait_block_id(old_block_id, new_limit)
         # EditDelayedContract
         editLimit = 2
-        data = {"Id": id, "Contract": contract_name, "EveryBlock": "1", "Conditions": "true", "Limit": editLimit}
-        res = self.call("EditDelayedContract", data)
-        check.is_tx_in_block(res)
-        old_block_id = res["blockid"]
+        tx3 = contract.edit_delayed_contract(self.url, self.pr_key, self.token, id,
+                                             tx2["name"], limit=editLimit)
+        old_block_id = check.is_tx_in_block(self.url, self.wait, tx3, self.token)
         # wait block_id until run CallDelayedContract
         self.wait_block_id(old_block_id, editLimit)
         # verify records count in table
-        count = actions.get_count(self.url, table_name, self.token)
+        count = actions.get_count(self.url, tx3["name"], self.token)
         self.unit.assertEqual(int(count), new_limit + editLimit)
 
-
     def test_upload_binary(self):
-        name = "image_" + tools.generate_random_name()
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
-        with open(path, 'rb') as f:
-            file = f.read()
-        data = {'Name': name, 'ApplicationId': '1', 'Data': file}
-        resp = actions.call_contract(self.url, self.pr_key, "UploadBinary",
-                                                data, self.token)
-        res = self.assert_tx_in_block(resp, self.token)
-        check.is_tx_in_block(res)
-
+        tx = contract.upload_binary(self.url, self.pr_key, self.token, path)
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
 
     def test_contract_recursive_call_by_name_action(self):
         contract_name = "recur_" + tools.generate_random_name()
@@ -1009,10 +746,9 @@ class TestSystemContracts():
             }
         }
         """ % contract_name
-        code = tools.generate_code(contract_name, body)
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
+        tx = contract.new_contract(self.url, self.pr_key, self.token,
+                                        name=contract_name, source=body)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "The contract can't call itself recursively"
         self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
 
@@ -1029,10 +765,9 @@ class TestSystemContracts():
         action { }
         }
         """ % contract_name
-        code = tools.generate_code(contract_name, body)
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
+        tx = contract.new_contract(self.url, self.pr_key, self.token,
+                                        name=contract_name, source=body)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "The contract can't call itself recursively"
         self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
 
@@ -1051,12 +786,11 @@ class TestSystemContracts():
             }
         }
         """ % contract_name
-        code = tools.generate_code(contract_name, body)
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
+        tx = contract.new_contract(self.url, self.pr_key, self.token,
+                                        name=contract_name, source=body)
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "The contract can't call itself recursively"
-        self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
 
     def test_contract_recursive_call_contract_action(self):
@@ -1072,13 +806,13 @@ class TestSystemContracts():
             }
         }
         """ % contract_name
-        code = tools.generate_code(contract_name, body)
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
-        res = self.call(contract_name, "")
+        tx = contract.new_contract(self.url, self.pr_key, self.token,
+                                        name=contract_name, source=body)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(self.url, self.pr_key, contract_name, {}, self.token)
+        status = actions.tx_status(self.url, self.wait, res, self.token)
         msg = "There is loop in @1{con} contract".format(con=contract_name)
-        self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
 
     def test_functions_recursive_limit(self):
@@ -1097,24 +831,21 @@ class TestSystemContracts():
             }
         }
         """
-        code, contract_name = tools.generate_name_and_code(body)
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        res = self.call("NewContract", data)
-        check.is_tx_in_block(res)
+        tx = contract.new_contract(self.url, self.pr_key, self.token,
+                                        name=contract_name, source=body)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # test
-        data = ""
         msg = "max call depth"
-        res = self.call(contract_name, data)
-        self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
+        tx_call = actions.call_contract(self.url, self.pr_key, tx["name"], {}, self.token)
+        status = actions.tx_status(self.url, self.wait, tx_call, self.token)
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
 
     def test_ImportExport(self):
         # Import
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
-        data = {'input_file': {'Path': path}}
-        res = self.call("ImportUpload", data)
-        check.is_tx_in_block(res)
+        tx = contract.import_upload(self.url, self.pr_key, self.token, path)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
         import_app_data = db.get_import_app_data(self.db, founder_id)
         import_app_data = import_app_data['data']
@@ -1123,10 +854,8 @@ class TestSystemContracts():
                  "params": import_app_data[i]} for i in range(len(import_app_data))]
         self.callMulti(contract_name, data, 60)
         # Export
-        appID = 1
-        data = {"ApplicationId": appID}
-        res = self.call("ExportNewApp", data)
-        check.is_tx_in_block(res)
+        tx_ex = contract.export_new_app(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_ex, self.token)
         data = {}
         res_export = self.call("Export", data)
         founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
