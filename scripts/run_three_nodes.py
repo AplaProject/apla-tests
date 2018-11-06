@@ -5,10 +5,13 @@ import json
 import argparse
 import shutil
 import sys
+
 module_dir = os.path.dirname(os.path.abspath(__file__))
-loger_path = os.path.join(module_dir, '..', 'libs')
-sys.path.insert(0, loger_path)
+libs_dir = os.path.split(module_dir)[0]
+libs_path = os.path.join(libs_dir, 'libs')
+sys.path.insert(0, libs_path)
 import loger
+
 
 log = loger.create_loger(__name__)
 log.info('Start '+ __file__)
@@ -40,9 +43,12 @@ parser.add_argument('-dbName3', default='gen3')
 parser.add_argument('-gapBetweenBlocks', default='2')
 parser.add_argument('-centrifugo', required=True)
 parser.add_argument('-test', default='true')
+parser.add_argument('-wait', default='3')
 
 
 args = parser.parse_args()
+
+wait = int(args.wait)
 
 binary = os.path.abspath(args.binary)
 workDir = os.path.abspath(args.workDir)
@@ -92,7 +98,7 @@ else:
 	])
 log.info('Runned centrifugo')
 
-time.sleep(3)
+time.sleep(wait)
 
 # Generate config for first node
 config1 = subprocess.Popen([
@@ -106,7 +112,7 @@ config1 = subprocess.Popen([
 	'--dbName='+args.dbName1
 ])
 log.info('Generated config for first node')
-time.sleep(3)
+time.sleep(wait)
 
 #Generate keys for first block
 keys1 = subprocess.Popen([
@@ -115,7 +121,7 @@ keys1 = subprocess.Popen([
 	'--config='+workDir1+'/config.toml'
 ])
 log.info('Generate keys for first block')
-time.sleep(3)
+time.sleep(wait)
 
 #Generate first block
 firstBlock = subprocess.Popen([
@@ -125,7 +131,7 @@ firstBlock = subprocess.Popen([
 	'--test='+args.test
 ])
 log.info('First block generated')
-time.sleep(3)
+time.sleep(wait)
 
 #Init data base
 firstBlock = subprocess.Popen([
@@ -134,7 +140,7 @@ firstBlock = subprocess.Popen([
 	'--config='+workDir1+'/config.toml'
 ])
 log.info('DB for first node is initialized')
-time.sleep(3)
+time.sleep(wait)
 
 #Start first node
 startFirstNode = subprocess.Popen([
@@ -143,7 +149,7 @@ startFirstNode = subprocess.Popen([
 	'--config='+workDir1+'/config.toml'
 ])
 log.info('First node started')
-time.sleep(3)
+time.sleep(wait)
 
 #Generate config for second node
 generateConfig2 = subprocess.Popen([
@@ -161,7 +167,7 @@ generateConfig2 = subprocess.Popen([
 	'--nodesAddr='+"127.0.0.1:"+args.tcpPort1
 ])
 log.info('Generated config for second node')
-time.sleep(3)
+time.sleep(wait)
 
 #Generate keys for second node
 generateKeys = subprocess.Popen([
@@ -170,7 +176,7 @@ generateKeys = subprocess.Popen([
 	'--config='+workDir2+'/config.toml'
 ])
 log.info('Generated keys for second node')
-time.sleep(3)
+time.sleep(wait)
 
 #Generate config for third node
 generateConfig3 = subprocess.Popen([
@@ -188,7 +194,7 @@ generateConfig3 = subprocess.Popen([
 	'--nodesAddr='+"127.0.0.1:"+args.tcpPort1
 ])
 log.info('Generated config for third node')
-time.sleep(3)
+time.sleep(wait)
 
 #Generate keys for third node
 generateKeys = subprocess.Popen([
@@ -197,7 +203,7 @@ generateKeys = subprocess.Popen([
 	'--config='+workDir3+'/config.toml'
 ])
 log.info('Generated keys for third node')
-time.sleep(3)
+time.sleep(wait)
 
 #Init database
 startFirstNode = subprocess.Popen([
@@ -206,7 +212,7 @@ startFirstNode = subprocess.Popen([
 	'--config='+workDir2+'/config.toml'
 ])
 log.info('DB for second node is initialized')
-time.sleep(3) 
+time.sleep(wait) 
 
 #Start third node
 startFirstNode = subprocess.Popen([
@@ -215,7 +221,7 @@ startFirstNode = subprocess.Popen([
 	'--config='+workDir2+'/config.toml'
 ])
 log.info('Third node started')
-time.sleep(3)
+time.sleep(wait)
 
 #Init database
 startThirdNode = subprocess.Popen([
@@ -224,7 +230,7 @@ startThirdNode = subprocess.Popen([
 	'--config='+workDir3+'/config.toml'
 ])
 log.info('DB for third node is initialized')
-time.sleep(3) 
+time.sleep(wait) 
 
 #Start third node
 startThirdNode = subprocess.Popen([
@@ -233,7 +239,7 @@ startThirdNode = subprocess.Popen([
 	'--config='+workDir3+'/config.toml'
 ])
 log.info('Third node started')
-time.sleep(3)
+time.sleep(wait)
 
 with open(os.path.join(workDir1, 'PrivateKey'), 'r') as f:
 	priv_key1 = f.read()
