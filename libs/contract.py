@@ -18,7 +18,7 @@ def new_contract(url, pr_key, token, source='',
                                 data,  token, ecosystem=ecosystem)
     return {"hash": res,
             "name": name,
-            "code": source}
+            "code": code}
 
 
 def new_ecosystem(url, pr_key, token, name='', ecosystem=1):
