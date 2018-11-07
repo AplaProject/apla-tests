@@ -132,9 +132,10 @@ class TestSystemContracts():
         self.unit.assertEqual(status["error"], msg, "Incorrect message" + msg)
 
     def test_tokens_send_amount_as_string(self):
+        amount = "tttt"
         ldata = actions.login(self.url, self.keys["key2"], 0)
         msg = "Invalid param 'Amount': can't convert {amount} to decimal".format(amount=amount)
-        tx = contract.tokens_send(self.url, self.pr_key, self.token, ldata['address'], "tttt")
+        tx = contract.tokens_send(self.url, self.pr_key, self.token, ldata['address'], amount)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         self.unit.assertEqual(status["error"], msg, "Incorrect message" + msg)
 
@@ -147,8 +148,8 @@ class TestSystemContracts():
         check.is_tx_in_block(self.url, self.wait, tx1, self.token)
         tx2 = contract.new_contract(self.url, self.pr_key, self.token, name=tx1["name"])
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
-        msg = "Contract " + cont_name + " already exists"
-        self.unit.assertEqual(status["error"], msg, "Incorrect message: " + str(status2))
+        msg = "Contract " + tx1["name"] + " already exists"
+        self.unit.assertEqual(status["error"], msg, "Incorrect message: " + str(status))
 
     def test_new_contract_without_name(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token, name='  ')
@@ -195,16 +196,15 @@ class TestSystemContracts():
 
     def test_edit_incorrect_contract(self):
         id = "9999"
-        tx2 = contract.edit_contract(self.url, self.pr_key, self.token, id)
+        tx2 = contract.edit_contract(self.url, self.pr_key, self.token, id, name="gggggggg")
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "Item {id} has not been found".format(id=id)
         self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_bind_wallet(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
-        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        check.is_tx_in_block(status)
-        id = actions.get_contract_id(self.url, name, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        id = actions.get_contract_id(self.url, tx["name"], self.token)
         tx = contract.bind_wallet(self.url, self.pr_key, self.token, id)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
@@ -228,7 +228,7 @@ class TestSystemContracts():
     def test_unbind_wallet(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        id = actions.get_contract_id(self.url, name, self.token)
+        id = actions.get_contract_id(self.url, tx["name"], self.token)
         tx = contract.bind_wallet(self.url, self.pr_key, self.token, id)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         tx = contract.unbind_wallet(self.url, self.pr_key, self.token, id)
@@ -270,7 +270,7 @@ class TestSystemContracts():
     def test_edit_parameter_incorrect_condition(self):
         tx = contract.new_parameter(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        id = actions.get_parameter_id(self.url, name, self.token)
+        id = actions.get_parameter_id(self.url, tx["name"], self.token)
         condition = "tryam"
         tx = contract.edit_parameter(self.url, self.pr_key, self.token,
                                      id, condition=condition)
@@ -282,7 +282,7 @@ class TestSystemContracts():
         tx = contract.new_menu(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         content = {'tree': [{'tag': 'text', 'text': 'Item1'}]}
-        m_content = actions.get_content(self.url, "menu", name, "", 1, self.token)
+        m_content = actions.get_content(self.url, "menu", tx["name"], "", 1, self.token)
         self.unit.assertEqual(m_content, content)
 
     def test_new_menu_exist_name(self):
@@ -307,7 +307,7 @@ class TestSystemContracts():
         tx2 = contract.edit_menu(self.url, self.pr_key, self.token, id)
         check.is_tx_in_block(self.url, self.wait, tx2, self.token)
         content = {'tree': [{'tag': 'text', 'text': 'ItemEdited'}]}
-        m_content = actions.get_content(self.url, "menu", name, "", 1, self.token)
+        m_content = actions.get_content(self.url, "menu", tx["name"], "", 1, self.token)
         self.unit.assertEqual(m_content, content)
 
     def test_edit_incorrect_menu(self):
@@ -330,7 +330,7 @@ class TestSystemContracts():
     def test_append_menu(self):
         tx = contract.new_menu(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        id = actions.get_object_id(self.url, name, "menu", self.token)
+        id = actions.get_object_id(self.url, tx["name"], "menu", self.token)
         tx = contract.append_item(self.url, self.pr_key, self.token, id)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
@@ -345,7 +345,7 @@ class TestSystemContracts():
         tx = contract.new_page(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         content = [{'tag': 'text', 'text': 'Hello page!'}]
-        cont = actions.get_content(self.url, "page", name, "", 1, self.token)
+        cont = actions.get_content(self.url, "page", tx["name"], "", 1, self.token)
         self.unit.assertEqual(cont['tree'], content)
 
     def test_new_page_exist_name(self):
@@ -357,6 +357,7 @@ class TestSystemContracts():
         self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_page_incorrect_condition(self):
+        condition = "tryam"
         tx = contract.new_page(self.url, self.pr_key, self.token, condition=condition)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'Condition {cond} is not allowed'.format(cond=condition)
@@ -365,21 +366,21 @@ class TestSystemContracts():
     def test_edit_page(self):
         tx = contract.new_page(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        id = actions.get_object_id(self.url, name, "pages", self.token)
+        id = actions.get_object_id(self.url, tx["name"], "pages", self.token)
         tx2 = contract.edit_page(self.url, self.pr_key, self.token, id)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         content = [{'tag': 'text', 'text': 'Good by page!'}]
-        p_content = actions.get_content(self.url, "page", name, "", 1, self.token)
+        p_content = actions.get_content(self.url, "page", tx["name"], "", 1, self.token)
         self.unit.assertEqual(p_content['tree'], content)
 
     def test_edit_page_with_validate_count(self):
         tx = contract.new_page(self.url, self.pr_key, self.token, validate_count=6)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        count = actions.get_object_id(self.url, name, "pages", self.token)
+        count = actions.get_object_id(self.url, tx["name"], "pages", self.token)
         tx2 = contract.edit_page(self.url, self.pr_key, self.token, id, validate_count=1)
         check.is_tx_in_block(self.url, self.wait, tx2, self.token)
         content = [{'tag': 'text', 'text': 'Good by page!'}]
-        p_content = actions.get_content(self.url, "page", name, "", 1, self.token)
+        p_content = actions.get_content(self.url, "page", tx["name"], "", 1, self.token)
         self.unit.assertEqual(p_content['tree'], content)
 
     def test_edit_incorrect_page(self):
@@ -393,7 +394,7 @@ class TestSystemContracts():
         tx = contract.new_page(self.url, self.pr_key, self.token, validate_count=6)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         condition = "Tryam"
-        id = actions.get_object_id(self.url, name, "pages", self.token)
+        id = actions.get_object_id(self.url, tx['name"], "pages", self.token)
         tx2 = contract.edit_page(self.url, self.pr_key, self.token, id, condition=condition)
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = 'Condition {cond} is not allowed'.format(cond=condition)
@@ -402,11 +403,11 @@ class TestSystemContracts():
     def test_append_page(self):
         tx = contract.new_page(self.url, self.pr_key, self.token, validate_count=6)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        id = actions.get_object_id(self.url, name, "pages", self.token)
+        id = actions.get_object_id(self.url, tx["name"], "pages", self.token)
         tx2 = contract.append_page(self.url, self.pr_key, self.token, id)
         check.is_tx_in_block(self.url, self.wait, tx2, self.token)
         content = [{'tag': 'text', 'text': 'Hello!\r\nGood by!'}]
-        p_content = actions.get_content(self.url, "page", name, "", 1, self.token)
+        p_content = actions.get_content(self.url, "page", tx["name"], "", 1, self.token)
         self.unit.assertEqual(p_content['tree'], content)
 
     def test_append_page_incorrect_id(self):
@@ -445,14 +446,14 @@ class TestSystemContracts():
     def test_edit_block(self):
         tx = contract.new_block(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        id = actions.get_object_id(self.url, name, "blocks", self.token)
+        id = actions.get_object_id(self.url, tx["name"], "blocks", self.token)
         tx2 = contract.edit_block(self.url, self.pr_key, self.token, id)
         check.is_tx_in_block(self.url, self.wait, tx2, self.token)
 
     def test_edit_block_incorrect_condition(self):
         tx = contract.new_block(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        id = actions.get_object_id(self.url, name, "blocks", self.token)
+        id = actions.get_object_id(self.url, tx["name"], "blocks", self.token)
         condition = "tryam"
         tx2 = contract.edit_block(self.url, self.pr_key, self.token, id, condition=condition)
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)

@@ -18,7 +18,7 @@ def new_contract(url, pr_key, token, source='',
                                 data,  token, ecosystem=ecosystem)
     return {"hash": res,
             "name": name,
-            "code": code}
+            "code": source}
 
 
 def new_ecosystem(url, pr_key, token, name='', ecosystem=1):
@@ -125,11 +125,13 @@ def new_lang_joint(url, pr_key, token, name='',
 
 
 def edit_contract(url, pr_key, token, id, new_source='',
-                  condition='true', ecosystem=1):
-    name = actions.get_object_name(url, id, object, token)
+                  condition='true', name='', ecosystem=1):
+    if name == '':
+        name = actions.get_object_name(url, id, "contracts", token)
     if not new_source:
         new_source = '{ data {} conditions {} action {} }'
     code = 'contract ' + name + new_source
+    print(code)
     data = {"Id": id,
             "Value": code,
             "Conditions": condition}
@@ -249,7 +251,7 @@ def edit_menu(url, pr_key, token, id, value="ItemEdited",
 def append_item(url, pr_key, token, id, value='AppendedItem', ecosystem=1):
     data = {"Id": id,
             "Value": value}
-    res = actions.call_contract(url, pr_key, "@1AppendedItem",
+    res = actions.call_contract(url, pr_key, "@1AppendMenu",
                                 data, token, ecosystem=ecosystem)
     return {"hash": res}
 
