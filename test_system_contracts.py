@@ -122,7 +122,7 @@ class TestSystemContracts():
         tx = contract.tokens_send(self.url, self.pr_key, self.token, ldata['address'], "0")
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'Amount equals zero'
-        self.unit.assertEqual(status["error"], msg, "Incorrect message" + str(ans))
+        self.unit.assertEqual(status["error"], msg, "Incorrect message" + str(status))
 
     def test_tokens_send_negative_amount(self):
         ldata = actions.login(self.url, self.keys["key2"], 0)
@@ -136,7 +136,7 @@ class TestSystemContracts():
         msg = "Invalid param 'Amount': can't convert {amount} to decimal".format(amount=amount)
         tx = contract.tokens_send(self.url, self.pr_key, self.token, ldata['address'], "tttt")
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        self.unit.assertEqual(ans["error"], msg, "Incorrect message" + msg)
+        self.unit.assertEqual(status["error"], msg, "Incorrect message" + msg)
 
     def test_new_contract(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
@@ -172,7 +172,7 @@ class TestSystemContracts():
                                      id, new_source=tx['code'], condition=cond)
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "Condition {cond} is not allowed".format(cond=cond)
-        self.unit.assertIn(msg, status["error"], "Incorrect message: " + str(ans))
+        self.unit.assertIn(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_edit_contract(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
@@ -191,14 +191,14 @@ class TestSystemContracts():
                                      id, new_source=code1)
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "Contracts or functions names cannot be changed"
-        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(ans))
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_edit_incorrect_contract(self):
         id = "9999"
         tx2 = contract.edit_contract(self.url, self.pr_key, self.token, id)
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "Item {id} has not been found".format(id=id)
-        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(ans))
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_bind_wallet(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
@@ -213,7 +213,7 @@ class TestSystemContracts():
         tx = contract.bind_wallet(self.url, self.pr_key, self.token, id)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "Contract {id} does not exist".format(id=id)
-        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(ans))
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_bind_wallet_incorrect_wallet(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
@@ -239,7 +239,7 @@ class TestSystemContracts():
         tx = contract.unbind_wallet(self.url, self.pr_key, self.token, id)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'Contract {id} does not exist'.format(id=id)
-        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(ans))
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_parameter(self):
         tx = contract.new_parameter(self.url, self.pr_key, self.token)
@@ -251,21 +251,21 @@ class TestSystemContracts():
         tx2 = contract.new_parameter(self.url, self.pr_key, self.token, name=tx["name"])
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "The parameter {name} is already exist".format(name=tx["name"])
-        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(ans))
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_parameter_incorrect_condition(self):
         condition = "tryam"
         tx = contract.new_parameter(self.url, self.pr_key, self.token, condition=condition)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'Condition {cond} is not allowed'.format(cond=condition)
-        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(ans))
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_edit_incorrect_parameter(self):
         id = "99999"
         tx = contract.edit_parameter(self.url, self.pr_key, self.token, id)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "Item {id} has not been found".format(id=id)
-        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(ans))
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_edit_parameter_incorrect_condition(self):
         tx = contract.new_parameter(self.url, self.pr_key, self.token)
@@ -291,7 +291,7 @@ class TestSystemContracts():
         tx = contract.new_menu(self.url, self.pr_key, self.token, name=tx["name"])
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "The menu {name} is already exist".format(name=tx["name"])
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(status))
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_menu_incorrect_condition(self):
         condition = "tryam"
@@ -426,7 +426,7 @@ class TestSystemContracts():
         tx2 = contract.new_block(self.url, self.pr_key, self.token, name=tx["name"])
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = "The block '{name}' is already exist".format(name=tx["name"])
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_block_incorrect_condition(self):
         condition = "tryam"
@@ -440,7 +440,7 @@ class TestSystemContracts():
         tx = contract.edit_block(self.url, self.pr_key, self.token, id)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'The item is not found'
-        self.unit.assertEqual(msg, ans["error"], "Incorrect message: " + str(ans))
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_edit_block(self):
         tx = contract.new_block(self.url, self.pr_key, self.token)
