@@ -591,7 +591,7 @@ class TestApi():
         check.is_tx_in_block(self.url, self.wait, res, self.token)
         last_rec = actions.get_count(self.url, 'binaries', self.token)
         founder_id = actions.get_object_id(self.url, 'founder', 'members', self.token)
-        # change column permissions
+        # change avatar in profile
         data = {
             'member_name': 'founder',
             'image_id': last_rec
