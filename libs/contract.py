@@ -176,9 +176,10 @@ def del_application(url, pr_key, token, id, val, ecosystem=1):
     return {"hash": res}
 
 
-def tokens_send(url, pr_key, token, wall, amount, ecosystem=1):
+def tokens_send(url, pr_key, token, wall, amount, comment='', ecosystem=1):
     data = {"Recipient": wall,
-            "Amount": amount}
+            "Amount": amount,
+            "Comment": comment}
     res = actions.call_contract(url, pr_key, "@1TokensSend",
                                 data, token, ecosystem=ecosystem)
     return {"hash": res}
