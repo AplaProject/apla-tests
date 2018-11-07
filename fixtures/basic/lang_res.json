@@ -1,5 +1,5 @@
 {
-    "name": "Basic",
+    "name": "System",
     "conditions": "ContractConditions(\"@1DeveloperCondition\")",
     "data": [
         {
@@ -175,6 +175,11 @@
         {
             "Name": "amount_must_greather_zero",
             "Trans": "{\"en\": \"Amount must be greater than zero\", \"ru\": \"Сумма должна быть больше нуля\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "amount_range",
+            "Trans": "{\"en\": \"Amount range\", \"ru\": \"Диапазон сумм\"}",
             "Type": "languages"
         },
         {
@@ -423,6 +428,11 @@
             "Type": "languages"
         },
         {
+            "Name": "block_key",
+            "Trans": "{\"en\": \"Block\", \"ru\": \"Заблокировать\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "block_timer",
             "Trans": "{\"en\": \"Block timer\", \"ru\": \"Блок-таймер\"}",
             "Type": "languages"
@@ -544,7 +554,7 @@
         },
         {
             "Name": "catalog_ecosystems",
-            "Trans": "{\"en\": \"Catalog of ecosystems\", \"ru\": \"Каталог экосистем\"}",
+            "Trans": "{\"en\": \"Ecosystems catalog\", \"ru\": \"Каталог экосистем\"}",
             "Type": "languages"
         },
         {
@@ -615,6 +625,11 @@
         {
             "Name": "checked_by",
             "Trans": "{\"en\": \"Checked by\", \"ru\": \"Проверено\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "clear",
+            "Trans": "{\"en\": \"Clear\", \"ru\": \"Очистить\"}",
             "Type": "languages"
         },
         {
@@ -963,26 +978,6 @@
             "Type": "languages"
         },
         {
-            "Name": "default1",
-            "Trans": "{\"en\": \"You, as a Founder, hold a complete set of rights for controlling the ecosystem: creating and editing applications, modifying ecosystem parameters, etc. To get started you can download ready-to-use applications from the \", \"ru\": \"Вы, как основатель, имеете полный набор прав, контролирующих данную экосистему: создание и редактирование приложений, изменение параметров экосистемы и так далее. Для того, чтобы начать работу, вы можете загрузить готовые приложения с \"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "default2",
-            "Trans": "{\"en\": \" and install them using the Import service. The basic.json contains applications for managing roles, creating notifications and votings. You can also create your own apps using the tools from the Admin tab. Documentation can be founded here: \", \"ru\": \" и выполнить установку, используя функцию импорта. Комплект базовых приложений (basic.json) включает в себя возможности управления ролями, создания уведомлений и голосований. Вы также можете создать ваши собственные приложения, используя инструменты из панели Администратора. Документацию можно найти по ссылке: \"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "default3",
-            "Trans": "{\"en\": \"You must install platform applications. This step is required if you want to continue\", \"ru\": \"Необходимо установить платформенные приложения, чтобы продолжить. Этот шаг является обязательным\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "default_main",
-            "Trans": "{\"en\": \"Congratulations! You have created your own ecosystem\", \"ru\": \"Поздравляем! Вы создали свою собственную экосистему\"}",
-            "Type": "languages"
-        },
-        {
             "Name": "default_menu_not_found",
             "Trans": "{\"en\": \"The default menu is not found\", \"ru\": \"Меню по умолчанию не существует\"}",
             "Type": "languages"
@@ -1095,6 +1090,11 @@
         {
             "Name": "ecosystem_name",
             "Trans": "{\"en\": \"Ecosystem name\", \"ru\": \"Имя экосистемы\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "ecosystem_not_found",
+            "Trans": "{\"en\": \"Ecosystem %v not found\", \"ru\": \"Экосистема %v не найдена\"}",
             "Type": "languages"
         },
         {
@@ -1318,6 +1318,11 @@
             "Type": "languages"
         },
         {
+            "Name": "filter",
+            "Trans": "{\"en\": \"Filter\", \"ru\": \"Фильтр\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "finance",
             "Trans": "{\"en\": \"Finance\", \"ru\": \"Финансы\"}",
             "Type": "languages"
@@ -1335,6 +1340,11 @@
         {
             "Name": "first_node_invalid",
             "Trans": "{\"en\": \"The application parameter first_node is not valid\", \"ru\": \"Параметр приложения first_node задан неверно\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "for_example",
+            "Trans": "{\"en\": \"for example\", \"ru\": \"например\"}",
             "Type": "languages"
         },
         {
@@ -1450,6 +1460,16 @@
         {
             "Name": "install_default_templates",
             "Trans": "{\"en\": \"Install default templates\", \"ru\": \"Установить стандартные шаблоны\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "installing_platform_apps",
+            "Trans": "{\"en\": \"Installing platform applications\", \"ru\": \"Установка платформенных приложений\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "installing_text",
+            "Trans": "{\"en\": \"Installing platform applications is a must. Platform applications ensure the functioning of your ecosystem.\", \"ru\": \"Установка платформенных приложений является обязательной. Платформенные приложения обеспечивают функционирование вашей экосистемы.\"}",
             "Type": "languages"
         },
         {
@@ -2508,6 +2528,16 @@
             "Type": "languages"
         },
         {
+            "Name": "resources_fees",
+            "Trans": "{\"en\": \"Fee for resources\", \"ru\": \"Плата за ресурсы\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "resources_fees_show",
+            "Trans": "{\"en\": \"Show fees for resources\", \"ru\": \"Показать платы за ресурсы\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "restore",
             "Trans": "{\"en\": \"Restore\", \"ru\": \"Восстановить\"}",
             "Type": "languages"
@@ -2580,6 +2610,11 @@
         {
             "Name": "role_members_added_before",
             "Trans": "{\"en\": \"Members of this role has already been added before\", \"ru\": \"Члены этой роли были добавлены ранее\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "role_none",
+            "Trans": "{\"en\": \"none\", \"ru\": \"отсутствуют\"}",
             "Type": "languages"
         },
         {
@@ -2895,6 +2930,11 @@
         {
             "Name": "sent",
             "Trans": "{\"en\": \"Sent\", \"ru\": \"Отправлено\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "show_all",
+            "Trans": "{\"en\": \"Show all\", \"ru\": \"Показывать все\"}",
             "Type": "languages"
         },
         {
@@ -3394,7 +3434,7 @@
         },
         {
             "Name": "tokens_transfer",
-            "Trans": "{\"en\": \"Tokens transfer\", \"ru\": \"Перевод средств\"}",
+            "Trans": "{\"en\": \"Tokens transfer\", \"ru\": \"Перевод токенов\"}",
             "Type": "languages"
         },
         {
@@ -3410,6 +3450,36 @@
         {
             "Name": "tranche",
             "Trans": "{\"en\": \"Tranche\", \"ru\": \"Транш\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "transaction_hash",
+            "Trans": "{\"en\": \"Transaction hash\", \"ru\": \"Хеш транзакции\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "transactions_filter_lower_desc",
+            "Trans": "{\"en\": \"Lower limit of the amount range\", \"ru\": \"Нижняя граница суммы транзакции\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "transactions_filter_upper_desc",
+            "Trans": "{\"en\": \"Upper limit of the amount range\", \"ru\": \"Верхняя граница суммы транзакции\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "transactions_filter_wallet_desc",
+            "Trans": "{\"en\": \"Use this field to show a history of transactions with specified wallet only\", \"ru\": \"Используйте это поле, чтобы отобразить историю транзакций с конкретным кошельком\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "transactions_history",
+            "Trans": "{\"en\": \"Transactions history\", \"ru\": \"История транзакций\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "transactions_history_empty",
+            "Trans": "{\"en\": \"Transactions history is empty\", \"ru\": \"История транзакций пуста\"}",
             "Type": "languages"
         },
         {
@@ -3430,6 +3500,31 @@
         {
             "Name": "ts_buyer_contract",
             "Trans": "{\"en\": \"The contract of the investor\", \"ru\": \"Контракт инвестора\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "ts_free_wallet_add",
+            "Trans": "{\"en\": \"Add a free wallet\", \"ru\": \"Добавить свободный кошелек\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "ts_free_wallet_not_found",
+            "Trans": "{\"en\": \"Free wallet not found\", \"ru\": \"Свободный кошелек не найден\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "ts_free_wallets",
+            "Trans": "{\"en\": \"Free wallets\", \"ru\": \"Свободные кошельки\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "ts_free_wallets_emptied",
+            "Trans": "{\"en\": \"Free wallet emptied\", \"ru\": \"Свободные кошелеки закончились\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "ts_free_wallets_need",
+            "Trans": "{\"en\": \"Need to add free wallets\", \"ru\": \"Необходимо добавить свободные кошельки\"}",
             "Type": "languages"
         },
         {
@@ -3483,6 +3578,16 @@
             "Type": "languages"
         },
         {
+            "Name": "ts_wallet_btc",
+            "Trans": "{\"en\": \"BTC wallet\", \"ru\": \"BTC кошелек\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "ts_wallet_eth",
+            "Trans": "{\"en\": \"ETH wallet\", \"ru\": \"ETH кошелек\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "ts_wallets",
             "Trans": "{\"en\": \"Investor wallets\", \"ru\": \"Кошельки инвесторов\"}",
             "Type": "languages"
@@ -3515,6 +3620,11 @@
         {
             "Name": "unbind",
             "Trans": "{\"en\": \"Unbind\", \"ru\": \"Отвязать\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "unblock_key",
+            "Trans": "{\"en\": \"Unblock\", \"ru\": \"Разблокировать\"}",
             "Type": "languages"
         },
         {
@@ -4133,6 +4243,11 @@
             "Type": "languages"
         },
         {
+            "Name": "want_block_key",
+            "Trans": "{\"en\": \"Do you want to block this key?\", \"ru\": \"Вы хотите блокировать этот ключ?\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "want_change_status",
             "Trans": "{\"en\": \"Do you really want to change the status of this member?\", \"ru\": \"Вы уверены, что хотите изменить статус этого члена?\"}",
             "Type": "languages"
@@ -4190,6 +4305,11 @@
         {
             "Name": "want_delete_from_role",
             "Trans": "{\"en\": \"Do you really want to delete this member from the role?\", \"ru\": \"Вы уверены, что хотите удалить этого члена из роли?\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "want_delete_key",
+            "Trans": "{\"en\": \"Do you want to delete this key?\", \"ru\": \"Вы хотите удалить этот ключ?\"}",
             "Type": "languages"
         },
         {
@@ -4303,6 +4423,11 @@
             "Type": "languages"
         },
         {
+            "Name": "want_unblock_key",
+            "Trans": "{\"en\": \"Do you want to unblock this key?\", \"ru\": \"Вы хотите разблокировать этот ключ?\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "want_vote_for_candidate",
             "Trans": "{\"en\": \"Do you really want to vote for this candidate?\", \"ru\": \"Вы уверены, что хотите проголосовать за этого кандидата?\"}",
             "Type": "languages"
@@ -4320,6 +4445,16 @@
         {
             "Name": "web_page",
             "Trans": "{\"en\": \"Page web-address\", \"ru\": \"Web-адрес страницы\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "welcome_text",
+            "Trans": "{ \"en\": \"You, as a Founder, hold a complete set of rights for controlling the ecosystem: creating and editing applications, modifying ecosystem parameters, etc. Before starting work, you need to install platform applications. After that you can create your own applications. Documentation can be founded here: \", \"ru\": \"Вы, как основатель, имеете полный набор прав, контролирующих данную экосистему: создание и редактирование приложений, изменение параметров экосистемы и так далее. Перед началом работы вам необходимо установить платформенные приложения. После этого, вы сможете создавать свои собственные приложения. Документацию можно найти по ссылке: \"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "welcome_title",
+            "Trans": "{\"en\": \"Congratulations! You have created your own ecosystem\", \"ru\": \"Поздравляем! Вы создали свою собственную экосистему\"}",
             "Type": "languages"
         },
         {
