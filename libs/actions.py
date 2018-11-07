@@ -6,8 +6,10 @@ import os
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
 from genesis_blockchain_tools.contract import Contract
-from libs import api, db
+from libs import api, db, tools, loger
 
+wait = tools.read_config("test")["wait_tx_status"]
+log = loger.create_loger(__name__)
 
 def login(url, pr_key, role=0, ecosystem=1):
     token, uid = api.getuid(url)
@@ -178,7 +180,7 @@ def is_count_tx_in_block(url, token, max_block_id, count_tx):
         info = api.block(url, token, block)
         block += 1
         if int(info['tx_count']) > count_tx:
-               print('Error in count_tx. Block ' + str(block) + ' has ' +\
+               log.error('Error in count_tx. Block ' + str(block) + ' has ' +\
                       str(block['count_tx']) + ' transactions')
                return False
     return True
@@ -283,14 +285,14 @@ def is_contract_present(url, token, name):
         return True
 
 def imp_app(app_name, url, pr_key, token):
+    log.info("Start install '" + app_name + "'")
     path = os.path.join(os.getcwd(), "fixtures", "basic", app_name + ".json")
     resp = call_contract(url, pr_key, "ImportUpload",
                          {'input_file': {'Path': path}}, token)
-    res_import_upload = tx_status(url, 30, resp, token)
+    res_import_upload = tx_status(url, wait, resp, token)
     if int(res_import_upload["blockid"]) > 0:
-        founder_id = call_get_api(url + "/ecosystemparam/founder_account/", "", token)['value']
-        result = call_get_api(url + "/list/buffer_data", "", token)
-        bufer_data_list = result['list']
+        founder_id = get_parameter_value(url, 'founder_account', token)
+        bufer_data_list = get_list(url, 'buffer_data', token)['list']
         for item in bufer_data_list:
             if item['key'] == "import" and item['member_id'] == founder_id:
                 import_app_data = json.loads(item['value'])['data']
@@ -299,13 +301,13 @@ def imp_app(app_name, url, pr_key, token):
         data = [{"contract": contract_name,
                  "params": import_app_data[i]} for i in range(len(import_app_data))]
         resp = call_multi_contract(url, pr_key, contract_name, data, token)
-        time.sleep(30)
+        time.sleep(wait)
         if "hashes" in resp:
             hashes = resp['hashes']
-            result = tx_status_multi(url, 30, hashes, token)
+            result = tx_status_multi(url, wait, hashes, token)
             for status in result.values():
-                print("status: ", status)
+                log.debug(str(status))
                 if int(status["blockid"]) < 1:
-                    print("Import is failed")
+                    log.error("Import '" + app_name + "' is failed")
                     exit(1)
-            print("App '" + app_name + "' successfully installed")
+            log.info("App '" + app_name + "' successfully installed")
