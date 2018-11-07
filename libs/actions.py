@@ -24,7 +24,6 @@ def login(url, pr_key, role=0, ecosystem=1):
 
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
     schema = api.contract(url, jvtToken, name)
-    print(schema)
     contract = Contract(schema=schema,
                         private_key=prKey,
                         ecosystem_id=ecosystem,
@@ -111,7 +110,6 @@ def call_post_api(url, data, token):
     return resp.json()
 
 def get_count(url, name, token):
-    print(name)
     res = api.list(url, token, name, limit=1)
     return res['count']
 
