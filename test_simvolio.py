@@ -3,7 +3,7 @@ import json
 import time
 import pytest
 
-from libs import actions, db, tools, api
+from libs import actions, db, tools, api, contract, check
 
 
 class TestSimvolio():

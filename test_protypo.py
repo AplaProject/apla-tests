@@ -2,7 +2,7 @@ import unittest
 import json
 import os
 
-from libs import actions, tools
+from libs import actions, tools, contract, check
 
 
 class TestPrototipo():
