@@ -20,46 +20,23 @@ class TestSimvolio():
         data = actions.login(self.url, self.pr_key, 0)
         self.token = data["jwtToken"]
 
-    def assert_tx_in_block(self, result, jwt_token):
-        status = actions.tx_status(self.url, self.wait, result, jwt_token)
-        self.unit.assertNotIn(json.dumps(status), 'errmsg')
-        self.unit.assertGreater(status['blockid'], 0)
-
-    def generate_name_and_code(self, sourseCode):
-        name = tools.generate_random_name()
-        code = "contract " + name + sourseCode
-        return code, name
-
-    def create_contract(self, code):
-        data = {"ApplicationId": 1,
-                "Value": code,
-                "Conditions": "ContractConditions(\"MainCondition\")"}
-        result = actions.call_contract(self.url, self.pr_key, "NewContract",
-                                       data, self.token)
-        self.assert_tx_in_block(result, self.token)
-
     def call_contract(self, name, data):
         result = actions.call_contract(self.url, self.pr_key, name,
                                        data, self.token)
-        self.assert_tx_in_block(result, self.token)
+        check.is_tx_in_block(self.url, self.wait, {"hash": result}, self.token)
 
     def check_contract(self, sourse, check_point):
-        code, name = self.generate_name_and_code(sourse)
-        self.create_contract(code)
-        res = actions.call_contract(self.url, self.pr_key, name, {}, self.token)
+        tx = contract.new_contract(self.url, self.pr_key, self.token, source=code)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(self.url, self.pr_key, tx['name'], {}, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
         self.unit.assertIn(check_point, result["result"], "ERROR: " + \
                            str(result))
 
-    def call(self, name, data):
-        result = actions.call_contract(self.url, self.pr_key, name, data, self.token)
-        status = actions.tx_status(self.url, self.wait, result, self.token)
-        return status
-
     def check_contract_with_data(self, sourse, data, check_point):
-        code, name = self.generate_name_and_code(sourse)
-        self.create_contract(code)
-        res = actions.call_contract(self.url, self.pr_key, name, data, self.token)
+        tx = contract.new_contract(self.url, self.pr_key, self.token, source=code)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(self.url, self.pr_key, tx['name'], data, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
         self.unit.assertIn(check_point, result["result"], "error")
 
@@ -272,10 +249,9 @@ class TestSimvolio():
         self.check_contract(contract["code"], contract["asert"])
 
     def test_contract_langRes(self):
-        data = {"Name": "test",
-                "Trans": "{\"en\": \"test_en\", \"de\" : \"test_de\"}"}
-        result = actions.call_contract(self.url, self.pr_key, "NewLang", data, self.token)
-        tx = actions.tx_status(self.url, self.wait, result, self.token)
+        name = "test"
+        trans = "{\"en\": \"test_en\", \"de\" : \"test_de\"}"
+        tx_lang = contract.new_lang(self.url, self.pr_key, self.token, name=name, trans=trans)
         contract = self.contracts["langRes"]
         self.check_contract(contract["code"], contract["asert"])
 
@@ -284,12 +260,8 @@ class TestSimvolio():
         "index": "1",  "conditions":"true"},
         {"name":"test","type":"varchar",
         "index": "0",  "conditions":"true"}]"""
-        permission = """{"insert": "true",
-        "update" : "true","new_column": "true"}"""
-        data = {"Name": "test", "ApplicationId": 1,
-                "Columns": columns,
-                "Permissions": permission}
-        result = actions.call_contract(self.url, self.pr_key, "NewTable", data, self.token)
+        tx = contract.new_table(self.url, self.pr_key, self.token, columns=columns,
+                                name="test")
         tx = actions.tx_status(self.url, self.wait, result, self.token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
@@ -299,13 +271,9 @@ class TestSimvolio():
         "index": "1",  "conditions":"true"},
         {"name":"test","type":"varchar",
         "index": "0",  "conditions":"true"}]"""
-        permission = """{"insert": "true",
-        "update" : "true","new_column": "true"}"""
-        data = {"Name": "test", "ApplicationId": 1,
-                "Columns": columns,
-                "Permissions": permission}
-        result = actions.call_contract(self.url, self.pr_key, "NewTable", data, self.token)
-        tx = actions.tx_status(self.url, self.wait, result, self.token)
+        tx = contract.new_table(self.url, self.pr_key, self.token, columns=columns,
+                                name="test")
+        st = actions.tx_status(self.url, self.wait, result, self.token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
         contract = self.contracts["dbUpdate"]
@@ -321,13 +289,9 @@ class TestSimvolio():
         "index": "1",  "conditions":"true"},
         {"name":"test","type":"varchar",
         "index": "0",  "conditions":"true"}]"""
-        permission = """{"insert": "true",
-        "update" : "true","new_column": "true"}"""
-        data = {"Name": "test", "ApplicationId": 1,
-                "Columns": columns,
-                "Permissions": permission}
-        result = actions.call_contract(self.url, self.pr_key, "NewTable", data, self.token)
-        tx = actions.tx_status(self.url, self.wait, result, self.token)
+        tx = contract.new_table(self.url, self.pr_key, self.token, columns=columns,
+                                name="test")
+        st = actions.tx_status(self.url, self.wait, result, self.token)
         contract = self.contracts["dbInsert"]
         self.check_contract(contract["code"], contract["asert"])
         contract = self.contracts["dbUpdateExt"]
@@ -335,9 +299,9 @@ class TestSimvolio():
 
     def test_contract_callContract(self):
         contract = self.contracts["myContract"]
-        code = "contract MyContract" + contract["code"]
-        data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
-        res = actions.call_contract(self.url, self.pr_key, "NewContract", data, self.token)
+        tx = contract.new_contract(self.url, self.pr_key, self.token, source=contract["code"],
+                                   name="MyContract")
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         contract = self.contracts["callContract"]
         self.check_contract(contract["code"], contract["asert"])
 
@@ -357,17 +321,13 @@ class TestSimvolio():
         expexted_dict = {}
         actual_dict = {}
         for i in range(len(var_list)):
-            sys_var_name = var_list[i]
-            print(sys_var_name)
-            contrac_name = tools.generate_random_name()
-            value = "contract con_" + contrac_name + " { data{ } conditions{ } action{ " + sys_var_name + " = 5 } }"
-            data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
-            result = actions.call_contract(self.url, self.pr_key, "NewContract", data, self.token)
-            tx = actions.tx_status(self.url, self.wait, result, self.token)
-            exp_result = "system variable " + sys_var_name + " cannot be changed"
+            code = " { data{ } conditions{ } action{ " + svar_list[i] + " = 5 } }"
+            tx = contract.new_contract(self.url, self.pr_key, self.token, source=code)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+            exp_result = "system variable " + var_list[i] + " cannot be changed"
             expexted_dict[i] = exp_result
             actual_dict[i] = tx["error"]
-        self.unit.assertDictEqual(expexted_dict, actual_dict, 'Dictionaries is different')
+            self.unit.assertDictEqual(expexted_dict, actual_dict, 'Dictionaries is different')
 
 
     def get_metrics(self, ecosystem_num, metric_name):
@@ -386,26 +346,14 @@ class TestSimvolio():
             while True:
                 if old_block_id == limit:
                     break
-                contrac_name = tools.generate_random_name()
-                value = "contract con_" + contrac_name + " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
-                data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
-                result = actions.call_contract(self.url, self.pr_key, "NewContract", data,
-                                               self.token)
-                tx = actions.tx_status(self.url, self.wait, result, self.token)
-                current_block_id = int(tx["blockid"])
-                self.unit.assertGreater(current_block_id, 0, "BlockId is not generated: " + \
-                                        str(tx))
+                code = " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
+                tx = contract.new_contract(self.url, self.pr_key, self.token, source=code)
+                current_block_id = check.is_tx_in_block(self.url, self.wait, tx, self.token)
                 old_block_id = current_block_id
-
         # generate contract which return count blocks in blockchain
-        contrac_name = tools.generate_random_name()
-        value = "contract con_" + contrac_name + \
-                " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
-        data = {"Value": value, "ApplicationId": 1, "Conditions": "true"}
-        result = actions.call_contract(self.url, self.pr_key, "NewContract", data, self.token)
-        tx = actions.tx_status(self.url, self.wait, result, self.token)
-        current_block_id = int(tx["blockid"])
-        self.unit.assertGreater(current_block_id, 0, "BlockId is not generated: " + str(tx))
+        code2 = " {\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
+        tx2 = contract.new_contract(self.url, self.pr_key, self.token, source=code)
+        current_block_id = check.is_tx_in_block(self.url, self.wait, tx2, self.token)
         # wait until generated 100 blocks
         if current_block_id < 100:
             wait_block_id(current_block_id, 100)
@@ -440,14 +388,14 @@ class TestSimvolio():
             action{ var %s int }
         }
         """ % replaced_string
-        code, name = self.generate_name_and_code(code)
-        self.create_contract(code)
+        tx = contract.new_contract(self.url, self.pr_key, self.token, source=code)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # change contract
-        id = actions.get_object_id(self.url, name, "contracts", self.token)
+        id = actions.get_object_id(self.url, tx['name'], "contracts", self.token)
         new_code = code.replace(replaced_string, "new_var")
-        data = {"Id": id,
-                "Value": new_code}
-        self.call_contract("EditContract", data)
+        tx = contract.edit_contract(self.url, self.pr_key, self.token, id,
+                                    new_source=new_code)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # test
         data = {"Table": "contracts", "ID": id}
         contract = self.contracts["getHistory"]
@@ -455,20 +403,14 @@ class TestSimvolio():
 
     def test_get_history_page(self):
         # create page
-        name = tools.generate_random_name()
         page = "Div(Body: Hello)"
-        data = {"ApplicationId": "1",
-                "Name": name,
-                "Value": page,
-                "Menu": "default_menu",
-                "Conditions": "true"}
-        self.call_contract("NewPage", data)
+        tx_page = contract.new_page(self.url, self.pr_key, self.token, value=page)
+        check.is_tx_in_block(self.url, self.wait, tx_page, self.token)
         # change page
-        id = actions.get_object_id(self.url, name, "pages", self.token)
+        id = actions.get_object_id(self.url, tx_page['name'], "pages", self.token)
         new_value_page = page.replace("Hello", "new_var")
-        data = {"Id": id,
-                "Value": new_value_page}
-        self.call_contract("EditPage", data)
+        tx = contract.edit_page(self.url, self.pr_key, self.token, id, value=new_value_page)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # test
         data = {"Table": "pages", "ID": id}
         contract = self.contracts["getHistory"]
@@ -485,8 +427,8 @@ class TestSimvolio():
                     }
                 }
                 """
-        inner_code, inner_name = self.generate_name_and_code(innerBody)
-        self.create_contract(inner_code)
+        inner = contract.new_contract(self.url, self.pr_key, self.token, source=innerBody)
+        check.is_tx_in_block(self.url, self.wait, inner, self.token)
         outer_body = """
                 {
                 data{}
@@ -499,29 +441,26 @@ class TestSimvolio():
                     }
                 }
                 """ % inner_name
-        outer_code, outer_name = self.generate_name_and_code(outer_body)
-        self.create_contract(outer_code)
-        data = {}
-        res = self.call(outer_name, data)
-        must_be = "[@1" + outer_name + " @1" + inner_name + "]"
+        outer = contract.new_contract(self.url, self.pr_key, self.token, source=outer_body)
+        check.is_tx_in_block(self.url, self.wait, outer, self.token)
+        result = actions.call_contract(self.url, self.pr_key, outer_name, {}, self.token)
+        res = actions.tx_status(self.url, self.wait, result, self.token)
+        must_be = "[@1" + outer['name'] + " @1" + inner['name'] + "]"
         self.unit.assertEqual(must_be, res["result"], "test_sys_var_stack is failed!")
 
     def test_get_history_row_menu(self):
         # create menu
         rollc_before = db.get_max_id_from_table(self.db1, "rollback_tx")
-        name = tools.generate_random_name()
         menu = "This is new menu"
-        data = {"Name": name,
-                "Value": menu,
-                "Conditions": "true"}
-        self.call_contract("NewMenu", data)
+        menu = contract.new_menu(self.url, self.pr_key, self.token, value=menu)
+        check.is_tx_in_block(self.url, self.wait, menu, self.token)
         rollc_after = db.get_max_id_from_table(self.db1, "rollback_tx")
         # change menu
-        id = actions.get_object_id(self.url, name, "menu", self.token)
+        id = actions.get_object_id(self.url, menu['name'], "menu", self.token)
         new_value_menu = menu.replace("new menu", "new_var")
-        data = {"Id": id,
-                "Value": new_value_menu}
-        self.call_contract("EditMenu", data)
+        menu_e = contract.edit_menu(self.url, self.pr_key, self.token,
+                                    id, value=new_value_menu)
+        check.is_tx_in_block(self.url, self.wait, menu_e, self.token)
         # test
         query = """SELECT id FROM "rollback_tx" WHERE table_name = '1_menu' AND data='' AND id >= %s AND id <= %s""" % (
             rollc_before, rollc_after)
@@ -533,20 +472,16 @@ class TestSimvolio():
     def test_get_history_row_block(self):
         # create block
         rollc_before = db.get_max_id_from_table(self.db1, "rollback_tx")
-        name = tools.generate_random_name()
         block = "Div(Body: Hello)"
-        data = {"ApplicationId": "1",
-                "Name": name,
-                "Value": block,
-                "Conditions": "true"}
-        self.call_contract("NewBlock", data)
+        block = contract.new_block(self.url, self.pr_key, self.token, value=block)
+        check.is_tx_in_block(self.url, self.wait, block, self.token)
         rollc_after = db.get_max_id_from_table(self.db1, "rollback_tx")
         # change block
-        id = actions.get_object_id(self.url, name, "blocks", self.token)
+        id = actions.get_object_id(self.url, block['name'], "blocks", self.token)
         new_value_block = block.replace("Hello", "new_var")
-        data = {"Id": id,
-                "Value": new_value_block}
-        self.call_contract("EditBlock", data)
+        block_e = contract.new_block(self.url, self.pr_key, self.token, id,
+                                     value=new_value_block)
+        check.is_tx_in_block(self.url, self.wait, block_e, self.token)
         # test
         query = """SELECT id FROM "rollback_tx" WHERE table_name = '1_blocks' AND data='' AND id >= %s AND id <= %s""" % (
             rollc_before, rollc_after)
