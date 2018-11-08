@@ -22,37 +22,15 @@ class TestSystemContracts():
         self.unit = unittest.TestCase()
 
 
-    def assert_tx_in_block(self, result, jwt_token):
-        status = actions.tx_status(self.url, self.wait, result, jwt_token)
-        if status['blockid'] > 0:
-            self.unit.assertNotIn(json.dumps(status), 'errmsg')
-            return {"blockid": int(status["blockid"]), "error": "0"}
-        else:
-            return {"blockid": 0, "error": status["error"]}
-
-
-    def call(self, name, data):
-        resp = actions.call_contract(self.url, self.pr_key, name, data, self.token)
-        resp = self.assert_tx_in_block(resp, self.token)
-        return resp
-
-
-    def assert_multi_tx_in_block(self, result, jwt_token):
-        self.unit.assertIn("hashes", result)
-        hashes = result['hashes']
-        result = actions.tx_status_multi(self.url, self.wait, hashes, jwt_token)
-        for status in result.values():
-            self.unit.assertNotIn('errmsg', status)
-            self.unit.assertGreater(int(status["blockid"]), 0,
-                               "BlockID not generated")
-            #check.is_tx_in_block(status)
-
-
     def callMulti(self, name, data, sleep):
         resp = actions.call_multi_contract(self.url, self.pr_key, name, data, self.token)
         time.sleep(sleep)
-        resp = self.assert_multi_tx_in_block(resp, self.token)
-        return resp
+        if 'hashes' in resp:
+            result = actions.tx_status_multi(self.url, self.wait, resp['hashes'], self.token)
+            for status in result.values():
+                self.unit.assertNotIn('errmsg', status)
+                self.unit.assertGreater(int(status["blockid"]), 0,
+                                        "BlockID not generated")
 
 
     def wait_block_id(self, old_block_id, limit):
@@ -858,7 +836,8 @@ class TestSystemContracts():
         tx_ex = contract.export_new_app(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx_ex, self.token)
         data = {}
-        res_export = self.call("Export", data)
+        res_export = actions.call_contract(self.url, self.pr_key, "Export", data, self.token)
+        check.is_tx_in_block(self.url, self.wait, {"hash": res_export}, self.token)
         founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
         export_app_data = actions.get_export_app_data(self.url, self.token, appID, founder_id)
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
