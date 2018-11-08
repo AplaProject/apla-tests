@@ -394,7 +394,7 @@ class TestSystemContracts():
         tx = contract.new_page(self.url, self.pr_key, self.token, validate_count=6)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         condition = "Tryam"
-        id = actions.get_object_id(self.url, tx['name"], "pages", self.token)
+        id = actions.get_object_id(self.url, tx['name'], "pages", self.token)
         tx2 = contract.edit_page(self.url, self.pr_key, self.token, id, condition=condition)
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
         msg = 'Condition {cond} is not allowed'.format(cond=condition)
