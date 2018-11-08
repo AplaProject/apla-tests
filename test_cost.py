@@ -3,7 +3,7 @@ import time
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
 
-from libs import tools, actions, db
+from libs import tools, actions, db, contract, check
 from asyncio.proactor_events import BaseProactorEventLoop
 
 NODE_COMISSION = 139680000000000000
@@ -34,15 +34,20 @@ class TestCost():
                                                      self.conf[i]["keyID"]))
             i += 1
         return node_balance
-
-    def create_contracts(self):
-        data_creater = actions.login(self.conf[0]["url"], self.conf[0]["private_key"], 0)
+    
+    @staticmethod
+    def create_contracts():
+        name = "CostContract"
+        data_creater = actions.login(TestCost.conf[0]["url"],
+                                     TestCost.conf[0]["private_key"], 0)
         token_creater = data_creater["jwtToken"]
-        contract = tools.read_fixtures("contracts")
-        tx = contract.new_contract(self.conf[0]["url"], self.conf[0]["private_key"],
-                                   token_creater, name="CostContract",
-                                   source=contract["for_cost"]["code"])
-        check.is_tx_in_block(self.conf[0]["url"], self.wait, tx, token_creater)
+        if not actions.is_contract_present(TestCost.conf[0]["url"], token_creater, name):
+            cont = tools.read_fixtures("contracts")
+            tx = contract.new_contract(TestCost.conf[0]["url"],
+                                       TestCost.conf[0]["private_key"],
+                                       token_creater, name=name,
+                                       source=cont["for_cost"]["code"])
+            check.is_tx_in_block(TestCost.conf[0]["url"], TestCost.wait, tx, token_creater)
         
 
     def bind_wallet(self):
@@ -95,7 +100,6 @@ class TestCost():
         a_node_balance = self.get_node_balances()
         balance_runner_a = actions.get_balance_by_id(self.conf[1]["url"], self.token,
                                                  data_runner['key_id'])
-        print('wallet_id', wallet_id)
         balance_contract_owner_a = actions.get_balance_by_id(self.conf[1]["url"], self.token,
                                                         wallet_id)
         node_commission = NODE_COMISSION
