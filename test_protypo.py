@@ -25,26 +25,15 @@ class TestPrototipo():
         self.uni.assertNotIn(json.dumps(status), 'errmsg')
         self.uni.assertGreater(status['blockid'], 0)
 
-    def create_contract(self, code):
-        data = {"ApplicationId": 1,
-                "Value": code,
-                "Conditions": "ContractConditions(\"MainCondition\")"}
-        result = actions.call_contract(self.url, self.pr_key, "NewContract",
-                                       data, self.token)
-        self.assert_tx_in_block(result, self.token)
-
     def call_contract(self, name, data):
         result = actions.call_contract(self.url, self.pr_key, name,
                                        data, self.token)
         self.assert_tx_in_block(result, self.token)
 
     def check_page(self, sourse):
-        name = "Page_" + tools.generate_random_name()
-        data = {"Name": name, "Value": sourse, "ApplicationId": 1,
-                "Conditions": "true", "Menu": "default_menu"}
-        resp = actions.call_contract(self.url, self.pr_key, "NewPage", data, self.token)
-        self.assert_tx_in_block(resp, self.token)
-        cont = actions.get_content(self.url, "page", name, "", 1, self.token)
+        tx = contract.new_page(self.url, self.pr_key, self.token, value=sourse)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        cont = actions.get_content(self.url, "page", tx["name"], "", 1, self.token)
         return cont
 
     def find_position_element_in_tree(self, content_tree, tag_name):
@@ -944,8 +933,8 @@ class TestPrototipo():
                     action{ var %s int }
                 }
                 """ % replaced_string
-        code, name = tools.generate_name_and_code(code)
-        self.create_contract(code)
+        tx = contract.new_contract(self.url, self.pr_key, self.token, source=code)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # change contract
         id = actions.get_object_id(self.url, name, "contracts", self.token)
         new_code = code.replace(replaced_string, "new_var")
