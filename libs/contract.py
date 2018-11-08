@@ -239,9 +239,10 @@ def new_menu(url, pr_key, token, name='', value="Item1",
 
 
 def edit_menu(url, pr_key, token, id, value="ItemEdited",
-              condition="true", ecosystem=1):
+              condition="true", title="true", ecosystem=1):
     data = {"Id": id,
             "Value": value,
+            "Title": title,
             "Conditions": condition}
     res = actions.call_contract(url, pr_key, "@1EditMenu",
                                 data, token, ecosystem=ecosystem)
@@ -296,7 +297,7 @@ def append_page(url, pr_key, token, id, value="Good by!", ecosystem=1):
     return {"hash": res}
 
 
-def new_block(url, pr_key, token, name='', value="Hello page!",
+def new_block(url, pr_key, token, name='', value="Hello block!",
               app_id=1, condition="true", ecosystem=1):
     if not name:
         name = "Block_" + tools.generate_random_name()
