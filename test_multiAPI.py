@@ -28,15 +28,6 @@ class TestMultiApi():
         resp = self.assert_multi_tx_in_block(resp, self.token)
         return resp
 
-
-    def test_new_interface_block(self):
-        contract_name = "NewBlock"
-        block = "Block_" + tools.generate_random_name()
-        data = [{"contract": contract_name,
-                 "params":{"Name": block, "Value": "Hello page!", "ApplicationId": "1",
-                "Conditions": "true"}}]
-        res = self.call_multi(contract_name, data)
-
     def test_new_interface_block_multi(self):
         contract_name = "NewBlock"
         data = [{"contract": contract_name,
@@ -45,18 +36,3 @@ class TestMultiApi():
                             "Conditions": "true"}} for _ in range(2)]
         res = self.call_multi(contract_name, data)
      
-    def test_new_lang(self):
-        contract_name = "NewLang"
-        name_lang = "Lang_" + tools.generate_random_name()
-        data = [{"contract": contract_name,
-                 "params": {"Name": name_lang,
-                "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
-                "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}}]
-        res = self.call_multi(contract_name, data)
-
-    def test_new_page(self):
-        contract_name = "NewPage"
-        name = "Page_" + tools.generate_random_name()
-        data = [{"contract": contract_name,
-                 "params":{"Name":name, "Value":"SetVar(a,\"Hello\") \n Div(Body: #a#)", "Conditions":"true", "Menu":"default_menu", "ApplicationId": "1"}}]
-        res = self.call_multi(contract_name, data)
