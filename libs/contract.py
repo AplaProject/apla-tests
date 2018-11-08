@@ -124,9 +124,10 @@ def new_lang_joint(url, pr_key, token, name='',
             "name": name}
 
 
-def edit_contract(url, pr_key, token, id, new_source='',
+def edit_contract(url, pr_key, token, id, new_source='', name='',
                   condition='true', ecosystem=1):
-    name = actions.get_object_name(url, id, "contracts", token)
+    if name == '':
+        name = actions.get_object_name(url, id, "contracts", token)
     if not new_source:
         new_source = '{ data {} conditions {} action {} }'
     code = 'contract ' + name + new_source

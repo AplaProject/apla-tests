@@ -35,39 +35,32 @@ class TestCost():
             i += 1
         return node_balance
 
-    @staticmethod
-    def create_contracts():
-        data_creater = actions.login(TestCost.conf[0]["url"], TestCost.conf[0]["private_key"], 0)
+    def create_contracts(self):
+        data_creater = actions.login(self.conf[0]["url"], self.conf[0]["private_key"], 0)
         token_creater = data_creater["jwtToken"]
         contract = tools.read_fixtures("contracts")
-        code = "contract CostContract" + contract["for_cost"]["code"]
-        data = {"Value": code, "ApplicationId": 1,
-                "Conditions": "true"}
-        print("wait: ", TestCost.wait)
-        result = actions.call_contract(TestCost.conf[0]["url"], TestCost.conf[0]["private_key"],
-                                       "NewContract", data, token_creater)
-        status = actions.tx_status(TestCost.conf[0]["url"], TestCost.wait,
-                                   result, token_creater)
+        tx = contract.new_contract(self.conf[0]["url"], self.conf[0]["private_key"],
+                                   token_creater, name="CostContract",
+                                   source=contract["for_cost"]["code"])
+        check.is_tx_in_block(self.conf[0]["url"], self.wait, tx, token_creater)
+        
 
     def bind_wallet(self):
         data_creater = actions.login(self.conf[1]["url"], self.conf[0]["private_key"], 0)
         token_creater = data_creater["jwtToken"]
         id = actions.get_contract_id(self.conf[1]["url"], "CostContract", token_creater)
-        data = {"Id": id}
-        result = actions.call_contract(self.conf[1]["url"], self.conf[0]["private_key"],
-                                       "BindWallet", data, token_creater)
-
-        status = actions.tx_status(self.conf[1]["url"], self.wait,
-                                   result, token_creater)
+        tx = contract.bind_wallet(self.conf[1]["url"], self.conf[0]["private_key"],
+                                  token_creater, id)
+        check.is_tx_in_block(self.conf[1]["url"], self.wait, tx, token_creater)
 
     def unbind_wallet(self):
         data_creater = actions.login(self.conf[0]["url"], self.conf[0]["private_key"], 0)
         token_creater = data_creater["jwtToken"]
         id = actions.get_contract_id(self.conf[0]["url"], "CostContract", token_creater)
-        data = {"Id": id}
-        result = actions.call_contract(self.conf[0]["url"], self.conf[0]["private_key"],
-                                       "UnbindWallet", data, token_creater)
-        status = actions.tx_status(self.conf[0]["url"], self.wait, result, token_creater)
+        tx = contract.unbind_wallet(self.conf[0]["url"], self.conf[0]["private_key"],
+                                  token_creater, id)
+        check.is_tx_in_block(self.conf[0]["url"], self.wait, tx, token_creater)
+
 
     def is_commissions_in_history(self, node_commision, id_from, platform_commission, node):
         is_node_commission = actions.is_commission_in_history(self.conf[1]["url"], self.token,
