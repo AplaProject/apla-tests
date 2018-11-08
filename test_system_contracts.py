@@ -157,6 +157,7 @@ class TestSystemContracts():
         tx = contract.new_contract(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         id = actions.get_contract_id(self.url, tx['name'], self.token)
+        print(tx['code'])
         tx2 = contract.edit_contract(self.url, self.pr_key, self.token,
                                      id, new_source=tx['code'], condition="false")
         check.is_tx_in_block(self.url, self.wait, tx2, self.token)
@@ -196,12 +197,12 @@ class TestSystemContracts():
     def test_bind_wallet_incorrect_wallet(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        id = actions.get_contract_id(self.url, name, self.token)
+        id = actions.get_contract_id(self.url, tx['name'], self.token)
         wallet = "0005-2070-2000-0006-0200"
         tx = contract.bind_wallet(self.url, self.pr_key, self.token, id, wallet = wallet)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'The key ID is not found'
-        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(res))
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_unbind_wallet(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
@@ -354,7 +355,7 @@ class TestSystemContracts():
     def test_edit_page_with_validate_count(self):
         tx = contract.new_page(self.url, self.pr_key, self.token, validate_count=6)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        count = actions.get_object_id(self.url, tx["name"], "pages", self.token)
+        id = actions.get_object_id(self.url, tx["name"], "pages", self.token)
         tx2 = contract.edit_page(self.url, self.pr_key, self.token, id, validate_count=1)
         check.is_tx_in_block(self.url, self.wait, tx2, self.token)
         content = [{'tag': 'text', 'text': 'Good by page!'}]
@@ -384,7 +385,7 @@ class TestSystemContracts():
         id = actions.get_object_id(self.url, tx["name"], "pages", self.token)
         tx2 = contract.append_page(self.url, self.pr_key, self.token, id)
         check.is_tx_in_block(self.url, self.wait, tx2, self.token)
-        content = [{'tag': 'text', 'text': 'Hello!\r\nGood by!'}]
+        content = [{'tag': 'text', 'text': 'Hello page!\r\nGood by!'}]
         p_content = actions.get_content(self.url, "page", tx["name"], "", 1, self.token)
         self.unit.assertEqual(p_content['tree'], content)
 
@@ -443,11 +444,14 @@ class TestSystemContracts():
         tx = contract.new_table(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # create new page
-        val = "DBFind(" + table_name + ",src)"
+        val = "DBFind(" + tx['name'] + ",src)"
         tx_page = contract.new_page(self.url, self.pr_key, self.token, value=val)
         check.is_tx_in_block(self.url, self.wait, tx_page, self.token)
         # test
-        content = [{'tag': 'text', 'text': 'Access denied'}]
+        content = [{'attr': {'columns': ['id', 'myname'], 'data': [], 
+                             'name': tx['name'], 
+                             'source': 'src', 'types': []},
+                             'tag': 'dbfind'}]
         cont = actions.get_content(self.url, "page", tx_page["name"], "", 1, self.token)
         self.unit.assertEqual(cont['tree'], content)
 
