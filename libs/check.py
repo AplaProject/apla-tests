@@ -1,6 +1,10 @@
 from libs import db, actions
 import unittest
 import time
+from libs import loger
+
+
+log = loger.create_loger(__name__)
 
 
 def compare_nodes(config):
@@ -43,7 +47,9 @@ def is_tx_in_block(url, wait, tx, token):
     if status["blockid"] > 0:
         return status["blockid"]
     else:
-        unittest.TestCase.fail("Transaction not in block. Status: " + str(status))
+        msg = "Transaction not in block. Status: " + str(status)
+        log.error(msg)
+        unittest.TestCase.fail(msg)
         return None
 
 
