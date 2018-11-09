@@ -23,21 +23,13 @@ class TestSimvolio():
         self.token = data["jwtToken"]
 
 
-    def check_contract(self, sourse, check_point):
-        tx = contracts.new_contract(self.url, self.pr_key, self.token, source=sourse)
-        check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        res = actions.call_contract(self.url, self.pr_key, tx['name'], {}, self.token)
-        result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertIn(check_point, result["result"], "ERROR: " + \
-                           str(result))
-
-
-    def check_contract_with_data(self, sourse, data, check_point):
+    def check_contract(self, sourse, check_point, data={}):
         tx = contracts.new_contract(self.url, self.pr_key, self.token, source=sourse)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(self.url, self.pr_key, tx['name'], data, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertIn(check_point, result["result"], "error")
+        self.unit.assertIn(check_point, result["result"], "ERROR: " + \
+                           str(result))
 
 
     def test_contract_dbFind(self):
@@ -303,10 +295,12 @@ class TestSimvolio():
     def test_contract_langRes(self):
         name = 'lang_' + tools.generate_random_name()
         trans = '{"en": "test_en", "de": "test_de"}'
-        tx = contracts.new_lang(self.url, self.pr_key, self.token, name=name, trans=trans)
+        tx = contracts.new_lang(self.url, self.pr_key, self.token,
+                                name=name, trans=trans)
         check.is_tx_in_block(self.url, self.wait, tx, self.token,)
         contract = self.contracts["langRes"]
-        self.check_contract(contract["code"], contract["asert"])
+        data = {'Name': name}
+        self.check_contract(contract["code"], contract["asert"], data)
 
 
     def test_contract_dbInsert(self):
@@ -363,7 +357,7 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         contract = self.contracts["callContract"]
         data = {'Name': inner_contract_name}
-        self.check_contract_with_data(contract["code"], data, contract["asert"])
+        self.check_contract(contract["code"], contract["asert"], data)
 
 
     def test_sys_vars_readonly(self):
@@ -464,7 +458,7 @@ class TestSimvolio():
         # test
         data = {"Table": "contracts", "ID": id}
         contract = self.contracts["getHistory"]
-        self.check_contract_with_data(contract["code"], data, replaced_string)
+        self.check_contract(contract["code"], replaced_string, data)
 
 
     def test_get_history_page(self):
@@ -480,7 +474,7 @@ class TestSimvolio():
         # test
         data = {"Table": "pages", "ID": id}
         contract = self.contracts["getHistory"]
-        self.check_contract_with_data(contract["code"], data, page)
+        self.check_contract(contract["code"], page, data)
 
 
     def test_sys_var_stack(self):
@@ -539,7 +533,7 @@ class TestSimvolio():
         rollback_id = db.submit_query(query, self.db1)[0][0]
         data = {"Table": "menu", "ID": id, "rID": rollback_id}
         contract = self.contracts["getHistoryRow"]
-        self.check_contract_with_data(contract["code"], data, value)
+        self.check_contract(contract["code"], value, data)
 
 
     def test_get_history_row_block(self):
@@ -562,4 +556,4 @@ class TestSimvolio():
         print(rollback_id)
         data = {"Table": "blocks", "ID": id, "rID": rollback_id}
         contract = self.contracts["getHistoryRow"]
-        self.check_contract_with_data(contract["code"], data, value)
+        self.check_contract(contract["code"], value, data)
