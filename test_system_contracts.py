@@ -285,7 +285,7 @@ class TestSystemContracts():
         id = actions.get_object_id(self.url, tx['name'], "menu", self.token)
         tx2 = contract.edit_menu(self.url, self.pr_key, self.token, id)
         check.is_tx_in_block(self.url, self.wait, tx2, self.token)
-        content = {'tree': [{'tag': 'text', 'text': 'ItemEdited'}]}
+        content = {'title': 'true', 'tree': [{'tag': 'text', 'text': 'ItemEdited'}]}
         m_content = actions.get_content(self.url, "menu", tx["name"], "", 1, self.token)
         self.unit.assertEqual(m_content, content)
 
@@ -346,9 +346,10 @@ class TestSystemContracts():
         tx = contract.new_page(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         id = actions.get_object_id(self.url, tx["name"], "pages", self.token)
+        new_val = 'Good by page!'
         tx2 = contract.edit_page(self.url, self.pr_key, self.token, id)
-        check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        content = [{'tag': 'text', 'text': 'Good by page!'}]
+        check.is_tx_in_block(self.url, self.wait, tx2, self.token)
+        content = [{'tag': 'text', 'text': new_val}]
         p_content = actions.get_content(self.url, "page", tx["name"], "", 1, self.token)
         self.unit.assertEqual(p_content['tree'], content)
 
@@ -470,14 +471,14 @@ class TestSystemContracts():
         action {
             DBInsert("%s", {text: "text1", num: "num1"})    
         }
-        }""" % table_name
+        }""" % tx['name']
         tx_cont = contract.new_contract(self.url, self.pr_key, self.token, source=code)
         check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
         # call contract
-        tx_call = actions.call_contract(url, pr_key, tokentx_cont["name"], {})
-        check.is_tx_in_block(self.url, self.wait, {"hash": tx_call}, self.token)
+        tx_call = actions.call_contract(self.url, self.pr_key, tx_cont["name"], {}, self.token)
+        status = actions.tx_status(self.url, self.wait, tx_call, self.token)
         # create new page
-        val = "DBFind(" + table_name + ",src)"
+        val = "DBFind(" + tx['name'] + ",src)"
         tx_page = contract.new_page(self.url, self.pr_key, self.token, value=val)
         check.is_tx_in_block(self.url, self.wait, tx_page, self.token)
         # test
@@ -517,14 +518,14 @@ class TestSystemContracts():
         action {
             DBInsert("%s", {text: "text1", num: "num1"})    
         }
-        }""" % table_name
+        }""" % tx['name']
         tx_cont = contract.new_contract(self.url, self.pr_key, self.token, source=code)
         check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
         # call contract
-        tx_call = actions.call_contract(url, pr_key, tokentx_cont["name"], {})
-        check.is_tx_in_block(self.url, self.wait, {"hash": tx_call}, self.token)
+        tx_call = actions.call_contract(self.url, self.pr_key, tx_cont["name"], {}, self.token)
+        status = actions.tx_status(self.url, self.wait, tx_call, self.token)
         # create new page
-        val = "DBFind(" + table_name + ",src)"
+        val = "DBFind(" + tx['name'] + ",src)"
         tx_page = contract.new_page(self.url, self.pr_key, self.token, value=val)
         check.is_tx_in_block(self.url, self.wait, tx_page, self.token)
         # test
@@ -596,7 +597,7 @@ class TestSystemContracts():
                   "\"index\": \"1\",  \"conditions\":\"true\"}," + \
                   "{\"name\":\"MyName\",\"type\":\"varchar\"," + \
                   "\"index\": \"1\",  \"conditions\":\"true\"}]"
-        tx = contract.new_table(self.url, self.pr_key, self.token, columns=column)
+        tx = contract.new_table(self.url, self.pr_key, self.token, columns=columns)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         self.unit.assertEqual("There are the same columns", status["error"],
                          "Incorrect message: " + str(status))
