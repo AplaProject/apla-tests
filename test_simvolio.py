@@ -26,7 +26,7 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, {"hash": result}, self.token)
 
     def check_contract(self, sourse, check_point):
-        tx = contract.new_contract(self.url, self.pr_key, self.token, source=code)
+        tx = contract.new_contract(self.url, self.pr_key, self.token, source=sourse)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(self.url, self.pr_key, tx['name'], {}, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
@@ -34,7 +34,7 @@ class TestSimvolio():
                            str(result))
 
     def check_contract_with_data(self, sourse, data, check_point):
-        tx = contract.new_contract(self.url, self.pr_key, self.token, source=code)
+        tx = contract.new_contract(self.url, self.pr_key, self.token, source=sourse)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(self.url, self.pr_key, tx['name'], data, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
