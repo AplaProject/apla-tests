@@ -47,7 +47,7 @@ def new_table(url, pr_key, token, name='', columns='',
     if not name:
         name = "Tab_" + tools.generate_random_name()
     if not perms:
-        perms = '{"insert": "false", "update": "true", "new_column": "true"}'
+        perms = '{"insert": "true", "update": "true", "new_column": "true"}'
     if not columns:
         columns = '[{"name": "MyName", "type":"varchar", "index": "1", "conditions": "true"}]'
     data = {"ApplicationId": appId,
