@@ -45,7 +45,7 @@ def new_application(url, pr_key, token, name='', condition='true', ecosystem=1):
 def new_table(url, pr_key, token, name='', columns='',
               perms='', appId=1, ecosystem=1):
     if not name:
-        name = "Tab_" + tools.generate_random_name()
+        name = "tab_" + tools.generate_random_name()
     if not perms:
         perms = '{"insert": "true", "update": "true", "new_column": "true"}'
     if not columns:
@@ -340,7 +340,7 @@ def new_app_param(url, pr_key, token, name='', app_id=1,
             "Name": name,
             "Value": val,
             "Conditions": condition}
-    res = actions.call_contract(url, pr_key, "@1EditTable",
+    res = actions.call_contract(url, pr_key, "@1NewAppParam",
                                 data, token, ecosystem=ecosystem)
     return {"hash": res,
             "name": name}
@@ -383,7 +383,7 @@ def edit_delayed_contract(url, pr_key, token, id, name, block=1,
     return result
 
 
-def upload_binary(url, pr_key, token, path, name, app_id='1', ecosystem=1):
+def upload_binary(url, pr_key, token, path, name='', app_id='1', ecosystem=1):
     if not name:
         name = "bin_" + tools.generate_random_name()
     with open(path, 'rb') as f:

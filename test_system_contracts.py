@@ -38,8 +38,7 @@ class TestSystemContracts():
             # add contract, which get block_id
             body = "{\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
             tx = contract.new_contract(self.url, self.pr_key, self.token, source=body)
-            check.is_tx_in_block(self.url, self.wait, tx, self.token)
-            currrent_block_id = res["blockid"]
+            currrent_block_id = check.is_tx_in_block(self.url, self.wait, tx, self.token)
             expected_block_id = old_block_id + limit + 1  # +1 spare block
             if currrent_block_id == expected_block_id:
                 break
@@ -495,7 +494,7 @@ class TestSystemContracts():
         tx = contract.new_table(self.url, self.pr_key, self.token, columns=column)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # create new page
-        val = "DBFind(" + table_name + ",src)"
+        val = "DBFind(" + tx['name'] + ",src)"
         tx_page = contract.new_page(self.url, self.pr_key, self.token, value=val)
         check.is_tx_in_block(self.url, self.wait, tx_page, self.token)
         # test
@@ -605,7 +604,7 @@ class TestSystemContracts():
     def test_edit_table(self):
         tx = contract.new_table(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        tx2 = contract.new_table(self.url, self.pr_key, self.token, tx["name"])
+        tx2 = contract.edit_table(self.url, self.pr_key, self.token, tx["name"])
         check.is_tx_in_block(self.url, self.wait, tx2, self.token)
 
     def test_new_column(self):
@@ -696,7 +695,8 @@ class TestSystemContracts():
         check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
         # NewDelayedContract
         new_limit = 3
-        tx2 = contract.new_delayed_contract(self.url, self.pr_key, self.token)
+        tx2 = contract.new_delayed_contract(self.url, self.pr_key, self.token,
+                                            name=tx_cont['name'])
         old_block_id = check.is_tx_in_block(self.url, self.wait, tx2, self.token)
         # get record id of 'delayed_contracts' table for run EditDelayedContract
         id = actions.get_count(self.url, 'delayed_contracts', self.token)
@@ -710,13 +710,13 @@ class TestSystemContracts():
         # wait block_id until run CallDelayedContract
         self.wait_block_id(old_block_id, editLimit)
         # verify records count in table
-        count = actions.get_count(self.url, tx3["name"], self.token)
+        count = actions.get_count(self.url, tx["name"], self.token)
         self.unit.assertEqual(int(count), new_limit + editLimit)
 
     def test_upload_binary(self):
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         tx = contract.upload_binary(self.url, self.pr_key, self.token, path)
-        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_contract_recursive_call_by_name_action(self):
         contract_name = "recur_" + tools.generate_random_name()
@@ -734,7 +734,7 @@ class TestSystemContracts():
                                         name=contract_name, source=body)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "The contract can't call itself recursively"
-        self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
 
     def test_contract_recursive_call_by_name_conditions(self):
@@ -753,7 +753,7 @@ class TestSystemContracts():
                                         name=contract_name, source=body)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = "The contract can't call itself recursively"
-        self.unit.assertEqual(msg, res["error"], "Incorrect message: " + str(res))
+        self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
 
     def test_contract_recursive_call_by_name_func_action(self):
@@ -815,8 +815,7 @@ class TestSystemContracts():
             }
         }
         """
-        tx = contract.new_contract(self.url, self.pr_key, self.token,
-                                        name=contract_name, source=body)
+        tx = contract.new_contract(self.url, self.pr_key, self.token, source=body)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # test
         msg = "max call depth"
@@ -825,7 +824,7 @@ class TestSystemContracts():
         self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
 
-    def test_ImportExport(self):
+    def test_import_export(self):
         # Import
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
         tx = contract.import_upload(self.url, self.pr_key, self.token, path)
