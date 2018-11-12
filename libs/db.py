@@ -77,7 +77,7 @@ def get_user_table_state(db, user_table):
 
 #block_chain
 def get_blockchain_hash(db, max_block_id):
-    request = "SELECT md5(array_agg(md5((t.id, t.hash, t.data, t.ecosystem_id, t.key_id, t.node_position, t.time, t.tx)::varchar))::varchar)  FROM (SELECT * FROM block_chain WHERE id <= " + str(
+    request = "SELECT md5(array_agg(md5((t.id, t.hash, t.rollbacks_hash, t.data, t.ecosystem_id, t.key_id, t.node_position, t.time, t.tx)::varchar))::varchar)  FROM (SELECT * FROM block_chain WHERE id <= " + str(
         max_block_id) + " ORDER BY id) AS t"
     return submit_query(request, db)
 
