@@ -588,7 +588,11 @@ class TestApi():
                                      self.token,
                                      path,
                                      name)
-        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        print(res)
+        print('upload_binary - OK')
+        res = check.is_tx_in_block(self.url, self.wait, res, self.token)
+        print(res)
+        print('is_tx_in_block')
         last_rec = actions.get_count(self.url, 'binaries', self.token)
         founder_id = actions.get_object_id(self.url, 'founder', 'members', self.token)
         # change avatar in profile
@@ -601,8 +605,12 @@ class TestApi():
                                     "ProfileEdit",
                                     data,
                                     self.token)
+        print(res)
+        print('ProfileEdit - OK')
         status = {'hash': res}
         check.is_tx_in_block(self.url, self.wait, status, self.token)
+        print(res)
+        print('is_tx_in_block')
         # test
         resp = api.avatar(self.url, token='', member=founder_id, ecosystem=1)
         msg = "Content-Length is different!"
