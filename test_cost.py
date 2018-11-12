@@ -6,8 +6,8 @@ from genesis_blockchain_tools.crypto import get_public_key
 from libs import tools, actions, db, contract, check
 from asyncio.proactor_events import BaseProactorEventLoop
 
-NODE_COMISSION = 139680000000000000
-PLATFORM_COMISSION = 4320000000000000
+NODE_COMISSION = 13968000000000
+PLATFORM_COMISSION = 432000000000
 
 class TestCost():
     wait = tools.read_config("test")["wait_tx_status"]
