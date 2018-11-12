@@ -124,7 +124,7 @@ class TestCost():
                               summ=int(summ_after),
                               history=True)
         self.u.assertDictEqual(dict_valid, dict_expect,
-                                          "Error in comissions run activated contract")
+                                          "Error in comissions for bind_wallet")
 
 
     def test_unbind_wallet(self):
@@ -171,7 +171,7 @@ class TestCost():
                            'nodeBalance': int(b_node_balance[node]) + int(node_commission),
                            'summ': int(summ_after), 'history': True}
         self.u.assertDictEqual(dict_valid, dict_expect,
-                             "Error in comissions run deactivated contract")
+                             "Error in comissions for unbind_wallet")
 
     def test_bind_wallet_with_err(self):
         if actions.is_contract_activated(self.conf[1]["url"], "CostContract", self.token) == False:
@@ -210,7 +210,7 @@ class TestCost():
                           balanceNodeOwner=balance_node_owner_b,
                           balanceCommision=balance_commision_b,
                           balanceRunner=balance_runner_b)
-        self.u.assertDictEqual(dict_valid, dict_expect, "Error in test_activated_contract_with_err")
+        self.u.assertDictEqual(dict_valid, dict_expect, "Error in test_bind_wallet_with_err")
 
     def test_deactive_contract_with_err(self):
         if actions.is_contract_activated(self.conf[1]["url"], "CostContract", self.token) == True:
