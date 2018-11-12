@@ -10,4 +10,3 @@ scripts/.pytest_cache/
 scripts/__pycache__/
 scripts/data/
 /fixtures/exportApp1.json
-logs/
