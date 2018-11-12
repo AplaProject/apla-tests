@@ -311,3 +311,15 @@ def imp_app(app_name, url, pr_key, token):
                     log.error("Import '" + app_name + "' is failed")
                     exit(1)
             log.info("App '" + app_name + "' successfully installed")
+            
+            
+def get_load_blocks_time(url, token, max_block, wait_upating):
+    sec = 1
+    while sec < wait_upating:
+        max_block_id1 = get_max_block_id(url, token)
+        if max_block_id1 == max_block:
+            print("Time: ", sec)
+            return {"time": sec, "blocks": max_block_id1}
+        else:
+            sec = sec + 1
+    return {"time": wait_upating + 1, "blocks": max_block_id1}
