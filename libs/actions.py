@@ -124,14 +124,15 @@ def get_contract_id(url, name, token):
     res = api.contract(url, token, name)
     return res['tableid']
 
-def get_object_id(url, name, object, token):
+def get_object_id(url, name, object, token, ecosystem=1):
     id = None
     param_name = 'name'
     if object == 'members':
         param_name = 'member_name'
     res = get_list(url, object, token)
     for object in res['list']:
-        if object[param_name] == name:
+        if object[param_name] == name \
+                and int(object['ecosystem']) == ecosystem:
             id = object['id']
             break
     return id
