@@ -208,7 +208,7 @@
     "asert": "[k1 k5 k9]"
   },
   "langRes": {
-    "code": "{\n data {}\n conditions {}\n action {\n $result=LangRes(\"test\", \"de\")\n }\n }",
+    "code": "{\n data { Name string }\n conditions {}\n action {\n $result=LangRes($Name, \"de\")\n }\n }",
     "asert": "test_de",
     "information": "needs to create language resourse with name - test and localisacions:en- test_en, de- test_de"
   },
@@ -230,7 +230,7 @@
     "asert": ""
   },
   "callContract": {
-    "code": "{\n data {}\n conditions {}\n action {\n var par map\n $result = CallContract(\"MyContract\", par)\n }\n }",
+    "code": "{\n data { Name string }\n conditions {}\n action {\n var par map\n $result = CallContract($Name, par)\n }\n }",
     "asert": "Hello",
     "information": "needs to create Contact MyContract"
   },

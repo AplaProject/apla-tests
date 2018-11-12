@@ -578,10 +578,10 @@ class TestSystemContracts():
 
     def test_new_table_exist_name(self):
         tx = contract.new_table(self.url, self.pr_key, self.token)
-        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
         tx2 = contract.new_table(self.url, self.pr_key, self.token, name=tx["name"])
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
-        msg = "table {name} exists".format(name=name)
+        msg = "table {name} exists".format(name=tx["name"])
         self.unit.assertEqual(msg, status["error"], "Incorrect message: " + str(status))
 
     def test_new_table_incorrect_name_cyrillic(self):
@@ -696,7 +696,7 @@ class TestSystemContracts():
         # NewDelayedContract
         new_limit = 3
         tx2 = contract.new_delayed_contract(self.url, self.pr_key, self.token,
-                                            name=tx_cont['name'])
+                                            name=tx_cont['name'], limit=new_limit)
         old_block_id = check.is_tx_in_block(self.url, self.wait, tx2, self.token)
         # get record id of 'delayed_contracts' table for run EditDelayedContract
         id = actions.get_count(self.url, 'delayed_contracts', self.token)
@@ -825,25 +825,15 @@ class TestSystemContracts():
 
 
     def test_import_export(self):
-        # Import
-        path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
-        tx = contract.import_upload(self.url, self.pr_key, self.token, path)
-        check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
-        import_app_data = db.get_import_app_data(self.db, founder_id)
-        import_app_data = import_app_data['data']
-        contract_name = "Import"
-        data = [{"contract": contract_name,
-                 "params": import_app_data[i]} for i in range(len(import_app_data))]
-        self.callMulti(contract_name, data, 60)
         # Export
         tx_ex = contract.export_new_app(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx_ex, self.token)
         data = {}
         res_export = actions.call_contract(self.url, self.pr_key, "Export", data, self.token)
-        check.is_tx_in_block(self.url, self.wait, {"hash": res_export}, self.token)
+        res = check.is_tx_in_block(self.url, self.wait, {"hash": res_export}, self.token)
         founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
-        export_app_data = actions.get_export_app_data(self.url, self.token, appID, founder_id)
+        app_id = 1
+        export_app_data = actions.get_export_app_data(self.url, self.token, app_id, founder_id)
         path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
         with open(path, 'w', encoding='UTF-8') as f:
             f.write(export_app_data)
@@ -853,8 +843,17 @@ class TestSystemContracts():
             file_exist = False
         must_be = dict(resultExport=True,
                       resultFile=True)
-        actual = dict(resultExport=int(res_export["blockid"]) > 0,
+        actual = dict(resultExport=int(res) > 0,
                       resultFile=file_exist)
         self.unit.assertDictEqual(must_be, actual, "test_Export is failed!")
-
-
+        # Import
+        path = os.path.join(os.getcwd(), "fixtures", "exportApp1.json")
+        tx = contract.import_upload(self.url, self.pr_key, self.token, path)
+        tx0 = check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
+        import_app_data = db.get_import_app_data(self.db, founder_id)
+        import_app_data = import_app_data['data']
+        contract_name = "Import"
+        data = [{"contract": contract_name,
+                 "params": import_app_data[i]} for i in range(len(import_app_data))]
+        self.callMulti(contract_name, data, 60)
