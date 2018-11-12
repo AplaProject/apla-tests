@@ -10,6 +10,7 @@ class TestPrototipo():
     pages = tools.read_fixtures("pages")
     url = conf[0]["url"]
     pr_key = conf[0]['private_key']
+    wait = tools.read_config("test")["wait_tx_status"]
 
     @classmethod
     def setup_class(self):
@@ -34,8 +35,8 @@ class TestPrototipo():
         tx = contract.new_page(self.url, self.pr_key, self.token, value=sourse)
         check.is_tx_in_block(self.url, tools.read_config("test")["wait_tx_status"],
                              tx, self.token)
-        cont = actions.get_content(self.url, "page", tx["name"], "", 1, self.token)
-        return cont
+        content = actions.get_content(self.url, "page", tx["name"], "", 1, self.token)
+        return content
 
     def find_position_element_in_tree(self, content_tree, tag_name):
         i = 0
@@ -68,7 +69,7 @@ class TestPrototipo():
 
     def test_page_button(self):
         cont = self.pages["button"]
-        content = self.check_page(contract["code"])
+        content = self.check_page(cont["code"])
         self.uni.assertEqual(content["tree"][0]["tag"], "button",
                          "There is no button in content" + str(content["tree"]))
 
@@ -240,7 +241,7 @@ class TestPrototipo():
     def test_page_linkPage(self):
         cont = self.pages["linkPage"]
         content = self.check_page(cont["code"])
-        part_content = cont['tree'][0]
+        part_content = content['tree'][0]
         contract_content = cont["content"]
         must_be = dict(tag=part_content['tag'],
                       linkPageClass=part_content['attr']['class'],
@@ -937,8 +938,10 @@ class TestPrototipo():
         tx = contract.new_contract(self.url, self.pr_key, self.token, source=code)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # change contract
-        id = actions.get_object_id(self.url, name, "contracts", self.token)
-        new_code = code.replace(replaced_string, "new_var")
+        id = actions.get_object_id(self.url, tx['name'], "contracts", self.token)
+        replaced_code = tx['code'].replace(replaced_string, "new_var")
+        new_code = 'contract {name} {code}'.format(name=tx['name'],
+                                                   code=replaced_code)
         data = {"Id": id, "Value": new_code}
         self.call_contract("EditContract", data)
         # test
