@@ -15,13 +15,10 @@ class TestCost():
     keys = tools.read_fixtures("keys")
 
     def setup_class(self):
-        print("setup_class")
         self.u = unittest.TestCase()
-        print("setup_class finished")
         TestCost.create_contracts()
 
     def setup(self):
-        print("setup")
         self.data = actions.login(self.conf[1]["url"], self.keys["key2"], 0)
         self.token = self.data["jwtToken"]
 
