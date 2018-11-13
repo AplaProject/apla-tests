@@ -22,13 +22,13 @@ def get_private_key(filename):
 
 def create_config(url, priv_key, db_host, db_name, login, password):
     config = {
-        "url": url,
-        "private_key": priv_key,
-        "db": {
-            "dbHost": db_host,
-            "dbName": db_name,
-            "login": login,
-            "pass": password,
+        'url': url,
+        'private_key': priv_key,
+        'db': {
+            'dbHost': db_host,
+            'dbName': db_name,
+            'login': login,
+            'pass': password,
         }
     }
     with open(file, 'w') as f:

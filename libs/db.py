@@ -3,8 +3,8 @@ import psycopg2
 
 # here
 def submit_query(query, db):
-    connect = psycopg2.connect(host=db["dbHost"], dbname=db["dbName"],
-                               user=db["login"], password=db["pass"])
+    connect = psycopg2.connect(host=db['dbHost'], dbname=db['dbName'],
+                               user=db['login'], password=db['pass'])
     cursor = connect.cursor()
     cursor.execute(query)
     return cursor.fetchall()
@@ -14,18 +14,18 @@ def submit_query(query, db):
 def compare_node_positions(db, max_block_id, nodes):
     count_rec = nodes * 3 + nodes
     min_block = max_block_id - count_rec + 1
-    request = "SELECT node_position, count(node_position) FROM block_chain WHERE id>" + str(
-        min_block) + " AND id<" + str(max_block_id) + "GROUP BY node_position"
+    request = 'SELECT node_position, count(node_position) FROM block_chain WHERE id>' + str(
+        min_block) + ' AND id<' + str(max_block_id) + 'GROUP BY node_position'
     positions = submit_query(request, db)
     countBlocks = round(count_rec / nodes / 10 * 7)
     if len(positions) < nodes:
-        print("One of nodes doesn't generate blocks" + str(positions))
+        print('One of nodes does not generate blocks' + str(positions))
         return False
     i = 0
     while i < len(positions):
         if positions[i][1] < countBlocks - 1:
-            print("Node " + str(i) + " generated " +
-                  str(positions[i][1]) + " blocks:" + str(positions))
+            print('Node ' + str(i) + ' generated ' +
+                  str(positions[i][1]) + ' blocks:' + str(positions))
             return False
         i = i + 1
     return True

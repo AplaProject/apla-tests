@@ -66,8 +66,8 @@ log.info('Work dirs created')
 # Set centrifugo variables
 centrifugo_secret = '4597e75c-4376-42a6-8c1f-7e3fc7eb2114'
 centrifugo_url = 'http://127.0.0.1:8000'
-cenConfig = os.path.join(args.centrifugo, "config.json")
-cenPath = os.path.join(args.centrifugo, "centrifugo")
+cenConfig = os.path.join(args.centrifugo, 'config.json')
+cenPath = os.path.join(args.centrifugo, 'centrifugo')
 log.info('Setted centrifugo variables')
 
 # Create config for centrifugo
@@ -163,7 +163,7 @@ generateConfig2 = subprocess.Popen([
     '--dbPassword='+args.dbPassword,
     '--centUrl='+centrifugo_url,
     '--centSecret='+centrifugo_secret,
-    '--nodesAddr='+"127.0.0.1:"+args.tcpPort1
+    '--nodesAddr='+'127.0.0.1:'+args.tcpPort1
 ])
 log.info('Generated config for second node')
 time.sleep(wait)
@@ -190,7 +190,7 @@ generateConfig3 = subprocess.Popen([
     '--dbPassword='+args.dbPassword,
     '--centUrl='+centrifugo_url,
     '--centSecret='+centrifugo_secret,
-    '--nodesAddr='+"127.0.0.1:"+args.tcpPort1
+    '--nodesAddr='+'127.0.0.1:'+args.tcpPort1
 ])
 log.info('Generated config for third node')
 time.sleep(wait)
@@ -268,48 +268,48 @@ log.info('Saved nodes files in work directories')
 
 config = [
     {
-        "url": "http://localhost:" + args.httpPort1 + "/api/v2",
-        "private_key": priv_key1,
-        "keyID": key_id1,
-        "pubKey": node_pub_key1,
-        "tcp_address": "localhost:" + args.tcpPort1,
-        "api_address": "http://localhost:" + args.httpPort1,
-        "db":
+        'url': 'http://localhost:' + args.httpPort1 + '/api/v2',
+        'private_key': priv_key1,
+        'keyID': key_id1,
+        'pubKey': node_pub_key1,
+        'tcp_address': 'localhost:' + args.tcpPort1,
+        'api_address': 'http://localhost:' + args.httpPort1,
+        'db':
         {
-            "dbHost": args.dbHost,
-            "dbName": args.dbName1,
-            "login": args.dbUser,
-            "pass": args.dbPassword
+            'dbHost': args.dbHost,
+            'dbName': args.dbName1,
+            'login': args.dbUser,
+            'pass': args.dbPassword
         }
     },
     {
-        "url": "http://localhost:" + args.httpPort2 + "/api/v2",
-        "private_key": priv_key2,
-        "keyID": key_id2,
-        "pubKey": node_pub_key2,
-        "tcp_address": "localhost:" + args.tcpPort2,
-        "api_address": "http://localhost:" + args.httpPort2,
-        "db":
+        'url': 'http://localhost:' + args.httpPort2 + '/api/v2',
+        'private_key': priv_key2,
+        'keyID': key_id2,
+        'pubKey': node_pub_key2,
+        'tcp_address': 'localhost:' + args.tcpPort2,
+        'api_address': 'http://localhost:' + args.httpPort2,
+        'db':
         {
-            "dbHost": args.dbHost,
-            "dbName": args.dbName2,
-            "login": args.dbUser,
-            "pass": args.dbPassword
+            'dbHost': args.dbHost,
+            'dbName': args.dbName2,
+            'login': args.dbUser,
+            'pass': args.dbPassword
         }
     },
     {
-        "url": "http://localhost:" + args.httpPort3 + "/api/v2",
-        "private_key": priv_key3,
-        "keyID": key_id3,
-        "pubKey": node_pub_key3,
-        "tcp_address": "localhost:" + args.tcpPort3,
-        "api_address": "http://localhost:" + args.httpPort3,
-        "db":
+        'url': 'http://localhost:' + args.httpPort3 + '/api/v2',
+        'private_key': priv_key3,
+        'keyID': key_id3,
+        'pubKey': node_pub_key3,
+        'tcp_address': 'localhost:' + args.tcpPort3,
+        'api_address': 'http://localhost:' + args.httpPort3,
+        'db':
         {
-            "dbHost": args.dbHost,
-            "dbName": args.dbName3,
-            "login": args.dbUser,
-            "pass": args.dbPassword
+            'dbHost': args.dbHost,
+            'dbName': args.dbName3,
+            'login': args.dbUser,
+            'pass': args.dbPassword
         }
     }]
 
