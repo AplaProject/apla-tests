@@ -2,10 +2,11 @@ import unittest
 import os
 import json
 
-from libs import db, tools, actions
+from libs import db, tools
+
 
 class TestRollback2():
-    
+
     def test_rollback2(self):
         self.unit = unittest.TestCase()
         self.conf = tools.read_config("main")
@@ -20,7 +21,8 @@ class TestRollback2():
         for key in db_json:
             db1 = db_information[key]
             db2 = db_json[key]
-            self.unit.assertEqual(int(db1), int(db2),"Different info about " + key)
+            self.unit.assertEqual(int(db1), int(
+                db2), "Different info about " + key)
         # Get from file user table name
         file = os.path.join(os.getcwd(), "userTableName.txt")
         with open(file, 'r') as f:
@@ -35,4 +37,5 @@ class TestRollback2():
         for key in db_user_json:
             db_user1 = db_user_table_info[key]
             db_user2 = db_user_json[key]
-            self.unit.assertEqual(db_user1, db_user2, "Different info about in user table " + key)
+            self.unit.assertEqual(db_user1, db_user2,
+                                  "Different info about in user table " + key)

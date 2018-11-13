@@ -3,18 +3,6 @@ import json
 import random
 import string
 
-def json_to_list(js):
-    full_list = []
-    list = []
-    for i in js:
-        tup = ()
-        list = []
-        for element in i:
-            list.append(i[element])
-        tup = tuple(list)
-        full_list.append(tup)
-    return full_list
-
 
 def generate_random_name():
     name = []
@@ -23,14 +11,16 @@ def generate_random_name():
         name.append(sym)
     return "".join(name)
 
+
 def generate_name_and_code(source_code):
     name = "Cont_" + generate_random_name()
     code = generate_code(name, source_code)
     return code, name
 
+
 def generate_code(contract_name, source_code):
     if source_code == "":
-        s_code = """{data { }    conditions {    }    action {    }    }"""
+        s_code = '{data { }    conditions { }    action { } }'
     else:
         s_code = source_code
     code = "contract " + contract_name + s_code
@@ -65,6 +55,7 @@ def read_fixtures(type):
     with open(path, 'r', encoding='UTF-8') as f:
         data = f.read()
     return json.loads(data)
+
 
 def generate_pr_key():
     return ''.join(random.choice('0123456789abcdef') for _ in range(64))

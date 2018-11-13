@@ -1,5 +1,4 @@
 import unittest
-import json
 import os
 import time
 
@@ -36,7 +35,16 @@ class TestSystemContracts():
     def wait_block_id(self, old_block_id, limit):
         while True:
             # add contract, which get block_id
-            body = "{\n data{} \n conditions{} \n action { \n  $result = $block \n } \n }"
+            body = """
+            {
+                data{}
+                conditions{}
+                action
+                    {
+                        $result = $block
+                    }
+            }
+            """
             tx = contract.new_contract(self.url, self.pr_key, self.token, source=body)
             currrent_block_id = check.is_tx_in_block(self.url, self.wait, tx, self.token)
             expected_block_id = old_block_id + limit + 1  # +1 spare block

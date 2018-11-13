@@ -2,6 +2,7 @@ from locust import HttpLocust, TaskSet, task
 from libs import actions, tools, api
 from genesis_blockchain_tools.contract import Contract
 
+
 class WebsiteTasks(TaskSet):
     def on_start(self):
         self.config = tools.read_config("nodes")
@@ -11,8 +12,7 @@ class WebsiteTasks(TaskSet):
         self.data = actions.login(self.url, self.pr_key, 0)
         self.token = self.data["jwtToken"]
         keys = tools.read_fixtures('keys')
-        self.ldata = actions.login(self.config[1]["url"],keys["key2"], 0)
-
+        self.ldata = actions.login(self.config[1]["url"], keys["key2"], 0)
 
     @task
     def NewContract(self):
@@ -21,7 +21,7 @@ class WebsiteTasks(TaskSet):
         data = {"Value": code, "ApplicationId": 1, "Conditions": "true"}
         schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
-                    params=data)
+                            params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": self.token}, name=contract_name)
@@ -33,24 +33,24 @@ class WebsiteTasks(TaskSet):
                 "Amount": "1000"}
         schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
-                    params=data)
+                            params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": self.token}, name=contract_name)
 
-    @task   
+    @task
     def NewParameter(self):
         contract_name = 'NewParameter'
         name = "Par_" + tools.generate_random_name()
         data = {"Name": name, "Value": "test", "Conditions": "true"}
         schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
-                    params=data)
+                            params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": self.token}, name=contract_name)
-        
-    @task   
+
+    @task
     def NewMenu(self):
         contract_name = 'NewMenu'
         name = "Menu_" + tools.generate_random_name()
@@ -58,12 +58,12 @@ class WebsiteTasks(TaskSet):
                 "Conditions": "true"}
         schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
-                    params=data)
+                            params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": self.token}, name=contract_name)
-        
-    @task   
+
+    @task
     def NewPage(self):
         contract_name = 'NewPage'
         name = "Page_" + tools.generate_random_name()
@@ -71,12 +71,12 @@ class WebsiteTasks(TaskSet):
                 "Conditions": "true", "Menu": "default_menu"}
         schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
-                    params=data)
+                            params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": self.token}, name=contract_name)
-        
-    @task   
+
+    @task
     def NewBlock(self):
         contract_name = 'NewBlock'
         name = "Block_" + tools.generate_random_name()
@@ -84,12 +84,12 @@ class WebsiteTasks(TaskSet):
                 "Conditions": "true"}
         schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
-                    params=data)
+                            params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": self.token}, name=contract_name)
-        
-    @task   
+
+    @task
     def NewTable(self):
         contract_name = 'NewTable'
         column = """[{"name":"MyName","type":"varchar",
@@ -101,19 +101,19 @@ class WebsiteTasks(TaskSet):
                 "Permissions": permission}
         schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
-                    params=data)
+                            params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": self.token}, name=contract_name)
-        
-    @task   
+
+    @task
     def NewLang(self):
         contract_name = 'NewLang'
         data = {"Name": "Lang_" + tools.generate_random_name(),
                 "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}"}
         schema = api.contract(self.url, self.token, contract_name)
         contract = Contract(schema=schema, private_key=self.pr_key,
-                    params=data)
+                            params=data)
         tx_bin_data = contract.concat()
         self.client.post("/sendTx", files={'call1': tx_bin_data},
                          headers={"Authorization": self.token}, name=contract_name)

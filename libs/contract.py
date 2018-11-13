@@ -1,6 +1,4 @@
-import requests
-from genesis_blockchain_tools.crypto import get_public_key
-from libs import api, tools, actions
+from libs import tools, actions
 
 
 def new_contract(url, pr_key, token, source='',
@@ -170,8 +168,8 @@ def edit_application(url, pr_key, token, id, condition="true", ecosystem=1):
 def del_application(url, pr_key, token, id, val, ecosystem=1):
     data = {"ApplicationId": id,
             "Value": val}
-    res =  actions.call_contract(url, pr_key, "@1DelApplication",
-                                 data, token, ecosystem=ecosystem)
+    res = actions.call_contract(url, pr_key, "@1DelApplication",
+                                data, token, ecosystem=ecosystem)
     return {"hash": res}
 
 
@@ -260,7 +258,7 @@ def append_item(url, pr_key, token, id, value='AppendedItem', ecosystem=1):
 def new_page(url, pr_key, token, name='', value='', app_id=1,
              condition='true', validate_count=1, menu='default_menu', ecosystem=1):
     if not name:
-        name = "Page_" + tools.generate_random_name() 
+        name = "Page_" + tools.generate_random_name()
     if not value:
         value = "Hello page!"
     data = {"Name": name,
@@ -316,7 +314,8 @@ def edit_block(url, pr_key, token, id, value="Good by!",
     data = {"Id": id,
             "Value": value,
             "Conditions": condition}
-    res = actions.call_contract(url, pr_key, "@1EditBlock", data, token, ecosystem=ecosystem)
+    res = actions.call_contract(
+        url, pr_key, "@1EditBlock", data, token, ecosystem=ecosystem)
     return {"hash": res}
 
 
@@ -344,8 +343,8 @@ def new_app_param(url, pr_key, token, name='', app_id=1,
                                 data, token, ecosystem=ecosystem)
     return {"hash": res,
             "name": name}
-    
-    
+
+
 def edit_app_param(url, pr_key, token, id,
                    value="myParamEdited", condition="true", ecosystem=1):
     data = {"Id": id,
@@ -387,7 +386,7 @@ def upload_binary(url, pr_key, token, path, name='', app_id='1', ecosystem=1):
     if not name:
         name = "bin_" + tools.generate_random_name()
     with open(path, 'rb') as f:
-            file = f.read()
+        file = f.read()
     data = {'Name': name,
             'ApplicationId': app_id,
             'Data': file}

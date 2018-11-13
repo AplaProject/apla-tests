@@ -3,13 +3,13 @@ import json
 import time
 import os
 
-from genesis_blockchain_tools.crypto import sign
-from genesis_blockchain_tools.crypto import get_public_key
+
 from genesis_blockchain_tools.contract import Contract
 from libs import api, db, tools, loger
 
 wait = tools.read_config("test")["wait_tx_status"]
 log = loger.create_loger(__name__)
+
 
 def login(url, pr_key, role=0, ecosystem=1):
     token, uid = api.getuid(url)
@@ -42,7 +42,7 @@ def call_multi_contract(url, prKey, name, data, jvtToken, withData=True):
     full_bindata = {}
     i = 1
     for inf in data:
-        if withData == True and inf['params']['Data'] == '[]':
+        if withData and inf['params']['Data'] == '[]':
             continue
         schema = api.contract(url, jvtToken, inf['contract'])
         contract = Contract(
@@ -66,9 +66,9 @@ def tx_status(url, sleep_time, hsh, jvt_token):
         if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
             break
         else:
-            sec = sec + 1  
+            sec = sec + 1
     if 'errmsg' not in jresp and jresp['blockid'] == '':
-        return {'blockid': None, 'result': None, 'error': None}     
+        return {'blockid': None, 'result': None, 'error': None}
     if 'errmsg' not in jresp and int(jresp['blockid']) > 0:
         return {'blockid': int(jresp['blockid']), 'result': jresp['result'], 'error': None}
     else:
@@ -92,7 +92,7 @@ def tx_status_multi(url, sleep_time, hshs, jvt_token):
                 allTxInBlocks = True
             else:
                 allTxInBlocks = False
-        if allTxInBlocks == True:
+        if allTxInBlocks:
             return jresp
         else:
             sec = sec + 1
@@ -103,26 +103,32 @@ def call_get_api(url, data, token):
     resp = requests.get(url, params=data,  headers={'Authorization': token})
     return resp.json()
 
+
 def call_get_api_with_full_response(url, data, token):
     resp = requests.get(url, params=data,  headers={'Authorization': token})
     return resp
+
 
 def call_post_api(url, data, token):
     resp = requests.post(url, data=data,  headers={'Authorization': token})
     return resp.json()
 
+
 def get_count(url, name, token):
     res = api.list(url, token, name, limit=1)
     return res['count']
+
 
 def get_list(url, type, token):
     count = get_count(url, type, token)
     res = api.list(url, token, type, limit=count)
     return res
 
+
 def get_contract_id(url, name, token):
     res = api.contract(url, token, name)
     return res['tableid']
+
 
 def get_object_id(url, name, object, token, ecosystem=1):
     id = None
@@ -137,6 +143,7 @@ def get_object_id(url, name, object, token, ecosystem=1):
             break
     return id
 
+
 def get_object_name(url, id, object, token):
     name = None
     res = get_list(url, object, token)
@@ -146,48 +153,57 @@ def get_object_name(url, id, object, token):
             break
     return name
 
+
 def is_contract_activated(url, name, token):
     res = api.contract(url, token, name)
     return res['active']
+
 
 def get_activated_wallet(url, name, token):
     res = api.contract(url, token, name)
     return res['walletid']
 
+
 def get_parameter_id(url, name, token):
     res = api.ecosystemparam(url, token, name)
     return res['id']
+
 
 def get_parameter_value(url, name, token):
     res = api.ecosystemparam(url, token, name)
     return res['value']
 
+
 def get_sysparams_value(url, token, name):
     list = api.systemparams(url, token, name)
     return list['list'][0]['value']
+
 
 def get_content(url, type, name, lang, app_id, token):
     res = api.content(url, token, type, name, lang, app_id)
     return res
 
+
 def get_max_block_id(url, token):
     res = api.maxblockid(url, token)
     return res['max_block_id']
 
-#limits
+# limits
+
+
 def is_count_tx_in_block(url, token, max_block_id, count_tx):
     block = max_block_id - 3
     while block < max_block_id:
         info = api.block(url, token, block)
         block += 1
         if int(info['tx_count']) > count_tx:
-               log.error('Error in count_tx. Block ' + str(block) + ' has ' +\
+            log.error('Error in count_tx. Block ' + str(block) + ' has ' +
                       str(block['count_tx']) + ' transactions')
-               return False
+            return False
     return True
 
 
-#api
+# api
 def get_ecosys_tables(url, token):
     count = get_count(url, 'tables', token)
     tables = api.tables(url, token, limit=count)['list']
@@ -197,7 +213,7 @@ def get_ecosys_tables(url, token):
     return list
 
 
-#system_contracts
+# system_contracts
 def get_export_app_data(url, token, app_id, member_id):
     result = api.list(url, token, 'binaries')
     for item in result['list']:
@@ -207,7 +223,9 @@ def get_export_app_data(url, token, app_id, member_id):
             return str(item['data'])
     return None
 
-#system_contracts
+# system_contracts
+
+
 def get_import_app_data(url, token, member_id):
     result = api.list(url, token, 'buffer_data')
     for item in result['list']:
@@ -216,7 +234,9 @@ def get_import_app_data(url, token, member_id):
             return item['value']
     return None
 
-#block_chain compare_nodes
+# block_chain compare_nodes
+
+
 def get_count_DB_objects(url, token):
     tables = {}
     list = api.tables(url, token, limit=1000)['list']
@@ -224,15 +244,17 @@ def get_count_DB_objects(url, token):
         tables[table['name']] = table['count']
     return tables
 
+
 def get_table_hashes(url, token, db_inf, ecos='1'):
     tables = {}
     list = api.tables(url, token, limit=1000)['list']
     for table in list:
-        tables[table['name']] = db.get_table_hash(db_inf, ecos + '_' + table['name'])
+        tables[table['name']] = db.get_table_hash(
+            db_inf, ecos + '_' + table['name'])
     return tables
 
 
-#done
+# done
 def get_user_token_amounts(url, token):
     count = get_count(url, 'keys', token)
     keys = api.list(url, token, 'keys', limit=count)
@@ -243,7 +265,7 @@ def get_user_token_amounts(url, token):
     return amounts
 
 
-#cost
+# cost
 def get_balance_by_id(url, token, key_id, ecos=1):
     count = get_count(url, 'keys', token)
     keys = api.list(url, token, 'keys', limit=count)
@@ -254,7 +276,7 @@ def get_balance_by_id(url, token, key_id, ecos=1):
     return None
 
 
-#API
+# API
 def is_wallet_created(url, token, id):
     count = get_count(url, 'keys', token)
     keys = api.list(url, token, 'keys', limit=count)
@@ -265,7 +287,7 @@ def is_wallet_created(url, token, id):
     return False
 
 
-#cost
+# cost
 def is_commission_in_history(url, token, id_from, id_to, summ):
     count = get_count(url, 'history', token)
     table = api.list(url, token, 'history', limit=count)
@@ -276,14 +298,16 @@ def is_commission_in_history(url, token, id_from, id_to, summ):
                 return True
     return False
 
+
 def is_contract_present(url, token, name):
     ans = api.contract(url, token, name)
     if "error" not in ans:
-       return True 
+        return True
     if ans['error'] == 'E_CONTRACT':
         return False
     else:
         return True
+
 
 def imp_app(app_name, url, pr_key, token):
     log.info("Start install '" + app_name + "'")
@@ -312,8 +336,8 @@ def imp_app(app_name, url, pr_key, token):
                     log.error("Import '" + app_name + "' is failed")
                     exit(1)
             log.info("App '" + app_name + "' successfully installed")
-            
-            
+
+
 def get_load_blocks_time(url, token, max_block, wait_upating):
     sec = 1
     while sec < wait_upating:

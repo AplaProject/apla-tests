@@ -2,8 +2,10 @@ import os
 import logging
 import inspect
 
+
 def stack():
     return inspect.stack()
+
 
 def set_level(level):
     return {
@@ -29,7 +31,8 @@ def create_loger(name, filename='tests.log', console_level='ERROR', file_level='
     fh = logging.FileHandler(log_path)
     fh.setLevel(file_level)
 
-    formatter = logging.Formatter('[%(levelname)s] \t %(message)s \t %(module)s:%(name)s:%(funcName)s:%(lineno)s \t %(asctime)s')
+    formatter = logging.Formatter(
+        '[%(levelname)s] \t %(message)s \t %(module)s:%(name)s:%(funcName)s:%(lineno)s \t %(asctime)s')
 
     ch.setFormatter(formatter)
     fh.setFormatter(formatter)
