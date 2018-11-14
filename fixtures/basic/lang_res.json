@@ -3,16 +3,6 @@
     "conditions": "ContractConditions(\"@1DeveloperCondition\")",
     "data": [
         {
-            "Name": "APL_not_required",
-            "Trans": "{\"en\": \"APL is not required\", \"ru\": \"Не требуется наличие APL\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "APL_required",
-            "Trans": "{\"en\": \"APL is required\", \"ru\": \"Требуется наличие APL\"}",
-            "Type": "languages"
-        },
-        {
             "Name": "accept",
             "Trans": "{\"en\": \"Accept\", \"ru\": \"Принять\"}",
             "Type": "languages"
@@ -460,6 +450,11 @@
         {
             "Name": "body_text",
             "Trans": "{\"en\": \"Text\", \"ru\": \"Текст\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "broadcast",
+            "Trans": "{\"en\": \"Broadcast\", \"ru\": \"Рассылка\"}",
             "Type": "languages"
         },
         {
@@ -1363,6 +1358,11 @@
             "Type": "languages"
         },
         {
+            "Name": "guest",
+            "Trans": "{\"en\": \"Guest\", \"ru\": \"Гость\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "header",
             "Trans": "{\"en\": \"Header\", \"ru\": \"Заголовок\"}",
             "Type": "languages"
@@ -1708,6 +1708,11 @@
             "Type": "languages"
         },
         {
+            "Name": "mark_read",
+            "Trans": "{\"en\": \"Mark as read\", \"ru\": \"Прочитано\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "maximum",
             "Trans": "{\"en\": \"Maximum\", \"ru\": \"Максимум\"}",
             "Type": "languages"
@@ -1805,6 +1810,76 @@
         {
             "Name": "menu_title",
             "Trans": "{\"en\": \"Menu title\", \"ru\": \"Заголовок меню\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "message_active_threads",
+            "Trans": "{\"en\": \"Active threads\", \"ru\": \"Активные переписки\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "message_create",
+            "Trans": "{\"en\": \"Create message\", \"ru\": \"Создать сообщение\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "message_from",
+            "Trans": "{\"en\": \"Message from\", \"ru\": \"Сообщение от\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "message_from_you",
+            "Trans": "{\"en\": \"Message from you\", \"ru\": \"Сообщение от вас\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "message_subject",
+            "Trans": "{\"en\": \"Subject\", \"ru\": \"Тема\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "message_subject_empty",
+            "Trans": "{\"en\": \"No subject\", \"ru\": \"Без темы\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "message_subject_type_here",
+            "Trans": "{\"en\": \"Describe the subject of your message\", \"ru\": \"Опишите тему сообщения\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "message_text",
+            "Trans": "{\"en\": \"Message text\", \"ru\": \"Текст сообщения\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "message_thread_history",
+            "Trans": "{\"en\": \"Thread history\", \"ru\": \"История переписки\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "message_thread_show",
+            "Trans": "{\"en\": \"Show thread\", \"ru\": \"Показать переписку\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "message_type_here",
+            "Trans": "{\"en\": \"Type your message here\", \"ru\": \"Введите текст сообщения\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "message_view",
+            "Trans": "{\"en\": \"Message view\", \"ru\": \"Просмотр сообщения\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "messages_empty",
+            "Trans": "{\"en\": \"There are no messages yet. You can create your first message using the Plus button at the top right corner\", \"ru\": \"Сообщений нет. Вы можете написать первое сообщение, нажав на кнопку создания справа вверху\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "messenger",
+            "Trans": "{\"en\": \"Messenger\", \"ru\": \"Мессенджер\"}",
             "Type": "languages"
         },
         {
@@ -2079,7 +2154,7 @@
         },
         {
             "Name": "notifications_view",
-            "Trans": "{\"en\": \"View notification\", \"ru\": \"Просмотр уведомления\"}",
+            "Trans": "{\"en\": \"Notification view\", \"ru\": \"Просмотр уведомления\"}",
             "Type": "languages"
         },
         {
@@ -2104,12 +2179,12 @@
         },
         {
             "Name": "only_admin_action",
-            "Trans": "{\"en\": \"Actions on this page are available to administrators only\", \"ru\": \"Действия на данной странице доступны только администраторам\"}",
+            "Trans": "{\"en\": \"Any actions on this page are available to administrators only\", \"ru\": \"Действия на данной странице доступны только администраторам\"}",
             "Type": "languages"
         },
         {
             "Name": "only_first_ecosystem_action",
-            "Trans": "{\"en\": \"Work on this page is available only in first ecosystem\", \"ru\": \"Работа на данной странице доступна только в первой экосистеме\"}",
+            "Trans": "{\"en\": \"Any actions on this page are available in the first ecosystem only\", \"ru\": \"Действия на данной странице доступны только в первой экосистеме\"}",
             "Type": "languages"
         },
         {
@@ -2268,6 +2343,11 @@
             "Type": "languages"
         },
         {
+            "Name": "poa_not_rights_to_change",
+            "Trans": "{\"en\": \"Not enough rights to change the parameters of this power of attorney\", \"ru\": \"Не достаточно прав для изменения параметров этой доверенности.\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "poa_not_rights_to_create",
             "Trans": "{\"en\": \"Not enough rights to create. You are not the admin of this ecosystem.\", \"ru\": \"Недостаточно прав на создание. Вы не админ этой экосистемы.\"}",
             "Type": "languages"
@@ -2290,6 +2370,11 @@
         {
             "Name": "poa_template_not_found",
             "Trans": "{\"en\": \"Power of attorney Template not found\", \"ru\": \"Шаблон доверенности не найден\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "popup",
+            "Trans": "{\"en\": \"Popup window\", \"ru\": \"Всплывающее окно\"}",
             "Type": "languages"
         },
         {
@@ -2445,6 +2530,16 @@
         {
             "Name": "removing_node_impossible",
             "Trans": "{\"en\": \"The minimum number of nodes. Node deleting is impossible\", \"ru\": \"Минимальное количество узлов. Удаление узла невозможно\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "reply",
+            "Trans": "{\"en\": \"Reply\", \"ru\": \"Ответить\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "reply_text",
+            "Trans": "{\"en\": \"Reply text\", \"ru\": \"Текст ответа\"}",
             "Type": "languages"
         },
         {
@@ -3628,13 +3723,18 @@
             "Type": "languages"
         },
         {
-            "Name": "understand",
-            "Trans": "{\"en\": \"Understand\", \"ru\": \"Ознакомился\"}",
+            "Name": "understood",
+            "Trans": "{\"en\": \"Understood\", \"ru\": \"Ознакомился\"}",
             "Type": "languages"
         },
         {
             "Name": "unlimited",
             "Trans": "{\"en\": \"Unlimited\", \"ru\": \"Не ограничены\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "unread",
+            "Trans": "{\"en\": \"unread\", \"ru\": \"не прочитано\"}",
             "Type": "languages"
         },
         {
@@ -3715,6 +3815,16 @@
         {
             "Name": "validate_role_name",
             "Trans": "{\"en\": \"must be between 3 and 30 characters\", \"ru\": \"должно быть от 3 до 30 символов\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "validate_wallet_btc",
+            "Trans": "{\"en\": \"must be between 27 and 34 characters\", \"ru\": \"должно быть от 27 до 34 символов\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "validate_wallet_eth",
+            "Trans": "{\"en\": \"must be between 40 and 44 characters\", \"ru\": \"должно быть от 40 до 44 символов\"}",
             "Type": "languages"
         },
         {
@@ -4203,6 +4313,16 @@
             "Type": "languages"
         },
         {
+            "Name": "wallet_btc_exists",
+            "Trans": "{\"en\":\"%s BTC wallet already exists\", \"ru\":\"%s BTC кошелек уже существует\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "wallet_eth_exists",
+            "Trans": "{\"en\":\"%s ETH wallet already exists\", \"ru\":\"%s ETH кошелек уже существует\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "wallet_not_found",
             "Trans": "{\"en\": \"Wallet is not found\", \"ru\": \"Адрес кошелька не найден\"}",
             "Type": "languages"
@@ -4505,6 +4625,11 @@
         {
             "Name": "yes",
             "Trans": "{\"en\": \"Yes\", \"ru\": \"Да\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "you",
+            "Trans": "{\"en\": \"You\", \"ru\": \"Вы\"}",
             "Type": "languages"
         }
     ]
