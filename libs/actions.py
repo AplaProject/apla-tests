@@ -156,7 +156,10 @@ def get_object_name(url, id, object, token):
 
 def is_contract_activated(url, name, token):
     res = api.contract(url, token, name)
-    return res['active']
+    if res['walletid'] == '0':
+        return False
+    else:
+        return True
 
 
 def get_activated_wallet(url, name, token):
