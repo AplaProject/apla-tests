@@ -59,11 +59,11 @@ class TestCost():
 
     def unbind_wallet(self):
         data_creater = actions.login(
-            self.conf[0]['url'], self.conf[0]['private_key'], 0)
+            self.conf[0]['url'], self.keys['key1'], 0)
         token_creater = data_creater['jwtToken']
         id = actions.get_contract_id(
             self.conf[0]['url'], 'CostContract', token_creater)
-        tx = contract.unbind_wallet(self.conf[0]['url'], self.conf[0]['private_key'],
+        tx = contract.unbind_wallet(self.conf[0]['url'], self.keys['key1'],
                                     token_creater, id)
         check.is_tx_in_block(self.conf[0]['url'], self.wait, tx, token_creater)
 
@@ -233,7 +233,7 @@ class TestCost():
 
     def test_deactive_contract_with_err(self):
         if actions.is_contract_activated(self.conf[1]['url'], 'CostContract', self.token):
-            self.deactivate_contract()
+            self.unbind_wallet()
         wallet_id = actions.get_activated_wallet(
             self.conf[1]['url'], 'CostContract', self.token)
         balance_contract_owner_b = actions.get_balance_by_id(self.conf[1]['url'], self.token,
