@@ -1,5 +1,7 @@
 import unittest
 import os
+import hashlib
+import requests
 
 from libs import actions, tools, api, check, contract
 
@@ -640,3 +642,63 @@ class TestApi():
         error = 'E_PARAMNOTFOUND'
         msg = 'Parameter name has not been found'
         self.check_result(res, asserts, error, msg)
+
+    def test_compare_hashes(self):
+        # Create new page for test
+        name = 'Page_' + tools.generate_random_name()
+        val = '''
+            Div(Body: "New value of parameter - #test#)
+            DBFind("contracts", src)
+            Div(Body: "New value of parameter - #test#)
+            DBFind("pages", src1)
+            Div(Body: "New value of parameter - #test#)
+            DBFind("blocks", src1)
+            Div(,If(#role_id# == 0){Span(true)}.Else{Span(false)})
+            Div(,If(#test# == 0){Span(#test#)}.Else{Span(false)})
+            Div(,If(#test# == 1){Span(#test#)}.Else{Span(false)})
+            Div(,If(#test# == 2){Span(#test#)}.Else{Span(false)})
+            Div(,If(#test# == 3){Span(#test#)}.Else{Span(false)})
+            Div(,If(#test# == 4){Span(#test#)}.Else{Span(false)})
+            DBFind("contracts", src)
+            Div(,If(#test# != 0){Span(true0)}.Else{Div(#test#)})
+            Div(,If(#test# != 1){Span(true1)}.Else{Div(#test#)})
+            Div(,If(#test# != 2){Span(true2)}.Else{Div(#test#)})
+            Div(,If(#test# != 3){Span(true3)}.Else{Div(#test#)})
+            Div(,If(#test# != 4){Span(true4)}.Else{Div(#test#)})
+            Div(, Calculate(10000-(34+5)*#test#))
+        '''
+        res = contract.new_page(self.url, self.pr_key, self.token, name=name, value=val)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        # Function, which get hashes
+        def get_hashes(test):
+            # Get content from page for getting hash
+            founderID = actions.get_parameter_value(self.url, 'founder_account', self.token)
+            my_login = actions.login(self.url, self.pr_key, role=0, ecosystem=1)
+            token1 = my_login['jwtToken']
+            data_content = {
+                'test': test,
+                'lang': 'en',
+                'ecosystem': 1,
+                'keyID': founderID,
+                'roleID': 0,
+            }
+            full_url = self.url + '/content/page/' + name
+            res = requests.post(full_url, params=data_content, headers={'Authorization': token1})
+            m = hashlib.sha256()
+            m.update(res.content)
+            sha = m.hexdigest()
+            # Get hash from page
+            full_url = self.url + '/content/hash/' + name
+            hash = requests.post(full_url, params=data_content)
+            hash = hash.json()
+            return sha, hash['hash']
+
+        sha_list = {}
+        hash_list = {}
+        i = 0
+        while i < 100:
+            sha_from_content, hash = get_hashes(str(i))
+            sha_list[i] = sha_from_content
+            hash_list[i] = hash
+            i += 1
+        self.unit.assertDictEqual(sha_list, hash_list, 'Hashes is not equals')
