@@ -1,3 +1,4 @@
+import hashlib
 import unittest
 
 from libs import actions, db, tools, contract as contracts, check
@@ -505,3 +506,28 @@ class TestSimvolio():
         data = {'Table': 'blocks', 'ID': id, 'rID': rollback_id}
         contract = self.contracts['getHistoryRow']
         self.check_contract(contract['code'], value, data)
+
+    def test_contract_hash(self):
+        my_string = 'Text message'
+        cont_value = '''
+        {
+            action {
+                $result = Hash("%s")
+            }
+        }
+        ''' % my_string
+        res = contracts.new_contract(self.url,
+                                     self.pr_key,
+                                     self.token,
+                                     source=cont_value)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        res = actions.call_contract(self.url,
+                                    self.pr_key,
+                                    res['name'],
+                                    {},
+                                    self.token)
+        res = actions.tx_status(self.url, self.wait, res, self.token)
+        m = hashlib.sha256()
+        m.update(bytes(my_string, 'utf-8'))
+        sha = m.hexdigest()
+        self.unit.assertEqual(res['result'], sha, 'Hashes is not equals.')
