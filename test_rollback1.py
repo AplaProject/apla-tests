@@ -18,7 +18,7 @@ class TestRollback1():
     l_data = actions.login(url, pr_key, 0)
     token = l_data['jwtToken']
     wait = tools.read_config('test')['wait_tx_status']
-    log = loger.create_loger(__name__, 'rollback.log')
+    log = loger.create_loger(__name__)
 
     def setup_class(self):
         self.unit = unittest.TestCase()

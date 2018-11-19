@@ -4,7 +4,7 @@ import json
 from libs import actions, tools, loger
 
 
-log = loger.create_loger(__name__, 'environment.log')
+log = loger.create_loger(__name__)
 
 
 def is_in_block(call, url, token):
