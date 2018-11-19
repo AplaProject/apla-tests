@@ -348,7 +348,7 @@ class TestRollback1():
                         "insert": "false",
                         "update" : "false",
                         "new_column": "false"}'''
-        table_name = 'TAB_' + tools.generate_random_name()
+        table_name = 'tab_' + tools.generate_random_name()
         res = contract.new_table(self.url,
                                  self.pr_key,
                                  self.token,
