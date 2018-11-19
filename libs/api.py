@@ -63,6 +63,7 @@ def login(url, token, uid, private_key, role_id=0, ecosystem=1, expire=3600):
         'pubkey': pubkey,
         'address': res['address'],
         'key_id': res['key_id'],
+        'ecosystem_id': res['ecosystem_id']
     }
     return result
 
@@ -77,6 +78,15 @@ def version(url, token):
 def balance(url, token, key_id):
     data = {}
     endpoint = '/balance/{key_id}'.format(
+        key_id=key_id
+    )
+    url += endpoint
+    return call_get_api(url, data, token)
+
+
+def keyinfo(url, token, key_id):
+    data = {}
+    endpoint = '/keyinfo/{key_id}'.format(
         key_id=key_id
     )
     url += endpoint
