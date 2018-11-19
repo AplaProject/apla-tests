@@ -584,6 +584,14 @@ class TestPrototipo():
                              'key_id has problem: ' + cont['content'] + '. Content = ' + str(
                                  content['tree']))
 
+    def test_page_sys_var_guest_key(self):
+        cont = self.pages['sys_var_guest_key']
+        content = self.check_page(cont['code'])
+        guest_key = content['tree'][0]['children'][0]['text']
+        self.uni.assertEqual(guest_key, cont['content'],
+                             'guest_key has problem: ' + cont['content'] + '. Content = ' + str(
+                                 content['tree']))
+
     def test_db_find_where_count(self):
         cont = self.pages['dbfindWhereCount']
         content = self.check_page(cont['code'])
