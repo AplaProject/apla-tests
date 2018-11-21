@@ -120,10 +120,21 @@ def get_count(url, name, token):
     return res['count']
 
 
-def get_list(url, type, token):
+def get_list(url, type, token, app_id=0):
     count = get_count(url, type, token)
+    print(count)
     res = api.list(url, token, type, limit=count)
-    return res
+    print('len = ' + res['count'])
+    res_list = []
+    i = 0
+    if app_id > 0:
+        for el in res['list']:
+            if int(el['app_id']) == app_id:
+                res_list.append(el)
+                i += 1
+        return {'count': i, 'list': res_list}
+    else:
+        return res
 
 
 def get_contract_id(url, name, token):
