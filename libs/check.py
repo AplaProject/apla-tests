@@ -49,6 +49,7 @@ def is_tx_in_block(url, wait, tx, token):
         return status['blockid']
     else:
         msg = 'Transaction not in block. Status: ' + str(status)
+        print(msg)
         log.error(msg)
         unittest.TestCase.fail(msg)
         return None
