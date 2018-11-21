@@ -62,6 +62,7 @@ def tx_status(url, sleep_time, hsh, jvt_token):
     while sec < sleep_time:
         time.sleep(1)
         resp = api.tx_status(url, jvt_token, hsh)
+        print(resp)
         jresp = resp['results'][hsh]
         if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
             break
@@ -137,10 +138,14 @@ def get_object_id(url, name, object, token, ecosystem=1):
         param_name = 'member_name'
     res = get_list(url, object, token)
     for object in res['list']:
-        if object[param_name] == name \
-                and int(object['ecosystem']) == ecosystem:
-            id = object['id']
-            break
+        if object[param_name] == name:
+            if ecosystem > 0:
+                if int(object['ecosystem']) == ecosystem:
+                    id = object['id']
+                    break
+            else:
+                id = object['id']
+                break
     return id
 
 

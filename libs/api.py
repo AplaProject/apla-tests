@@ -57,6 +57,7 @@ def login(url, token, uid, private_key, role_id=0, ecosystem=1, expire=3600):
     endpoint = '/login'
     url += endpoint
     res = call_post_api(url, data, full_token)
+    print(res)
     result = {
         'uid': uid,
         'jwtToken': 'Bearer ' + res['token'],

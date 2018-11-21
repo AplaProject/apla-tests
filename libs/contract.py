@@ -408,3 +408,8 @@ def export_new_app(url, pr_key, token, app_id=1, ecosystem=1):
     res = actions.call_contract(url, pr_key, '@1ExportNewApp',
                                 data, token, ecosystem=ecosystem)
     return {'hash': res}
+
+def platform_apps_install(url, pr_key, token, ecosystem=1):
+    res = actions.call_contract(url, pr_key, '@1PlatformAppsInstall',
+                                {}, token, ecosystem=ecosystem)
+    return {'hash': res}
