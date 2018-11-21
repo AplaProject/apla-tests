@@ -643,7 +643,8 @@ class TestApi():
         msg = 'Parameter name has not been found'
         self.check_result(res, asserts, error, msg)
 
-    def test_compare_hashes(self):
+    # off
+    def compare_hashes(self):
         # Create new page for test
         name = 'Page_' + tools.generate_random_name()
         val = '''
