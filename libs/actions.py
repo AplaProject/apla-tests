@@ -348,3 +348,95 @@ def get_load_blocks_time(url, token, max_block, wait_upating):
         else:
             sec = sec + 1
     return {'time': wait_upating + 1, 'blocks': max_block_id1}
+
+def is_in_block(call, url, token):
+    status = tx_status(url, 30, call, token)
+    if 'blockid' not in status or int(status['blockid']) < 0:
+        return False
+    return True
+
+
+def roles_install(url, pr_key, token):
+    data = {}
+    log.info('RolesInstall started')
+    call = call_contract(url, pr_key, 'RolesInstall',
+                                 data, token)
+    if not is_in_block(call, url, token):
+        log.error('RolesInstall is failed')
+        exit(1)
+
+
+def voting_templates_install(url, pr_key, token):
+    data = {}
+    log.info('VotingTemplatesInstall started')
+    call = call_contract(url, pr_key, 'VotingTemplatesInstall',
+                                 data, token)
+    if not is_in_block(call, url, token):
+        log.error('VotingTemplatesInstall is failed')
+        exit(1)
+
+
+def edit_app_param(name, val, url, pr_key, token):
+    log.info('EditAppParam started')
+    id = get_object_id(url, name, 'app_params', token)
+    data = {'Id': id, 'Value': val, 'Conditions': 'true'}
+    call = call_contract(url, pr_key, 'EditAppParam',
+                                 data, token)
+    if not is_in_block(call, url, token):
+        log.error('EditAppParam ' + name + ' is failed')
+        exit(1)
+
+
+def update_profile(name, url, pr_key, token):
+    log.info('UpdateProfile started')
+    time.sleep(5)
+    data = {'member_name': name}
+    resp = call_contract(url, pr_key, 'ProfileEdit',
+                                 data, token)
+    if not is_in_block(resp, url, token):
+        log.error('UpdateProfile ' + name + ' is failed')
+        exit(1)
+
+
+def set_apla_consensus(id, url, pr_key, token):
+    log.info('setAplaconsensus started')
+    data = {'member_id': id, 'rid': 3}
+    call = call_contract(url, pr_key, 'RolesAssign',
+                                 data, token)
+    if not is_in_block(call, url, token):
+        log.error('RolesAssign ' + id + ' is failed')
+        exit(1)
+
+
+def create_voiting(tcp_address, api_address, key_id, pub_key, url, pr_key, token):
+    log.info('VotingNodeAdd started')
+    data = {'TcpAddress': tcp_address, 'ApiAddress': api_address,
+            'KeyId': key_id, 'PubKey': pub_key, 'Duration': 1}
+    call = call_contract(url, pr_key, 'VotingNodeAdd',
+                                 data, token)
+    if not is_in_block(call, url, token):
+        log.error('VotingNodeAdd is failed')
+        exit(1)
+
+
+def voting_status_update(url, pr_key, token):
+    log.info('VotingStatusUpdate started')
+    data = {}
+    call = call_contract(url, pr_key, 'VotingStatusUpdate',
+                                 data, token)
+    if not is_in_block(call, url, token):
+        log.error('VoitingStatusUpdate is failed')
+        exit(1)
+
+
+def voiting(id, url, pr_key, token):
+    log.info('VotingDecisionAccept started')
+    data = {'votingID': id,
+            'RoleId': 3}
+    call = call_contract(url, pr_key, 'VotingDecisionAccept',
+                                 data, token)
+    if not is_in_block(call, url, token):
+        log.error('VotingDecisionAccept ' + id + ' is failed')
+        exit(1)
+        return False
+    return True
