@@ -43,8 +43,6 @@ def read_config(type):
 
 def read_fixtures(type):
     path = ''
-    if type == 'contracts':
-        path = os.path.join(os.getcwd(), 'fixtures', 'contracts.json')
     if type == 'pages':
         path = os.path.join(os.getcwd(), 'fixtures', 'pages.json')
     if type == 'api':
@@ -55,8 +53,11 @@ def read_fixtures(type):
         data = f.read()
     return json.loads(data)
 
+
 def read_fixtures_yaml(type):
     path = ''
+    if type == 'contracts':
+        path = os.path.join(os.getcwd(), 'fixtures', 'contracts.yaml')
     if type == 'simvolio':
         path = os.path.join(os.getcwd(), 'fixtures', 'simvolio.yaml')
     with open(path, 'r', encoding='UTF-8') as f:
