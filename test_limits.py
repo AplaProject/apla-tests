@@ -7,7 +7,7 @@ from libs import actions, tools
 
 class TestLimits():
     conf = tools.read_config('nodes')
-    contracts = tools.read_fixtures('contracts')
+    contracts = tools.read_fixtures_yaml('contracts')
     wait = tools.read_config('test')['wait_tx_status']
     data = actions.login(conf[1]['url'],
                          conf[0]['private_key'], 0)
