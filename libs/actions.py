@@ -32,6 +32,7 @@ def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
                         params=data)
     tx_bin_data = {'call1': contract.concat()}
     result = api.send_tx(url, jvtToken, tx_bin_data)
+    log.info(result)
     if 'hashes' in result:
         return result['hashes']['call1']
     else:

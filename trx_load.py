@@ -11,7 +11,7 @@ class WebsiteTasks(TaskSet):
     def on_start(self):
         config = tools.read_config('nodes')
         self.url = self.parent.host
-        self.pr_key = self.config[0]['private_key']
+        self.pr_key = config[0]['private_key']
         self.data = actions.login(self.url, self.pr_key, 0)
         self.token = self.data['jwtToken']
 
