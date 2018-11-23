@@ -12,7 +12,7 @@ sys.path.insert(0, libs_path)
 import loger
 
 
-log = loger.create_loger(__name__, 'environment.log')
+log = loger.create_loger(__name__)
 log.info('Start ' + __file__)
 
 curDir = os.path.dirname(os.path.abspath(__file__))

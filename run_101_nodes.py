@@ -9,7 +9,7 @@ import sys
 from libs import loger, actions, tools, check
 
 
-log = loger.create_loger(__name__, 'environment.log')
+log = loger.create_loger(__name__)
 log.info('Start ' + __file__)
 
 curDir = os.path.dirname(os.path.abspath(__file__))
