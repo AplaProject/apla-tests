@@ -56,6 +56,9 @@ for node in nodes:
                                        max_block_id2, wait)
     current_res = {str(current):max_block_id2}
     result.append(current_res)
+    #save monitoring file
+    with open(resultFile, 'w') as fconf:
+        fconf.write(json.dumps(result, indent=4))
     
 #link new node to net
     l_data0 = actions.login(node_conf[0]['url'], node_conf[current]['private_key'], 0)
@@ -80,9 +83,7 @@ for node in nodes:
     start_locust = subprocess.Popen("locust --locustfile=trx_load.py --host=" +\
                                      node_conf[0]['url'] + " --no-web --clients=" +\
                                      str(args.threads))
-#save monitoring file
-with open(resultFile, 'w') as fconf:
-    fconf.write(json.dumps(result, indent=4))
+
 
 log.info('All nodes are started')
 exit(0)
