@@ -2,6 +2,7 @@ import os
 import json
 import random
 import string
+import yaml
 
 
 def generate_random_name():
@@ -42,19 +43,26 @@ def read_config(type):
 
 def read_fixtures(type):
     path = ''
-    if type == 'contracts':
-        path = os.path.join(os.getcwd(), 'fixtures', 'contracts.json')
     if type == 'pages':
         path = os.path.join(os.getcwd(), 'fixtures', 'pages.json')
     if type == 'api':
         path = os.path.join(os.getcwd(), 'fixtures', 'api.json')
     if type == 'keys':
         path = os.path.join(os.getcwd(), 'fixtures', 'prKeys.json')
-    if type == 'simvolio':
-        path = os.path.join(os.getcwd(), 'fixtures', 'simvolio.json')
     with open(path, 'r', encoding='UTF-8') as f:
         data = f.read()
     return json.loads(data)
+
+
+def read_fixtures_yaml(type):
+    path = ''
+    if type == 'contracts':
+        path = os.path.join(os.getcwd(), 'fixtures', 'contracts.yaml')
+    if type == 'simvolio':
+        path = os.path.join(os.getcwd(), 'fixtures', 'simvolio.yaml')
+    with open(path, 'r', encoding='UTF-8') as f:
+        data = f.read()
+    return yaml.load(data)
 
 
 def generate_pr_key():

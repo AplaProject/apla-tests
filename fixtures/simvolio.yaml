@@ -1,0 +1,931 @@
+dbFind:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var res array
+        var val map
+        res = DBFind("pages").Columns("name").Where({id: "1"}).Order("id")
+        val = res[0]
+        $result = val["name"]
+      }
+    }
+  asert: "admin_index"
+
+
+toUpper:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = ToUpper("Hello My Friends!")
+      }
+    }
+  asert: "HELLO MY FRIENDS!"
+
+
+elseif:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var val int
+        val = 8
+        if val > 10 {
+          $result = "val>10"}
+        elif val>8 {
+          $result = "val>8"}
+        elif val>5{
+          $result = "val>5"}
+        else {
+          $result="val<5"
+        }
+      }
+    }
+  asert: "val>5"
+
+
+blockTime:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = BlockTime()
+      }
+    }
+  asert: ""
+
+ecosysParam:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var res string
+        res = EcosysParam("changing_menu")
+        $result=res
+      }
+    }
+  asert: "MainCondition"
+
+
+ifMap:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var my map
+        my["test"] = 1
+        if my {
+          $result="true"
+        }
+        else {
+          $result="false"
+        }
+      }
+    }
+  asert: "true"
+
+
+dbRow:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var vals map
+        vals = DBRow("pages").Columns("name, menu").Where({id: "1"})
+        $result = vals["name"]
+      }
+    }
+  asert: "admin_index"
+
+
+evalCondition:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        EvalCondition("pages", "default_page", `conditions`)
+      }
+    }
+  asert: ""
+
+
+validateCondition:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        ValidateCondition(`ContractConditions("@1MainCondition")`, 1)
+      }
+    }
+  asert: ""
+
+
+addressToId:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = AddressToId("0005-2070-2000-0006-0200")
+      }
+    }
+  asert: "52070200000060200"
+
+
+idToAddress:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = IdToAddress(52070200000060200)
+      }
+    }
+  asert: "0005-2070-2000-0006-0200"
+
+
+one:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = DBFind("pages").Columns("id,name").WhereId(1).One("name")
+      }
+    }
+  asert: "admin_index"
+
+
+row:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var ret map
+        ret = DBFind("pages").Columns("id,name").WhereId(1).Row()
+        $result = ret["name"]
+      }
+    }
+  asert: "admin_index"
+
+
+contains:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        if Contains("Hello world", `Hello`) {
+          $result = "Hello world"
+        }
+      }
+    }
+  asert: "Hello world"
+
+
+float:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var val int
+        val = Float("567") + Float(232)
+        $result = Str(val)
+      }
+    }
+  asert: "799.000000"
+
+
+hasPrefix:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        if HasPrefix("myString", `my`) {
+          $result = "Prefix"
+        }
+      }
+    }
+  asert: "Prefix"
+
+
+hexToBytes:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Str(HexToBytes("34fe4501a4d80094"))
+      }
+    }
+  asert: "[52 254 69 1 164 216 0 148]"
+
+
+int:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var val int
+        val = Int("105") + Int("45")
+        $result = Str(val)
+      }
+    }
+  asert: "150"
+
+
+join:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var val string
+        var myarr array
+        myarr[0] = "first"
+        myarr[1] = "second"
+        $result = Join(myarr, ",")
+      }
+    }
+  asert: "first,second"
+
+
+split:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var myarr array
+        myarr = Split("first,second,third", ",")
+        $result = myarr[1]
+      }
+    }
+  asert: "second"
+
+
+len:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var arr array
+        arr[0] = "1"
+        arr[1] = "2"
+        arr[2] = "3"
+        $result = Len(arr)
+      }
+    }
+  asert: "3"
+
+
+pubToID:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = PubToID("05f1521f6a7e769ebbde2ab3df01f4740d1408e7e7150745cac9fb953d8ad366")
+      }
+    }
+  asert: "-6799051354910978041"
+
+
+replace:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Replace("this is my decision, this is my gole, this is my life", `this is my`, `your`)
+      }
+    }
+  asert: "your decision, your gole, your life"
+
+
+size:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Size("hello")
+      }
+    }
+  asert: "5"
+
+
+sha256:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Sha256("Test")
+      }
+    }
+  asert: "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25"
+
+
+sprintf:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Sprintf("%s is %d", "Five", 5)
+      }
+    }
+  asert: "Five is 5"
+
+
+str:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Str(5.678)
+      }
+    }
+  asert: "5.678"
+
+
+substr:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Substr("ecosystema", 2, 5)
+      }
+    }
+  asert: "osyst"
+
+
+sysParamString:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = SysParamString("blockchain_url")
+      }
+    }
+  asert: ""
+
+
+sysParamInt:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Str(SysParamInt("max_columns"))
+      }
+    }
+  asert: "50"
+
+
+getContractByName:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Str(GetContractByName("MainCondition"))
+      }
+    }
+  asert: "3"
+
+
+random:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Str(Random(5,6))
+      }
+    }
+  asert: "5"
+
+
+getBlock:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var m map
+        m = GetBlock(1)
+        $result = m["id"]
+      }
+    }
+  asert: "1"
+
+
+type_bool:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var i, j, k bool
+        i = true
+        j = false
+        k = !j
+        $result = (i && j) || k
+      }
+    }
+  asert: "true"
+
+
+type_bytes:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var b bytes
+        b = 255
+        $result = b
+      }
+    }
+  asert: "255"
+
+
+type_int:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var i, j int
+        i = 43
+        j = -100
+        $result = i + j
+      }
+    }
+  asert: "-57"
+
+
+type_address:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var a address
+        a = 1 + 1000000
+        $result = a
+      }
+    }
+  asert: "1000001"
+
+
+type_array:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var a,b,c array
+        a[0] = 2500
+        a[1] = "hello"
+        a[2] = 2.12
+        b = a
+        $result = Str(b) + a[1]
+      }
+    }
+  asert: "[2500 hello 2.12]hello"
+
+
+type_map:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var m, m1 map
+        m["id"] = 1
+        m["name"] = "hello"
+        m["price"] = 14.95
+        m1 = m
+        $result = Str(m1["id"]) + m1["name"] + Str(m["price"])
+      }
+    }
+  asert: "1hello14.95"
+
+
+type_money:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var m money
+        m = 12000000
+        $result = m
+      }
+    }
+  asert: "12000000"
+
+
+type_float:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var f float
+        f = 99.9 - 100
+        $result = f
+      }
+    }
+  asert: "-0.09999999999999432"
+
+
+type_string:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var s, s1 string
+        s = "hello"
+        s1 = "world"
+        $result = s+s1
+      }
+    }
+  asert: "helloworld"
+
+
+getColumnType:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = GetColumnType("contracts", "id")
+      }
+    }
+  asert: "number"
+
+
+decodeBase64:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var s string
+        s = "SGVsbG8h"
+        $result = DecodeBase64(s)
+      }
+    }
+  asert: "Hello!"
+
+
+encodeBase64:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $my_str = "Hello!"
+        $result = EncodeBase64($my_str)
+      }
+    }
+  asert: "SGVsbG8h"
+
+
+jsonEncode:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var a array, m map
+        m["k1"] = 1
+        m["k2"] = 2
+        a[0] = m
+        a[1] = m
+        $result = JSONEncode(a)
+      }
+    }
+  asert: '[{"k1":1,"k2":2},{"k1":1,"k2":2}]'
+
+
+jsonDecode:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var a string
+        a = `[{"k1":"1"},{"k2":"2"}]`
+        $result = JSONDecode(a)
+      }
+    }
+  asert: "[map[k1:1] map[k2:2]]"
+
+
+bytesToString:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var s string
+        s = BytesToString(StringToBytes("Success test StringToBytes and BytesToString functions!"))
+        $result = s
+      }
+    }
+  asert: "Success test StringToBytes and BytesToString functions!"
+
+
+stringToBytes:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var b bytes
+        b = StringToBytes("Hello!")
+        $result = b
+      }
+    }
+  asert: "[72 101 108 108 111 33]"
+
+
+append:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var a array
+        a[0] = "hello"
+        a = Append(a, 10)
+        $result = a
+      }
+    }
+  asert: "[hello 10]"
+
+
+getMapKeys:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var val map
+        var arr array
+        val["key"] = "hello"
+        arr = GetMapKeys(val)
+        $result = arr
+      }
+    }
+  asert: "[key]"
+
+
+sortedKeys:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var val map
+        var arr array
+        val["k9"] = "3"
+        val["k5"] = "7"
+        val["k1"] = "1"
+        arr = SortedKeys(val)
+        $result = arr
+      }
+    }
+  asert: "[k1 k5 k9]"
+
+
+langRes:
+  code: |
+    {
+      data {
+        Name string
+      }
+      conditions {}
+      action {
+        $result=LangRes($Name, "de")
+      }
+    }
+  asert: "test_de"
+  information": needs to create language resourse with name - test and localisacions:en- test_en, de- test_de
+
+
+dbInsert:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = DBInsert("test", {name: "block2", test: "val1"})
+      }
+    }
+  asert: ""
+  information": needs to create table "test" with "name" and "test" string columns
+
+
+dbUpdate:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        DBUpdate("test", 1, {"test": "updated"})
+      }
+    }
+  asert: ""
+
+
+dbSelectMetricsMin:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var a array
+        var m map
+        var i, ecosysNum int
+        ecosysNum = 1
+        a = DBSelectMetrics("ecosystem_tx", "1 month", "min")
+        i = 0
+        while i < Len(a) {
+          m = a[i]
+          if m["key"] == ecosysNum {
+            break
+          }
+        i = i + 1
+        }
+        $result = m["value"]
+      }
+    }
+  asert: ""
+
+
+dbUpdateExt:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        DBUpdateExt("test", "name", "block2", {test: "updatedByName"})
+      }
+    }
+  asert: ""
+
+
+callContract:
+  code: |
+    {
+      data {
+        Name string
+      }
+      conditions {}
+      action {
+        var par map
+        $result = CallContract($Name, par)
+      }
+    }
+  asert: "Hello"
+  information": needs to create Contact MyContract
+
+
+myContract:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = "Hello"
+      }
+    }
+  asert: ""
+
+
+dbSelectMetricsMax:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var a array
+        var m map
+        var i, ecosysNum int
+        ecosysNum = 1
+        a = DBSelectMetrics("ecosystem_members", "1 days", "max")
+        i = 0
+        while i < Len(a) {
+          m = a[i]
+          if m["key"] == ecosysNum {
+            break
+          }
+        i = i + 1
+        }
+        $result = m["value"]
+      }
+    }
+  asert: ""
+
+
+dbSelectMetricsAvg:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var a array
+        var m map
+        var i, ecosysNum int
+        ecosysNum = 1
+        a = DBSelectMetrics("ecosystem_pages", "1 day", "avg")
+        i = 0
+        while i < Len(a) {
+          m = a[i]
+          if m["key"] == ecosysNum {
+            break
+          }
+        i = i + 1
+        }
+        $result = m["value"]
+      }
+    }
+  asert: ""
+
+
+getContractById:
+  code: |
+    {
+      data {
+        ID int
+      }
+      conditions {}
+      action {
+        $result = GetContractById($ID)
+      }
+    }
+  asert: "MainCondition"
+
+
+getHistory:
+  code: |
+    {
+      data {
+        Table string
+        ID int
+      }
+      conditions {}
+      action {
+        var list array
+        var item map
+        list = GetHistory($Table, $ID)
+        if Len(list)>0 {
+          item = list[0]
+        }
+        $result = item["value"]
+      }
+    }
+  asert: ""
+
+
+getHistoryRow:
+  code: |
+    {
+      data {
+        Table string
+        ID, rID int
+      }
+      conditions {}
+      action {
+        var m map
+        m = GetHistoryRow($Table, $ID, $rID)
+        $result = m["value"]
+      }
+    }
+  asert: ""
+
