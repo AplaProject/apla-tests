@@ -4,7 +4,7 @@ import json
 from libs import actions, tools, loger, contract, check
 
 
-log = loger.create_loger(__name__, 'environment.log')
+log = loger.create_loger(__name__)
 
 
 if __name__ == '__main__':

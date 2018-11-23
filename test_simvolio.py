@@ -5,7 +5,7 @@ from libs import actions, db, tools, contract as contracts, check
 
 
 class TestSimvolio():
-    contracts = tools.read_fixtures('simvolio')
+    contracts = tools.read_fixtures_yaml('simvolio')
     wait = tools.read_config('test')['wait_tx_status']
     config = tools.read_config('nodes')
     unit = unittest.TestCase()

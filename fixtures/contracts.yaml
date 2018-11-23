@@ -1,0 +1,104 @@
+findEcosystem:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result=FindEcosystem(`MyEcosystem`)
+      }
+    }
+  asert: "2"
+  information: "needs to create ecosystem with name MyEcosystem"
+
+
+contractAccess:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        ContractAccess("AccesContr")
+      }
+    }
+  assert: ""
+  information: "needs to create contract AccesContr"
+
+
+updateLang:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        UpdateLang(1, "test", "{'ru': 'Тест'}")
+      }
+    }
+  asert: ""
+
+updateSysParam:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        DBUpdateSysParam("number_of_nodes", "102", "true")
+      }
+    }
+  asert: ""
+
+
+for_cost:
+  code: |
+    {
+      data {
+        State int
+      }
+      conditions {}
+      action {
+        var res array
+        res = DBFind("pages").Columns("name").Where({id: "1"})
+        if $State < 1 {
+          var par map
+          CallContract("incorrectContract", par)
+          $result = GetContractById(999999999999)
+        }
+        else {
+          $result = "OK"
+        }
+      }
+    }
+  asert: "_"
+
+
+get_keyId:
+  code: |
+    {
+      data {
+        Pub string
+      }
+      conditions {}
+      action {
+        $result = PubToID($Pub)
+      }
+    }
+  asert: "_"
+
+
+limits:
+  code: |
+    {
+      data {
+        Count int
+      }
+      conditions {}
+      action {
+        var i int
+        var res array
+        while i < $Count {
+          var res array
+          res = DBFind("contracts").Columns("name")
+          i = i + 1
+        }
+      }
+    }
+  asert: ""
