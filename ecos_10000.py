@@ -19,7 +19,7 @@ if __name__ == '__main__':
     while ecos < 3:
         tx = contract.new_ecosystem(url, pr_key, token)
         check.is_tx_in_block(url, wait, tx, token)
-        ecos_id = actions.get_object_id(url, tx['name'], "ecosystems", token, ecosystem=0)
+        ecos_id = int(actions.get_object_id(url, tx['name'], "ecosystems", token, ecosystem=0))
         data_e = actions.login(url, pr_key, ecosystem=ecos_id)
         token_e = data_e['jwtToken']
         tx_app = contract.platform_apps_install(url, pr_key, token_e, ecosystem=ecos_id)
