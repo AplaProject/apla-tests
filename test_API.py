@@ -706,70 +706,68 @@ class TestApi():
 
     def test_appcontent_in_first_ecosystem(self):
         app_id = 1
-        '''
         expected = {
             'blocks': len(actions.get_list(self.url, 'blocks', self.token, app_id)['list']),
             'pages': len(actions.get_list(self.url, 'pages', self.token, app_id)['list']),
             'contracts': len(actions.get_list(self.url, 'contracts', self.token, app_id)['list'])
         }
-        '''
         asserts = ['blocks', 'pages', 'contracts']
         res = api.appcontent(self.url, self.token, appid=app_id, ecosystem=1)
-        print(res)
         actual = {
             'blocks': len(res['blocks']),
             'pages': len(res['pages']),
             'contracts': len(res['contracts'])
         }
         self.check_result(res, asserts)
-        #self.unit.assertEqual(expected, actual, 'Dict is nor equals')
-
-    def test_appcontent_in_first_ecosystem1(self):
-        app_id = 1
-        t = actions.get_list(self.url, 'blocks', self.token, app_id)
-        print(t)
-        expected = {
-            'blocks': len(actions.get_list(self.url, 'blocks', self.token, app_id)['list']),
-            #'pages': len(actions.get_list(self.url, 'pages', self.token, app_id)['list']),
-            #'contracts': len(actions.get_list(self.url, 'contracts', self.token, app_id)['list'])
-        }
-        asserts = ['blocks', 'pages', 'contracts']
-        res = api.appcontent(self.url, self.token, appid=app_id, ecosystem=1)
-        actual = {
-            'blocks': len(res['blocks']),
-            #'pages': len(res['pages']),
-            #'contracts': len(res['contracts'])
-        }
-        self.check_result(res, asserts)
         self.unit.assertEqual(expected, actual, 'Dict is nor equals')
 
     def test_appcontent_in_new_ecosystem(self):
-        # reate new ecosystem
+        # create new ecosystem
         res = contract.new_ecosystem(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, res, self.token)
         ecos_id = actions.get_count(self.url, 'ecosystems', self.token)
+        app_id = 1
         # test
+        expected = {
+            'blocks': len(actions.get_list(self.url, 'blocks', self.token, app_id)['list']),
+            'pages': len(actions.get_list(self.url, 'pages', self.token, app_id)['list']),
+            'contracts': len(actions.get_list(self.url, 'contracts', self.token, app_id)['list'])
+        }
+        print(expected)
         asserts = ['blocks', 'pages', 'contracts']
-        res = api.appcontent(self.url, self.token, appid=1, ecosystem=ecos_id)
+        res = api.appcontent(self.url, self.token, appid=app_id, ecosystem=ecos_id)
+        actual = {
+            'blocks': len(res['blocks']),
+            'pages': len(res['pages']),
+            'contracts': len(res['contracts'])
+        }
+        print(actual)
         self.check_result(res, asserts)
+        self.unit.assertEqual(expected, actual, 'Dict is nor equals')
 
     def test_appcontent_in_new_app(self):
         # create new app
         res = contract.new_application(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, res, self.token)
-        app_id = actions.get_object_id(self.url, res['name'], 'applications', self.token)
+        app_id = int(actions.get_object_id(self.url, res['name'], 'applications', self.token))
+        res = contract.new_contract(self.url, self.pr_key, self.token, app=app_id)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        res = contract.new_block(self.url, self.pr_key, self.token, app_id=app_id)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        res = contract.new_page(self.url, self.pr_key, self.token, app_id=app_id)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
         # test
         expected = {
-            1: True,
-            2: True,
-            3: True
+            'blocks': len(actions.get_list(self.url, 'blocks', self.token, app_id)['list']),
+            'pages': len(actions.get_list(self.url, 'pages', self.token, app_id)['list']),
+            'contracts': len(actions.get_list(self.url, 'contracts', self.token, app_id)['list'])
         }
         asserts = ['blocks', 'pages', 'contracts']
         res = api.appcontent(self.url, self.token, app_id, ecosystem=1)
         actual = {
-            1: len(res['blocks']) == 0,
-            2: len(res['pages']) == 0,
-            3: len(res['contracts']) == 0
+            'blocks': len(res['blocks']),
+            'pages': len(res['pages']),
+            'contracts': len(res['contracts'])
         }
         self.check_result(res, asserts)
         self.unit.assertEqual(expected, actual, 'Dict is nor equals')
