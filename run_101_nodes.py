@@ -81,7 +81,8 @@ for node in nodes:
                                      node_conf[0]['url'] + " --no-web --clients=" +\
                                      str(args.threads))
 #save monitoring file
-    with open(resultFile, 'w') as fconf:
-        fconf.write(json.dumps(result, indent=4))
+with open(resultFile, 'w') as fconf:
+    fconf.write(json.dumps(result, indent=4))
 
-log.info('Nodes successfully started and linked')
+log.info('All nodes are started')
+exit(0)
