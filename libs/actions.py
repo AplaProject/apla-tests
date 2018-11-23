@@ -122,9 +122,7 @@ def get_count(url, name, token):
 
 def get_list(url, type, token, app_id=0):
     count = get_count(url, type, token)
-    print(count)
     res = api.list(url, token, type, limit=count)
-    print('len = ' + res['count'])
     res_list = []
     i = 0
     if app_id > 0:
