@@ -544,4 +544,4 @@ class TestSimvolio():
         tx = contracts.new_contract(
             self.url, self.pr_key, self.token, source=contract['code'])
         result = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        self.unit.assertEqual(result['error'], contract['asert'])
+        self.unit.assertEqual(result['error'], contract['asert'], 'Error messages is different')
