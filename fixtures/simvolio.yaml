@@ -929,3 +929,37 @@ getHistoryRow:
     }
   asert: ""
 
+
+types_of_data:
+  code: |
+    {
+      data {
+        B, B2, B3 bool
+        Bytes1 bytes "optional"
+        Int1 int "optional"
+        Array1, Array2 array "optional"
+        Money1 money "optional"
+        Float1 float "optional"
+        String1 string "optional"
+        ID, rID int "optional"
+        //Address1 address "optional" // not support genesis_blockchain_tools.contract.UnknownParamTypeError: address
+        //Map1 map "optional" // not support genesis_blockchain_tools.contract.UnknownParamTypeError: map
+      }
+      action {
+        $result = "hello"
+      }
+    }
+  asert: "hello"
+
+
+types_of_data_incorrect:
+  code: |
+    {
+      data {
+        Bytes1 bytes "optional"
+        Int1, Int2 unknown
+      }
+      action {}
+    }
+  asert: "expecting type of the data field [Ln:4 Col:17]"
+
