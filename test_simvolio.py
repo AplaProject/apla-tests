@@ -531,3 +531,17 @@ class TestSimvolio():
         m.update(bytes(my_string, 'utf-8'))
         sha = m.hexdigest()
         self.unit.assertEqual(res['result'], sha, 'Hashes is not equals.')
+
+    def test_types_of_data(self):
+        data = {"B": "true",
+                "B2": "true",
+                "B3": "true"}
+        contract = self.contracts['types_of_data']
+        self.check_contract(contract['code'], contract['asert'], data)
+
+    def test_types_of_data_incorrect(self):
+        contract = self.contracts['types_of_data_incorrect']
+        tx = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=contract['code'])
+        result = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
+        self.unit.assertEqual(result['error'], contract['asert'], 'Error messages is different')

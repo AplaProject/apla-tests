@@ -120,6 +120,16 @@ def appparams(url, token, appid, ecosystem=1, names=''):
     return call_get_api(url, data, token)
 
 
+def appcontent(url, token, appid, ecosystem=1):
+    data = {}
+    data['ecosystem'] = ecosystem
+    endpoint = '/appcontent/{appid}'.format(
+        appid=appid
+    )
+    url += endpoint
+    return call_get_api(url, data, token)
+
+
 def appparam(url, token, appid, name, ecosystem=1):
     data = {'ecosystem': ecosystem}
     endpoint = '/appparam/{appid}/{name}'.format(
