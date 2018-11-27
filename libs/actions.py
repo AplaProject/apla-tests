@@ -213,7 +213,12 @@ def get_max_block_id(url, token):
 def is_count_tx_in_block(url, token, max_block_id, count_tx):
     block = max_block_id - 3
     while block < max_block_id:
+        print('block = ' + str(block))
         info = api.block(url, token, block)
+        log.debug('!!! INFORMATION')
+        log.debug(info)
+        print('!!! INFORMATION')
+        print(info)
         block += 1
         if int(info['tx_count']) > count_tx:
             log.error('Error in count_tx. Block ' + str(block) + ' has ' +
