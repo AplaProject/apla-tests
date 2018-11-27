@@ -98,16 +98,21 @@ class TestCost():
                                     'CostContract', {"State": 1}, token_runner)
         result = actions.tx_status(self.conf[1]['url'], self.wait, res, token_runner)
         time.sleep(10)
-        
         node = db.get_block_gen_node(self.conf[0]['db'], result['blockid'])
+        platforma_commission = actions.get_commission_from_history(self.conf[1]['url'],
+                                                                  token_runner, wallet_id,
+                                                                  self.conf[0]['keyID'],
+                                                                  result['blockid'])
+        node_commission = actions.get_commission_from_history(self.conf[1]['url'],
+                                                                  token_runner, wallet_id,
+                                                                  self.conf[node]['keyID'],
+                                                                  result['blockid'])
         summ_after = sum(actions.get_user_token_amounts(self.conf[1]['url'], self.token))
         a_node_balance = self.get_node_balances()
         balance_runner_a = actions.get_balance_by_id(self.conf[1]['url'], self.token,
                                                      data_runner['key_id'])
         balance_contract_owner_a = actions.get_balance_by_id(self.conf[1]['url'], self.token,
                                                              wallet_id)
-        node_commission = NODE_COMISSION
-        platforma_commission = PLATFORM_COMISSION
         in_history = self.is_commissions_in_history(node_commission, wallet_id,
                                                    platforma_commission, node)
         bal_own =  int(balance_contract_owner_b) - (node_commission + platforma_commission)
@@ -157,11 +162,19 @@ class TestCost():
             self.conf[1]['url'], self.wait, res, token_runner)
         time.sleep(10)
         node = db.get_block_gen_node(self.conf[0]['db'], result['blockid'])
+        platforma_commission = actions.get_commission_from_history(self.conf[1]['url'],
+                                                                  token_runner,
+                                                                  data_runner['key_id'],
+                                                                  self.conf[0]['keyID'],
+                                                                  result['blockid'])
+        node_commission = actions.get_commission_from_history(self.conf[1]['url'],
+                                                                  token_runner,
+                                                                  data_runner['key_id'],
+                                                                  self.conf[node]['keyID'],
+                                                                  result['blockid'])
         summ_after = sum(actions.get_user_token_amounts(
             self.conf[1]['url'], self.token))
         a_node_balance = self.get_node_balances()
-        node_commission = NODE_COMISSION
-        platforma_commission = PLATFORM_COMISSION
         commission = node_commission + platforma_commission
         balance_runner_a = actions.get_balance_by_id(self.conf[1]['url'], self.token,
                                                      data_runner['key_id'])

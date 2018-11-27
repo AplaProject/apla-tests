@@ -317,6 +317,16 @@ def is_commission_in_history(url, token, id_from, id_to, summ):
                 return True
     return False
 
+def get_commission_from_history(url, token, id_from, id_to, block_id):
+    count = get_count(url, 'history', token)
+    table = api.list(url, token, 'history', offset=int(count)-5, limit=5)
+    for item in table['list']:
+        if item['sender_id'] == str(id_from) \
+                and item['recipient_id'] == str(id_to) \
+                and item['block_id'] == str(block_id):
+            return int(item['amount'])
+    return None
+
 
 def is_contract_present(url, token, name):
     ans = api.contract(url, token, name)
