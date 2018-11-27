@@ -26,6 +26,7 @@ def login(url, pr_key, role=0, ecosystem=1):
 
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
     schema = api.contract(url, jvtToken, name)
+    print(data)
     contract = Contract(schema=schema,
                         private_key=prKey,
                         ecosystem_id=ecosystem,

@@ -16,7 +16,7 @@ if __name__ == '__main__':
     data = actions.login(url, pr_key, 0)
     token = data['jwtToken']
     ecos = 0
-    while ecos < 3:
+    while ecos < 10000:
         tx = contract.new_ecosystem(url, pr_key, token)
         check.is_tx_in_block(url, wait, tx, token)
         ecos_id = int(actions.get_object_id(url, tx['name'], "ecosystems", token, ecosystem=0))
@@ -26,7 +26,7 @@ if __name__ == '__main__':
         print(tx_app)
         check.is_tx_in_block(url, wait, tx_app, token_e)
         cont = 0
-        while cont < 3:
+        while cont < 50:
             print(cont)
             tx_cont = contract.new_contract(url, pr_key, token_e, ecosystem=ecos_id)
             print(tx_cont)

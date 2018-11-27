@@ -37,7 +37,7 @@ class TestCost():
                                      TestCost.conf[0]['private_key'], 0)
         token_creater = data_creater['jwtToken']
         if not actions.is_contract_present(TestCost.conf[0]['url'], token_creater, name):
-            cont = tools.read_fixtures('contracts')
+            cont = tools.read_fixtures_yaml('contracts')
             tx = contract.new_contract(TestCost.conf[0]['url'],
                                        TestCost.conf[0]['private_key'],
                                        token_creater, name=name,
