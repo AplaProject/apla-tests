@@ -1,7 +1,7 @@
 import hashlib
 import unittest
 
-from libs import actions, db, tools, contract as contracts, check
+from libs import actions, db, tools, contract as contracts, check, api
 
 
 class TestSimvolio():
@@ -285,9 +285,34 @@ class TestSimvolio():
                                  name='test')
         actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         contract = self.contracts['dbInsert']
-        self.check_contract(contract['code'], contract['asert'])
+        limit = 5
+        for i in range(limit):
+            self.check_contract(contract['code'], contract['asert'])
         contract = self.contracts['dbUpdateExt']
         self.check_contract(contract['code'], contract['asert'])
+        res = api.list(self.url, self.token, 'test', limit=limit)
+        expected = [
+            {'id': '1', 'name': 'block2', 'test': 'updatedById=1'},
+            {'id': '2', 'name': 'block2', 'test': 'updatedByName'},
+            {'id': '3', 'name': 'block2', 'test': 'updateIdBetween3-5'},
+            {'id': '4', 'name': 'block2', 'test': 'updateIdBetween3-5'},
+            {'id': '5', 'name': 'block2', 'test': 'updateIdBetween3-5'},
+        ]
+        self.unit.assertEqual(res['list'], expected, 'Error in updated records')
+
+    def test_trrr(self):
+        res = api.list(self.url, self.token, 'test', limit=5)
+        print(type(res['list']))
+        for r in res['list']:
+            print(r)
+        expected = [
+            {'id': '1', 'name': 'block2', 'test': 'updatedById=1'},
+            {'id': '2', 'name': 'block2', 'test': 'updatedByName'},
+            {'id': '3', 'name': 'block2', 'test': 'updateIdBetween3-5'},
+            {'id': '4', 'name': 'block2', 'test': 'updateIdBetween3-5'},
+            {'id': '5', 'name': 'block2', 'test': 'updateIdBetween3-5'},
+        ]
+        self.unit.assertEqual(res['list'], expected)
 
     def test_contract_callContract(self):
         contract = self.contracts['myContract']
