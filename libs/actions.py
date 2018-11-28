@@ -215,7 +215,7 @@ def is_count_tx_in_block(url, token, max_block_id, count_tx):
         block += 1
         if int(info['tx_count']) > count_tx:
             log.error('Error in count_tx. Block ' + str(block) + ' has ' +
-                      str(block['count_tx']) + ' transactions')
+                      str(info['count_tx']) + ' transactions')
             return False
     return True
 
