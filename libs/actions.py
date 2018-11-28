@@ -26,7 +26,6 @@ def login(url, pr_key, role=0, ecosystem=1):
 
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
     schema = api.contract(url, jvtToken, name)
-    print(data)
     contract = Contract(schema=schema,
                         private_key=prKey,
                         ecosystem_id=ecosystem,
@@ -64,7 +63,6 @@ def tx_status(url, sleep_time, hsh, jvt_token):
     while sec < sleep_time:
         time.sleep(1)
         resp = api.tx_status(url, jvt_token, hsh)
-        print(resp)
         jresp = resp['results'][hsh]
         if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
             break
