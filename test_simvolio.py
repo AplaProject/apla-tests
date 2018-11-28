@@ -300,20 +300,6 @@ class TestSimvolio():
         ]
         self.unit.assertEqual(res['list'], expected, 'Error in updated records')
 
-    def test_trrr(self):
-        res = api.list(self.url, self.token, 'test', limit=5)
-        print(type(res['list']))
-        for r in res['list']:
-            print(r)
-        expected = [
-            {'id': '1', 'name': 'block2', 'test': 'updatedById=1'},
-            {'id': '2', 'name': 'block2', 'test': 'updatedByName'},
-            {'id': '3', 'name': 'block2', 'test': 'updateIdBetween3-5'},
-            {'id': '4', 'name': 'block2', 'test': 'updateIdBetween3-5'},
-            {'id': '5', 'name': 'block2', 'test': 'updateIdBetween3-5'},
-        ]
-        self.unit.assertEqual(res['list'], expected)
-
     def test_contract_callContract(self):
         contract = self.contracts['myContract']
         inner_contract_name = tools.generate_random_name()
