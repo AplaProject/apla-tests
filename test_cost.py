@@ -19,7 +19,6 @@ class TestCost():
     def setup(self):
         self.data = actions.login(self.conf[1]['url'], self.keys['key2'], 0)
         self.token = self.data['jwtToken']
-        self.log = loger.create_loger(__name__)
 
     def get_node_balances(self):
         node_count = len(self.conf)
@@ -103,10 +102,10 @@ class TestCost():
                                                                   wallet_id,
                                                                   self.conf[node]['keyID'],
                                                                   result['blockid'])[0]
-        self.log.info("platforma_commission: ", str(platforma_commission), "runner ID: ", wallet_id,
-              "block: ", result['blockid'])
-        self.log.info("node_commission: ", str(node_commission), "runner ID: ", wallet_id,
-              "block: ", result['blockid'], "reciep: ", self.conf[node]['keyID'])
+        inf1 = "platforma_commission: " + str(platforma_commission) +\
+         "runner ID: " + wallet_id + "block: " + str(result['blockid'])
+        inf2 = "node_commission: " + str(node_commission) + "runner ID: " +\
+        wallet_id + "block: " + str(result['blockid']) + "reciep: " + self.conf[node]['keyID']
         summ_after = sum(actions.get_user_token_amounts(self.conf[1]['url'], self.token))
         a_node_balance = self.get_node_balances()
         balance_runner_a = actions.get_balance_by_id(self.conf[1]['url'], self.token,
@@ -136,12 +135,11 @@ class TestCost():
                               nodeBalance=int(b_node_balance[node]) + int(node_commission),
                               summ=int(summ_after))
         self.u.assertDictEqual(dict_valid, dict_expect,
-                               'Error in comissions for bind_wallet' + str(node))
+                               'Error in comissions for bind_wallet' + str(node) + inf1 + inf2)
 
     def test_unbind_wallet(self):
         if actions.is_contract_activated(self.conf[1]['url'], 'CostContract', self.token):
             self.unbind_wallet()
-        print("bind: ", actions.is_contract_activated(self.conf[1]['url'], 'CostContract', self.token))
         wallet_id = actions.get_activated_wallet(self.conf[1]['url'],
                                                  'CostContract', self.token)
         summ_before = sum(actions.get_user_token_amounts(self.conf[1]['url'], self.token))
@@ -171,10 +169,11 @@ class TestCost():
                                                                   data_runner['key_id'],
                                                                   self.conf[node]['keyID'],
                                                                   result['blockid'])[0]
-        self.log.info("platforma_commission: ", str(platforma_commission), "runner ID: ", data_runner['key_id'],
-              "block: ", result['blockid'])
-        self.log.info("node_commission: ", str(node_commission), "runner ID: ", data_runner['key_id'],
-              "block: ", result['blockid'], "reciep: ", self.conf[node]['keyID'])
+        inf1 = "platforma_commission: " + str(platforma_commission) + "runner ID: " +\
+         data_runner['key_id'] + "block: " + str(result['blockid'])
+        inf2 = "node_commission: " + str(node_commission) + "runner ID: " +\
+         data_runner['key_id'] + "block: " + str(result['blockid']) +\
+          "reciep: " + self.conf[node]['keyID']
         summ_after = sum(actions.get_user_token_amounts(
             self.conf[1]['url'], self.token))
         a_node_balance = self.get_node_balances()
@@ -199,7 +198,7 @@ class TestCost():
                            'nodeBalance': int(b_node_balance[node]) + int(node_commission),
                            'summ': int(summ_after)}
         self.u.assertDictEqual(dict_valid, dict_expect,
-                               'Error in comissions for unbind_wallet' + str(node))
+                               'Error in comissions for unbind_wallet' + str(node) + inf1 + inf2)
 
     def test_bind_wallet_with_err(self):
         if not actions.is_contract_activated(self.conf[1]['url'], 'CostContract', self.token):
