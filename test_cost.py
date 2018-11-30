@@ -152,7 +152,7 @@ class TestCost():
                                     'CostContract', {'State': 1}, token_runner)
         result = actions.tx_status(
             self.conf[1]['url'], self.wait, res, token_runner)
-        time.sleep(10)
+        time.sleep(20)
         node = db.get_block_gen_node(self.conf[0]['db'], result['blockid'])
         platforma_commissions = actions.get_commission_from_history(self.conf[1]['url'],
                                                                   token_runner,
@@ -174,6 +174,7 @@ class TestCost():
         inf2 = "node_commission: " + str(node_commission) + "runner ID: " +\
          data_runner['key_id'] + "block: " + str(result['blockid']) +\
           "reciep: " + self.conf[node]['keyID']
+          
         summ_after = sum(actions.get_user_token_amounts(
             self.conf[1]['url'], self.token))
         a_node_balance = self.get_node_balances()
@@ -182,6 +183,9 @@ class TestCost():
                                                      data_runner['key_id'])
         balance_contract_owner_a = actions.get_balance_by_id(self.conf[1]['url'], self.token,
                                                              wallet_id)
+        e_node_balance = int(balance_runner_b) - int(commission)
+        print('b_node_balance[0] ', b_node_balance[0], 'b_node_balance[0] with commission', e_node_balance)
+        print('a_node_balance[0]', a_node_balance[0])
         if node == 0:
             dict_valid = {'balanceRunner': int(balance_runner_a),
                           'platformBalance': int(a_node_balance[0]),
