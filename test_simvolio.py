@@ -24,6 +24,7 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], data, self.token)
+        print(res)
         result = actions.tx_status(self.url, self.wait, res, self.token)
         self.unit.assertIn(check_point, result['result'], 'ERROR: ' +
                            str(result))
@@ -545,3 +546,11 @@ class TestSimvolio():
             self.url, self.pr_key, self.token, source=contract['code'])
         result = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         self.unit.assertEqual(result['error'], contract['asert'], 'Error messages is different')
+
+    def test_transactionInfo(self):
+        res = contracts.new_contract(self.url,
+                                     self.pr_key,
+                                     self.token)
+        data = {'Myhash': res['hash']}
+        contract = self.contracts['transactionInfo']
+        self.check_contract(contract['code'], contract['asert'], data)

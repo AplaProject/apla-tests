@@ -963,3 +963,16 @@ types_of_data_incorrect:
     }
   asert: "expecting type of the data field [Ln:4 Col:17]"
 
+
+transactionInfo:
+  code: |
+    {
+      data {
+        Myhash string
+      }
+      action {
+        $result = TransactionInfo($Myhash)
+      }
+    }
+  asert: '"contract":"@1NewContract","params":{"ApplicationId":1'
+

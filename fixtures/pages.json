@@ -859,5 +859,10 @@
 				]
 			  }
 			}
+	},
+	"transactionInfo": {
+		"code": "ArrayToSource(dat, [\"hello\", \"my name\",\"is Billy\"])",
+		"menu": "default_menu",
+		"content": {}
 	}
 }
