@@ -646,3 +646,11 @@ class TestSimvolio():
             self.url, self.pr_key, self.token, source=contract['code'])
         result = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         self.unit.assertEqual(result['error'], contract['asert'], 'Error messages is different')
+
+    def test_contract_PubToHex(self):
+        contract = self.contracts['PubToHex']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_HexToPub(self):
+        contract = self.contracts['HexToPub']
+        self.check_contract(contract['code'], contract['asert'])
