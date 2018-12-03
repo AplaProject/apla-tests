@@ -235,6 +235,107 @@ class TestSimvolio():
     def test_contract_sortedKeys(self):
         contract = self.contracts['sortedKeys']
         self.check_contract(contract['code'], contract['asert'])
+        
+    def test_del_table_not_empty(self):
+        contractName = 'SimvolioDelTab'
+        if not actions.is_contract_present(self.url, self.token, contractName):
+            contract = self.contracts['del_table']
+            tx = contracts.new_contract(self.url, self.pr_key, self.token,
+                                        source=contract['code'], name = contractName)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tab = 'contracts'
+        res = actions.call_contract(self.url, self.pr_key, contractName,
+                                    {"table": tab}, self.token)
+        result = actions.tx_status(self.url, self.wait, res, self.token)
+        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' is not empty',
+                              'Erorr in deleting tables by DelTab funtion')
+        
+    def test_del_table_not_present(self):
+        contractName = 'SimvolioDelTab'
+        if not actions.is_contract_present(self.url, self.token, contractName):
+            contract = self.contracts['del_table']
+            tx = contracts.new_contract(self.url, self.pr_key, self.token,
+                                        source=contract['code'], name = contractName)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tab = 'kjkb'
+        res = actions.call_contract(self.url, self.pr_key, contractName,
+                                    {"table": tab}, self.token)
+        result = actions.tx_status(self.url, self.wait, res, self.token)
+        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' has not been found',
+                              'Erorr in deleting tables by DelTab funtion' + result['error'])
+        
+    def test_del_table_empty(self):
+        contractName = 'SimvolioDelTab'
+        if not actions.is_contract_present(self.url, self.token, contractName):
+            contract = self.contracts['del_table']
+            tx = contracts.new_contract(self.url, self.pr_key, self.token,
+                                        source=contract['code'], name = contractName)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tx_tab = contracts.new_table(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_tab, self.token)
+        res = actions.call_contract(self.url, self.pr_key, contractName,
+                                    {"table": tx_tab['name']}, self.token)
+        check.is_tx_in_block(self.url, self.wait, {'hash': res}, self.token)
+        
+    def test_del_column_not_empty(self):
+        contractName = 'SimvolioDelColumn'
+        if not actions.is_contract_present(self.url, self.token, contractName):
+            contract = self.contracts['del_column']
+            tx = contracts.new_contract(self.url, self.pr_key, self.token,
+                                        source=contract['code'], name = contractName)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tab = 'contracts'
+        res = actions.call_contract(self.url, self.pr_key, contractName,
+                                    {'table': tab, 'col': 'name'}, self.token)
+        result = actions.tx_status(self.url, self.wait, res, self.token)
+        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' is not empty',
+                              'Erorr in deleting tables by DelTab funtion' + result['error'])
+        
+    def test_del_column_not_present_table(self):
+        contractName = 'SimvolioDelColumn'
+        if not actions.is_contract_present(self.url, self.token, contractName):
+            contract = self.contracts['del_column']
+            tx = contracts.new_contract(self.url, self.pr_key, self.token,
+                                        source=contract['code'], name = contractName)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tab = 'notpresent'
+        res = actions.call_contract(self.url, self.pr_key, contractName,
+                                    {'table': tab, 'col': 'name'}, self.token)
+        result = actions.tx_status(self.url, self.wait, res, self.token)
+        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' has not been found',
+                              'Erorr in deleting tables by DelTab funtion' + result['error'])
+        
+    def test_del_column_not_present_column(self):
+        contractName = 'SimvolioDelColumn'
+        if not actions.is_contract_present(self.url, self.token, contractName):
+            contract = self.contracts['del_column']
+            tx = contracts.new_contract(self.url, self.pr_key, self.token,
+                                        source=contract['code'], name = contractName)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tx_tab = contracts.new_table(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_tab, self.token)
+        col = "notpresent"
+        res = actions.call_contract(self.url, self.pr_key, contractName,
+                                    {'table': tx_tab['name'], 'col': col}, self.token)
+        result = actions.tx_status(self.url, self.wait, res, self.token)
+        self.unit.assertEqual(result['error'], 'column ' + col + " doesn't exist",
+                              'Erorr in deleting tables by DelTab funtion' + result['error'])
+        
+    def test_del_column_not_empty(self):
+        contractName = 'SimvolioDelColumn'
+        if not actions.is_contract_present(self.url, self.token, contractName):
+            contract = self.contracts['del_column']
+            tx = contracts.new_contract(self.url, self.pr_key, self.token,
+                                        source=contract['code'], name = contractName)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tx_tab = contracts.new_table(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_tab, self.token)
+        tx2 = contracts.new_column(self.url, self.pr_key, self.token, tx_tab['name'])
+        check.is_tx_in_block(self.url, self.wait, tx2, self.token)
+        res = actions.call_contract(self.url, self.pr_key, contractName,
+                                    {'table': tx_tab['name'], 'col': tx2['name']}, self.token)
+        check.is_tx_in_block(self.url, self.wait, {'hash': res}, self.token)
+
 
     def test_contract_langRes(self):
         name = 'lang_' + tools.generate_random_name()

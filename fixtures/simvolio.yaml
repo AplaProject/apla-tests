@@ -962,4 +962,29 @@ types_of_data_incorrect:
       action {}
     }
   asert: "expecting type of the data field [Ln:4 Col:17]"
+  
+  
+del_table:
+  code: |
+    {
+      data {
+        table string
+      }
+      action {
+      DelTable($table)
+      }
+    }
+  asert: ""
 
+
+del_column:
+  code: |
+    {
+      data {
+        table, col string
+      }
+      action {
+      DelColumn($table, $col)
+      }
+    }
+  asert: ""
