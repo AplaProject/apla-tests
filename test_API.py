@@ -778,3 +778,24 @@ class TestApi():
         error = 'E_ECOSYSTEM'
         msg = "Ecosystem {} doesn't exist".format(ecos_id)
         self.check_result(res, asserts, error, msg)
+
+    def test_block(self):
+        asserts = ['hash',
+                   'ecosystem_id',
+                   'key_id',
+                   'time',
+                   'tx_count',
+                   'rollbacks_hash',
+                   'node_position']
+        id = 1
+        res = api.block(self.url, self.token, id)
+        print(res)
+        self.check_result(res, asserts)
+
+    def test_block_incorrect(self):
+        asserts = ['error', 'msg']
+        id = 9999
+        res = api.block(self.url, self.token, id)
+        error = 'E_NOTFOUND'
+        msg = 'Page not found'
+        self.check_result(res, asserts, error, msg)
