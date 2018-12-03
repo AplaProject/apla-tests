@@ -789,7 +789,6 @@ class TestApi():
                    'node_position']
         id = 1
         res = api.block(self.url, self.token, id)
-        print(res)
         self.check_result(res, asserts)
 
     def test_block_incorrect(self):
