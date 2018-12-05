@@ -684,7 +684,7 @@ class TestApi():
             }
             full_url = self.url + '/content/page/' + name
             res = requests.post(full_url, params=data_content, headers={'Authorization': token1})
-            page_content = res.content[:len(res.content) - 1] # content without last symbol \n
+            page_content = res.content[:-1] # content without last symbol \n
             m = hashlib.sha256()
             m.update(page_content)
             sha = m.hexdigest()
