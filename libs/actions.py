@@ -12,12 +12,11 @@ log = loger.create_loger(__name__)
 
 
 def login(url, pr_key, role=0, ecosystem=1):
-    token, uid, network_id = api.getuid(url)
+    token, uid = api.getuid(url)
     result = api.login(
         url=url,
         token=token,
         uid=uid,
-        network_id=network_id,
         private_key=pr_key,
         role_id=role,
         ecosystem=ecosystem

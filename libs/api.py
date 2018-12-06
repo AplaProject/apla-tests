@@ -39,12 +39,11 @@ def getuid(url):
     result = response.json()
     token = result['token']
     uid = result['uid']
-    network_id = result['network_id']
-    return token, uid, network_id
+    return token, uid
 
 
-def login(url, token, uid, network_id, private_key, role_id=0, ecosystem=1, expire=3600):
-    signature = sign(private_key, 'LOGIN' + network_id + uid)
+def login(url, token, uid, private_key, role_id=0, ecosystem=1, expire=3600):
+    signature = sign(private_key, 'LOGIN' + uid)
     pubkey = get_public_key(private_key)
     full_token = 'Bearer ' + token
     data = {
