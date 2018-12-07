@@ -94,6 +94,7 @@ class TestApi():
         self.check_result(res, asserts, error, msg)
 
     def test_get_ecosystem(self):
+        check.cors(self.url, 'GET')
         asserts = ['number']
         res = api.ecosystems(self.url, self.token)
         self.check_result(res, asserts)

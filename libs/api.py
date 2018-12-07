@@ -55,17 +55,36 @@ def login(url, token, uid, private_key, role_id=0, ecosystem=1, expire=3600):
         # key_id # not use with parameter 'pubkey'
     }
     endpoint = '/login'
-    url += endpoint
-    res = call_post_api(url, data, full_token)
-    result = {
-        'uid': uid,
-        'jwtToken': 'Bearer ' + res['token'],
-        'pubkey': pubkey,
-        'address': res['address'],
-        'key_id': res['key_id'],
-        'ecosystem_id': res['ecosystem_id']
-    }
-    return result
+    full_url = url + endpoint
+    headers = []
+    if cors(full_url, url, 'POST'):
+        res = call_post_api(full_url, data, full_token)
+        result = {
+            'uid': uid,
+            'jwtToken': 'Bearer ' + res['token'],
+            'pubkey': pubkey,
+            'address': res['address'],
+            'key_id': res['key_id'],
+            'ecosystem_id': res['ecosystem_id']
+            }
+        return result
+    else:
+        return None 
+
+def cors(full_url, url, method):
+    host = url[7:-7]
+    head = {'Access-Control-Request-Method': method,
+            'Origin': 'http://localhost:3000',
+            'Host': host,
+            'Access-Control-Request-Headers': 'authorization'}
+    resp = requests.options(full_url, headers=head)
+    if resp.headers['Access-Control-Allow-Origin'] and\
+     resp.headers['Access-Control-Allow-Origin'] == '*' and\
+     resp.headers['Access-Control-Allow-Headers'] == 'Authorization' and\
+     resp.headers['Access-Control-Max-Age'] == '600':
+        return True
+    else:
+        return False
 
 
 def version(url, token):
