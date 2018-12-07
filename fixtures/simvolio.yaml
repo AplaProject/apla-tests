@@ -12,6 +12,25 @@ dbFind:
       }
     }
   asert: "admin_index"
+  
+  
+Throw:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+      	var val int
+      	val = 10
+        if val > 5 {
+        	Throw("Problem", "There is some problem")
+        }
+      }
+    }
+  asert: |
+    {"blockid":"","errmsg":
+    {"type":"exception","error":"There is some problem","id":"Problem"},
+    "result":""}
 
 
 toUpper:

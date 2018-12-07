@@ -121,22 +121,6 @@ UpdateSysParam_mock:
       }
     }
   asert: ""
-  
-  
-Throw:
-  code: |
-    {
-      data {}
-      conditions {}
-      action {
-      	var val int
-      	val = 10
-        if val > 5 {
-        	Throw("Problem", "There is some problem")
-        }
-      }
-    }
-  asert: ""
 
 
 UpdateSysParam_original:

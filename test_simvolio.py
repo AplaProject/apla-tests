@@ -25,6 +25,7 @@ class TestSimvolio():
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], data, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
+        print(result)
         self.unit.assertIn(check_point, result['result'], 'ERROR: ' +
                            str(result))
 
@@ -654,3 +655,14 @@ class TestSimvolio():
     def test_contract_HexToPub(self):
         contract = self.contracts['HexToPub']
         self.check_contract(contract['code'], contract['asert'])
+        
+    def test_throw(self):
+        contract = self.contracts['Throw']
+        tx = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(
+            self.url, self.pr_key, tx['name'], {}, self.token)
+        result = actions.tx_status(self.url, self.wait, res, self.token)
+        print(contract['asert'])
+        self.unit.assertEqual(str(contract['asert']), result, result)
