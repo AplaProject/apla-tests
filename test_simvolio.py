@@ -666,3 +666,11 @@ class TestSimvolio():
         result = actions.tx_status(self.url, self.wait, res, self.token)
         print(contract['asert'])
         self.unit.assertEqual(str(contract['asert']), result, result)
+
+    def test_contract_UpdateNotifications(self):
+        contract = self.contracts['UpdateNotifications']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_UpdateRolesNotifications(self):
+        contract = self.contracts['UpdateRolesNotifications']
+        self.check_contract(contract['code'], contract['asert'])

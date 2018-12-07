@@ -1037,3 +1037,43 @@ HexToPub:
       }
     }
   asert: "True"
+
+
+UpdateNotifications:
+  code: |
+    {
+      data {}
+      action {
+        var users array
+        $u1 = 8329652236040743282
+        $u2 = 8329652236040743283
+        users[0] = $u1
+        users[1] = $u2
+        UpdateNotifications(1, users)
+        UpdateNotifications(1, $u1, $u2)
+        UpdateNotifications(1, [$u1, $u2])
+        $result = "True"
+      }
+    }
+  asert: "True"
+
+
+UpdateRolesNotifications:
+  code: |
+    {
+      data {}
+      action {
+        var roles array
+        $r1 = 1
+        $r2 = 2
+        $r3 = 3
+        roles[0] = $r1
+        roles[1] = $r2
+        roles[2] = $r3
+        UpdateRolesNotifications(1, roles)
+        UpdateRolesNotifications(1, $r1, $r2, $r3)
+        UpdateRolesNotifications(1, [$r1, $r2, $r3])
+        $result = "True"
+      }
+    }
+  asert: "True"
