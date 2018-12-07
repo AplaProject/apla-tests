@@ -654,3 +654,11 @@ class TestSimvolio():
     def test_contract_HexToPub(self):
         contract = self.contracts['HexToPub']
         self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_UpdateNotifications(self):
+        contract = self.contracts['UpdateNotifications']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_UpdateRolesNotifications(self):
+        contract = self.contracts['UpdateRolesNotifications']
+        self.check_contract(contract['code'], contract['asert'])
