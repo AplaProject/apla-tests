@@ -669,16 +669,7 @@ class TestSimvolio():
         for el in resp:
             actual = resp[el]
             break
-        expected = {
-            'blockid': '',
-            'errmsg': {
-                'type': 'exception',
-                'error': 'There is some problem',
-                'id': 'Problem'
-            },
-            'result': '',
-        }
-        self.unit.assertEqual(expected, actual, resp)
+        self.unit.assertEqual(contract['asert'], actual, resp)
 
     def test_contract_UpdateNotifications(self):
         contract = self.contracts['UpdateNotifications']
