@@ -1,7 +1,8 @@
 import hashlib
 import unittest
+import time
 
-from libs import actions, db, tools, contract as contracts, check
+from libs import actions, db, tools, contract as contracts, check, api
 
 
 class TestSimvolio():
@@ -663,9 +664,10 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
+        time.sleep(5)
+        resp = api.tx_status(self.url, self.token, res)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        print(contract['asert'])
-        self.unit.assertEqual(str(contract['asert']), result, result)
+        self.unit.assertIn(str(contract['asert']), str(resp), resp)
 
     def test_contract_UpdateNotifications(self):
         contract = self.contracts['UpdateNotifications']
