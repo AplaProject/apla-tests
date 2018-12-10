@@ -198,6 +198,17 @@ class TestPrototipo():
                 result = part['attr']
         self.uni.assertEqual(part['attr'], cont['content']['attr'],
                              'show has problem: ' + str(content['tree']))
+        
+    def test_page_error_redirect(self):
+        cont = self.pages['errorRedirect']
+        content = self.check_page(cont['code'])
+        tree = content['tree']
+        result = None
+        for part in tree:
+            if part['tag'] == 'button':
+                result = part['attr']
+        self.uni.assertEqual(part['attr'], cont['content']['attr'],
+                             'show has problem: ' + str(content['tree']))
     
     def test_page_hide(self):
         cont = self.pages['hide']
