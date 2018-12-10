@@ -665,9 +665,20 @@ class TestSimvolio():
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
         time.sleep(5)
-        resp = api.tx_status(self.url, self.token, res)
-        result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertIn(str(contract['asert']), str(resp), resp)
+        resp = api.tx_status(self.url, self.token, res)['results']
+        for el in resp:
+            actual = resp[el]
+            break
+        expected = {
+            'blockid': '',
+            'errmsg': {
+                'type': 'exception',
+                'error': 'There is some problem',
+                'id': 'Problem'
+            },
+            'result': '',
+        }
+        self.unit.assertEqual(expected, actual, resp)
 
     def test_contract_UpdateNotifications(self):
         contract = self.contracts['UpdateNotifications']
