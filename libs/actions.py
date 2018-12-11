@@ -23,7 +23,10 @@ def login(url, pr_key, role=0, ecosystem=1):
     )
     return result
 
-
+def login_cors(url, pr_key, role=0, ecosystem=1):
+    token, uid = api.getuid(url)
+    result = api.cors(url, 'POST')
+    return result
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
     schema = api.contract(url, jvtToken, name)
     contract = Contract(schema=schema,

@@ -176,6 +176,50 @@ class TestPrototipo():
                     childrenText=contract_content2['children'][0]['text'])
         self.uni.assertDictEqual(must_be, page,
                                  'divs has problem: ' + str(content['tree']))
+        
+    def test_page_show(self):
+        cont = self.pages['show']
+        content = self.check_page(cont['code'])
+        tree = content['tree']
+        result = None
+        for part in tree:
+            if part['tag'] == 'div':
+                result = part['attr']
+        self.uni.assertEqual(part['attr'], cont['content']['attr'],
+                             'show has problem: ' + str(content['tree']))
+        
+    def test_page_show2(self):
+        cont = self.pages['show2']
+        content = self.check_page(cont['code'])
+        tree = content['tree']
+        result = None
+        for part in tree:
+            if part['tag'] == 'div':
+                result = part['attr']
+        self.uni.assertEqual(part['attr'], cont['content']['attr'],
+                             'show has problem: ' + str(content['tree']))
+        
+    def test_page_error_redirect(self):
+        cont = self.pages['errorRedirect']
+        content = self.check_page(cont['code'])
+        tree = content['tree']
+        result = None
+        for part in tree:
+            if part['tag'] == 'button':
+                result = part['attr']
+        self.uni.assertEqual(part['attr'], cont['content']['attr'],
+                             'show has problem: ' + str(content['tree']))
+    
+    def test_page_hide(self):
+        cont = self.pages['hide']
+        content = self.check_page(cont['code'])
+        tree = content['tree'][0]['children']
+        result = None
+        for part in tree:
+            if part['tag'] == 'div':
+                result = part['attr']
+        self.uni.assertEqual(part['attr'], cont['content']['attr'],
+                             'show has problem: ' + str(content['tree']))
 
     def test_page_setVar(self):
         cont = self.pages['setVar']

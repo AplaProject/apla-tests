@@ -4,6 +4,47 @@
 		"Menu": "default_menu",
 		"content": ""
 	},
+	"show":{
+		"code": "Input(Name: \"Test\", Value: \"Hello\")\n Div(){ \"Hello world!\"\n }.Show(\"Test=Hello\")",
+		"menu": "default_menu",
+		"content":  {
+				"tag": "div",
+				"attr": {"show": [{"Test": "Hello"}]}
+				}
+	},
+	"hide":{
+		"code": "Form(){\n Input(Name: \"Test\", Value: \"HR\")\n Div(){\n Hello world!\n }.Hide(\"Test=Hello\")}",
+		"menu": "default_menu",
+		"content":  {
+				"tag": "div",
+				"attr": {"hide": [{"Test": "Hello"}]}
+				}
+	},
+	"show2":{
+		"code": "Input(Name: \"Test\", Value: \"Hello\")\n Input(Name: \"Test2\", Value: \"World\")\n Div(){\n Hello world!\n }.Show(\"Test=Hello,Test2=World\")",
+		"menu": "default_menu",
+		"content":  {
+				"tag": "div",
+				"attr": {"show": [{"Test": "Hello", "Test2": "World"}]}
+				}
+	},
+	"errorRedirect":{
+		"code": "Button(Body: Hello, Contract: con1).ErrorRedirect(PageParams: name=5, PageName: \"errpage\", ErrorID: Problem)",
+		"menu": "default_menu",
+		"content":  {
+			"tag": "button",
+			"attr": {
+				"contract": "con1",
+				"errredirect": {
+					"Problem": {
+						"errorid": "Problem",
+						"pagename": "errpage",
+						"pageparams": {"name": {"text": "5", "type": "text"}}
+						}
+					}
+				}
+			}
+	},
 	"buttonCompositeContract":{
 		"code": "Button(Body: addpage).CompositeContract(NewPage, [{\"param1\": \"val1\"}])",
 		"Menu": "default_menu",

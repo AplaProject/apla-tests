@@ -1,6 +1,6 @@
 import unittest
 import time
-from libs import db, actions, loger
+from libs import db, actions, loger, api
 
 
 log = loger.create_loger(__name__)
@@ -86,3 +86,11 @@ def is_new_key_in_keys(url, token, key_id, attempts, ecosystem=1):
         i += 1
     unittest.TestCase.fail('Key_id is not find in keys table.')
     return False
+
+def cors(url, method):
+    if api.cors(url, method):
+        return True
+    else:
+        unittest.TestCase.fail('CORS is not allowed')
+        return False
+        

@@ -643,8 +643,7 @@ class TestApi():
         msg = 'Parameter name has not been found'
         self.check_result(res, asserts, error, msg)
 
-    # off
-    def compare_hashes(self):
+    def test_compare_hashes(self):
         # Create new page for test
         name = 'Page_' + tools.generate_random_name()
         val = '''
@@ -685,8 +684,9 @@ class TestApi():
             }
             full_url = self.url + '/content/page/' + name
             res = requests.post(full_url, params=data_content, headers={'Authorization': token1})
+            page_content = res.content[:-1] # content without last symbol \n
             m = hashlib.sha256()
-            m.update(res.content)
+            m.update(page_content)
             sha = m.hexdigest()
             # Get hash from page
             full_url = self.url + '/content/hash/' + name
@@ -726,14 +726,15 @@ class TestApi():
         res = contract.new_ecosystem(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, res, self.token)
         ecos_id = actions.get_count(self.url, 'ecosystems', self.token)
-        app_id = 1
+        new_data = actions.login(self.url, self.pr_key, ecosystem=ecos_id)
+        new_token = new_data['jwtToken']
+        app_id = actions.get_list(self.url, 'applications', new_token)['list'][0]['id']
         # test
         expected = {
-            'blocks': len(actions.get_list(self.url, 'blocks', self.token, app_id)['list']),
-            'pages': len(actions.get_list(self.url, 'pages', self.token, app_id)['list']),
-            'contracts': len(actions.get_list(self.url, 'contracts', self.token, app_id)['list'])
+            'blocks': int(actions.get_count(self.url, 'blocks', new_token)),
+            'pages': int(actions.get_count(self.url, 'pages', new_token)),
+            'contracts': int(actions.get_count(self.url, 'contracts', new_token))
         }
-        print(expected)
         asserts = ['blocks', 'pages', 'contracts']
         res = api.appcontent(self.url, self.token, appid=app_id, ecosystem=ecos_id)
         actual = {
@@ -741,7 +742,6 @@ class TestApi():
             'pages': len(res['pages']),
             'contracts': len(res['contracts'])
         }
-        print(actual)
         self.check_result(res, asserts)
         self.unit.assertEqual(expected, actual, 'Dict is nor equals')
 
@@ -778,4 +778,24 @@ class TestApi():
         res = api.appcontent(self.url, self.token, appid=1, ecosystem=ecos_id)
         error = 'E_ECOSYSTEM'
         msg = "Ecosystem {} doesn't exist".format(ecos_id)
+        self.check_result(res, asserts, error, msg)
+
+    def test_block(self):
+        asserts = ['hash',
+                   'ecosystem_id',
+                   'key_id',
+                   'time',
+                   'tx_count',
+                   'rollbacks_hash',
+                   'node_position']
+        id = 1
+        res = api.block(self.url, self.token, id)
+        self.check_result(res, asserts)
+
+    def test_block_incorrect(self):
+        asserts = ['error', 'msg']
+        id = 9999
+        res = api.block(self.url, self.token, id)
+        error = 'E_NOTFOUND'
+        msg = 'Page not found'
         self.check_result(res, asserts, error, msg)

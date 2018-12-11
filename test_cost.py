@@ -68,6 +68,7 @@ class TestCost():
         check.is_tx_in_block(self.conf[0]['url'], self.wait, tx, token_creater)
 
     def test_bind_wallet(self):
+        time.sleep(10)
         if not actions.is_contract_activated(self.conf[1]['url'], 'CostContract', self.token):
             bind_wallet = self.bind_wallet()
         time.sleep(10)
@@ -138,8 +139,10 @@ class TestCost():
                                'Error in comissions for bind_wallet' + str(node) + inf1 + inf2)
 
     def test_unbind_wallet(self):
+        time.sleep(10)
         if actions.is_contract_activated(self.conf[1]['url'], 'CostContract', self.token):
             self.unbind_wallet()
+        time.sleep(10)
         wallet_id = actions.get_activated_wallet(self.conf[1]['url'],
                                                  'CostContract', self.token)
         summ_before = sum(actions.get_user_token_amounts(self.conf[1]['url'], self.token))
@@ -152,7 +155,7 @@ class TestCost():
                                     'CostContract', {'State': 1}, token_runner)
         result = actions.tx_status(
             self.conf[1]['url'], self.wait, res, token_runner)
-        time.sleep(20)
+        time.sleep(10)
         node = db.get_block_gen_node(self.conf[0]['db'], result['blockid'])
         platforma_commissions = actions.get_commission_from_history(self.conf[1]['url'],
                                                                   token_runner,
@@ -205,6 +208,7 @@ class TestCost():
                                'Error in comissions for unbind_wallet' + str(node) + inf1 + inf2)
 
     def test_bind_wallet_with_err(self):
+        time.sleep(10)
         if not actions.is_contract_activated(self.conf[1]['url'], 'CostContract', self.token):
             self.bind_wallet()
         wallet_id = actions.get_activated_wallet(self.conf[1]['url'], 'CostContract',
@@ -246,6 +250,7 @@ class TestCost():
                                'Error in test_bind_wallet_with_err')
 
     def test_deactive_contract_with_err(self):
+        time.sleep(10)
         if actions.is_contract_activated(self.conf[1]['url'], 'CostContract', self.token):
             self.unbind_wallet()
         wallet_id = actions.get_activated_wallet(

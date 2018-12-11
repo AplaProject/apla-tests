@@ -1,7 +1,8 @@
 import hashlib
 import unittest
+import time
 
-from libs import actions, db, tools, contract as contracts, check
+from libs import actions, db, tools, contract as contracts, check, api
 
 
 class TestSimvolio():
@@ -26,6 +27,7 @@ class TestSimvolio():
             self.url, self.pr_key, tx['name'], data, self.token)
         print(res)
         result = actions.tx_status(self.url, self.wait, res, self.token)
+        print(result)
         self.unit.assertIn(check_point, result['result'], 'ERROR: ' +
                            str(result))
 
@@ -236,6 +238,107 @@ class TestSimvolio():
     def test_contract_sortedKeys(self):
         contract = self.contracts['sortedKeys']
         self.check_contract(contract['code'], contract['asert'])
+        
+    def test_del_table_not_empty(self):
+        contractName = 'SimvolioDelTab'
+        if not actions.is_contract_present(self.url, self.token, contractName):
+            contract = self.contracts['del_table']
+            tx = contracts.new_contract(self.url, self.pr_key, self.token,
+                                        source=contract['code'], name = contractName)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tab = 'contracts'
+        res = actions.call_contract(self.url, self.pr_key, contractName,
+                                    {"table": tab}, self.token)
+        result = actions.tx_status(self.url, self.wait, res, self.token)
+        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' is not empty',
+                              'Erorr in deleting tables by DelTab funtion')
+        
+    def test_del_table_not_present(self):
+        contractName = 'SimvolioDelTab'
+        if not actions.is_contract_present(self.url, self.token, contractName):
+            contract = self.contracts['del_table']
+            tx = contracts.new_contract(self.url, self.pr_key, self.token,
+                                        source=contract['code'], name = contractName)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tab = 'kjkb'
+        res = actions.call_contract(self.url, self.pr_key, contractName,
+                                    {"table": tab}, self.token)
+        result = actions.tx_status(self.url, self.wait, res, self.token)
+        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' has not been found',
+                              'Erorr in deleting tables by DelTab funtion' + result['error'])
+        
+    def test_del_table_empty(self):
+        contractName = 'SimvolioDelTab'
+        if not actions.is_contract_present(self.url, self.token, contractName):
+            contract = self.contracts['del_table']
+            tx = contracts.new_contract(self.url, self.pr_key, self.token,
+                                        source=contract['code'], name = contractName)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tx_tab = contracts.new_table(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_tab, self.token)
+        res = actions.call_contract(self.url, self.pr_key, contractName,
+                                    {"table": tx_tab['name']}, self.token)
+        check.is_tx_in_block(self.url, self.wait, {'hash': res}, self.token)
+        
+    def test_del_column_not_empty(self):
+        contractName = 'SimvolioDelColumn'
+        if not actions.is_contract_present(self.url, self.token, contractName):
+            contract = self.contracts['del_column']
+            tx = contracts.new_contract(self.url, self.pr_key, self.token,
+                                        source=contract['code'], name = contractName)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tab = 'contracts'
+        res = actions.call_contract(self.url, self.pr_key, contractName,
+                                    {'table': tab, 'col': 'name'}, self.token)
+        result = actions.tx_status(self.url, self.wait, res, self.token)
+        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' is not empty',
+                              'Erorr in deleting tables by DelTab funtion' + result['error'])
+        
+    def test_del_column_not_present_table(self):
+        contractName = 'SimvolioDelColumn'
+        if not actions.is_contract_present(self.url, self.token, contractName):
+            contract = self.contracts['del_column']
+            tx = contracts.new_contract(self.url, self.pr_key, self.token,
+                                        source=contract['code'], name = contractName)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tab = 'notpresent'
+        res = actions.call_contract(self.url, self.pr_key, contractName,
+                                    {'table': tab, 'col': 'name'}, self.token)
+        result = actions.tx_status(self.url, self.wait, res, self.token)
+        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' has not been found',
+                              'Erorr in deleting tables by DelTab funtion' + result['error'])
+        
+    def test_del_column_not_present_column(self):
+        contractName = 'SimvolioDelColumn'
+        if not actions.is_contract_present(self.url, self.token, contractName):
+            contract = self.contracts['del_column']
+            tx = contracts.new_contract(self.url, self.pr_key, self.token,
+                                        source=contract['code'], name = contractName)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tx_tab = contracts.new_table(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_tab, self.token)
+        col = "notpresent"
+        res = actions.call_contract(self.url, self.pr_key, contractName,
+                                    {'table': tx_tab['name'], 'col': col}, self.token)
+        result = actions.tx_status(self.url, self.wait, res, self.token)
+        self.unit.assertEqual(result['error'], 'column ' + col + " doesn't exist",
+                              'Erorr in deleting tables by DelTab funtion' + result['error'])
+        
+    def test_del_column_not_empty(self):
+        contractName = 'SimvolioDelColumn'
+        if not actions.is_contract_present(self.url, self.token, contractName):
+            contract = self.contracts['del_column']
+            tx = contracts.new_contract(self.url, self.pr_key, self.token,
+                                        source=contract['code'], name = contractName)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        tx_tab = contracts.new_table(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_tab, self.token)
+        tx2 = contracts.new_column(self.url, self.pr_key, self.token, tx_tab['name'])
+        check.is_tx_in_block(self.url, self.wait, tx2, self.token)
+        res = actions.call_contract(self.url, self.pr_key, contractName,
+                                    {'table': tx_tab['name'], 'col': tx2['name']}, self.token)
+        check.is_tx_in_block(self.url, self.wait, {'hash': res}, self.token)
+
 
     def test_contract_langRes(self):
         name = 'lang_' + tools.generate_random_name()
@@ -286,9 +389,20 @@ class TestSimvolio():
                                  name='test')
         actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         contract = self.contracts['dbInsert']
-        self.check_contract(contract['code'], contract['asert'])
+        limit = 5
+        for i in range(limit):
+            self.check_contract(contract['code'], contract['asert'])
         contract = self.contracts['dbUpdateExt']
         self.check_contract(contract['code'], contract['asert'])
+        res = api.list(self.url, self.token, 'test', limit=limit)
+        expected = [
+            {'id': '1', 'name': 'block2', 'test': 'updatedById=1'},
+            {'id': '2', 'name': 'block2', 'test': 'updatedByName'},
+            {'id': '3', 'name': 'block2', 'test': 'updateIdBetween3-5'},
+            {'id': '4', 'name': 'block2', 'test': 'updateIdBetween3-5'},
+            {'id': '5', 'name': 'block2', 'test': 'updateIdBetween3-5'},
+        ]
+        self.unit.assertEqual(res['list'], expected, 'Error in updated records')
 
     def test_contract_callContract(self):
         contract = self.contracts['myContract']
@@ -554,3 +668,33 @@ class TestSimvolio():
         data = {'Myhash': res['hash']}
         contract = self.contracts['transactionInfo']
         self.check_contract(contract['code'], contract['asert'], data)
+
+    def test_contract_PubToHex(self):
+        contract = self.contracts['PubToHex']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_HexToPub(self):
+        contract = self.contracts['HexToPub']
+        self.check_contract(contract['code'], contract['asert'])
+        
+    def test_throw(self):
+        contract = self.contracts['Throw']
+        tx = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(
+            self.url, self.pr_key, tx['name'], {}, self.token)
+        time.sleep(5)
+        resp = api.tx_status(self.url, self.token, res)['results']
+        for el in resp:
+            actual = resp[el]
+            break
+        self.unit.assertEqual(contract['asert'], actual, resp)
+
+    def test_contract_UpdateNotifications(self):
+        contract = self.contracts['UpdateNotifications']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_UpdateRolesNotifications(self):
+        contract = self.contracts['UpdateRolesNotifications']
+        self.check_contract(contract['code'], contract['asert'])

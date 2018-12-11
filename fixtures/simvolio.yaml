@@ -12,6 +12,30 @@ dbFind:
       }
     }
   asert: "admin_index"
+  
+  
+Throw:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+      	var val int
+      	val = 10
+        if val > 5 {
+        	Throw("Problem", "There is some problem")
+        }
+      }
+    }
+  asert: {
+            'blockid': '',
+            'errmsg': {
+                'type': 'exception',
+                'error': 'There is some problem',
+                'id': 'Problem'
+            },
+            'result': '',
+        }
 
 
 toUpper:
@@ -794,7 +818,10 @@ dbUpdateExt:
       data {}
       conditions {}
       action {
-        DBUpdateExt("test", "name", "block2", {test: "updatedByName"})
+        DBUpdateExt("test", {id: 1}, {test: "updatedById=1"})
+        DBUpdateExt("test", {id: 2}, {test: "updatedById=2"})
+        DBUpdateExt("test", {test: "updatedById=2"}, {test: "updatedByName"})
+        DBUpdateExt("test", {"$and": [{id:{"$gte": 3}}, {id:{"$lte": 5}}]}, {test: "updateIdBetween3-5"})
       }
     }
   asert: ""
@@ -962,6 +989,19 @@ types_of_data_incorrect:
       action {}
     }
   asert: "expecting type of the data field [Ln:4 Col:17]"
+  
+  
+del_table:
+  code: |
+    {
+      data {
+        table string
+      }
+      action {
+        DelTable($table)
+      }
+    }
+  asert: ""
 
 
 transactionInfo:
@@ -976,3 +1016,85 @@ transactionInfo:
     }
   asert: '"contract":"@1NewContract","params":{"ApplicationId":1'
 
+
+del_column:
+  code: |
+    {
+      data {
+        table, col string
+      }
+      action {
+        DelColumn($table, $col)
+      }
+    }
+  asert: ""
+
+
+PubToHex:
+  code: |
+    {
+      data {}
+      action {
+        $pub = "0471b6167bba75995f003720f9951fca9cfe8c926bcfc4c42c54a29460cbf7e20f29b1e2cd82e7238c191598c2bf349ffe60fefe3b429dd75e5f087a77ef4465b2"
+        $hex = PubToHex(StringToBytes($pub))
+        $result = $hex
+      }
+    }
+  asert: "303437316236313637626261373539393566303033373230663939353166636139636665386339323662636663346334326335346132393436306362663765323066323962316532636438326537323338633139313539386332626633343966666536306665666533623432396464373565356630383761373765663434363"
+
+
+HexToPub:
+  code: |
+    {
+      data {}
+      action {
+        $pub = "0471b6167bba75995f003720f9951fca9cfe8c926bcfc4c42c54a29460cbf7e20f29b1e2cd82e7238c191598c2bf349ffe60fefe3b429dd75e5f087a77ef4465b2"
+        $hex_pub = StringToBytes($pub)
+        $hex = PubToHex($hex_pub)
+        $new_pub = HexToPub($hex)
+        if Str($hex_pub) == Str($new_pub) {
+          $result  = "True"
+        }
+      }
+    }
+  asert: "True"
+
+
+UpdateNotifications:
+  code: |
+    {
+      data {}
+      action {
+        var users array
+        $u1 = 8329652236040743282
+        $u2 = 8329652236040743283
+        users[0] = $u1
+        users[1] = $u2
+        UpdateNotifications(1, users)
+        UpdateNotifications(1, $u1, $u2)
+        UpdateNotifications(1, [$u1, $u2])
+        $result = "True"
+      }
+    }
+  asert: "True"
+
+
+UpdateRolesNotifications:
+  code: |
+    {
+      data {}
+      action {
+        var roles array
+        $r1 = 1
+        $r2 = 2
+        $r3 = 3
+        roles[0] = $r1
+        roles[1] = $r2
+        roles[2] = $r3
+        UpdateRolesNotifications(1, roles)
+        UpdateRolesNotifications(1, $r1, $r2, $r3)
+        UpdateRolesNotifications(1, [$r1, $r2, $r3])
+        $result = "True"
+      }
+    }
+  asert: "True"
