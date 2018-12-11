@@ -1004,6 +1004,19 @@ del_table:
   asert: ""
 
 
+transactionInfo:
+  code: |
+    {
+      data {
+        Myhash string
+      }
+      action {
+        $result = TransactionInfo($Myhash)
+      }
+    }
+  asert: '"contract":"@1NewContract","params":{"ApplicationId":1'
+
+
 del_column:
   code: |
     {

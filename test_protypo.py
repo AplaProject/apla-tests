@@ -1024,3 +1024,16 @@ class TestPrototipo():
         part_content = content['tree'][0]['attr']['data'][0]
         self.uni.assertIn(replaced_string, str(part_content),
                           'getHistoryContract has problem: ' + str(content['tree']))
+
+
+    def test_transactionInfo(self):
+        # it test has not fixture
+        res = contract.new_contract(self.url,
+                                    self.pr_key,
+                                    self.token)
+        content = self.check_page(
+            'Span(TransactionInfo({hash}))'.format(hash=res['hash']))
+        part_content = content['tree'][0]['children'][0]['text']
+        expected_str = '"contract":"@1NewContract","params":{"ApplicationId":1'
+        self.uni.assertIn(expected_str, str(part_content),
+                          'transactionInfo has problem: ' + str(content['tree']))
