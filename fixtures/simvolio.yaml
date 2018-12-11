@@ -27,7 +27,15 @@ Throw:
         }
       }
     }
-  asert: "{'blockid': '', 'errmsg': {'type': 'exception', 'error': 'There is some problem', 'id': 'Problem'}, 'result': ''}}"
+  asert: {
+            'blockid': '',
+            'errmsg': {
+                'type': 'exception',
+                'error': 'There is some problem',
+                'id': 'Problem'
+            },
+            'result': '',
+        }
 
 
 toUpper:
