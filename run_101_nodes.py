@@ -37,13 +37,15 @@ for node in nodes:
 
 #TODO run new node
     curDir = os.path.dirname(os.path.abspath(__file__))
-    script_path = os.path.join(curDir, 'scripts\\add_new_node.py')
+    script_path = os.path.join(curDir, '101\\reinit.yml')
+    hosts_path = os.path.join(curDir, '101\\hosts')
     start_n = subprocess.Popen([
-        'python',
+        'ansible-playbook',
+        '-i',
+        hosts_path,
         script_path,
-        '-action=start',
-        '-binary=D:\genesis\go-genesis.exe'
-])
+        '-l',
+        node['db']['dbHost']])
 #compare_blocks
     node_conf = tools.read_config('nodes')
     wait = tools.read_config('test')['wait_upating_node']
