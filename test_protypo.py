@@ -106,6 +106,22 @@ class TestPrototipo():
         self.uni.assertDictEqual(
             must_be, page, 'now has problem: ' + str(content['tree']))
 
+    def test_page_addToolButton_popup(self):
+        cont = self.pages['addToolButtonPopup']
+        content = self.check_page(cont['code'])
+        part_content = content['tree']
+        contract_content = cont['content']
+        must_be = dict(tag=part_content[0]['tag'],
+                       title=part_content[0]['attr']['title'],
+                       popupHeader=part_content[0]['attr']['popup']['header'],
+                       popupWidth=part_content[0]['attr']['popup']['width'])
+        page = dict(tag=contract_content[0]['tag'],
+                    title=contract_content[0]['attr']['title'],
+                    popupHeader=contract_content[0]['attr']['popup']['header'],
+                    popupWidth=contract_content[0]['attr']['popup']['width'])
+        self.uni.assertDictEqual(
+            must_be, page, 'now has problem: ' + str(content['tree']))
+
     def test_page_selectorFromDB(self):
         cont = self.pages['selectorFromDB']
         content = self.check_page(cont['code'])

@@ -93,6 +93,24 @@
 			  }
 			]
 	},
+	"addToolButtonPopup":{
+		"code": "AddToolButton(Title: popup, Page: not_page, Icon: icon-plus).Popup(Header: request, Width: \"30\")",
+		"Menu": "default_menu",
+		"content": [
+			  {
+				  "tag": "addtoolbutton",
+				  "attr": {
+					"icon": "icon-plus",
+					"page": "not_page",
+					"popup": {
+					  "header": "request",
+					  "width": "30"
+					},
+					"title": "popup"
+				  }
+				}
+			]
+	},
     "selectorFromDB":{
 		"code": "DBFind(\"menu\", data) %n Select(MySelect, data, \"name\")",
 		"menu": "default_menu",
