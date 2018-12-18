@@ -237,6 +237,35 @@ class TestPrototipo():
         self.uni.assertEqual(part['attr'], cont['content']['attr'],
                              'show has problem: ' + str(content['tree']))
 
+    def test_page_varAsIs(self):
+        cont = self.pages['varAsIs']
+        contract_content = cont['content']
+        content = self.check_page(cont['code'])
+        part_content = content['tree']
+        required_tag_num = self.find_position_element_in_tree(
+            content['tree'], 'span')
+        span = part_content[required_tag_num]
+        required_tag_num = self.find_position_element_in_tree(
+            content['tree'], 'em')
+        em = part_content[required_tag_num]
+        required_tag_num = self.find_position_element_in_tree(
+            content['tree'], 'div')
+        div = part_content[required_tag_num]
+        must_be = dict(tagSpan=contract_content[0]['tag'],
+                       childrenSpanText=contract_content[0]['children'][0]['text'],
+                       tagEm=contract_content[1]['tag'],
+                       childrenEmText=contract_content[1]['children'][0]['text'],
+                       tagDiv=contract_content[2]['tag'],
+                       childrenDivText=contract_content[2]['children'][0]['text'])
+        page = dict(tagSpan=span['tag'],
+                    childrenSpanText=span['children'][0]['text'],
+                    tagEm=em['tag'],
+                    childrenEmText=em['children'][0]['text'],
+                    tagDiv=div['tag'],
+                    childrenDivText=div['children'][0]['text'])
+        self.uni.assertDictEqual(must_be, page,
+                                 'varAsIs has problem: ' + str(content['tree']))
+
     def test_page_setVar(self):
         cont = self.pages['setVar']
         content = self.check_page(cont['code'])
