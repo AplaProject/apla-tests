@@ -399,5 +399,14 @@ def config_centrifugo(url, token):
     return call_get_api(url, data, token)
 
 
+def page_validators_count(url, token, name):
+    data = {}
+    endpoint = '/page/validators_count/{name}'.format(
+        name=name
+    )
+    url += endpoint
+    return call_get_api(url, data, token)
+
+
 if __name__ == 'main':
     pass
