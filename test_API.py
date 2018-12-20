@@ -890,3 +890,35 @@ class TestApi():
             actual_user[el['id']] = el['title']
         self.unit.assertEqual(expected_admin, actual_admin, 'Dict admin is not equals')
         self.unit.assertEqual(expected_user, actual_user, 'Dict user is not equals')
+
+    def test_page_validators_count(self):
+        token = ''
+        asserts = ['validate_count']
+        page = '@1default_page'
+        res = api.page_validators_count(self.url, token, page)
+        self.check_result(res, asserts)
+        self.unit.assertEqual(res['validate_count'], 1,
+                              'page_validators_count is not equal')
+
+    def test_page_validators_count_in_new_ecosystem(self):
+        # create new ecosystem
+        tx = contract.new_ecosystem(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        ecos_num = actions.get_count(self.url, 'ecosystems', self.token)
+        # test
+        token = ''
+        asserts = ['validate_count']
+        page = '@{}default_page'.format(ecos_num)
+        res = api.page_validators_count(self.url, token, page)
+        self.check_result(res, asserts)
+        self.unit.assertEqual(res['validate_count'], 1,
+                              'page_validators_count_in_new_ecosystem is not equal')
+
+    def test_page_validators_count_incorrect(self):
+        token = ''
+        asserts = ['error', 'msg']
+        name = 'not_exist_page_xxxxxxxxxxxxxx'
+        res = api.page_validators_count(self.url, token, name)
+        error = 'E_NOTFOUND'
+        msg = 'Page not found'
+        self.check_result(res, asserts, error, msg)
