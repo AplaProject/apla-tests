@@ -18,7 +18,7 @@ def set_level(level):
     }.get(level)
 
 
-def create_loger(name, filename='tests.log', console_level='ERROR', file_level='DEBUG'):
+def create_loger(name, filename='tests.log', console_level='DEBUG', file_level='DEBUG'):
     module_dir = os.path.dirname(os.path.abspath(__file__))
     log_path = os.path.join(module_dir, '..', 'logs', filename)
 
