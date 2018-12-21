@@ -145,22 +145,6 @@ class TestPrototipo():
         self.uni.assertDictEqual(must_be, page,
                                  'selectorFromData has problem: ' + str(content['tree']))
 
-    def test_page_now(self):
-        cont = self.pages['now']
-        content = self.check_page(cont['code'])
-        contract_content = cont['content']
-        part_content = content['tree'][0]
-        must_be = dict(tagOwner=contract_content['tag'],
-                       tag=contract_content['children'][0]['tag'],
-                       format=contract_content['children'][0]['attr']['format'],
-                       interval=contract_content['children'][0]['attr']['interval'])
-        page = dict(tagOwner=part_content['tag'],
-                    tag=part_content['children'][0]['tag'],
-                    format=part_content['children'][0]['attr']['format'],
-                    interval=part_content['children'][0]['attr']['interval'])
-        self.uni.assertDictEqual(
-            must_be, page, 'now has problem: ' + str(content['tree']))
-
     def test_page_divs(self):
         cont = self.pages['divs']
         content = self.check_page(cont['code'])
