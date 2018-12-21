@@ -88,7 +88,7 @@ class TestPrototipo():
                     compositeData=contract_content[0]['attr']['composite'][0]['data'][0],
                     text=contract_content[0]['children'][0]['text'])
         self.uni.assertDictEqual(
-            must_be, page, 'now has problem: ' + str(content['tree']))
+            must_be, page, 'button_composite_contract has problem: ' + str(content['tree']))
 
     def test_page_button_popup(self):
         cont = self.pages['buttonPopup']
@@ -104,7 +104,7 @@ class TestPrototipo():
                     popupWidth=contract_content[0]['attr']['popup']['width'],
                     text=contract_content[0]['children'][0]['text'])
         self.uni.assertDictEqual(
-            must_be, page, 'now has problem: ' + str(content['tree']))
+            must_be, page, 'button_popup has problem: ' + str(content['tree']))
 
     def test_page_addToolButton_popup(self):
         cont = self.pages['addToolButtonPopup']
@@ -120,7 +120,7 @@ class TestPrototipo():
                     popupHeader=contract_content[0]['attr']['popup']['header'],
                     popupWidth=contract_content[0]['attr']['popup']['width'])
         self.uni.assertDictEqual(
-            must_be, page, 'now has problem: ' + str(content['tree']))
+            must_be, page, 'addToolButton_popup has problem: ' + str(content['tree']))
 
     def test_page_selectorFromDB(self):
         cont = self.pages['selectorFromDB']
