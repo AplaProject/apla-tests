@@ -132,22 +132,6 @@
 		"menu": "default_menu",
 		"content": ""
 	},
-    "now":{
-		"code": "Div(,Now(datetime,-3 hours))",
-		"menu": "default_menu",
-		"content":  {
-			  "tag": "div",
-			  "children": [
-				{
-				  "tag": "now",
-				  "attr": {
-					"format": "datetime",
-					"interval": "-3 hours"
-				  }
-				}
-			  ]
-			}
-	},
 	"divs":{
 		"code": "Div(content-wrapper){ %n Div(panel panel-primary){ %n Div(panel-heading, Header) %n }}",
 		"menu": "default_menu",
