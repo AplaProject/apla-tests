@@ -442,7 +442,7 @@ def create_voiting(tcp_address, api_address, key_id, pub_key, url, pr_key, token
     if check.is_tx_in_block(url, wait, {'hash': call}, token) < 1:
         log.error('VotingNodeAdd is failed')
         exit(1)
-
+        
 
 def voting_status_update(url, pr_key, token, wait):
     log.info('VotingStatusUpdate started')

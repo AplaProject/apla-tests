@@ -52,17 +52,18 @@ if __name__ == '__main__':
     actions.create_voiting(conf[1]['tcp_address'], conf[1]['api_address'],
                    conf[1]['keyID'], conf[1]['pubKey'],
                    url, pr_key2, token2, wait)
+    id_voting = actions.get_count(url, 'votings', token1)
     actions.voting_status_update(url, pr_key1, token1, wait)
 
     data = actions.login(url, pr_key3, 3)
     token3 = data['jwtToken']
-    actions.voiting(1, url, pr_key3, token3, wait)
+    actions.voiting(id_voting, url, pr_key3, token3, wait)
     data = actions.login(url, pr_key1, 3)
     token1 = data['jwtToken']
-    actions.voiting(1, url, pr_key1, token1, wait)
+    actions.voiting(id_voting, url, pr_key1, token1, wait)
     data = actions.login(url, pr_key2, 3)
     token2 = data['jwtToken']
-    actions.voiting(1, url, pr_key2, token2, wait)
+    actions.voiting(id_voting, url, pr_key2, token2, wait)
 
     log.info('Start create voting 2')
     data = actions.login(url, pr_key3, 3)
@@ -70,17 +71,18 @@ if __name__ == '__main__':
     actions.create_voiting(conf[2]['tcp_address'], conf[2]['api_address'],
                    conf[2]['keyID'], conf[2]['pubKey'],
                    url, pr_key3, token3, wait)
+    id_voting2 = actions.get_count(url, 'votings', token1)
     actions.voting_status_update(url, pr_key1, token1, wait)
 
     data = actions.login(url, pr_key3, 3)
     token3 = data['jwtToken']
-    actions.voiting(2, url, pr_key3, token3, wait)
+    actions.voiting(id_voting2, url, pr_key3, token3, wait)
     data = actions.login(url, pr_key1, 3)
     token1 = data['jwtToken']
-    actions.voiting(2, url, pr_key1, token1, wait)
+    actions.voiting(id_voting2, url, pr_key1, token1, wait)
     data = actions.login(url, pr_key2, 3)
     token2 = data['jwtToken']
-    if actions.voiting(2, url, pr_key2, token2, wait):
+    if actions.voiting(id_voting2, url, pr_key2, token2, wait):
         log.info('Nodes successfully linked')
         exit(0)
     else:
