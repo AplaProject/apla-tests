@@ -711,9 +711,7 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
         # get result from db
         db_res = db.get_all_sorted_records_from_table(self.db1, table)
-        m = hashlib.sha256()
-        m.update(bytes(str(db_res), 'utf-8'))
-        expected_hash = m.hexdigest()
+        expected_hash = tools.get_hash_sha256(str(db_res))
         # test
         expected_list = {}
         actual_list = {}
@@ -741,9 +739,7 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
         # get result from db
         db_res = db.get_all_sorted_records_from_table(self.db1, table)
-        m = hashlib.sha256()
-        m.update(bytes(str(db_res), 'utf-8'))
-        expected_hash = m.hexdigest()
+        expected_hash = tools.get_hash_sha256(str(db_res))
         # test
         expected_list = {}
         actual_list = {}
@@ -768,9 +764,7 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
         # get result from db
         db_res = db.get_all_sorted_records_from_table(self.db1, table)
-        m = hashlib.sha256()
-        m.update(bytes(str(db_res), 'utf-8'))
-        expected_hash = m.hexdigest()
+        expected_hash = tools.get_hash_sha256(str(db_res))
         # test
         expected_list = {}
         actual_list = {}
@@ -787,7 +781,6 @@ class TestSimvolio():
         self.unit.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
 
     def test_dbfind_sorted_user_table(self):
-        table = 'contracts'
         # create user table
         table_name = tools.generate_random_name()
         columns = '''[{"name":"name","type":"varchar",
@@ -811,10 +804,8 @@ class TestSimvolio():
             self.url, self.pr_key, self.token, source=str(contract['code']))
         check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
         # get result from db
-        db_res = db.get_all_sorted_records_from_table(self.db1, table)
-        m = hashlib.sha256()
-        m.update(bytes(str(db_res), 'utf-8'))
-        expected_hash = m.hexdigest()
+        db_res = db.get_all_sorted_records_from_table(self.db1, table_name)
+        expected_hash = tools.get_hash_sha256(str(db_res))
         # test
         expected_list = {}
         actual_list = {}
@@ -822,7 +813,7 @@ class TestSimvolio():
         while i < 10:
             expected_list[i] = expected_hash
             # get result from contract
-            data = {"Table": table}
+            data = {"Table": table_name}
             res = actions.call_contract(
                 self.url, self.pr_key, tx_cont['name'], data, self.token)
             actual_hash = actions.tx_status(self.url, self.wait, res, self.token)['result']
