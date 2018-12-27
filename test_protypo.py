@@ -1,8 +1,9 @@
 import unittest
 import json
 import os
+import hashlib
 
-from libs import actions, tools, contract, check, api
+from libs import actions, tools, contract, check, api, db
 
 
 class TestPrototipo():
@@ -10,6 +11,7 @@ class TestPrototipo():
     pages = tools.read_fixtures('pages')
     url = conf[0]['url']
     pr_key = conf[0]['private_key']
+    db1 = conf[0]['db']
     wait = tools.read_config('test')['wait_tx_status']
 
     @classmethod
@@ -37,7 +39,7 @@ class TestPrototipo():
                              tx, self.token)
         content = actions.get_content(
             self.url, 'page', tx['name'], '', 1, self.token)
-        return content
+        return content, tx['name']
 
     def find_position_element_in_tree(self, content_tree, tag_name):
         i = 0
@@ -1037,3 +1039,146 @@ class TestPrototipo():
         expected_str = '"contract":"@1NewContract","params":{"ApplicationId":1'
         self.uni.assertIn(expected_str, str(part_content),
                           'transactionInfo has problem: ' + str(content['tree']))
+
+    def test_DBFindSortedKeys(self):
+        table = 'keys'
+        # create new ecosystem
+        tx_ecos = contract.new_ecosystem(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_ecos, self.token)
+        # get data from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        # get hash from data
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        cont = self.pages['DBFindSortedKeys']
+        # create page with content
+        _, page_name = self.check_page(cont['code'])
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get content from page
+            content = actions.get_content(
+                self.url, 'page', page_name, '', 1, self.token)
+            dbfind_list = []
+            dbfind_data = content['tree'][0]['attr']['data']
+            for el in dbfind_data:
+                id = int(el[0])
+                ecos = int(el[1])
+                t = (id, ecos)
+                dbfind_list.append(t)
+            actual_hash = tools.get_hash_sha256(str(dbfind_list))
+            actual_list[i] = actual_hash
+            i += 1
+        self.uni.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
+
+    def test_DBFindSortedMembers(self):
+        table = 'members'
+        # create new ecosystem
+        tx_ecos = contract.new_ecosystem(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_ecos, self.token)
+        # get data from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        # get hash from data
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        cont = self.pages['DBFindSortedMembers']
+        # create page with content
+        _, page_name = self.check_page(cont['code'])
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get content from page
+            content = actions.get_content(
+                self.url, 'page', page_name, '', 1, self.token)
+            dbfind_list = []
+            dbfind_data = content['tree'][0]['attr']['data']
+            for el in dbfind_data:
+                id = int(el[0])
+                ecos = int(el[1])
+                t = (id, ecos)
+                dbfind_list.append(t)
+            actual_hash = tools.get_hash_sha256(str(dbfind_list))
+            actual_list[i] = actual_hash
+            i += 1
+        self.uni.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
+
+    def test_DBFindSortedPages(self):
+        table = 'pages'
+        # create page with content
+        cont = self.pages['DBFindSortedPages']
+        _, page_name = self.check_page(cont['code'])
+        # get data from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        # get hash from data
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get content from page
+            content = actions.get_content(
+                self.url, 'page', page_name, '', 1, self.token)
+            dbfind_list = []
+            dbfind_data = content['tree'][0]['attr']['data']
+            for el in dbfind_data:
+                id = int(el[0])
+                name = el[1]
+                t = (id, name)
+                dbfind_list.append(t)
+            actual_hash = tools.get_hash_sha256(str(dbfind_list))
+            actual_list[i] = actual_hash
+            i += 1
+        self.uni.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
+
+    def test_DBFindSortedUserTable(self):
+        # create user table
+        table = tools.generate_random_name()
+        columns = '''[{"name":"name","type":"varchar",
+                       "index": "1",  "conditions":"true"}]'''
+        tx_cont = contract.new_table(
+            self.url, self.pr_key, self.token, name=table, columns=columns)
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # create new contract for insert data in user table
+        contr = tools.read_fixtures_yaml('simvolio')
+        cont = contr['DBFindSortedUserTable']
+        tx_cont = contract.new_contract(
+            self.url, self.pr_key, self.token, source=str(cont['code']))
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # call contract, which insert data in user table
+        data = {"TableName": table}
+        res = actions.call_contract(
+            self.url, self.pr_key, tx_cont['name'], data, self.token)
+        actions.tx_status(self.url, self.wait, res, self.token)['result']
+        # create page with content
+        page_value = 'DBFind("{}").Columns("id,name").Limit(250)'.format(table)
+        _, page_name = self.check_page(page_value)
+        # get data from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        # get hash from data
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get content from page
+            content = actions.get_content(
+                self.url, 'page', page_name, '', 1, self.token)
+            dbfind_list = []
+            dbfind_data = content['tree'][0]['attr']['data']
+            for el in dbfind_data:
+                id = int(el[0])
+                name = el[1]
+                t = (id, name)
+                dbfind_list.append(t)
+            actual_hash = tools.get_hash_sha256(str(dbfind_list))
+            actual_list[i] = actual_hash
+            i += 1
+        self.uni.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
