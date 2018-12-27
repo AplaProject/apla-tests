@@ -703,7 +703,6 @@ class TestSimvolio():
         contract = self.contracts['NotValidStringUTF8']
         tx = contracts.new_contract(self.url, self.pr_key, self.token, source=contract['code'])
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        # test
         msg = contract['asert']
         tx_call = actions.call_contract(self.url, self.pr_key, tx['name'], {}, self.token)
         status = actions.tx_status(self.url, self.wait, tx_call, self.token)
