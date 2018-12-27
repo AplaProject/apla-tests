@@ -907,5 +907,20 @@
 		"code": "ArrayToSource(dat, [\"hello\", \"my name\",\"is Billy\"])",
 		"menu": "default_menu",
 		"content": {}
+	},
+	"DBFindSortedKeys": {
+		"code": "DBFind(\"keys\").Columns(\"id,ecosystem\").Limit(250)",
+		"menu": "default_menu",
+		"content": {}
+	},
+	"DBFindSortedMembers": {
+		"code": "DBFind(\"members\").Columns(\"id,ecosystem\").Limit(250)",
+		"menu": "default_menu",
+		"content": {}
+	},
+	"DBFindSortedPages": {
+		"code": "DBFind(\"pages\").Columns(\"id,name\").Limit(250)",
+		"menu": "default_menu",
+		"content": {}
 	}
 }
