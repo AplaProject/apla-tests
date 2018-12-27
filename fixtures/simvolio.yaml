@@ -1117,13 +1117,11 @@ DBFindSorted:
         {
           col = "ecosystem"
           ret = DBFind($Table).Columns("id," + col).Limit(250)
-          Println(ret)
         }
         else
         {
           col = "name"
           ret = DBFind($Table).Columns("id," + col).Limit(250)
-          Println(ret)
         }
 
         while i < Len(ret) {
@@ -1146,7 +1144,6 @@ DBFindSorted:
           i = i + 1
         }
         r_str = "[" + r_str + "]"
-        Println(r_str)
         $result = Hash(r_str)
         }
     }
