@@ -399,5 +399,15 @@ def config_centrifugo(url, token):
     return call_get_api(url, data, token)
 
 
+def metrics(url, token, name):
+    # name = [blocks, transactions, ecosystems, keys, fullnodes]
+    data = {}
+    endpoint = '/metrics/{name}'.format(
+        name=name
+    )
+    url += endpoint
+    return call_get_api(url, data, token)
+
+
 if __name__ == 'main':
     pass
