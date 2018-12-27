@@ -709,16 +709,16 @@ class TestSimvolio():
         tx_cont = contracts.new_contract(
             self.url, self.pr_key, self.token, source=str(contract['code']))
         check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # get result from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        m = hashlib.sha256()
+        m.update(bytes(str(db_res), 'utf-8'))
+        expected_hash = m.hexdigest()
         # test
         expected_list = {}
         actual_list = {}
         i = 0
         while i < 10:
-            # get result from db
-            db_res = db.get_all_sorted_records_from_table(self.db1, table)
-            m = hashlib.sha256()
-            m.update(bytes(str(db_res), 'utf-8'))
-            expected_hash = m.hexdigest()
             expected_list[i] = expected_hash
             # get result from contract
             data = {"Table": table}
@@ -739,16 +739,16 @@ class TestSimvolio():
         tx_cont = contracts.new_contract(
             self.url, self.pr_key, self.token, source=str(contract['code']))
         check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # get result from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        m = hashlib.sha256()
+        m.update(bytes(str(db_res), 'utf-8'))
+        expected_hash = m.hexdigest()
         # test
         expected_list = {}
         actual_list = {}
         i = 0
         while i < 10:
-            # get result from db
-            db_res = db.get_all_sorted_records_from_table(self.db1, table)
-            m = hashlib.sha256()
-            m.update(bytes(str(db_res), 'utf-8'))
-            expected_hash = m.hexdigest()
             expected_list[i] = expected_hash
             # get result from contract
             data = {"Table": table}
@@ -766,16 +766,16 @@ class TestSimvolio():
         tx_cont = contracts.new_contract(
             self.url, self.pr_key, self.token, source=str(contract['code']))
         check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # get result from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        m = hashlib.sha256()
+        m.update(bytes(str(db_res), 'utf-8'))
+        expected_hash = m.hexdigest()
         # test
         expected_list = {}
         actual_list = {}
         i = 0
         while i < 10:
-            # get result from db
-            db_res = db.get_all_sorted_records_from_table(self.db1, table)
-            m = hashlib.sha256()
-            m.update(bytes(str(db_res), 'utf-8'))
-            expected_hash = m.hexdigest()
             expected_list[i] = expected_hash
             # get result from contract
             data = {"Table": table}
@@ -810,16 +810,16 @@ class TestSimvolio():
         tx_cont = contracts.new_contract(
             self.url, self.pr_key, self.token, source=str(contract['code']))
         check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # get result from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        m = hashlib.sha256()
+        m.update(bytes(str(db_res), 'utf-8'))
+        expected_hash = m.hexdigest()
         # test
         expected_list = {}
         actual_list = {}
         i = 0
         while i < 10:
-            # get result from db
-            db_res = db.get_all_sorted_records_from_table(self.db1, table)
-            m = hashlib.sha256()
-            m.update(bytes(str(db_res), 'utf-8'))
-            expected_hash = m.hexdigest()
             expected_list[i] = expected_hash
             # get result from contract
             data = {"Table": table}
