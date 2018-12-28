@@ -1,0 +1,45 @@
+
+[
+      {
+      "url": "http://node0.t.genesis.space:7079/api/v2",
+      "private_key": "a6655b9a6b7af3c00ce241190edbe52d8b6324e8dd87bdacfebbe14a87250be7",
+      "keyID": "6575557097789624323",
+      "pubKey": "04ccce2ee97875bdebc15c77946003db89f1a761a6084c6af214642ff6ffd8a200bbb9d5891d22d216c1fd2089cf4b50b918d2d0ad9312ae5c7a92d33a262739f0",
+      "tcp_address": "node0.t.genesis.space:7078",
+      "api_address": "http://node0.t.genesis.space:7079",
+      "db": {
+        "dbHost": "node0.t.genesis.space",
+        "dbName": "apla",
+        "login": "apla",
+        "pass": "apla"
+      }
+    },
+      {
+      "url": "http://node1.t.genesis.space:7079/api/v2",
+      "private_key": "c08c8c2874e067d1354035be9f2c654406801c08f1dafa90ebeaec99b9f7e63f",
+      "keyID": "9123144389785245698",
+      "pubKey": "04f38833389dcda099d50d2c8745adca01dc2d3d229c9f568207dcbf79826cc6efec594e337988011d0aa9a3bf9762acd781579f992f75928fecf2955ac3cb7845",
+      "tcp_address": "node1.t.genesis.space:7078",
+      "api_address": "http://node1.t.genesis.space:7079",
+      "db": {
+        "dbHost": "node1.t.genesis.space",
+        "dbName": "apla",
+        "login": "apla",
+        "pass": "apla"
+      }
+    },
+      {
+      "url": "http://node2.t.genesis.space:7079/api/v2",
+      "private_key": "9f38f0f6c873a8f6c27f85c9eb3e6c4a2174e7d0360933ab029e4bec6be2a9",
+      "keyID": "7187103214916397720",
+      "pubKey": "0441688d485c681cde246db7d9b2dffc60c7519892b25cf96f873dd1b5f44d4863a5d081ed26b8ea601283cd687c681e7e849943bc2688f0a124a5ec8139cf4766",
+      "tcp_address": "node2.t.genesis.space:7078",
+      "api_address": "http://node2.t.genesis.space:7079",
+      "db": {
+        "dbHost": "node2.t.genesis.space",
+        "dbName": "apla",
+        "login": "apla",
+        "pass": "apla"
+      }
+    }
+	]

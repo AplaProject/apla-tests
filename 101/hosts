@@ -1,0 +1,7 @@
+#### DO NOT DELETE!!!
+localhost ansible_connection=local
+#### DO NOT DELETE!!!
+
+
+[101]
+node[0:100].t.genesis.space

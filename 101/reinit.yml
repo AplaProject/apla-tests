@@ -1,0 +1,46 @@
+---
+# reinit nodes
+
+
+- name: reinit nodes
+  hosts: '101'
+  gather_facts: no
+  become: yes
+
+  tasks:
+  - name: stop node
+    supervisorctl:
+      name: go-apla
+      state: stopped
+
+  - block:
+    - name: drop database
+      postgresql_db:
+        name: apla
+        state: absent
+
+    - name: add database
+      postgresql_db:
+        name: apla
+        owner: apla
+        encoding: UTF-8
+        lc_collate: en_US.UTF-8
+        lc_ctype: en_US.UTF-8
+        state: present
+
+    - name: add extensions
+      postgresql_ext:
+        db: apla
+        name: pg_stat_statements
+        state: present
+
+    become_user: postgres
+
+  - name: init database
+    become_user: apla.back
+    command: /srv/apla.back/apla/go-apla initDatabase --config=/srv/apla.back/config.toml
+
+  - name: start node
+    supervisorctl:
+      name: go-apla
+      state: started
