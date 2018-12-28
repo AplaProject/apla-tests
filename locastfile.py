@@ -6,7 +6,7 @@ from genesis_blockchain_tools.contract import Contract
 class WebsiteTasks(TaskSet):
     def on_start(self):
         self.config = tools.read_config('nodes')
-        self.url = self.config[1]['url']
+        self.url = self.parent.host
         self.pause = tools.read_config('test')['wait_tx_status']
         self.pr_key = self.config[0]['private_key']
         self.data = actions.login(self.url, self.pr_key, 0)

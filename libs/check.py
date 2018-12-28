@@ -59,16 +59,14 @@ def compare_db(config, url, token):
     nodes = len(config)
     dbInformation = []
     first_db = actions.get_count_DB_objects(url, token)
-    first_hashes = actions.get_table_hashes(url, token, config[0]['db'])
+    #first_hashes = actions.get_table_hashes(url, token, config[0]['db'])
     i = 1
     while i < nodes:
         current_db = actions.get_count_DB_objects(url, token)
-        current_hashes = actions.get_table_hashes(url, token, config[i]['db'])
-        if current_db != first_db or current_hashes != first_hashes:
+        #current_hashes = actions.get_table_hashes(url, token, config[i]['db'])
+        if current_db != first_db:
             print('Errorin db: Different info about ' + str(current_db) +
-                  ' != ' + str(first_db) + ' current node is ' + str(i) +
-                  'hashes: First: ' + str(first_hashes) + 'current: ' +
-                  str(current_hashes))
+                  ' != ' + str(first_db) + ' current node is ' + str(i))
             return False
         i += 1
     return True

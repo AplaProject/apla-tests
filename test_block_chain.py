@@ -31,15 +31,12 @@ class TestBlockChain():
                                             self.token)
             i = i + 1
             time.sleep(1)
-        time.sleep(120)
+        time.sleep(10)
         amounts_after = actions.get_user_token_amounts(
             self.config1['url'], self.token)
-        expect = {'isTheSameNodes': True, 'isTheSameDB': True,
-                  'sumAmounts': sum_amounts_before}
-        dict = {'isTheSameNodes': check.compare_nodes(self.full_config),
-                'isTheSameDB': check.compare_db(self.full_config, self.config1['url'],
-                                                self.token),
-                'sumAmounts': sum(amounts_after)}
+        expect = {'isTheSameDB': True}
+        dict = {'isTheSameDB': check.compare_db(self.full_config, self.config1['url'],
+                                                self.token)}
         self.uni.assertDictEqual(expect, dict, 'Error in test_block_chain')
 
     def test_block_chain_edit(self):
@@ -64,8 +61,7 @@ class TestBlockChain():
             self.config1['url'], self.token)
         expect = {'isTheSameNodes': True, 'isTheSameDB': True,
                   'sumAmounts': sum_amounts_before}
-        dict = {'isTheSameNodes': check.compare_nodes(self.full_config),
-                'isTheSameDB': check.compare_db(self.full_config, self.config1['url'],
+        dict = {'isTheSameDB': check.compare_db(self.full_config, self.config1['url'],
                                                 self.token),
                 'sumAmounts': sum(amounts_after)}
         self.uni.assertDictEqual(
