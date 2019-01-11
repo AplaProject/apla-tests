@@ -1098,3 +1098,25 @@ UpdateRolesNotifications:
       }
     }
   asert: "True"
+
+
+datetime:
+  code: |
+    {
+      data {}
+      action {
+        $result = DateTime(1532325250)
+      }
+    }
+  asert: "2018-07-23 05:54:10"
+
+
+unixdatetime:
+  code: |
+    {
+      data {}
+      action {
+        $result = UnixDateTime("2018-07-23 05:54:10")
+      }
+    }
+  asert: "1532325250"

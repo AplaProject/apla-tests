@@ -1037,3 +1037,53 @@ class TestPrototipo():
         expected_str = '"contract":"@1NewContract","params":{"ApplicationId":1'
         self.uni.assertIn(expected_str, str(part_content),
                           'transactionInfo has problem: ' + str(content['tree']))
+
+    def test_page_datetime(self):
+        cont = self.pages['datetime']
+        content = self.check_page(cont['code'])
+        part_content = content['tree'][0]
+        contract_content = cont['content']
+        must_be = dict(tag=part_content['tag'],
+                       text=part_content['text'])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['text'])
+        self.uni.assertDictEqual(must_be, page,
+                                 'datetime has problem: ' + str(content['tree']))
+
+    def test_page_datetimeUnix(self):
+        # returns datetime in timezone in which the node is running
+        cont = self.pages['datetimeUnix']
+        content = self.check_page(cont['code'])
+        part_content = content['tree'][0]
+        contract_content = cont['content']
+        must_be = dict(tag=part_content['tag'],
+                       text=part_content['text'])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['text'])
+        self.uni.assertDictEqual(must_be, page,
+                                 'datetimeUnix has problem: ' + str(content['tree']))
+
+    def test_page_cmpTime(self):
+        cont = self.pages['cmpTime']
+        content = self.check_page(cont['code'])
+        part_content = content['tree'][0]
+        contract_content = cont['content']
+        must_be = dict(tag=part_content['tag'],
+                       text=part_content['text'])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['text'])
+        self.uni.assertDictEqual(must_be, page,
+                                 'cmpTime has problem: ' + str(content['tree']))
+
+    def test_page_cmpTimeUnix(self):
+        cont = self.pages['cmpTimeUnix']
+        content = self.check_page(cont['code'])
+        part_content = content['tree'][0]
+        contract_content = cont['content']
+        must_be = dict(tag=part_content['tag'],
+                       text=part_content['text'])
+        page = dict(tag=contract_content['tag'],
+                    text=contract_content['text'])
+        self.uni.assertDictEqual(must_be, page,
+                                 'cmpTimeUnix has problem: ' + str(content['tree']))
+

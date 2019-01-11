@@ -698,3 +698,12 @@ class TestSimvolio():
     def test_contract_UpdateRolesNotifications(self):
         contract = self.contracts['UpdateRolesNotifications']
         self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_datetime(self):
+        # returns datetime in timezone in which the node is running
+        contract = self.contracts['datetime']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_unixdatetime(self):
+        contract = self.contracts['unixdatetime']
+        self.check_contract(contract['code'], contract['asert'])
