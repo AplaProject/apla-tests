@@ -88,7 +88,7 @@ class TestPrototipo():
                     compositeData=contract_content[0]['attr']['composite'][0]['data'][0],
                     text=contract_content[0]['children'][0]['text'])
         self.uni.assertDictEqual(
-            must_be, page, 'now has problem: ' + str(content['tree']))
+            must_be, page, 'button_composite_contract has problem: ' + str(content['tree']))
 
     def test_page_button_popup(self):
         cont = self.pages['buttonPopup']
@@ -104,7 +104,23 @@ class TestPrototipo():
                     popupWidth=contract_content[0]['attr']['popup']['width'],
                     text=contract_content[0]['children'][0]['text'])
         self.uni.assertDictEqual(
-            must_be, page, 'now has problem: ' + str(content['tree']))
+            must_be, page, 'button_popup has problem: ' + str(content['tree']))
+
+    def test_page_addToolButton_popup(self):
+        cont = self.pages['addToolButtonPopup']
+        content = self.check_page(cont['code'])
+        part_content = content['tree']
+        contract_content = cont['content']
+        must_be = dict(tag=part_content[0]['tag'],
+                       title=part_content[0]['attr']['title'],
+                       popupHeader=part_content[0]['attr']['popup']['header'],
+                       popupWidth=part_content[0]['attr']['popup']['width'])
+        page = dict(tag=contract_content[0]['tag'],
+                    title=contract_content[0]['attr']['title'],
+                    popupHeader=contract_content[0]['attr']['popup']['header'],
+                    popupWidth=contract_content[0]['attr']['popup']['width'])
+        self.uni.assertDictEqual(
+            must_be, page, 'addToolButton_popup has problem: ' + str(content['tree']))
 
     def test_page_selectorFromDB(self):
         cont = self.pages['selectorFromDB']
@@ -128,22 +144,6 @@ class TestPrototipo():
                     selectSourse=content['tree'][2]['attr']['source'])
         self.uni.assertDictEqual(must_be, page,
                                  'selectorFromData has problem: ' + str(content['tree']))
-
-    def test_page_now(self):
-        cont = self.pages['now']
-        content = self.check_page(cont['code'])
-        contract_content = cont['content']
-        part_content = content['tree'][0]
-        must_be = dict(tagOwner=contract_content['tag'],
-                       tag=contract_content['children'][0]['tag'],
-                       format=contract_content['children'][0]['attr']['format'],
-                       interval=contract_content['children'][0]['attr']['interval'])
-        page = dict(tagOwner=part_content['tag'],
-                    tag=part_content['children'][0]['tag'],
-                    format=part_content['children'][0]['attr']['format'],
-                    interval=part_content['children'][0]['attr']['interval'])
-        self.uni.assertDictEqual(
-            must_be, page, 'now has problem: ' + str(content['tree']))
 
     def test_page_divs(self):
         cont = self.pages['divs']
@@ -1024,3 +1024,16 @@ class TestPrototipo():
         part_content = content['tree'][0]['attr']['data'][0]
         self.uni.assertIn(replaced_string, str(part_content),
                           'getHistoryContract has problem: ' + str(content['tree']))
+
+
+    def test_transactionInfo(self):
+        # it test has not fixture
+        res = contract.new_contract(self.url,
+                                    self.pr_key,
+                                    self.token)
+        content = self.check_page(
+            'Span(TransactionInfo({hash}))'.format(hash=res['hash']))
+        part_content = content['tree'][0]['children'][0]['text']
+        expected_str = '"contract":"@1NewContract","params":{"ApplicationId":1'
+        self.uni.assertIn(expected_str, str(part_content),
+                          'transactionInfo has problem: ' + str(content['tree']))

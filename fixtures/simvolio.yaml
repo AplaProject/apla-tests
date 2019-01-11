@@ -818,7 +818,10 @@ dbUpdateExt:
       data {}
       conditions {}
       action {
-        DBUpdateExt("test", "name", "block2", {test: "updatedByName"})
+        DBUpdateExt("test", {id: 1}, {test: "updatedById=1"})
+        DBUpdateExt("test", {id: 2}, {test: "updatedById=2"})
+        DBUpdateExt("test", {test: "updatedById=2"}, {test: "updatedByName"})
+        DBUpdateExt("test", {"$and": [{id:{"$gte": 3}}, {id:{"$lte": 5}}]}, {test: "updateIdBetween3-5"})
       }
     }
   asert: ""
@@ -999,6 +1002,19 @@ del_table:
       }
     }
   asert: ""
+
+
+transactionInfo:
+  code: |
+    {
+      data {
+        Myhash string
+      }
+      action {
+        $result = TransactionInfo($Myhash)
+      }
+    }
+  asert: '"contract":"@1NewContract","params":{"ApplicationId":1'
 
 
 del_column:

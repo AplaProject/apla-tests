@@ -93,6 +93,24 @@
 			  }
 			]
 	},
+	"addToolButtonPopup":{
+		"code": "AddToolButton(Title: popup, Page: not_page, Icon: icon-plus).Popup(Header: request, Width: \"30\")",
+		"Menu": "default_menu",
+		"content": [
+			  {
+				  "tag": "addtoolbutton",
+				  "attr": {
+					"icon": "icon-plus",
+					"page": "not_page",
+					"popup": {
+					  "header": "request",
+					  "width": "30"
+					},
+					"title": "popup"
+				  }
+				}
+			]
+	},
     "selectorFromDB":{
 		"code": "DBFind(\"menu\", data) %n Select(MySelect, data, \"name\")",
 		"menu": "default_menu",
@@ -113,22 +131,6 @@
 		"code": "Data(myData, \"gender\"){\"Men\", \"Women\", \"Between\"} %n Select(mySelect, myData, \"gender\")",
 		"menu": "default_menu",
 		"content": ""
-	},
-    "now":{
-		"code": "Div(,Now(datetime,-3 hours))",
-		"menu": "default_menu",
-		"content":  {
-			  "tag": "div",
-			  "children": [
-				{
-				  "tag": "now",
-				  "attr": {
-					"format": "datetime",
-					"interval": "-3 hours"
-				  }
-				}
-			  ]
-			}
 	},
 	"divs":{
 		"code": "Div(content-wrapper){ %n Div(panel panel-primary){ %n Div(panel-heading, Header) %n }}",
@@ -900,5 +902,10 @@
 				]
 			  }
 			}
+	},
+	"transactionInfo": {
+		"code": "ArrayToSource(dat, [\"hello\", \"my name\",\"is Billy\"])",
+		"menu": "default_menu",
+		"content": {}
 	}
 }

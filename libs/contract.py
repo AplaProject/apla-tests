@@ -414,3 +414,50 @@ def platform_apps_install(url, pr_key, token, ecosystem=1):
     res = actions.call_contract(url, pr_key, '@1PlatformAppsInstall',
                                 {}, token, ecosystem=ecosystem)
     return {'hash': res}
+
+def new_section(url, pr_key, token, title='',
+                status='1', urlname='', page='default_page', ecosystem=1):
+    if not title:
+        title = 'Sec_' + tools.generate_random_name()
+    if not urlname:
+        urlname = 'url_' + tools.generate_random_name()
+    data = {
+        'title': title,
+        'status': status,
+        'urlname': urlname,
+        'page': page
+    }
+    res = actions.call_contract(url, pr_key, '@1NewSection',
+                                data, token, ecosystem=ecosystem)
+    result = {'hash': res,
+              'name': title}
+    return result
+
+def edit_section(url, pr_key, token, id, title='',
+                status='1', urlname='', page='default_page', ecosystem=1):
+    if not title:
+        title = 'Sec_' + tools.generate_random_name()
+    if not urlname:
+        urlname = 'url_' + tools.generate_random_name()
+    data = {
+        'id': id,
+        'title': title,
+        'status': status,
+        'urlname': urlname,
+        'page': page
+    }
+    res = actions.call_contract(url, pr_key, '@1EditSection',
+                                data, token, ecosystem=ecosystem)
+    return {'hash': res}
+
+def section_roles(url, pr_key, token,
+                  id, rid, operation='add', ecosystem=1):
+    data = {
+        'id': id,
+        'rid': rid,
+        'operation': operation,
+
+    }
+    res = actions.call_contract(url, pr_key, '@1SectionRoles',
+                                data, token, ecosystem=ecosystem)
+    return {'hash': res}
