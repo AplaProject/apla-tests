@@ -1,5 +1,7 @@
 import unittest
 import os
+import hashlib
+import requests
 
 from libs import actions, tools, api, check, contract
 
@@ -640,3 +642,250 @@ class TestApi():
         error = 'E_PARAMNOTFOUND'
         msg = 'Parameter name has not been found'
         self.check_result(res, asserts, error, msg)
+
+    def test_compare_hashes(self):
+        # Create new page for test
+        name = 'Page_' + tools.generate_random_name()
+        val = '''
+            Div(Body: "New value of parameter - #test#)
+            DBFind("contracts", src)
+            Div(Body: "New value of parameter - #test#)
+            DBFind("pages", src1)
+            Div(Body: "New value of parameter - #test#)
+            DBFind("blocks", src1)
+            Div(,If(#role_id# == 0){Span(true)}.Else{Span(false)})
+            Div(,If(#test# == 0){Span(#test#)}.Else{Span(false)})
+            Div(,If(#test# == 1){Span(#test#)}.Else{Span(false)})
+            Div(,If(#test# == 2){Span(#test#)}.Else{Span(false)})
+            Div(,If(#test# == 3){Span(#test#)}.Else{Span(false)})
+            Div(,If(#test# == 4){Span(#test#)}.Else{Span(false)})
+            DBFind("contracts", src)
+            Div(,If(#test# != 0){Span(true0)}.Else{Div(#test#)})
+            Div(,If(#test# != 1){Span(true1)}.Else{Div(#test#)})
+            Div(,If(#test# != 2){Span(true2)}.Else{Div(#test#)})
+            Div(,If(#test# != 3){Span(true3)}.Else{Div(#test#)})
+            Div(,If(#test# != 4){Span(true4)}.Else{Div(#test#)})
+            Div(, Calculate(10000-(34+5)*#test#))
+        '''
+        res = contract.new_page(self.url, self.pr_key, self.token, name=name, value=val)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        # Function, which get hashes
+        def get_hashes(test):
+            # Get content from page for getting hash
+            founderID = actions.get_parameter_value(self.url, 'founder_account', self.token)
+            my_login = actions.login(self.url, self.pr_key, role=0, ecosystem=1)
+            token1 = my_login['jwtToken']
+            data_content = {
+                'test': test,
+                'lang': 'en',
+                'ecosystem': 1,
+                'keyID': founderID,
+                'roleID': 0,
+            }
+            full_url = self.url + '/content/page/' + name
+            res = requests.post(full_url, params=data_content, headers={'Authorization': token1})
+            m = hashlib.sha256()
+            m.update(res.content)
+            sha = m.hexdigest()
+            # Get hash from page
+            full_url = self.url + '/content/hash/' + name
+            hash = requests.post(full_url, params=data_content)
+            hash = hash.json()
+            return sha, hash['hash']
+
+        sha_list = {}
+        hash_list = {}
+        i = 0
+        while i < 100:
+            sha_from_content, hash = get_hashes(str(i))
+            sha_list[i] = sha_from_content
+            hash_list[i] = hash
+            i += 1
+        self.unit.assertDictEqual(sha_list, hash_list, 'Hashes is not equals')
+
+    def test_appcontent_in_first_ecosystem(self):
+        app_id = 1
+        expected = {
+            'blocks': len(actions.get_list(self.url, 'blocks', self.token, app_id)['list']),
+            'pages': len(actions.get_list(self.url, 'pages', self.token, app_id)['list']),
+            'contracts': len(actions.get_list(self.url, 'contracts', self.token, app_id)['list'])
+        }
+        asserts = ['blocks', 'pages', 'contracts']
+        res = api.appcontent(self.url, self.token, appid=app_id, ecosystem=1)
+        actual = {
+            'blocks': len(res['blocks']),
+            'pages': len(res['pages']),
+            'contracts': len(res['contracts'])
+        }
+        self.check_result(res, asserts)
+        self.unit.assertEqual(expected, actual, 'Dict is nor equals')
+
+    def test_appcontent_in_new_ecosystem(self):
+        # create new ecosystem
+        res = contract.new_ecosystem(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        ecos_id = actions.get_count(self.url, 'ecosystems', self.token)
+        new_data = actions.login(self.url, self.pr_key, ecosystem=ecos_id)
+        new_token = new_data['jwtToken']
+        app_id = actions.get_list(self.url, 'applications', new_token)['list'][0]['id']
+        # test
+        expected = {
+            'blocks': int(actions.get_count(self.url, 'blocks', new_token)),
+            'pages': int(actions.get_count(self.url, 'pages', new_token)),
+            'contracts': int(actions.get_count(self.url, 'contracts', new_token))
+        }
+        asserts = ['blocks', 'pages', 'contracts']
+        res = api.appcontent(self.url, self.token, appid=app_id, ecosystem=ecos_id)
+        actual = {
+            'blocks': len(res['blocks']),
+            'pages': len(res['pages']),
+            'contracts': len(res['contracts'])
+        }
+        self.check_result(res, asserts)
+        self.unit.assertEqual(expected, actual, 'Dict is nor equals')
+
+    def test_appcontent_in_new_app(self):
+        # create new app
+        res = contract.new_application(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        app_id = int(actions.get_object_id(self.url, res['name'], 'applications', self.token))
+        res = contract.new_contract(self.url, self.pr_key, self.token, app=app_id)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        res = contract.new_block(self.url, self.pr_key, self.token, app_id=app_id)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        res = contract.new_page(self.url, self.pr_key, self.token, app_id=app_id)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        # test
+        expected = {
+            'blocks': len(actions.get_list(self.url, 'blocks', self.token, app_id)['list']),
+            'pages': len(actions.get_list(self.url, 'pages', self.token, app_id)['list']),
+            'contracts': len(actions.get_list(self.url, 'contracts', self.token, app_id)['list'])
+        }
+        asserts = ['blocks', 'pages', 'contracts']
+        res = api.appcontent(self.url, self.token, app_id, ecosystem=1)
+        actual = {
+            'blocks': len(res['blocks']),
+            'pages': len(res['pages']),
+            'contracts': len(res['contracts'])
+        }
+        self.check_result(res, asserts)
+        self.unit.assertEqual(expected, actual, 'Dict is nor equals')
+
+    def test_appcontent_incorrect_ecosystem(self):
+        asserts = ['error', 'msg']
+        ecos_id = 9999
+        res = api.appcontent(self.url, self.token, appid=1, ecosystem=ecos_id)
+        error = 'E_ECOSYSTEM'
+        msg = "Ecosystem {} doesn't exist".format(ecos_id)
+        self.check_result(res, asserts, error, msg)
+
+    def test_block(self):
+        asserts = ['hash',
+                   'ecosystem_id',
+                   'key_id',
+                   'time',
+                   'tx_count',
+                   'rollbacks_hash',
+                   'node_position']
+        id = 1
+        res = api.block(self.url, self.token, id)
+        self.check_result(res, asserts)
+
+    def test_block_incorrect(self):
+        asserts = ['error', 'msg']
+        id = 9999
+        res = api.block(self.url, self.token, id)
+        error = 'E_NOTFOUND'
+        msg = 'Page not found'
+        self.check_result(res, asserts, error, msg)
+
+    def test_get_sections(self):
+        asserts = ['count', 'list']
+        res = api.sections(self.url, self.token)
+        sec_count = actions.get_count(self.url, 'sections', self.token)
+        self.check_result(res, asserts)
+        self.unit.assertEqual(int(sec_count), int(res['count']), 'Dict is nor equals')
+
+    def test_get_section_lang(self):
+        # add new langres
+        lang_name = tools.generate_random_name()
+        en_title = 'NewSection'
+        ru_title = 'НоваяСекция'
+        trans = '{"en": "' + en_title + '", "ru" : "' + ru_title + '"}'
+        res = contract.new_lang(self.url, self.pr_key, self.token,
+                                name=lang_name, trans=trans)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        # add new section
+        res = contract.new_section(self.url, self.pr_key, self.token,
+                                   title='$' + lang_name + '$')
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        # test
+        count = int(actions.get_count(self.url, 'sections', self.token))
+        en_res = api.sections(self.url, self.token,
+                           limit=1, offset=count-1, lang='en')
+        ru_res = api.sections(self.url, self.token,
+                           limit=1, offset=count-1, lang='ru')
+        expected = {
+            'en': en_title,
+            'ru': ru_title
+        }
+        actual = {
+            'en': en_res['list'][0]['title'],
+            'ru': ru_res['list'][0]['title']
+        }
+        self.unit.assertEqual(expected, actual, 'Dict is not equals')
+    # off
+    def get_section_avalible_users(self):
+        # change langres name on static name from section
+        sections = actions.get_list(self.url, 'sections', self.token)
+        sec_list = sections['list']
+        for el in sec_list:
+            if '$' in el['title']:
+                res = contract.edit_section(self.url, self.pr_key, self.token,
+                                            id=int(el['id']),
+                                            title=tools.generate_random_name())
+                check.is_tx_in_block(self.url, self.wait, res, self.token)
+        # add new section
+        admin_role = '1'
+        res = contract.new_section(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        # add role for section
+        count = int(actions.get_count(self.url, 'sections', self.token))
+        res = contract.section_roles(self.url, self.pr_key, self.token,
+                                     id=int(count),
+                                     rid=admin_role,
+                                     operation='add')
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        # test
+        # added elements in expected dicts
+        sections = actions.get_list(self.url, 'sections', self.token)
+        count = int(sections['count'])
+        sec_list = sections['list']
+        expected_admin = {}
+        expected_user = {}
+        for el in sec_list:
+            if el['roles_access'] == '[]':
+                expected_user[el['id']] = el['title']
+                expected_admin[el['id']] = el['title']
+            if admin_role in el['roles_access']:
+                expected_admin[el['id']] = el['title']
+        # added elements in actual_admin dict
+        actual_admin = {}
+        token_admin = actions.login(self.url, self.pr_key,
+                                    role=admin_role)['jwtToken']
+        res_admin = api.sections(self.url, token_admin,
+                                 limit=count)
+        res_admin_list = res_admin['list']
+        for el in res_admin_list:
+            actual_admin[el['id']] = el['title']
+        # added elements in actual_user dict
+        actual_user = {}
+        token_user = actions.login(self.url,
+                               tools.generate_pr_key())['jwtToken']
+        res_user = api.sections(self.url, token_user,
+                                 limit=count)
+        res_user_list = res_user['list']
+        for el in res_user_list:
+            actual_user[el['id']] = el['title']
+        self.unit.assertEqual(expected_admin, actual_admin, 'Dict admin is not equals')
+        self.unit.assertEqual(expected_user, actual_user, 'Dict user is not equals')

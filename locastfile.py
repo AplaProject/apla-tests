@@ -8,7 +8,7 @@ class WebsiteTasks(TaskSet):
         self.config = tools.read_config('nodes')
         self.url = self.config[1]['url']
         self.pause = tools.read_config('test')['wait_tx_status']
-        self.pr_key = self.config[1]['private_key']
+        self.pr_key = self.config[0]['private_key']
         self.data = actions.login(self.url, self.pr_key, 0)
         self.token = self.data['jwtToken']
         keys = tools.read_fixtures('keys')

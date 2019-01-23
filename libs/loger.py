@@ -31,11 +31,14 @@ def create_loger(name, filename='tests.log', console_level='DEBUG', file_level='
     fh = logging.FileHandler(log_path)
     fh.setLevel(file_level)
 
-    formatter = logging.Formatter(
+    console_formatter = logging.Formatter(
+        '[%(levelname)s] \t %(message)s')
+
+    file_formatter = logging.Formatter(
         '[%(levelname)s] \t %(message)s \t %(module)s:%(name)s:%(funcName)s:%(lineno)s \t %(asctime)s')
 
-    ch.setFormatter(formatter)
-    fh.setFormatter(formatter)
+    ch.setFormatter(console_formatter)
+    fh.setFormatter(file_formatter)
 
     logger.addHandler(ch)
     logger.addHandler(fh)

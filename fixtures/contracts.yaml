@@ -1,0 +1,167 @@
+findEcosystem:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result=FindEcosystem(`MyEcosystem`)
+      }
+    }
+  asert: "2"
+  information: "needs to create ecosystem with name MyEcosystem"
+
+
+contractAccess:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        ContractAccess("AccesContr")
+      }
+    }
+  assert: ""
+  information: "needs to create contract AccesContr"
+
+
+updateLang:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        UpdateLang(1, "test", "{'ru': 'Тест'}")
+      }
+    }
+  asert: ""
+
+updateSysParam:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        DBUpdateSysParam("number_of_nodes", "102", "true")
+      }
+    }
+  asert: ""
+
+
+for_cost:
+  code: |
+    {
+      data {
+        State int
+      }
+      conditions {}
+      action {
+        var res array
+        res = DBFind("pages").Columns("name").Where({id: "1"})
+        if $State < 1 {
+          var par map
+          CallContract("incorrectContract", par)
+          $result = GetContractById(999999999999)
+        }
+        else {
+          $result = "OK"
+        }
+      }
+    }
+  asert: "_"
+
+
+get_keyId:
+  code: |
+    {
+      data {
+        Pub string
+      }
+      conditions {}
+      action {
+        $result = PubToID($Pub)
+      }
+    }
+  asert: "_"
+
+
+limits:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        var i int
+        var res array
+        while i < 5 {
+          var res array
+          res = DBFind("contracts").Columns("name")
+          i = i + 1
+          Println(Str(i))
+        }
+        Println("ok")
+      }
+    }
+  asert: ""
+
+
+UpdateSysParam_mock:
+  code: |
+    {
+      data {
+        Name string
+        Value string
+        Conditions string "optional"
+      }
+      conditions {}
+      action {
+        var params map
+        params["Value"] = $Value
+        CallContract($Name, params)
+        DBUpdateSysParam($Name, $Value, $Conditions)
+      }
+    }
+  asert: ""
+
+
+UpdateSysParam_original:
+  code: |
+    {
+      data {
+        Name string
+        Value string
+        VotingId int
+        Conditions string "optional"
+      }
+      conditions {
+        if GetContractByName($Name) == 0{
+          warning LangRes("@1system_parameter_not_found", "en")
+        }
+
+        var prev string
+        prev = $stack[0]
+        if Len($stack) > 2{
+          prev = $stack[Len($stack) - 2]
+        }
+        if prev != "@1VotingDecisionCheck" {
+          error LangRes("@1contract_start_votingdecisioncheck_only", "en")
+        }
+        $voting = DBFind("@1votings").Where({ecosystem:$ecosystem_id, id: $VotingId }).Columns("voting->type_decision,flags->success,voting->type").Row()
+        if Int($voting["voting.type"]) != 2 {
+          error LangRes("@1voting_type_invalid", "en")
+        }
+        if Int($voting["voting.type_decision"]) != 4 {
+          error LangRes("@1voting_error_decision", "en")
+        }
+        if Int($voting["flags.success"]) != 1 {
+          error LangRes("@1voting_error_success", "en")
+        }
+      }
+      action {
+        var params map
+        params["Value"] = $Value
+        CallContract($Name, params)
+        DBUpdateSysParam($Name, $Value, $Conditions)
+      }
+    }
+  asert: ""
+

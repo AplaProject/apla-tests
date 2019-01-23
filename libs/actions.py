@@ -5,7 +5,7 @@ import os
 
 
 from genesis_blockchain_tools.contract import Contract
-from libs import api, db, tools, loger
+from libs import api, db, tools, loger, check
 
 wait = tools.read_config('test')['wait_tx_status']
 log = loger.create_loger(__name__)
@@ -23,7 +23,10 @@ def login(url, pr_key, role=0, ecosystem=1):
     )
     return result
 
-
+def login_cors(url, pr_key, role=0, ecosystem=1):
+    token, uid = api.getuid(url)
+    result = api.cors(url, 'POST')
+    return result
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
     schema = api.contract(url, jvtToken, name)
     contract = Contract(schema=schema,
@@ -32,6 +35,7 @@ def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
                         params=data)
     tx_bin_data = {'call1': contract.concat()}
     result = api.send_tx(url, jvtToken, tx_bin_data)
+    log.info(result)
     if 'hashes' in result:
         return result['hashes']['call1']
     else:
@@ -119,10 +123,19 @@ def get_count(url, name, token):
     return res['count']
 
 
-def get_list(url, type, token):
+def get_list(url, type, token, app_id=0):
     count = get_count(url, type, token)
     res = api.list(url, token, type, limit=count)
-    return res
+    res_list = []
+    i = 0
+    if app_id > 0:
+        for el in res['list']:
+            if int(el['app_id']) == app_id:
+                res_list.append(el)
+                i += 1
+        return {'count': i, 'list': res_list}
+    else:
+        return res
 
 
 def get_contract_id(url, name, token):
@@ -137,10 +150,14 @@ def get_object_id(url, name, object, token, ecosystem=1):
         param_name = 'member_name'
     res = get_list(url, object, token)
     for object in res['list']:
-        if object[param_name] == name \
-                and int(object['ecosystem']) == ecosystem:
-            id = object['id']
-            break
+        if object[param_name] == name:
+            if ecosystem > 0:
+                if int(object['ecosystem']) == ecosystem:
+                    id = object['id']
+                    break
+            else:
+                id = object['id']
+                break
     return id
 
 
@@ -201,7 +218,7 @@ def is_count_tx_in_block(url, token, max_block_id, count_tx):
         block += 1
         if int(info['tx_count']) > count_tx:
             log.error('Error in count_tx. Block ' + str(block) + ' has ' +
-                      str(block['count_tx']) + ' transactions')
+                      str(info['count_tx']) + ' transactions')
             return False
     return True
 
@@ -301,6 +318,17 @@ def is_commission_in_history(url, token, id_from, id_to, summ):
                 return True
     return False
 
+def get_commission_from_history(url, token, id_from, id_to, block_id):
+    count = get_count(url, 'history', token)
+    table = api.list(url, token, 'history', offset=int(count)-5, limit=5)
+    amounts = []
+    for item in table['list']:
+        if item['sender_id'] == str(id_from) \
+                and item['recipient_id'] == str(id_to) \
+                and item['block_id'] == str(block_id):
+            amounts.append(int(item['amount']))
+    return amounts
+
 
 def is_contract_present(url, token, name):
     ans = api.contract(url, token, name)
@@ -351,3 +379,89 @@ def get_load_blocks_time(url, token, max_block, wait_upating):
         else:
             sec = sec + 1
     return {'time': wait_upating + 1, 'blocks': max_block_id1}
+
+
+def roles_install(url, pr_key, token, wait):
+    data = {}
+    log.info('RolesInstall started')
+    call = call_contract(url, pr_key, 'RolesInstall',
+                                 data, token)
+    if check.is_tx_in_block(url, wait, {'hash': call}, token) < 1:
+        log.error('RolesInstall is failed')
+        exit(1)
+
+
+def voting_templates_install(url, pr_key, token, wait):
+    data = {}
+    log.info('VotingTemplatesInstall started')
+    call = call_contract(url, pr_key, 'VotingTemplatesInstall',
+                                 data, token)
+    if check.is_tx_in_block(url, wait, {'hash': call}, token) < 1:
+        log.error('VotingTemplatesInstall is failed')
+        exit(1)
+
+
+def edit_app_param(name, val, url, pr_key, token, wait):
+    log.info('EditAppParam started')
+    id = get_object_id(url, name, 'app_params', token)
+    data = {'Id': id, 'Value': val, 'Conditions': 'true'}
+    call = call_contract(url, pr_key, 'EditAppParam',
+                                 data, token)
+    if check.is_tx_in_block(url, wait, {'hash': call}, token) < 1:
+        log.error('EditAppParam ' + name + ' is failed')
+        exit(1)
+
+
+def update_profile(name, url, pr_key, token, wait):
+    log.info('UpdateProfile started')
+    time.sleep(5)
+    data = {'member_name': name}
+    resp = call_contract(url, pr_key, 'ProfileEdit',
+                                 data, token)
+    if check.is_tx_in_block(url, wait, {'hash': resp}, token) < 1:
+        log.error('UpdateProfile ' + name + ' is failed')
+        exit(1)
+
+
+def set_apla_consensus(id, url, pr_key, token, wait):
+    log.info('setAplaconsensus started')
+    data = {'member_id': id, 'rid': 3}
+    call = call_contract(url, pr_key, 'RolesAssign',
+                                 data, token)
+    if check.is_tx_in_block(url, wait, {'hash': call}, token) < 1:
+        log.error('RolesAssign ' + id + ' is failed')
+        exit(1)
+
+
+def create_voiting(tcp_address, api_address, key_id, pub_key, url, pr_key, token, wait):
+    log.info('VotingNodeAdd started')
+    data = {'TcpAddress': tcp_address, 'ApiAddress': api_address,
+            'KeyId': key_id, 'PubKey': pub_key, 'Duration': 1}
+    call = call_contract(url, pr_key, 'VotingNodeAdd',
+                                 data, token)
+    if check.is_tx_in_block(url, wait, {'hash': call}, token) < 1:
+        log.error('VotingNodeAdd is failed')
+        exit(1)
+
+
+def voting_status_update(url, pr_key, token, wait):
+    log.info('VotingStatusUpdate started')
+    data = {}
+    call = call_contract(url, pr_key, 'VotingStatusUpdate',
+                                 data, token)
+    if check.is_tx_in_block(url, wait, {'hash': call}, token) < 1:
+        log.error('VoitingStatusUpdate is failed')
+        exit(1)
+
+
+def voiting(id, url, pr_key, token, wait):
+    log.info('VotingDecisionAccept started')
+    data = {'votingID': id,
+            'RoleId': 3}
+    call = call_contract(url, pr_key, 'VotingDecisionAccept',
+                                 data, token)
+    if check.is_tx_in_block(url, wait, {'hash': call}, token) < 1:
+        log.error('VotingDecisionAccept ' + id + ' is failed')
+        exit(1)
+        return False
+    return True

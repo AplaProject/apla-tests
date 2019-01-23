@@ -12,6 +12,7 @@ def new_contract(url, pr_key, token, source='',
     data = {'Value': code,
             'ApplicationId': app,
             'Conditions': condition}
+    print(data)
     res = actions.call_contract(url, pr_key, '@1NewContract',
                                 data,  token, ecosystem=ecosystem)
     return {'hash': res,
@@ -406,5 +407,57 @@ def import_upload(url, pr_key, token, path, ecosystem=1):
 def export_new_app(url, pr_key, token, app_id=1, ecosystem=1):
     data = {'ApplicationId': app_id}
     res = actions.call_contract(url, pr_key, '@1ExportNewApp',
+                                data, token, ecosystem=ecosystem)
+    return {'hash': res}
+
+def platform_apps_install(url, pr_key, token, ecosystem=1):
+    res = actions.call_contract(url, pr_key, '@1PlatformAppsInstall',
+                                {}, token, ecosystem=ecosystem)
+    return {'hash': res}
+
+def new_section(url, pr_key, token, title='',
+                status='1', urlname='', page='default_page', ecosystem=1):
+    if not title:
+        title = 'Sec_' + tools.generate_random_name()
+    if not urlname:
+        urlname = 'url_' + tools.generate_random_name()
+    data = {
+        'title': title,
+        'status': status,
+        'urlname': urlname,
+        'page': page
+    }
+    res = actions.call_contract(url, pr_key, '@1NewSection',
+                                data, token, ecosystem=ecosystem)
+    result = {'hash': res,
+              'name': title}
+    return result
+
+def edit_section(url, pr_key, token, id, title='',
+                status='1', urlname='', page='default_page', ecosystem=1):
+    if not title:
+        title = 'Sec_' + tools.generate_random_name()
+    if not urlname:
+        urlname = 'url_' + tools.generate_random_name()
+    data = {
+        'id': id,
+        'title': title,
+        'status': status,
+        'urlname': urlname,
+        'page': page
+    }
+    res = actions.call_contract(url, pr_key, '@1EditSection',
+                                data, token, ecosystem=ecosystem)
+    return {'hash': res}
+
+def section_roles(url, pr_key, token,
+                  id, rid, operation='add', ecosystem=1):
+    data = {
+        'id': id,
+        'rid': rid,
+        'operation': operation,
+
+    }
+    res = actions.call_contract(url, pr_key, '@1SectionRoles',
                                 data, token, ecosystem=ecosystem)
     return {'hash': res}
