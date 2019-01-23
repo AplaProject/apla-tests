@@ -78,11 +78,6 @@
             "Type": "languages"
         },
         {
-            "Name": "additional_info_edit",
-            "Trans": "{\"en\": \"Edit additional info\", \"ru\": \"Редактировать дополнительную информацию\"}",
-            "Type": "languages"
-        },
-        {
             "Name": "address",
             "Trans": "{\"en\": \"Address\", \"ru\": \"Адрес\"}",
             "Type": "languages"
@@ -200,16 +195,6 @@
         {
             "Name": "api_address",
             "Trans": "{\"en\": \"API address\", \"ru\": \"API адрес\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "apla_not_required",
-            "Trans": "{\"en\": \"APLA is not required\", \"ru\": \"Наличие APLA не требуется\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "apla_required",
-            "Trans": "{\"en\": \"APLA is required\", \"ru\": \"Требуется наличие APLA\"}",
             "Type": "languages"
         },
         {
@@ -569,17 +554,17 @@
         },
         {
             "Name": "catalog_ecosystems_conditions",
-            "Trans": "{\"en\": \"Terms and conditions for the entry\", \"ru\": \"Условия и порядок вступления\"}",
+            "Trans": "{\"en\": \"Ecosystem conditions and procedure for accession\", \"ru\": \"Условия и порядок присоединения к экосистеме\"}",
             "Type": "languages"
         },
         {
-            "Name": "catalog_ecosystems_desc",
-            "Trans": "{\"en\": \"Ecosystems catalog with detailed information provided by the founders\", \"ru\": \"Каталог экосистем с подробной информацией, предоставленной основателями\"}",
+            "Name": "catalog_ecosystems_contact_email",
+            "Trans": "{\"en\": \"Contact email\", \"ru\": \"Электронная почта для контактов\"}",
             "Type": "languages"
         },
         {
-            "Name": "catalog_ecosystems_description",
-            "Trans": "{\"en\": \"Short description\", \"ru\": \"Краткое описание\"}",
+            "Name": "catalog_ecosystems_contact_phone",
+            "Trans": "{\"en\": \"Contact phone\", \"ru\": \"Контактный телефон\"}",
             "Type": "languages"
         },
         {
@@ -593,18 +578,18 @@
             "Type": "languages"
         },
         {
-            "Name": "catalog_ecosystems_email",
-            "Trans": "{\"en\": \"Contact email\", \"ru\": \"Электронная почта\"}",
+            "Name": "catalog_ecosystems_form",
+            "Trans": "{\"en\": \"Add the ecosystem to the catalog\", \"ru\": \"Добавить экосистему в каталог\"}",
             "Type": "languages"
         },
         {
-            "Name": "catalog_ecosystems_hardware",
-            "Trans": "{\"en\": \"Ecosystem hardware\", \"ru\": \"Оборудование экосистемы\"}",
+            "Name": "catalog_ecosystems_freetype",
+            "Trans": "{\"en\": \"Availability of own funds for entry\", \"ru\": \"Наличие собственных средств для вступления\"}",
             "Type": "languages"
         },
         {
             "Name": "catalog_ecosystems_logo",
-            "Trans": "{\"en\": \"Ecosystem logo\", \"ru\": \"Логотип экосистемы\"}",
+            "Trans": "{\"en\": \"Logotype image\", \"ru\": \"Изображение логотипа\"}",
             "Type": "languages"
         },
         {
@@ -630,11 +615,6 @@
         {
             "Name": "catalog_ecosystems_type",
             "Trans": "{\"en\": \"Ecosystem type\", \"ru\": \"Тип экосистемы\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "catalog_ecosystems_visibility",
-            "Trans": "{\"en\": \"Visibility in the catalog\", \"ru\": \"Видимость в каталоге\"}",
             "Type": "languages"
         },
         {
@@ -1158,11 +1138,6 @@
             "Type": "languages"
         },
         {
-            "Name": "ecosystem_select",
-            "Trans": "{\"en\": \"Select an ecosystem\", \"ru\": \"Выберите экосистему\"}",
-            "Type": "languages"
-        },
-        {
             "Name": "ecosystems",
             "Trans": "{\"en\": \"Ecosystems\", \"ru\": \"Экосистемы\"}",
             "Type": "languages"
@@ -1470,11 +1445,6 @@
         {
             "Name": "hidden_section",
             "Trans": "{\"en\": \"Hidden section\", \"ru\": \"Скрытая секция\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "hide",
-            "Trans": "{\"en\": \"Hide\", \"ru\": \"Скрыть\"}",
             "Type": "languages"
         },
         {
@@ -3208,11 +3178,6 @@
             "Type": "languages"
         },
         {
-            "Name": "show",
-            "Trans": "{\"en\": \"Show\", \"ru\": \"Показать\"}",
-            "Type": "languages"
-        },
-        {
             "Name": "show_all",
             "Trans": "{\"en\": \"Show all\", \"ru\": \"Показывать все\"}",
             "Type": "languages"
@@ -3873,6 +3838,11 @@
             "Type": "languages"
         },
         {
+            "Name": "understand",
+            "Trans": "{\"en\": \"Understand\", \"ru\": \"Ознакомился\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "understood",
             "Trans": "{\"en\": \"Understood\", \"ru\": \"Ознакомился\"}",
             "Type": "languages"
@@ -4048,7 +4018,7 @@
             "Type": "languages"
         },
         {
-            "Name": "vde_form_address",
+            "Name": "vde_form",
             "Trans": "{\"en\": \"VDE form address\", \"ru\": \"Адрес VDE-формы\"}",
             "Type": "languages"
         },
@@ -4708,8 +4678,8 @@
             "Type": "languages"
         },
         {
-            "Name": "web_page_address",
-            "Trans": "{\"en\": \"Web page address\", \"ru\": \"Адрес веб-страницы\"}",
+            "Name": "web_page",
+            "Trans": "{\"en\": \"Page web-address\", \"ru\": \"Web-адрес страницы\"}",
             "Type": "languages"
         },
         {

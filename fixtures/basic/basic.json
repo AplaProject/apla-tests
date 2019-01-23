@@ -75,6 +75,18 @@
             "Type": "tables"
         },
         {
+            "Name": "catalog_ecosystems_freetype",
+            "Conditions": "ContractConditions(\"@1DeveloperCondition\")",
+            "Value": "@1APL_not_required,@1APL_required",
+            "Type": "app_params"
+        },
+        {
+            "Name": "catalog_ecosystems_type",
+            "Conditions": "ContractConditions(\"@1DeveloperCondition\")",
+            "Value": "@1public_org,@1business,@1finance",
+            "Type": "app_params"
+        },
+        {
             "Name": "first_node",
             "Conditions": "ContractConditions(\"@1DeveloperCondition\")",
             "Value": "{\"api_address\":\"\",\"key_id\":\"\",\"public_key\":\"\",\"tcp_address\":\"\"}",
