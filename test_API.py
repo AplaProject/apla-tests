@@ -684,9 +684,8 @@ class TestApi():
             }
             full_url = self.url + '/content/page/' + name
             res = requests.post(full_url, params=data_content, headers={'Authorization': token1})
-            page_content = res.content[:-1] # content without last symbol \n
             m = hashlib.sha256()
-            m.update(page_content)
+            m.update(res.content)
             sha = m.hexdigest()
             # Get hash from page
             full_url = self.url + '/content/hash/' + name
@@ -835,8 +834,8 @@ class TestApi():
             'ru': ru_res['list'][0]['title']
         }
         self.unit.assertEqual(expected, actual, 'Dict is not equals')
-
-    def test_get_section_avalible_users(self):
+    # off
+    def get_section_avalible_users(self):
         # change langres name on static name from section
         sections = actions.get_list(self.url, 'sections', self.token)
         sec_list = sections['list']
