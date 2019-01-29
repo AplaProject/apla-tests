@@ -905,7 +905,7 @@
 		}
 	},
     "arrayToSource": {
-		"code": "ArrayToSource(dat, [\"hello\", \"my name\",\"is Billy\"])",
+		"code": "SetVar(arr, [1,\"hello\",{\"val\":\"12300\",\"time\": \"1545788052\", \"type\": \"emission\"}, {\"val\": \"555006848\", \"time\": \"1545788125\", \"type\": \"emission\"},bye1]) ArrayToSource(dat, #arr#)",
 		"menu": "default_menu",
 		"content": {
 			  "tag": "arraytosource",
@@ -917,15 +917,23 @@
 				"data": [
 				  [
 					"0",
-					"hello"
+					"1"
 				  ],
 				  [
 					"1",
-					"my name"
+					"hello"
 				  ],
 				  [
 					"2",
-					"is Billy"
+					"{\"val\":\"12300\",\"time\": \"1545788052\", \"type\": \"emission\"}"
+				  ],
+				  [
+					"3",
+					"{\"val\": \"555006848\", \"time\": \"1545788125\", \"type\": \"emission\"}"
+				  ],
+				  [
+					"4",
+					"bye1"
 				  ]
 				],
 				"source": "dat",

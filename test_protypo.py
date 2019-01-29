@@ -1016,11 +1016,15 @@ class TestPrototipo():
                        data1=part_content['attr']['data'][0],
                        data2=part_content['attr']['data'][1],
                        data3=part_content['attr']['data'][2],
+                       data4=part_content['attr']['data'][3],
+                       data5=part_content['attr']['data'][4],
                        source=part_content['attr']['source'])
         page = dict(tag=contract_content['tag'],
                     data1=contract_content['attr']['data'][0],
                     data2=contract_content['attr']['data'][1],
                     data3=contract_content['attr']['data'][2],
+                    data4=contract_content['attr']['data'][3],
+                    data5=contract_content['attr']['data'][4],
                     source=contract_content['attr']['source'])
         self.uni.assertDictEqual(must_be, page,
                                  'arrayToSource has problem: \n' + str(content['tree']))
