@@ -3,6 +3,7 @@ import json
 import random
 import string
 import yaml
+import hashlib
 
 
 def generate_random_name():
@@ -67,3 +68,9 @@ def read_fixtures_yaml(type):
 
 def generate_pr_key():
     return ''.join(random.choice('0123456789abcdef') for _ in range(64))
+
+
+def get_hash_sha256(str_content):
+    m = hashlib.sha256()
+    m.update(bytes(str_content, 'utf-8'))
+    return m.hexdigest()
