@@ -4,6 +4,8 @@ import hashlib
 import requests
 
 from libs import actions, tools, api, check, contract
+from genesis_blockchain_tools.crypto import sign
+from genesis_blockchain_tools.crypto import get_public_key
 
 
 class TestApi():
@@ -982,3 +984,39 @@ class TestApi():
             actual_user[el['id']] = el['title']
         self.unit.assertEqual(expected_admin, actual_admin, 'Dict admin is not equals')
         self.unit.assertEqual(expected_user, actual_user, 'Dict user is not equals')
+
+    def test_new_key_injection(self):
+        # create new ecosystem
+        name = 'ecos_' + tools.generate_random_name()
+        res = contract.new_ecosystem(self.url,
+                                     self.pr_key,
+                                     self.token,
+                                     name)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        # get id of created ecosystem
+        id = actions.get_count(self.url, 'ecosystems', self.token)
+        # test
+        # enter in first ecosystem
+        asserts = ['uid', 'jwtToken', 'pubkey']
+        new_key = tools.generate_pr_key()
+        login_1 = actions.login(self.url, new_key, ecosystem=1)
+        self.check_result(login_1, asserts)
+        # enter in created ecosystem
+        token, uid = api.getuid(self.url)
+        signature = sign(new_key, 'LOGIN' + uid)
+        pubkey = get_public_key(new_key)
+        full_token = 'Bearer ' + token
+        data = {
+            'role_id': 0,
+            'ecosystem': id,
+            'pubkey': pubkey,
+            'signature': signature,
+        }
+        endpoint = '/login'
+        full_url = self.url + endpoint
+        res = api.call_post_api(full_url, data, full_token)
+        asserts = ['error', 'msg']
+        error = 'E_KEYNOTFOUND'
+        msg = 'Key has not been found'
+        self.check_result(res, asserts, error, msg)
+
