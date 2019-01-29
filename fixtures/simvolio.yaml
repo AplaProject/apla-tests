@@ -1242,3 +1242,85 @@ SqrtError:
       }
     }
   asert: "incorrect float result"
+
+
+NotValidStringUTF8:
+  code: |
+    {
+      data {}
+      action {
+        $result = DBFind("keys")
+      }
+    }
+  asert: "Result is not valid utf-8 string"
+
+
+DBFindSorted:
+  code: |
+    {
+      data {
+          Table string
+        }
+      conditions {}
+      action {
+        var ret array
+        var i int
+        var r_str string
+        var col string
+
+        if $Table == "keys" || $Table == "members"
+        {
+          col = "ecosystem"
+          ret = DBFind($Table).Columns("id," + col).Limit(250)
+        }
+        else
+        {
+          col = "name"
+          ret = DBFind($Table).Columns("id," + col).Limit(250)
+        }
+
+        while i < Len(ret) {
+          var vals map
+          vals = ret[i]
+          var tmp_str string
+          if $Table == "keys" || $Table == "members"
+          {
+            tmp_str = "(" + Str(vals["id"]) + ", " + Str(vals[col]) + ")"
+          }
+          else
+          {
+            tmp_str = "(" + Str(vals["id"]) + ", '" + Str(vals[col]) + "')"
+          }
+          if i != Len(ret) - 1
+          {
+              tmp_str = tmp_str + ", "
+          }
+          r_str = r_str + tmp_str
+          i = i + 1
+        }
+        r_str = "[" + r_str + "]"
+        $result = Hash(r_str)
+        }
+    }
+  asert: ""
+
+
+DBFindSortedUserTable:
+  code: |
+    {
+      data {
+        TableName string
+      }
+      conditions {}
+      action {
+        DBInsert($TableName, {name: "val1"})
+        DBInsert($TableName, {name: "val1"})
+        DBInsert($TableName, {name: "val2"})
+        DBInsert($TableName, {name: "val2"})
+        DBInsert($TableName, {name: "val3"})
+        DBUpdate($TableName, 1, {name: "val1"})
+      }
+    }
+  asert: ""
+
+

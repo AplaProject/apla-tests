@@ -4,6 +4,8 @@ import hashlib
 import requests
 
 from libs import actions, tools, api, check, contract
+from genesis_blockchain_tools.crypto import sign
+from genesis_blockchain_tools.crypto import get_public_key
 
 
 class TestApi():
@@ -425,6 +427,99 @@ class TestApi():
         expected_value = dict(page_text=res_page['tree'][0]['children'][0]['text'],
                               menu=res_menu['tree'][0]['attr']['title'])
         self.unit.assertEqual(must_be, expected_value,
+                              'Dictionaries are different!')
+
+    def test_get_content_page_with_menu_from_different_ecosystems(self):
+        page_name = 'Page_' + tools.generate_random_name()
+        menu_name = 'Menu_' + tools.generate_random_name()
+        ecosys_num = 1
+        # create menu in first ecosystem
+        menu_title1 = 'Test menu {}'.format(ecosys_num)
+        menu_value = 'MenuItem(Title:"{}")'.format(menu_title1)
+        res = contract.new_menu(self.url,
+                                self.pr_key,
+                                self.token,
+                                menu_name,
+                                menu_value,
+                                ecosystem=ecosys_num)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        # create page in first ecosystem
+        page_text1 = 'Page in {} ecosystem'.format(ecosys_num)
+        page_value = 'Span({})'.format(page_text1)
+        res = contract.new_page(self.url,
+                                self.pr_key,
+                                self.token,
+                                page_name,
+                                page_value,
+                                menu=menu_name,
+                                ecosystem=ecosys_num)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        p_name1 = '@{ecosys_num}{page_name}'.format(
+            ecosys_num=ecosys_num,
+            page_name=page_name
+        )
+        # create new ecosystem
+        ecosys_name = 'Ecosys_' + tools.generate_random_name()
+        res = contract.new_ecosystem(self.url,
+                                     self.pr_key,
+                                     self.token,
+                                     ecosys_name)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        ecosys_num = api.ecosystems(self.url, self.token)['number']
+        # login founder in new ecosystem
+        data2 = actions.login(self.url, self.pr_key, 0, ecosys_num)
+        token2 = data2['jwtToken']
+        # create menu in new ecosystem
+        menu_title2 = 'Test menu {}'.format(ecosys_num)
+        menu_value = 'MenuItem(Title:"{}")'.format(menu_title2)
+        res = contract.new_menu(self.url,
+                                self.pr_key,
+                                token2,
+                                menu_name,
+                                menu_value,
+                                ecosystem=ecosys_num)
+        check.is_tx_in_block(self.url, self.wait, res, token2)
+        # create page in new ecosystem
+        page_text2 = 'Page in {} ecosystem'.format(ecosys_num)
+        page_value = 'Span({})'.format(page_text2)
+        res = contract.new_page(self.url,
+                                self.pr_key,
+                                token2,
+                                page_name,
+                                page_value,
+                                menu=menu_name,
+                                ecosystem=ecosys_num)
+        check.is_tx_in_block(self.url, self.wait, res, token2)
+        p_name2 = '@{ecosys_num}{page_name}'.format(
+            ecosys_num=ecosys_num,
+            page_name=page_name
+        )
+        # test
+        res_page11 = api.content(self.url, self.token, 'page', p_name1)
+        res_page12 = api.content(self.url, self.token, 'page', p_name2)
+        res_page22 = api.content(self.url, token2, 'page', p_name2)
+        res_page21 = api.content(self.url, token2, 'page', p_name1)
+        expected = dict(
+            page11=page_text1,
+            page12=page_text2,
+            menu11=menu_title1,
+            menu12=menu_title1,
+            page22=page_text2,
+            page21=page_text1,
+            menu22=menu_title2,
+            menu21=menu_title2,
+        )
+        actual = dict(
+            page11=res_page11['tree'][0]['children'][0]['text'],
+            page12=res_page12['tree'][0]['children'][0]['text'],
+            menu11=res_page11['menutree'][0]['attr']['title'],
+            menu12=res_page12['menutree'][0]['attr']['title'],
+            page22=res_page22['tree'][0]['children'][0]['text'],
+            page21=res_page21['tree'][0]['children'][0]['text'],
+            menu22=res_page22['menutree'][0]['attr']['title'],
+            menu21=res_page21['menutree'][0]['attr']['title'],
+        )
+        self.unit.assertEqual(actual, expected,
                               'Dictionaries are different!')
 
     def test_get_back_api_version(self):
@@ -889,3 +984,101 @@ class TestApi():
             actual_user[el['id']] = el['title']
         self.unit.assertEqual(expected_admin, actual_admin, 'Dict admin is not equals')
         self.unit.assertEqual(expected_user, actual_user, 'Dict user is not equals')
+
+    def test_metrics_blocks(self):
+        asserts = ['count']
+        token = ''
+        res = api.metrics(self.url, token, 'blocks')
+        self.check_result(res, asserts)
+
+    def test_metrics_transactions(self):
+        asserts = ['count']
+        token = ''
+        res = api.metrics(self.url, token, 'transactions')
+        self.check_result(res, asserts)
+
+    def test_metrics_ecosystems(self):
+        asserts = ['count']
+        token = ''
+        res = api.metrics(self.url, token, 'ecosystems')
+        self.check_result(res, asserts)
+
+    def test_metrics_keys(self):
+        asserts = ['count']
+        token = ''
+        res = api.metrics(self.url, token, 'keys')
+        self.check_result(res, asserts)
+
+    def test_metrics_fullnodes(self):
+        asserts = ['count']
+        token = ''
+        res = api.metrics(self.url, token, 'fullnodes')
+        self.check_result(res, asserts)
+
+    def test_page_validators_count(self):
+        token = ''
+        asserts = ['validate_count']
+        page = '@1default_page'
+        res = api.page_validators_count(self.url, token, page)
+        self.check_result(res, asserts)
+        self.unit.assertEqual(res['validate_count'], 1,
+                              'page_validators_count is not equal')
+
+    def test_page_validators_count_in_new_ecosystem(self):
+        # create new ecosystem
+        tx = contract.new_ecosystem(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        ecos_num = actions.get_count(self.url, 'ecosystems', self.token)
+        # test
+        token = ''
+        asserts = ['validate_count']
+        page = '@{}default_page'.format(ecos_num)
+        res = api.page_validators_count(self.url, token, page)
+        self.check_result(res, asserts)
+        self.unit.assertEqual(res['validate_count'], 1,
+                              'page_validators_count_in_new_ecosystem is not equal')
+
+    def test_page_validators_count_incorrect(self):
+        token = ''
+        asserts = ['error', 'msg']
+        name = 'not_exist_page_xxxxxxxxxxxxxx'
+        res = api.page_validators_count(self.url, token, name)
+        error = 'E_NOTFOUND'
+        msg = 'Page not found'
+        self.check_result(res, asserts, error, msg)
+
+    def test_new_key_injection(self):
+        # create new ecosystem
+        name = 'ecos_' + tools.generate_random_name()
+        res = contract.new_ecosystem(self.url,
+                                     self.pr_key,
+                                     self.token,
+                                     name)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+        # get id of created ecosystem
+        id = actions.get_count(self.url, 'ecosystems', self.token)
+        # test
+        # enter in first ecosystem
+        asserts = ['uid', 'jwtToken', 'pubkey']
+        new_key = tools.generate_pr_key()
+        login_1 = actions.login(self.url, new_key, ecosystem=1)
+        self.check_result(login_1, asserts)
+        # enter in created ecosystem
+        token, uid = api.getuid(self.url)
+        signature = sign(new_key, 'LOGIN' + uid)
+        pubkey = get_public_key(new_key)
+        full_token = 'Bearer ' + token
+        data = {
+            'role_id': 0,
+            'ecosystem': id,
+            'pubkey': pubkey,
+            'signature': signature,
+        }
+        endpoint = '/login'
+        full_url = self.url + endpoint
+        res = api.call_post_api(full_url, data, full_token)
+        asserts = ['error', 'msg']
+        error = 'E_KEYNOTFOUND'
+        msg = 'Key has not been found'
+        self.check_result(res, asserts, error, msg)
+

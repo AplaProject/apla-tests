@@ -171,6 +171,39 @@
 			]
 		}
 	},
+    "varAsIs": {
+		"code": "Span(#ecosystem_id#) VarAsIs(ecosystem_id, #ecosystem_id#) Em(#ecosystem_id#) VarAsIs(ecosystem_id, I am #ecosystem_id#) Div(, #ecosystem_id#)",
+		"menu": "default_menu",
+		"content":  [
+			{
+			  "tag": "span",
+			  "children": [
+				{
+				  "tag": "text",
+				  "text": "1"
+				}
+			  ]
+			},
+			{
+			  "tag": "em",
+			  "children": [
+				{
+				  "tag": "text",
+				  "text": "1"
+				}
+			  ]
+			},
+			{
+			  "tag": "div",
+			  "children": [
+				{
+				  "tag": "text",
+				  "text": "I am #ecosystem_id#"
+				}
+			  ]
+			}
+		  ]
+	},
 	"input":{
 		"code": "Input(Class: form-control, Placeholder: text, Type: text, Name: name)",
 		"menu": "default_menu",
@@ -872,7 +905,7 @@
 		}
 	},
     "arrayToSource": {
-		"code": "ArrayToSource(dat, [\"hello\", \"my name\",\"is Billy\"])",
+		"code": "SetVar(arr, [1,\"hello\",{\"val\":\"12300\",\"time\": \"1545788052\", \"type\": \"emission\"}, {\"val\": \"555006848\", \"time\": \"1545788125\", \"type\": \"emission\"},bye1]) ArrayToSource(dat, #arr#)",
 		"menu": "default_menu",
 		"content": {
 			  "tag": "arraytosource",
@@ -884,15 +917,23 @@
 				"data": [
 				  [
 					"0",
-					"hello"
+					"1"
 				  ],
 				  [
 					"1",
-					"my name"
+					"hello"
 				  ],
 				  [
 					"2",
-					"is Billy"
+					"{\"val\":\"12300\",\"time\": \"1545788052\", \"type\": \"emission\"}"
+				  ],
+				  [
+					"3",
+					"{\"val\": \"555006848\", \"time\": \"1545788125\", \"type\": \"emission\"}"
+				  ],
+				  [
+					"4",
+					"bye1"
 				  ]
 				],
 				"source": "dat",
@@ -905,6 +946,21 @@
 	},
 	"transactionInfo": {
 		"code": "ArrayToSource(dat, [\"hello\", \"my name\",\"is Billy\"])",
+		"menu": "default_menu",
+		"content": {}
+	},
+	"DBFindSortedKeys": {
+		"code": "DBFind(\"keys\").Columns(\"id,ecosystem\").Limit(250)",
+		"menu": "default_menu",
+		"content": {}
+	},
+	"DBFindSortedMembers": {
+		"code": "DBFind(\"members\").Columns(\"id,ecosystem\").Limit(250)",
+		"menu": "default_menu",
+		"content": {}
+	},
+	"DBFindSortedPages": {
+		"code": "DBFind(\"pages\").Columns(\"id,name\").Limit(250)",
 		"menu": "default_menu",
 		"content": {}
 	}

@@ -128,3 +128,13 @@ def get_import_app_data(db, member_id):
         str(member_id)
     result = submit_query(request, db)
     return result[0][0]
+
+
+# func for sorted DBFind test
+def get_all_sorted_records_from_table(db, table):
+    if table == 'keys' or table == 'members':
+        request = 'SELECT id, ecosystem FROM "1_' + table + '" ORDER BY ecosystem, id LIMIT 250'
+    else:
+        request = 'SELECT id, name FROM "1_' + table + '" ORDER BY id LIMIT 250'
+    result = submit_query(request, db)
+    return result
