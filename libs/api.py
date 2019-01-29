@@ -399,6 +399,16 @@ def config_centrifugo(url, token):
     return call_get_api(url, data, token)
 
 
+def metrics(url, token, name):
+    # name = [blocks, transactions, ecosystems, keys, fullnodes]
+    data = {}
+    endpoint = '/metrics/{name}'.format(
+      name=name
+    )
+    url += endpoint
+    return call_get_api(url, data, token)
+
+  
 def page_validators_count(url, token, name):
     data = {}
     endpoint = '/page/validators_count/{name}'.format(

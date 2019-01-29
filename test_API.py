@@ -985,6 +985,36 @@ class TestApi():
         self.unit.assertEqual(expected_admin, actual_admin, 'Dict admin is not equals')
         self.unit.assertEqual(expected_user, actual_user, 'Dict user is not equals')
 
+    def test_metrics_blocks(self):
+        asserts = ['count']
+        token = ''
+        res = api.metrics(self.url, token, 'blocks')
+        self.check_result(res, asserts)
+
+    def test_metrics_transactions(self):
+        asserts = ['count']
+        token = ''
+        res = api.metrics(self.url, token, 'transactions')
+        self.check_result(res, asserts)
+
+    def test_metrics_ecosystems(self):
+        asserts = ['count']
+        token = ''
+        res = api.metrics(self.url, token, 'ecosystems')
+        self.check_result(res, asserts)
+
+    def test_metrics_keys(self):
+        asserts = ['count']
+        token = ''
+        res = api.metrics(self.url, token, 'keys')
+        self.check_result(res, asserts)
+
+    def test_metrics_fullnodes(self):
+        asserts = ['count']
+        token = ''
+        res = api.metrics(self.url, token, 'fullnodes')
+        self.check_result(res, asserts)
+
     def test_page_validators_count(self):
         token = ''
         asserts = ['validate_count']
@@ -1051,3 +1081,4 @@ class TestApi():
         error = 'E_KEYNOTFOUND'
         msg = 'Key has not been found'
         self.check_result(res, asserts, error, msg)
+
