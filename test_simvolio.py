@@ -698,3 +698,125 @@ class TestSimvolio():
     def test_contract_UpdateRolesNotifications(self):
         contract = self.contracts['UpdateRolesNotifications']
         self.check_contract(contract['code'], contract['asert'])
+
+    def test_dbfind_sorted_keys(self):
+        table = 'keys'
+        # create new ecosystem
+        tx_ecos = contracts.new_ecosystem(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_ecos, self.token)
+        # create new contract for run it in loop
+        contract = self.contracts['DBFindSorted']
+        tx_cont = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # get result from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get result from contract
+            data = {"Table": table}
+            res = actions.call_contract(
+                self.url, self.pr_key, tx_cont['name'], data, self.token)
+            actual_hash = actions.tx_status(self.url, self.wait, res, self.token)['result']
+            actual_list[i] = actual_hash
+            i += 1
+        self.unit.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
+
+    def test_dbfind_sorted_members(self):
+        table = 'members'
+        # create new ecosystem
+        tx_ecos = contracts.new_ecosystem(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_ecos, self.token)
+        # create new contract for run it in loop
+        contract = self.contracts['DBFindSorted']
+        tx_cont = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # get result from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get result from contract
+            data = {"Table": table}
+            res = actions.call_contract(
+                self.url, self.pr_key, tx_cont['name'], data, self.token)
+            actual_hash = actions.tx_status(self.url, self.wait, res, self.token)['result']
+            actual_list[i] = actual_hash
+            i += 1
+        self.unit.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
+
+    def test_dbfind_sorted_contracts(self):
+        table = 'contracts'
+        # create new contract for run it in loop
+        contract = self.contracts['DBFindSorted']
+        tx_cont = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # get result from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get result from contract
+            data = {"Table": table}
+            res = actions.call_contract(
+                self.url, self.pr_key, tx_cont['name'], data, self.token)
+            actual_hash = actions.tx_status(self.url, self.wait, res, self.token)['result']
+            actual_list[i] = actual_hash
+            i += 1
+        self.unit.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
+
+    def test_dbfind_sorted_user_table(self):
+        # create user table
+        table_name = tools.generate_random_name()
+        columns = '''[{"name":"name","type":"varchar",
+                "index": "1",  "conditions":"true"}]'''
+        tx_cont = contracts.new_table(
+            self.url, self.pr_key, self.token, name=table_name, columns=columns )
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # create new contract for insert data in user table
+        contract = self.contracts['DBFindSortedUserTable']
+        tx_cont = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # call contract, which insert data in user table
+        data = {"TableName": table_name}
+        res = actions.call_contract(
+            self.url, self.pr_key, tx_cont['name'], data, self.token)
+        actions.tx_status(self.url, self.wait, res, self.token)['result']
+        # create new contract for run it in loop
+        contract = self.contracts['DBFindSorted']
+        tx_cont = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # get result from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table_name)
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get result from contract
+            data = {"Table": table_name}
+            res = actions.call_contract(
+                self.url, self.pr_key, tx_cont['name'], data, self.token)
+            actual_hash = actions.tx_status(self.url, self.wait, res, self.token)['result']
+            actual_list[i] = actual_hash
+            i += 1
+        self.unit.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
