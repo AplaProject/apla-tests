@@ -79,7 +79,7 @@ class TestSystemContracts():
         id = 500
         tx = contract.edit_ecosystem_name(self.url, self.pr_key, self.token, id=id)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        msg = 'The ecosystem {id} is not exist'.format(id=id)
+        msg = 'The ecosystem {id} does not exist'.format(id=id)
         self.unit.assertEqual(msg, status['error'], 'Is not equals')
 
     def test_tokens_send(self):
@@ -97,6 +97,13 @@ class TestSystemContracts():
 
     def test_tokens_send_incorrect_wallet(self):
         wallet = '0005-2070-2000-0006'
+        msg = 'The recipient 0000-0000-0000-0000-0000 is not valid'
+        tx = contract.tokens_send(self.url, self.pr_key, self.token, wallet, '1000')
+        status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
+        self.unit.assertEqual(status['error'], msg, 'Incorrect message' + msg)
+
+    def test_tokens_send_incorrect_keyid(self):
+        wallet = '-3449126383880043801'
         msg = 'The recipient {wallet} is not valid'.format(wallet=wallet)
         tx = contract.tokens_send(self.url, self.pr_key, self.token, wallet, '1000')
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
@@ -106,12 +113,12 @@ class TestSystemContracts():
         ldata = actions.login(self.url, self.keys['key2'], 0)
         tx = contract.tokens_send(self.url, self.pr_key, self.token, ldata['address'], '0')
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        msg = 'Amount equals zero'
+        msg = 'The specified amount is zero'
         self.unit.assertEqual(status['error'], msg, 'Incorrect message' + str(status))
 
     def test_tokens_send_negative_amount(self):
         ldata = actions.login(self.url, self.keys['key2'], 0)
-        msg = 'Amount is less than zero'
+        msg = 'The specified amount is less than zero'
         tx = contract.tokens_send(self.url, self.pr_key, self.token, ldata['address'], '-1000')
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         self.unit.assertEqual(status['error'], msg, 'Incorrect message' + msg)
@@ -236,7 +243,7 @@ class TestSystemContracts():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         tx2 = contract.new_parameter(self.url, self.pr_key, self.token, name=tx['name'])
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
-        msg = 'The parameter {name} is already exist'.format(name=tx['name'])
+        msg = 'The {name} parameter already exists'.format(name=tx['name'])
         self.unit.assertEqual(msg, status['error'], 'Incorrect message: ' + str(status))
 
     def test_new_parameter_incorrect_condition(self):
@@ -276,7 +283,7 @@ class TestSystemContracts():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         tx = contract.new_menu(self.url, self.pr_key, self.token, name=tx['name'])
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        msg = 'The menu {name} is already exist'.format(name=tx['name'])
+        msg = 'The {name} menu already exists'.format(name=tx['name'])
         self.unit.assertEqual(msg, status['error'], 'Incorrect message: ' + str(status))
 
     def test_new_menu_incorrect_condition(self):
@@ -339,7 +346,7 @@ class TestSystemContracts():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         tx2 = contract.new_page(self.url, self.pr_key, self.token, name=tx['name'])
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
-        msg = 'The page {name} is already exist'.format(name=tx['name'])
+        msg = 'The {name} page already exists'.format(name=tx['name'])
         self.unit.assertEqual(msg, status['error'], 'Incorrect message: ' + str(status))
 
     def test_new_page_incorrect_condition(self):
@@ -413,7 +420,7 @@ class TestSystemContracts():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         tx2 = contract.new_block(self.url, self.pr_key, self.token, name=tx['name'])
         status = actions.tx_status(self.url, self.wait, tx2['hash'], self.token)
-        msg = "The block '{name}' is already exist".format(name=tx['name'])
+        msg = "The '{name}' block already exists".format(name=tx['name'])
         self.unit.assertEqual(msg, status['error'], 'Incorrect message: ' + str(status))
 
     def test_new_block_incorrect_condition(self):
