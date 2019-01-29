@@ -1100,6 +1100,150 @@ UpdateRolesNotifications:
   asert: "True"
 
 
+Floor:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Floor(-4.1) + Floor(2) + Floor(3.9) + Floor("100") + Floor(0)
+      }
+    }
+  asert: "100"
+
+
+Log:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Log(1) + Log(5.6) + Log("10")
+      }
+    }
+  asert: "4.02535169073515"
+
+
+LogNegative:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Log(-1)
+      }
+    }
+  asert: "incorrect float result"
+
+
+LogZero:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Log(0)
+      }
+    }
+  asert: "incorrect float result"
+
+
+Log10:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Log10(50) + Log10(12.4) + Log10("10")
+      }
+    }
+  asert: "3.792391689498254"
+
+
+Log10Negative:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Log10(-5)
+      }
+    }
+  asert: "incorrect float result"
+
+
+Log10Zero:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+        $result = Log10(0)
+      }
+    }
+  asert: "incorrect float result"
+
+
+Pow:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+      $result = Pow(0.1,0) + Pow(-5,"0") + Pow("5",0) + Pow("-10.1","-2") + Pow(10, 2.5) + Pow(-10,"2")
+      }
+    }
+  asert: "419.23756897733205"
+
+
+PowError:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+      $result = Pow(0,-2)
+      }
+    }
+  asert: "incorrect float result"
+
+
+Round:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+      $result = Round(5) + Round("5.0") + Round(5.4) + Round(5.5) + Round(5.8) + Round("-5.2") + Round(0) + Round("-5.8")
+      }
+    }
+  asert: "16"
+
+
+Sqrt:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+      $result = Sqrt(4) + Sqrt(25.0) + Sqrt("5.5") + Sqrt(0)
+      }
+    }
+  asert: "9.345207879911715"
+
+
+SqrtError:
+  code: |
+    {
+      data {}
+      conditions {}
+      action {
+      $result = Sqrt(-5)
+      }
+    }
+  asert: "incorrect float result"
+
+
 NotValidStringUTF8:
   code: |
     {
@@ -1178,4 +1322,5 @@ DBFindSortedUserTable:
       }
     }
   asert: ""
+
 

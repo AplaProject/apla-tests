@@ -699,6 +699,120 @@ class TestSimvolio():
         contract = self.contracts['UpdateRolesNotifications']
         self.check_contract(contract['code'], contract['asert'])
 
+    def test_contract_Floor(self):
+        contract = self.contracts['Floor']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_Log(self):
+        contract = self.contracts['Log']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_LogNegative(self):
+        contract = self.contracts['LogNegative']
+        tx = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(
+            self.url, self.pr_key, tx['name'], {}, self.token)
+        time.sleep(5)
+        resp = api.tx_status(self.url, self.token, res)['results']
+        print(resp)
+        for el in resp:
+            actual = resp[el]['errmsg']['error']
+            break
+        self.unit.assertEqual(contract['asert'], actual, resp)
+
+    def test_contract_LogZero(self):
+        contract = self.contracts['LogZero']
+        tx = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(
+            self.url, self.pr_key, tx['name'], {}, self.token)
+        time.sleep(5)
+        resp = api.tx_status(self.url, self.token, res)['results']
+        print(resp)
+        for el in resp:
+            actual = resp[el]['errmsg']['error']
+            break
+        self.unit.assertEqual(contract['asert'], actual, resp)
+
+    def test_contract_Log10(self):
+        contract = self.contracts['Log10']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_Log10Negative(self):
+        contract = self.contracts['Log10Negative']
+        tx = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(
+            self.url, self.pr_key, tx['name'], {}, self.token)
+        time.sleep(5)
+        resp = api.tx_status(self.url, self.token, res)['results']
+        print(resp)
+        for el in resp:
+            actual = resp[el]['errmsg']['error']
+            break
+        self.unit.assertEqual(contract['asert'], actual, resp)
+
+    def test_contract_Log10Zero(self):
+        contract = self.contracts['Log10Zero']
+        tx = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(
+            self.url, self.pr_key, tx['name'], {}, self.token)
+        time.sleep(5)
+        resp = api.tx_status(self.url, self.token, res)['results']
+        print(resp)
+        for el in resp:
+            actual = resp[el]['errmsg']['error']
+            break
+        self.unit.assertEqual(contract['asert'], actual, resp)
+
+    def test_contract_Pow(self):
+        contract = self.contracts['Pow']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_PowError(self):
+        contract = self.contracts['PowError']
+        tx = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(
+            self.url, self.pr_key, tx['name'], {}, self.token)
+        time.sleep(5)
+        resp = api.tx_status(self.url, self.token, res)['results']
+        print(resp)
+        for el in resp:
+            actual = resp[el]['errmsg']['error']
+            break
+        self.unit.assertEqual(contract['asert'], actual, resp)
+
+    def test_contract_Round(self):
+        contract = self.contracts['Round']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_Sqrt(self):
+        contract = self.contracts['Sqrt']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_SqrtError(self):
+        contract = self.contracts['SqrtError']
+        tx = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(
+            self.url, self.pr_key, tx['name'], {}, self.token)
+        time.sleep(5)
+        resp = api.tx_status(self.url, self.token, res)['results']
+        print(resp)
+        for el in resp:
+            actual = resp[el]['errmsg']['error']
+            break
+        self.unit.assertEqual(contract['asert'], actual, resp)
+
     def test_contract_NotValidStringUTF8(self):
         contract = self.contracts['NotValidStringUTF8']
         tx = contracts.new_contract(self.url, self.pr_key, self.token, source=contract['code'])
