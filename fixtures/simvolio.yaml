@@ -1100,6 +1100,17 @@ UpdateRolesNotifications:
   asert: "True"
 
 
+NotValidStringUTF8:
+  code: |
+    {
+      data {}
+      action {
+        $result = DBFind("keys")
+      }
+    }
+  asert: "Result is not valid utf-8 string"
+
+
 DBFindSorted:
   code: |
     {
@@ -1167,3 +1178,4 @@ DBFindSortedUserTable:
       }
     }
   asert: ""
+

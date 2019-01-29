@@ -699,6 +699,15 @@ class TestSimvolio():
         contract = self.contracts['UpdateRolesNotifications']
         self.check_contract(contract['code'], contract['asert'])
 
+    def test_contract_NotValidStringUTF8(self):
+        contract = self.contracts['NotValidStringUTF8']
+        tx = contracts.new_contract(self.url, self.pr_key, self.token, source=contract['code'])
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        msg = contract['asert']
+        tx_call = actions.call_contract(self.url, self.pr_key, tx['name'], {}, self.token)
+        status = actions.tx_status(self.url, self.wait, tx_call, self.token)
+        self.unit.assertEqual(msg, status['error'], 'Incorect messages: ' + str(status))
+
     def test_dbfind_sorted_keys(self):
         table = 'keys'
         # create new ecosystem
@@ -820,3 +829,4 @@ class TestSimvolio():
             actual_list[i] = actual_hash
             i += 1
         self.unit.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
+
