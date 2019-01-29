@@ -171,6 +171,39 @@
 			]
 		}
 	},
+    "varAsIs": {
+		"code": "Span(#ecosystem_id#) VarAsIs(ecosystem_id, #ecosystem_id#) Em(#ecosystem_id#) VarAsIs(ecosystem_id, I am #ecosystem_id#) Div(, #ecosystem_id#)",
+		"menu": "default_menu",
+		"content":  [
+			{
+			  "tag": "span",
+			  "children": [
+				{
+				  "tag": "text",
+				  "text": "1"
+				}
+			  ]
+			},
+			{
+			  "tag": "em",
+			  "children": [
+				{
+				  "tag": "text",
+				  "text": "1"
+				}
+			  ]
+			},
+			{
+			  "tag": "div",
+			  "children": [
+				{
+				  "tag": "text",
+				  "text": "I am #ecosystem_id#"
+				}
+			  ]
+			}
+		  ]
+	},
 	"input":{
 		"code": "Input(Class: form-control, Placeholder: text, Type: text, Name: name)",
 		"menu": "default_menu",
