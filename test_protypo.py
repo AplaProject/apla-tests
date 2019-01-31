@@ -39,7 +39,7 @@ class TestPrototipo():
                              tx, self.token)
         content = actions.get_content(
             self.url, 'page', tx['name'], '', 1, self.token)
-        return content, tx['name']
+        return content
 
     def find_position_element_in_tree(self, content_tree, tag_name):
         i = 0
@@ -73,6 +73,7 @@ class TestPrototipo():
     def test_page_button(self):
         cont = self.pages['button']
         content = self.check_page(cont['code'])
+        print(content)
         self.uni.assertEqual(content['tree'][0]['tag'], 'button',
                              'There is no button in content' + str(content['tree']))
 
@@ -1084,7 +1085,10 @@ class TestPrototipo():
         expected_hash = tools.get_hash_sha256(str(db_res))
         cont = self.pages['DBFindSortedKeys']
         # create page with content
-        _, page_name = self.check_page(cont['code'])
+        tx = contract.new_page(self.url, self.pr_key, self.token, value=cont['code'])
+        check.is_tx_in_block(self.url, tools.read_config('test')['wait_tx_status'],
+                             tx, self.token)
+        page_name = tx['name']
         # test
         expected_list = {}
         actual_list = {}
@@ -1117,7 +1121,10 @@ class TestPrototipo():
         expected_hash = tools.get_hash_sha256(str(db_res))
         cont = self.pages['DBFindSortedMembers']
         # create page with content
-        _, page_name = self.check_page(cont['code'])
+        tx = contract.new_page(self.url, self.pr_key, self.token, value=cont['code'])
+        check.is_tx_in_block(self.url, tools.read_config('test')['wait_tx_status'],
+                             tx, self.token)
+        page_name = tx['name']
         # test
         expected_list = {}
         actual_list = {}
@@ -1143,7 +1150,10 @@ class TestPrototipo():
         table = 'pages'
         # create page with content
         cont = self.pages['DBFindSortedPages']
-        _, page_name = self.check_page(cont['code'])
+        tx = contract.new_page(self.url, self.pr_key, self.token, value=cont['code'])
+        check.is_tx_in_block(self.url, tools.read_config('test')['wait_tx_status'],
+                             tx, self.token)
+        page_name = tx['name']
         # get data from db
         db_res = db.get_all_sorted_records_from_table(self.db1, table)
         # get hash from data
@@ -1190,7 +1200,10 @@ class TestPrototipo():
         actions.tx_status(self.url, self.wait, res, self.token)['result']
         # create page with content
         page_value = 'DBFind("{}").Columns("id,name").Limit(250)'.format(table)
-        _, page_name = self.check_page(page_value)
+        tx = contract.new_page(self.url, self.pr_key, self.token, value=page_value)
+        check.is_tx_in_block(self.url, tools.read_config('test')['wait_tx_status'],
+                             tx, self.token)
+        page_name = tx['name']
         # get data from db
         db_res = db.get_all_sorted_records_from_table(self.db1, table)
         # get hash from data
