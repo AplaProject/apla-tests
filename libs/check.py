@@ -19,6 +19,11 @@ def compare_nodes(config):
         max_block_id.append(actions.get_max_block_id(config[i]['url'], token))
         i += 1
     max_block = max(max_block_id)
+    min_block = min(max_block_id)
+    if max_block - min_block > 5:
+        print('One of nodes has blocks less than others. Max block is ' + max_block +\
+              ' Min block is ' + min_block)
+        return False
     hash = []
     i = 0
     while i < nodes:
