@@ -113,6 +113,11 @@
             "Type": "languages"
         },
         {
+            "Name": "aggregate",
+            "Trans": "{\"en\": \"Aggregate\", \"ru\": \"Сбор\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "aid_cannot_zero",
             "Trans": "{\"en\": \"Application ID cannot be zero\", \"ru\": \"Идентификатор приложения не может равняться нулю\"}",
             "Type": "languages"
@@ -208,11 +213,6 @@
             "Type": "languages"
         },
         {
-            "Name": "app_installed",
-            "Trans": "{\"en\": \"Application already installed\", \"ru\": \"Приложение уже установлено\"}",
-            "Type": "languages"
-        },
-        {
             "Name": "app_name_missing",
             "Trans": "{\"en\": \"The application name is missing\", \"ru\": \"Не указано имя приложения\"}",
             "Type": "languages"
@@ -295,16 +295,6 @@
         {
             "Name": "appointment_impossible",
             "Trans": "{\"en\": \"*This role cannot be assigned to members\", \"ru\": \"Назначение членов на эту роль невозможно\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "apps_catalog",
-            "Trans": "{\"en\": \"Application catalog\", \"ru\": \"Каталог приложений\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "apps_catalog_desc",
-            "Trans": "{\"en\": \"This page contains a list of all the applications that you can install in your ecosystem\", \"ru\": \"Эта страница содержит список всех приложений, которые вы можете установить в вашу экосистему\"}",
             "Type": "languages"
         },
         {
@@ -599,7 +589,7 @@
         },
         {
             "Name": "catalog_ecosystems_editing",
-            "Trans": "{\"en\": \"Edit ecosystem information\", \"ru\": \"Редактирование информации об экосистеме\"}",
+            "Trans": "{\"en\": \"Ecosystem information editing\", \"ru\": \"Редактирование информации об экосистеме\"}",
             "Type": "languages"
         },
         {
@@ -738,11 +728,6 @@
             "Type": "languages"
         },
         {
-            "Name": "compact",
-            "Trans": "{\"en\": \"Compact\", \"ru\": \"Компактный\"}",
-            "Type": "languages"
-        },
-        {
             "Name": "companies",
             "Trans": "{\"en\": \"Companies\", \"ru\": \"Компании\"}",
             "Type": "languages"
@@ -773,11 +758,6 @@
             "Type": "languages"
         },
         {
-            "Name": "config_not_find",
-            "Trans": "{\"en\": \"Could not find config for this application\", \"ru\": \"Не удалось найти конфигурацию для этого приложения\"}",
-            "Type": "languages"
-        },
-        {
             "Name": "confirm_button",
             "Trans": "{\"en\": \"Confirm\", \"ru\": \"Подтвердить\"}",
             "Type": "languages"
@@ -789,7 +769,7 @@
         },
         {
             "Name": "congratulation",
-            "Trans": "{\"en\": \"Congratulations\", \"ru\": \"Поздравление\"}",
+            "Trans": "{\"en\": \"Congratulation\", \"ru\": \"Поздравление\"}",
             "Type": "languages"
         },
         {
@@ -829,7 +809,7 @@
         },
         {
             "Name": "contract_binding_des",
-            "Trans": "{\"en\": \"New offer from another member to bind a contract to your wallet\", \"ru\": \"Новое предложение привязать контракт к вашему кошельку от пользователя\"}",
+            "Trans": "{\"en\": \"A new offer to bind a contract to your wallet from a user\", \"ru\": \"Новое предложение привязать контракт к вашему кошельку от пользователя\"}",
             "Type": "languages"
         },
         {
@@ -840,11 +820,6 @@
         {
             "Name": "contract_chain_distorted",
             "Trans": "{\"en\": \"The order of contracts execution is not valid\", \"ru\": \"Нарушена последовательность запуска контрактов\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "contract_execute",
-            "Trans": "{\"en\": \"Execute contract\", \"ru\": \"Запустить контракт\"}",
             "Type": "languages"
         },
         {
@@ -975,16 +950,6 @@
         {
             "Name": "currency_type",
             "Trans": "{\"en\": \"Сurrency type\", \"ru\": \"Тип валюты\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "current",
-            "Trans": "{\"en\": \"Сurrent\", \"ru\": \"Текущее\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "current_value",
-            "Trans": "{\"en\": \"Сurrent value\", \"ru\": \"Текущее значение\"}",
             "Type": "languages"
         },
         {
@@ -1129,7 +1094,7 @@
         },
         {
             "Name": "ec_hint",
-            "Trans": "{\"en\": \"To enter the new ecosystem, log out from the current and log in to your new ecosystem\", \"ru\": \"Для входа в новую экосистему необходимо выйти из текущей и войти в вашу новую экосистему\"}",
+            "Trans": "{\"en\": \"To enter, you must log out and log in to your ecosystem.\", \"ru\": \"Для входа необходимо разлогиниться и войти в вашу экосистему.\"}",
             "Type": "languages"
         },
         {
@@ -1358,8 +1323,13 @@
             "Type": "languages"
         },
         {
+            "Name": "enter_your_questions",
+            "Trans": "{\"en\": \"Enter your questions\", \"ru\": \"Введите ваш вопрос\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "errand_performer",
-            "Trans": "{\"en\": \"Errand executor\", \"ru\": \"Исполнитель поручения\"}",
+            "Trans": "{\"en\": \"Errand performer\", \"ru\": \"Исполнитель поручения\"}",
             "Type": "languages"
         },
         {
@@ -1478,11 +1448,6 @@
             "Type": "languages"
         },
         {
-            "Name": "full",
-            "Trans": "{\"en\": \"Full\", \"ru\": \"Полный\"}",
-            "Type": "languages"
-        },
-        {
             "Name": "gender",
             "Trans": "{\"en\": \"Gender\", \"ru\": \"Пол\"}",
             "Type": "languages"
@@ -1510,11 +1475,6 @@
         {
             "Name": "hide",
             "Trans": "{\"en\": \"Hide\", \"ru\": \"Скрыть\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "history_value",
-            "Trans": "{\"en\": \"Value from the history\", \"ru\": \"Значение из истории\"}",
             "Type": "languages"
         },
         {
@@ -1613,11 +1573,6 @@
             "Type": "languages"
         },
         {
-            "Name": "installed",
-            "Trans": "{\"en\": \"Installed\", \"ru\": \"Установлено\"}",
-            "Type": "languages"
-        },
-        {
             "Name": "installing_platform_apps",
             "Trans": "{\"en\": \"Installing platform applications\", \"ru\": \"Установка платформенных приложений\"}",
             "Type": "languages"
@@ -1644,7 +1599,7 @@
         },
         {
             "Name": "interval_too_big",
-            "Trans": "{\"en\": \"The interval is too long\", \"ru\": \"Интервал слишком велик\"}",
+            "Trans": "{\"en\": \"The interval is too big\", \"ru\": \"Интервал слишком велик\"}",
             "Type": "languages"
         },
         {
@@ -1795,11 +1750,6 @@
         {
             "Name": "languages",
             "Trans": "{\"en\": \"Languages\", \"ru\": \"Языки\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "last_save",
-            "Trans": "{\"en\": \"Last save\", \"ru\": \"Последнее сохранение\"}",
             "Type": "languages"
         },
         {
@@ -2223,6 +2173,11 @@
             "Type": "languages"
         },
         {
+            "Name": "not_participants",
+            "Trans": "{\"en\": \"Has no participants\", \"ru\": \"Не имеет участников\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "not_started",
             "Trans": "{\"en\": \"Not started\", \"ru\": \"Не начата\"}",
             "Type": "languages"
@@ -2330,11 +2285,6 @@
         {
             "Name": "number_votes",
             "Trans": "{\"en\": \"Number of votes\", \"ru\": \"Число голосов\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "ok",
-            "Trans": "{\"en\": \"OK\", \"ru\": \"ОК\"}",
             "Type": "languages"
         },
         {
@@ -2588,11 +2538,6 @@
             "Type": "languages"
         },
         {
-            "Name": "poll_question",
-            "Trans": "{\"en\": \"Poll question\", \"ru\": \"Текст опроса\"}",
-            "Type": "languages"
-        },
-        {
             "Name": "poll_start",
             "Trans": "{\"en\": \"Polling dates are specified when the template is launched.\", \"ru\": \"Даты опроса указываются при запуске шаблона.\"}",
             "Type": "languages"
@@ -2669,7 +2614,7 @@
         },
         {
             "Name": "quorum_range_must_be",
-            "Trans": "{\"en\": \"Quorum [%v] must be in the range from 1 to 100 percent \", \"ru\": \"Кворум [%v] должен быть в диапазоне от 1 до 100 процентов\"}",
+            "Trans": "{\"en\": \"Quorum [%v] must be in the range from 5% to 100%\", \"ru\": \"Кворум [%v] должен быть в диапазоне от 5% до 100%\"}",
             "Type": "languages"
         },
         {
@@ -3088,11 +3033,6 @@
             "Type": "languages"
         },
         {
-            "Name": "sampling_type",
-            "Trans": "{\"en\": \"Sampling type\", \"ru\": \"Тип выборки\"}",
-            "Type": "languages"
-        },
-        {
             "Name": "save",
             "Trans": "{\"en\": \"Save\", \"ru\": \"Сохранить\"}",
             "Type": "languages"
@@ -3164,7 +3104,7 @@
         },
         {
             "Name": "select_default_templates_manually",
-            "Trans": "{\"en\": \"Select default voting templates manually\", \"ru\": \"Выбрать стандартные шаблоны голосований вручную\"}",
+            "Trans": "{\"en\": \"Select default voting templates manually\", \"ru\": \"Установить стандартные шаблоны голосований вручную\"}",
             "Type": "languages"
         },
         {
@@ -3308,11 +3248,6 @@
             "Type": "languages"
         },
         {
-            "Name": "start_over",
-            "Trans": "{\"en\": \"Start over\", \"ru\": \"Начать сначала\"}",
-            "Type": "languages"
-        },
-        {
             "Name": "start_poll",
             "Trans": "{\"en\": \"Start poll template\", \"ru\": \"Запустить шаблон опроса\"}",
             "Type": "languages"
@@ -3384,7 +3319,7 @@
         },
         {
             "Name": "sure_want_delete",
-            "Trans": "{\"en\": \"Do you really want to delete this?\", \"ru\": \"Вы уверены, что хотите удалить это?\"}",
+            "Trans": "{\"en\": \"Do you really want to delete?\", \"ru\": \"Вы уверены, что хотите удалить?\"}",
             "Type": "languages"
         },
         {
@@ -3823,13 +3758,13 @@
             "Type": "languages"
         },
         {
-            "Name": "ts_free_wallets_ended",
-            "Trans": "{\"en\": \"Free wallets have ended\", \"ru\": \"Свободные кошельки закончились\"}",
+            "Name": "ts_free_wallets_emptied",
+            "Trans": "{\"en\": \"Free wallets are emptied\", \"ru\": \"Свободные кошельки закончились\"}",
             "Type": "languages"
         },
         {
             "Name": "ts_free_wallets_need",
-            "Trans": "{\"en\": \"Please add free wallets\", \"ru\": \"Необходимо добавить свободные кошельки\"}",
+            "Trans": "{\"en\": \"Need to add free wallets\", \"ru\": \"Необходимо добавить свободные кошельки\"}",
             "Type": "languages"
         },
         {
@@ -3864,7 +3799,7 @@
         },
         {
             "Name": "ts_settings_description",
-            "Trans": "{\"en\": \"Correspondence of Token sale application roles to ecosystem roles\", \"ru\": \"Соответствие ролей приложения Token sale ролям экосистемы\"}",
+            "Trans": "{\"en\": \"Compliance between Token sale application roles and ecosystem roles\", \"ru\": \"Соответствие ролей приложения Token sale ролям экосистемы\"}",
             "Type": "languages"
         },
         {
@@ -3938,6 +3873,11 @@
             "Type": "languages"
         },
         {
+            "Name": "understood",
+            "Trans": "{\"en\": \"Understood\", \"ru\": \"Ознакомился\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "unread",
             "Trans": "{\"en\": \"unread\", \"ru\": \"не прочитано\"}",
             "Type": "languages"
@@ -3985,6 +3925,11 @@
         {
             "Name": "user_info",
             "Trans": "{\"en\": \"Member information\", \"ru\": \"Информация о пользователе\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "username",
+            "Trans": "{\"en\": \"Username\", \"ru\": \"Никнейм\"}",
             "Type": "languages"
         },
         {
@@ -4149,7 +4094,7 @@
         },
         {
             "Name": "volume_range_must_be",
-            "Trans": "{\"en\": \"Volume [%v] must be in the range from 1 to 100 percent\", \"ru\": \"Объем [%v] должн быть в диапазоне от 1 до 100 процентов\"}",
+            "Trans": "{\"en\": \"Volume [%v] must be in the range of 50% to 100%\", \"ru\": \"Необходимая доля проголосовавших [%v] должна быть в диапазоне от 50% до 100%\"}",
             "Type": "languages"
         },
         {
@@ -4189,7 +4134,7 @@
         },
         {
             "Name": "voters_number_less_one",
-            "Trans": "{\"en\": \"Number of voters (quorum) cannot be less than 1\", \"ru\": \"Необходимое количество проголосовавших (кворум) не может быть меньше 1\"}",
+            "Trans": "{\"en\": \"Number of voters cannot be less than 1\", \"ru\": \"Необходимое количество проголосовавших не может быть меньше 1\"}",
             "Type": "languages"
         },
         {
@@ -4328,11 +4273,6 @@
             "Type": "languages"
         },
         {
-            "Name": "voting_no_participants",
-            "Trans": "{\"en\": \"Voting has no participants\", \"ru\": \"У голосования нет участников\"}",
-            "Type": "languages"
-        },
-        {
             "Name": "voting_not_creator",
             "Trans": "{\"en\": \"You are not the creator of this voting\", \"ru\": \"Вы не являетесь создателем этого голосования\"}",
             "Type": "languages"
@@ -4389,27 +4329,7 @@
         },
         {
             "Name": "voting_quorum_desc",
-            "Trans": "{\"en\": \"Percentage value of voters to fulfill the requirements of this voting (from 1 to 100 percent)\", \"ru\": \"Необходимая процентная доля проголосовавших для выполнения требований этого голосования (от 1 до 100 процентов)\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "voting_quorum_number_desc",
-            "Trans": "{\"en\": \"Number of voters to fulfill the requirements of this voting (starting from 1)\", \"ru\": \"Необходимое количество проголосовавших для выполнения требований этого голосования (минимум 1)\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "voting_rating",
-            "Trans": "{\"en\": \"Rating\", \"ru\": \"Рейтинг\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "voting_rating_desc",
-            "Trans": "{\"en\": \"Use rating when counting votes\", \"ru\": \"Использовать рейтинг при подсчете голосов\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "voting_rating_not_used",
-            "Trans": "{\"en\": \"Do not use rating when counting votes\", \"ru\": \"Не использовать рейтинг при подсчете голосов\"}",
+            "Trans": "{\"en\": \"Percentage value of the votes to accept a decision (from 5 to 100)\", \"ru\": \"Процентная доля голосов для принятия решения (от 5 до 100)\"}",
             "Type": "languages"
         },
         {
@@ -4445,11 +4365,6 @@
         {
             "Name": "voting_subject",
             "Trans": "{\"en\": \"Voting subject\", \"ru\": \"Тема голосования\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "voting_subject_not_filled",
-            "Trans": "{\"en\": \"Voting subject is not filled\", \"ru\": \"Не заполнен предмет голосования\"}",
             "Type": "languages"
         },
         {
@@ -4519,22 +4434,17 @@
         },
         {
             "Name": "voting_volume_desc",
-            "Trans": "{\"en\": \"Percentage value of the votes to accept a decision (from 1 to 100)\", \"ru\": \"Процентная доля голосов для принятия решения (от 1 до 100)\"}",
+            "Trans": "{\"en\": \"Percentage value of voters to fulfill the requirements of this voting (from 50% to 100%)\", \"ru\": \"Необходимая процентная доля проголосовавших для выполнения требований этого голосования (от 50% до 100%)\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "voting_volume_number_desc",
+            "Trans": "{\"en\": \"Number of voters to fulfill the requirements of this voting (starting from 1)\", \"ru\": \"Необходимое количество проголосовавших для выполнения требований этого голосования (минимум 1)\"}",
             "Type": "languages"
         },
         {
             "Name": "voting_wizard",
             "Trans": "{\"en\": \"Voting wizard\", \"ru\": \"Мастер создания голосования\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "voting_wizard_draft_message",
-            "Trans": "{\"en\": \"You have autosaved voting draft. Do you want to use it?\", \"ru\": \"У вас есть автосохранённый черновик голосования. Хотите использовать его?\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "voting_wizard_use_draft",
-            "Trans": "{\"en\": \"Use the draft\", \"ru\": \"Использовать черновик\"}",
             "Type": "languages"
         },
         {
@@ -4740,11 +4650,6 @@
         {
             "Name": "want_resign",
             "Trans": "{\"en\": \"Do you really want to resign from the Validator role?\", \"ru\": \"Вы уверены, что хотите уйти с роли Validator?\"}",
-            "Type": "languages"
-        },
-        {
-            "Name": "want_restore_history_value",
-            "Trans": "{\"en\": \"Do you really want to restore this value from the history?\", \"ru\": \"Вы уверены, что хотите восстановить это значение из истории?\"}",
             "Type": "languages"
         },
         {
