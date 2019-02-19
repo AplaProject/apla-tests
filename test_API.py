@@ -86,11 +86,6 @@ class TestApi():
         for item in res:
             self.check_result(item, asserts)
         self.unit.assertEqual(len(res), 1, 'Length response is not equals')
-        
-    def test_keyinfo_by_keyid1(self):
-        res = api.keyinfo(self.url, token='', key_id='1280868483444751768')
-        print(res)
-        s = a+ n
 
     def test_keyinfo_by_address_incorrect(self):
         asserts = ['error', 'msg']
