@@ -108,7 +108,8 @@ config1 = subprocess.Popen([
     '--dbPassword='+args.dbPassword,
     '--centUrl='+centrifugo_url,
     '--centSecret='+centrifugo_secret,
-    '--dbName='+args.dbName1
+    '--dbName='+args.dbName1,
+    ''
 ])
 log.info('Generated config for first node')
 time.sleep(wait)
@@ -127,6 +128,7 @@ firstBlock = subprocess.Popen([
     binary,
     'generateFirstBlock',
     '--config='+workDir1+'/config.toml',
+    '--private=false', 
     '--test='+args.test
 ])
 log.info('First block generated')

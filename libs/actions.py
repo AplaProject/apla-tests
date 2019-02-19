@@ -364,8 +364,9 @@ def imp_app(app_name, url, pr_key, token):
             result = tx_status_multi(url, wait, hashes, token)
             for status in result.values():
                 log.debug(str(status))
+                print(status)
                 if int(status['blockid']) < 1:
-                    log.error('Import "{app_name}" is failed'.format(app_name=app_name))
+                    log.error('Import "{app_name}" is failed'.format(app_name=app_name) + status)
                     exit(1)
             log.info('"{app_name}" successfully installed'.format(app_name=app_name))
 

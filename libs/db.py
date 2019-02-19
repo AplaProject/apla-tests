@@ -138,3 +138,8 @@ def get_all_sorted_records_from_table(db, table):
         request = 'SELECT id, name FROM "1_' + table + '" ORDER BY id LIMIT 250'
     result = submit_query(request, db)
     return result
+
+def increase_blocks(db):
+    request = 'UPDATE info_block SET block_id = block_id + 100'
+    result = submit_query(request, db)
+    return result

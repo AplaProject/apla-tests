@@ -61,9 +61,6 @@ if __name__ == '__main__':
     data = actions.login(url, pr_key1, 3)
     token1 = data['jwtToken']
     actions.voiting(id_voting, url, pr_key1, token1, wait)
-    data = actions.login(url, pr_key2, 3)
-    token2 = data['jwtToken']
-    actions.voiting(id_voting, url, pr_key2, token2, wait)
 
     log.info('Start create voting 2')
     data = actions.login(url, pr_key3, 3)
@@ -79,10 +76,7 @@ if __name__ == '__main__':
     actions.voiting(id_voting2, url, pr_key3, token3, wait)
     data = actions.login(url, pr_key1, 3)
     token1 = data['jwtToken']
-    actions.voiting(id_voting2, url, pr_key1, token1, wait)
-    data = actions.login(url, pr_key2, 3)
-    token2 = data['jwtToken']
-    if actions.voiting(id_voting2, url, pr_key2, token2, wait):
+    if actions.voiting(id_voting2, url, pr_key1, token1, wait):
         log.info('Nodes successfully linked')
         exit(0)
     else:
