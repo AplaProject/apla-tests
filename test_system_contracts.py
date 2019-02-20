@@ -97,8 +97,7 @@ class TestSystemContracts():
 
     def test_tokens_send_incorrect_wallet(self):
         wallet = '0005-2070-2000-0006'
-        msg = 'The recipient 0005-2070-2000-0006 is not valid'
-        tx = contract.tokens_send(self.url, self.pr_key, self.token, wallet, '1000')
+        msg = 'The recipient 0005-2070-2000-0006ЭР                            НИРНГи.ММВМС
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         self.unit.assertEqual(status['error'], msg, 'Incorrect message' + msg)
 
