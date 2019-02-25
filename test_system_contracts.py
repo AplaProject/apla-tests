@@ -54,6 +54,10 @@ class TestSystemContracts():
     def test_create_ecosystem(self):
         tx = contract.new_ecosystem(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        
+    def test_create_new_user(self):
+        tx = contract.new_user(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
     def test_edit_application(self):
         tx = contract.new_application(self.url, self.pr_key, self.token)
