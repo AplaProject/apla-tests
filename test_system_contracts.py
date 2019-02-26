@@ -257,6 +257,18 @@ class TestSystemContracts():
         msg = 'Condition {cond} is not allowed'.format(cond=condition)
         self.unit.assertEqual(msg, status['error'], 'Incorrect message: ' + str(status))
 
+    def test_edit_parameter(self):
+        tx = contract.new_parameter(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        id = actions.get_parameter_id(self.url, tx['name'], self.token)
+        value = 'test_edited'
+        res = contract.edit_parameter(self.url,
+                                      self.pr_key,
+                                      self.token,
+                                      id,
+                                      value)
+        check.is_tx_in_block(self.url, self.wait, res, self.token)
+
     def test_edit_incorrect_parameter(self):
         id = '99999'
         tx = contract.edit_parameter(self.url, self.pr_key, self.token, id)
