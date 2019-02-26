@@ -449,8 +449,7 @@ class TestRollback1():
         self.bind_wallet(cont)
         self.unbind_wallet(cont)
         param = self.new_parameter()
-        # off, работает через голосование
-        #self.edit_parameter(param)
+        self.edit_parameter(param)
         menu = self.new_menu()
         self.edit_menu(menu)
         self.append_memu(menu)
