@@ -1243,6 +1243,11 @@
             "Type": "languages"
         },
         {
+            "Name": "ecosystems_description",
+            "Trans": "{\"en\":\"A list of all ecosystems where you can create and manage your ecosystems, add an ecosystem logo, and specify the ecosystem type.\",\"ru\":\"Список всех экосистем с возможностью создания экосистем, управления своими экосистемами, добавления логотипа и типа экосистемы.\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "ecosystems_list",
             "Trans": "{\"en\": \"Ecosystems list\", \"ru\": \"Список экосистем\"}",
             "Type": "languages"
@@ -1250,6 +1255,11 @@
         {
             "Name": "ecosystems_list_desc",
             "Trans": "{\"en\": \"А complete list of all ecosystems\", \"ru\": \"Полный список всех экосистем\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "ecosystems_members_description",
+            "Trans": "{\"en\":\"A list of all members of the current ecosystem where you can view member profiles and quickly send tokens.\",\"ru\":\"Список всех членов текущей экосистемы, с возможностью переходить на профили участников и быстрой отправкой токенов.\"}",
             "Type": "languages"
         },
         {
@@ -2428,6 +2438,11 @@
             "Type": "languages"
         },
         {
+            "Name": "notifications_description",
+            "Trans": "{\"en\":\"This platform application provides the functionality of sending notifications, including notifications for single members and for roles.\",\"ru\":\"Платформенное приложение предоставляет функционал рассылки оповещений, как одиночных так и ролевых.\"}",
+            "Type": "languages"
+        },
+        {
             "Name": "notifications_install_needed",
             "Trans": "{\"en\": \"You must install an application that contains a contract for the notifications sending\", \"ru\": \"Необходимо установить приложение, содержащее контракт для отправки уведомлений\"}",
             "Type": "languages"
@@ -2540,6 +2555,11 @@
         {
             "Name": "parameter_name",
             "Trans": "{\"en\": \"Parameter name\", \"ru\": \"Название параметра\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "parameters_description",
+            "Trans": "{\"en\":\"Parameters for configuring nodes, transactions, blocks, and network resources payment. These parameters can be changed only by voting.\",\"ru\":\"Параметры для настройки узлов, транзакций, блоков и оплаты сетевых ресурсов. Их можно изменить только в процессе голосования.\"}",
             "Type": "languages"
         },
         {
@@ -3175,6 +3195,11 @@
         {
             "Name": "roles_access",
             "Trans": "{\"en\": \"Roles access\", \"ru\": \"Доступ для ролей\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "roles_description",
+            "Trans": "{\"en\":\"The roles application allows you to group ecosystem members into roles. All members of a role will have access rights and action permissions assigned for this role, and will receive role notifications.\",\"ru\":\"Приложение позволяет группировать членов экосистемы в роли. Все участники одной роли будут иметь общие настройки прав, назначенных для этой роли, доступ к действиям, на которые назначена эта роль, а также будут получать ролевые уведомления.\"}",
             "Type": "languages"
         },
         {
@@ -4690,6 +4715,11 @@
         {
             "Name": "votings",
             "Trans": "{\"en\": \"Votings\", \"ru\": \"Голосования\"}",
+            "Type": "languages"
+        },
+        {
+            "Name": "votings_description",
+            "Trans": "{\"en\":\"The voting application provides the functionality of making consensus decisions on the majority of platform parameters and actions.\",\"ru\":\"Приложение голосования предоставляет функционал консенсусного принятия решения по большинству настроек и действий платформы.\"}",
             "Type": "languages"
         },
         {
