@@ -5,7 +5,7 @@ import os
 
 
 from genesis_blockchain_tools.contract import Contract
-from libs import api, db, tools, loger, check
+from libs import api, db, tools, loger, check, contract
 
 wait = tools.read_config('test')['wait_tx_status']
 log = loger.create_loger(__name__)
@@ -29,6 +29,7 @@ def login_cors(url, pr_key, role=0, ecosystem=1):
     return result
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
     schema = api.contract(url, jvtToken, name)
+    print(schema)
     contract = Contract(schema=schema,
                         private_key=prKey,
                         ecosystem_id=ecosystem,
@@ -344,7 +345,7 @@ def imp_app(app_name, url, pr_key, token):
     log.info('Start install "{app_name}"'.format(app_name=app_name))
     path = os.path.join(os.getcwd(), 'fixtures', 'basic', app_name + '.json')
     resp = call_contract(url, pr_key, 'ImportUpload',
-                         {'input_file': {'Path': path}}, token)
+                         {'Data': {'Path': path}}, token)
     res_import_upload = tx_status(url, wait, resp, token)
     if int(res_import_upload['blockid']) > 0:
         founder_id = get_parameter_value(url, 'founder_account', token)
@@ -393,7 +394,7 @@ def roles_install(url, pr_key, token, wait):
 
 
 def voting_templates_install(url, pr_key, token, wait):
-    data = {}
+    data = {'SetDefault': 'yes'}
     log.info('VotingTemplatesInstall started')
     call = call_contract(url, pr_key, 'VotingTemplatesInstall',
                                  data, token)
@@ -405,10 +406,9 @@ def voting_templates_install(url, pr_key, token, wait):
 def edit_app_param(name, val, url, pr_key, token, wait):
     log.info('EditAppParam started')
     id = get_object_id(url, name, 'app_params', token)
-    data = {'Id': id, 'Value': val, 'Conditions': 'true'}
-    call = call_contract(url, pr_key, 'EditAppParam',
-                                 data, token)
-    if check.is_tx_in_block(url, wait, {'hash': call}, token) < 1:
+    print('id = ', id)
+    tx = contract.edit_app_param(url, pr_key, token, int(id), value=val)
+    if check.is_tx_in_block(url, wait, tx, token) < 1:
         log.error('EditAppParam ' + name + ' is failed')
         exit(1)
 
@@ -426,7 +426,7 @@ def update_profile(name, url, pr_key, token, wait):
 
 def set_apla_consensus(id, url, pr_key, token, wait):
     log.info('setAplaconsensus started')
-    data = {'member_id': id, 'rid': 3}
+    data = {'MemberId': id, 'Rid': 3}
     call = call_contract(url, pr_key, 'RolesAssign',
                                  data, token)
     if check.is_tx_in_block(url, wait, {'hash': call}, token) < 1:
@@ -444,6 +444,23 @@ def create_voiting(tcp_address, api_address, key_id, pub_key, url, pr_key, token
         log.error('VotingNodeAdd is failed')
         exit(1)
         
+def validator_request(tcp_address, api_address, key_id, pub_key, url, pr_key, token, wait):
+    log.info('ValidatorRequest started')
+    data = {'TcpAddress': tcp_address, 'ApiAddress': api_address,
+            'KeyId': key_id, 'PubKey': pub_key}
+    call = call_contract(url, pr_key, 'ValidatorRequest',
+                                 data, token)
+    if tx_status(url, wait, call, token)['blockid'] < 1:
+        log.error('ValidatorRequest is failed')
+        
+        
+def run_voting(id_voting, url, pr_key, token, wait):
+    log.info('VotingRunNewValidator started')
+    data = {'ValidatorId': id_voting}
+    call = call_contract(url, pr_key, 'VotingRunNewValidator', data, token)
+    if tx_status(url, wait, call, token)['blockid'] < 1:
+        log.error('VotingRunNewValidator is failed')
+        
 
 def voting_status_update(url, pr_key, token, wait):
     log.info('VotingStatusUpdate started')
@@ -457,7 +474,7 @@ def voting_status_update(url, pr_key, token, wait):
 
 def voiting(id, url, pr_key, token, wait):
     log.info('VotingDecisionAccept started')
-    data = {'votingID': id,
+    data = {'VotingId': id,
             'RoleId': 3}
     call = call_contract(url, pr_key, 'VotingDecisionAccept',
                                  data, token)
