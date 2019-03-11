@@ -409,7 +409,7 @@ def upload_binary(url, pr_key, token, path, name='', app_id='1', ecosystem=1):
 
 
 def import_upload(url, pr_key, token, path, ecosystem=1):
-    data = {'input_file': {'Path': path}}
+    data = {'Data': {'Path': path}}
     res = actions.call_contract(url, pr_key, '@1ImportUpload',
                                 data, token, ecosystem=ecosystem)
     return {'hash': res}
@@ -433,10 +433,10 @@ def new_section(url, pr_key, token, title='',
     if not urlname:
         urlname = 'url_' + tools.generate_random_name()
     data = {
-        'title': title,
-        'status': status,
-        'urlname': urlname,
-        'page': page
+        'Title': title,
+        'Status': status,
+        'Urlname': urlname,
+        'Page': page
     }
     res = actions.call_contract(url, pr_key, '@1NewSection',
                                 data, token, ecosystem=ecosystem)
