@@ -69,7 +69,6 @@ def login(url, token, uid, private_key, role_id=0, ecosystem=1, expire=3600):
             'key_id': res['key_id'],
             'ecosystem_id': res['ecosystem_id']
             }
-        time.sleep(25)
         return result
     else:
         return None 

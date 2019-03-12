@@ -30,7 +30,6 @@ if __name__ == '__main__':
                         'public_key': conf[0]['pubKey']})
     actions.edit_app_param('first_node', node1, url, pr_key1, token1, wait)
     data2 = actions.login(url, pr_key2, 0)
-    time.sleep(15)
     token2 = data2['jwtToken']
     actions.validator_request(conf[1]['tcp_address'], conf[1]['api_address'],
                               conf[1]['keyID'], conf[1]['pubKey'],
@@ -40,7 +39,6 @@ if __name__ == '__main__':
     actions.voiting(id_validator, url, pr_key1, token1, wait)
     
     data3 = actions.login(url, pr_key3, 0)
-    time.sleep(30)
     token3 = data3['jwtToken']
     actions.validator_request(conf[2]['tcp_address'], conf[2]['api_address'],
                               conf[2]['keyID'], conf[2]['pubKey'],
