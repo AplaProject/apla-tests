@@ -13,7 +13,7 @@ def submit_query(query, db):
 # block_chain
 def compare_node_positions(db, max_block_id, nodes):
     count_rec = nodes * 3 + nodes
-    min_block = max_block_id - count_rec + 1
+    min_block = max_block_id - 20 + 1
     request = 'SELECT node_position, count(node_position) FROM block_chain WHERE id>' + str(
         min_block) + ' AND id<' + str(max_block_id) + 'GROUP BY node_position'
     positions = submit_query(request, db)
