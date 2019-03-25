@@ -21,8 +21,8 @@ def compare_nodes(config):
     max_block = max(max_block_id)
     min_block = min(max_block_id)
     if max_block - min_block > 5:
-        print('One of nodes has blocks less than others. Max block is ' + max_block +\
-              ' Min block is ' + min_block)
+        print('One of nodes has blocks less than others. Max block is ' + str(max_block) +\
+              ' Min block is ' + str(min_block))
         return False
     hash = []
     i = 0
@@ -99,3 +99,8 @@ def cors(url, method):
         unittest.TestCase.fail('CORS is not allowed')
         return False
         
+def is_updating(url):
+    if not api.getuid(url):
+        return True
+    else:
+        return False

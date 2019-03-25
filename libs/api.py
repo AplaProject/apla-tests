@@ -38,9 +38,12 @@ def getuid(url):
     url += endpoint
     response = requests.get(url)
     result = response.json()
-    token = result['token']
-    uid = result['uid']
-    return token, uid
+    if 'token' and 'uid' in result:
+        token = result['token']
+        uid = result['uid']
+        return token, uid
+    else:
+        return False
 
 
 def login(url, token, uid, private_key, role_id=0, ecosystem=1, expire=3600):
