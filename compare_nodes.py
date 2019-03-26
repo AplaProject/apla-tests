@@ -1,5 +1,5 @@
 import unittest
-from libs import tools, check, actions
+from libs import tools, check, actions, contract
 
 
 class TestCompareNodes(unittest.TestCase):
@@ -14,8 +14,12 @@ class TestCompareNodes(unittest.TestCase):
         url = self.config[0]['url']
         data = actions.login(url, self.config[0]['private_key'])
         token = data['jwtToken']
-        self.unit.assertTrue(check.compare_db(self.config, url, token),
-                             'Error in test_compare_db')
+        if not check.compare_db(self.config, url, token):
+            print('Error in test_compare_db, send one more transaction')
+            tx = contract.new_contract(url, self.config[0]['private_key'], token)
+            check.is_tx_in_block(url, 30, tx, token)
+            unit.assertTrue(check.compare_db(self.config, url, token),
+                            'Error in test_compare_db')
 
 
 if __name__ == '__main__':
