@@ -146,3 +146,20 @@ def increase_blocks(db):
     cursor = connect.cursor()
     cursor.execute(request)
     connect.commit()
+    
+def change_hash_block_chain(db):
+    request = "UPDATE block_chain SET rollbacks_hash = '0a0638f1411c71353f358fc4472f476ea10e8d8b6a3a17926489684c3aa08e72'"
+    connect = psycopg2.connect(host=db['dbHost'], dbname=db['dbName'],
+                               user=db['login'], password=db['pass'])
+    cursor = connect.cursor()
+    cursor.execute(request)
+    connect.commit()
+    
+def change_hash_info_block(db):
+    request = "UPDATE info_block SET rollbacks_hash = '0a0638f1411c71353f358fc4472f476ea10e8d8b6a3a17926489684c3aa08e72'"
+    connect = psycopg2.connect(host=db['dbHost'], dbname=db['dbName'],
+                               user=db['login'], password=db['pass'])
+    cursor = connect.cursor()
+    cursor.execute(request)
+    connect.commit()
+    

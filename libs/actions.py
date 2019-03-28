@@ -72,6 +72,7 @@ def tx_status(url, sleep_time, hsh, jvt_token):
             break
         else:
             sec = sec + 1
+    print(jresp)
     if 'errmsg' not in jresp and jresp['blockid'] == '':
         return {'blockid': None, 'result': None, 'error': None}
     if 'errmsg' not in jresp and int(jresp['blockid']) > 0:

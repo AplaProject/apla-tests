@@ -1,4 +1,5 @@
 import unittest
+import time
 from libs import tools, check, actions, contract
 
 
@@ -18,7 +19,8 @@ class TestCompareNodes(unittest.TestCase):
             print('Error in test_compare_db, send one more transaction')
             tx = contract.new_contract(url, self.config[0]['private_key'], token)
             check.is_tx_in_block(url, 30, tx, token)
-            unit.assertTrue(check.compare_db(self.config, url, token),
+            time.sleep(20)
+            self.unit.assertTrue(check.compare_db(self.config, url, token),
                             'Error in test_compare_db')
 
 

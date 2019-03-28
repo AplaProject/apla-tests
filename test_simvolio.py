@@ -689,6 +689,7 @@ class TestSimvolio():
         for el in resp:
             actual = resp[el]
             break
+        print(actual)
         self.unit.assertEqual(contract['asert'], actual, resp)
 
     def test_contract_UpdateNotifications(self):
