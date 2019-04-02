@@ -163,3 +163,11 @@ def change_hash_info_block(db):
     cursor.execute(request)
     connect.commit()
     
+def change_content(db):
+    request = "UPDATE \"1_greeting\" SET greeting='hacked' where id=1"
+    connect = psycopg2.connect(host=db['dbHost'], dbname=db['dbName'],
+                               user=db['login'], password=db['pass'])
+    cursor = connect.cursor()
+    cursor.execute(request)
+    connect.commit()
+    

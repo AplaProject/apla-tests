@@ -25,9 +25,7 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], data, self.token)
-        print(res)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        print(result)
         self.unit.assertIn(check_point, result['result'], 'ERROR: ' +
                            str(result))
 

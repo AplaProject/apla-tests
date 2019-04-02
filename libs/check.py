@@ -18,6 +18,7 @@ def compare_nodes(config):
         amounts.append(actions.get_user_token_amounts(config[i]['url'], token))
         max_block_id.append(actions.get_max_block_id(config[i]['url'], token))
         i += 1
+    print("Max blocks: ", max_block_id)
     max_block = max(max_block_id)
     min_block = min(max_block_id)
     if max_block - min_block > 5:
@@ -61,6 +62,7 @@ def is_tx_in_block(url, wait, tx, token):
 
 
 def compare_db(config, url, token):
+    time.sleep(60)
     nodes = len(config)
     dbInformation = []
     first_db = actions.get_count_DB_objects(url, token)

@@ -53,6 +53,29 @@ class TestSecurity(unittest.TestCase):
             i = i + 1
             time.sleep(1)
         time.sleep(120)
+        
+    def test_change_content(self):
+        wait = tools.read_config('test')['wait_tx_status']
+        conf = tools.read_config('nodes')
+        url = conf[0]['url']
+        pr_key1 = conf[0]['private_key']
+        data = actions.login(url, pr_key1, 0)
+        token1 = data['jwtToken']
+        actions.imp_app('apla_test_app', url, pr_key1, token1)
+        data = {'greeting': 'record1'}
+        res = actions.call_contract(url, pr_key1, 'testInsert', data, token1)
+        result = actions.tx_status(url, wait, res, token1)
+        db.change_content(self.config[2]['db'])
+        data1 = {'id': '1'}
+        res = actions.call_contract(url, pr_key1, 'testUpdate', data1 , token1)
+        result = actions.tx_status(url, wait, res, token1)
+        data2 = {'greeting': 'record2'}
+        res = actions.call_contract(url, pr_key1, 'testInsert', data2, token1)
+        
+        
+        
+        
+        
 
 
 if __name__ == '__main__':
