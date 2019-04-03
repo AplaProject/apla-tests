@@ -15,6 +15,9 @@ class TestCompareNodes(unittest.TestCase):
         url = self.config[0]['url']
         data = actions.login(url, self.config[0]['private_key'])
         token = data['jwtToken']
+        print(api.metrics(self.config[0]['url'], token, "ban"))
+        print(api.metrics(self.config[1]['url'], token, "ban"))
+        print(api.metrics(self.config[2]['url'], token, "ban"))
         if not check.compare_db(self.config, url, token):
             print('Error in test_compare_db, send one more transaction')
             tx = contract.new_contract(url, self.config[0]['private_key'], token)
