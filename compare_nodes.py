@@ -1,6 +1,6 @@
 import unittest
 import time
-from libs import tools, check, actions, contract
+from libs import tools, check, actions, contract, api
 
 
 class TestCompareNodes(unittest.TestCase):
