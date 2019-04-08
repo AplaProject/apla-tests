@@ -684,10 +684,12 @@ class TestSimvolio():
             self.url, self.pr_key, tx['name'], {}, self.token)
         time.sleep(5)
         resp = api.tx_status(self.url, self.token, res)['results']
+        print("resp:  ", str(resp))
         for el in resp:
             actual = resp[el]
             break
-        print(actual)
+        print('actual', str(actual))
+        print('contract[asert]', contract['asert'])
         self.unit.assertDictEqual(contract['asert'], actual, resp)
 
     def test_contract_UpdateNotifications(self):

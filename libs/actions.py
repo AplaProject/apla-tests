@@ -29,7 +29,6 @@ def login_cors(url, pr_key, role=0, ecosystem=1):
     return result
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
     schema = api.contract(url, jvtToken, name)
-    print(schema)
     contract = Contract(schema=schema,
                         private_key=prKey,
                         ecosystem_id=ecosystem,
@@ -72,7 +71,6 @@ def tx_status(url, sleep_time, hsh, jvt_token):
             break
         else:
             sec = sec + 1
-    print(jresp)
     if 'errmsg' not in jresp and jresp['blockid'] == '':
         return {'blockid': None, 'result': None, 'error': None}
     if 'errmsg' not in jresp and int(jresp['blockid']) > 0:
@@ -366,7 +364,6 @@ def imp_app(app_name, url, pr_key, token):
             result = tx_status_multi(url, wait, hashes, token)
             for status in result.values():
                 log.debug(str(status))
-                print(status)
                 if int(status['blockid']) < 1:
                     log.error('Import "{app_name}" is failed'.format(app_name=app_name) + status)
                     exit(1)
@@ -407,7 +404,6 @@ def voting_templates_install(url, pr_key, token, wait):
 def edit_app_param(name, val, url, pr_key, token, wait):
     log.info('EditAppParam started')
     id = get_object_id(url, name, 'app_params', token)
-    print('id = ', id)
     tx = contract.edit_app_param(url, pr_key, token, int(id), value=val)
     if check.is_tx_in_block(url, wait, tx, token) < 1:
         log.error('EditAppParam ' + name + ' is failed')
