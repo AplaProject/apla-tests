@@ -7,7 +7,7 @@ from libs import actions, tools, db, contract, check
 
 class TestSystemContracts():
     config = tools.read_config('nodes')
-    url = config[0]['url']
+    url = config[2]['url']
     db = config[0]['db']
     wait = tools.read_config('test')['wait_tx_status']
     pr_key = config[0]['private_key']
