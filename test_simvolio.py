@@ -764,7 +764,7 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
-        time.sleep(5)
+        time.sleep(20)
         resp = api.tx_status(self.url, self.token, res)['results']
         print(resp)
         for el in resp:
