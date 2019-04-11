@@ -682,15 +682,8 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
-        time.sleep(20)
-        resp = api.tx_status(self.url, self.token, res)['results']
-        print("resp:  ", str(resp))
-        for el in resp:
-            actual = resp[el]
-            break
-        print('actual', str(actual))
-        print('contract[asert]', contract['asert'])
-        self.unit.assertDictEqual(contract['asert'], actual, resp)
+        resp = actions.tx_get_error(self.url, 30, res, self.token)
+        self.unit.assertDictEqual(contract['asert']['errmsg'], resp, resp)
 
     def test_contract_UpdateNotifications(self):
         contract = self.contracts['UpdateNotifications']
@@ -715,13 +708,10 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
-        time.sleep(5)
-        resp = api.tx_status(self.url, self.token, res)['results']
-        print(resp)
-        for el in resp:
-            actual = resp[el]['errmsg']['error']
-            break
-        self.unit.assertEqual(contract['asert'], actual, resp)
+        resp = actions.tx_get_error(self.url, 30, res, self.token)
+        print(contract['asert'])
+        print(resp['error'])
+        self.unit.assertEqual(contract['asert'], resp['error'], str(resp))
 
     def test_contract_LogZero(self):
         contract = self.contracts['LogZero']
@@ -730,13 +720,8 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
-        time.sleep(20)
-        resp = api.tx_status(self.url, self.token, res)['results']
-        print(resp)
-        for el in resp:
-            actual = resp[el]['errmsg']['error']
-            break
-        self.unit.assertEqual(contract['asert'], actual, resp)
+        resp = actions.tx_get_error(self.url, 30, res, self.token)
+        self.unit.assertEqual(contract['asert'], resp['error'], resp)
 
     def test_contract_Log10(self):
         contract = self.contracts['Log10']
@@ -749,13 +734,8 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
-        time.sleep(5)
-        resp = api.tx_status(self.url, self.token, res)['results']
-        print(resp)
-        for el in resp:
-            actual = resp[el]['errmsg']['error']
-            break
-        self.unit.assertEqual(contract['asert'], actual, resp)
+        resp = actions.tx_get_error(self.url, 30, res, self.token)
+        self.unit.assertEqual(contract['asert'], resp['error'], resp)
 
     def test_contract_Log10Zero(self):
         contract = self.contracts['Log10Zero']
@@ -764,13 +744,8 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
-        time.sleep(20)
-        resp = api.tx_status(self.url, self.token, res)['results']
-        print(resp)
-        for el in resp:
-            actual = resp[el]['errmsg']['error']
-            break
-        self.unit.assertEqual(contract['asert'], actual, resp)
+        resp = actions.tx_get_error(self.url, 30, res, self.token)
+        self.unit.assertEqual(contract['asert'], resp['error'], resp)
 
     def test_contract_Pow(self):
         contract = self.contracts['Pow']
@@ -783,13 +758,8 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
-        time.sleep(5)
-        resp = api.tx_status(self.url, self.token, res)['results']
-        print(resp)
-        for el in resp:
-            actual = resp[el]['errmsg']['error']
-            break
-        self.unit.assertEqual(contract['asert'], actual, resp)
+        resp = actions.tx_get_error(self.url, 30, res, self.token)
+        self.unit.assertEqual(contract['asert'], resp['error'], resp)
 
     def test_contract_Round(self):
         contract = self.contracts['Round']
@@ -806,13 +776,8 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
-        time.sleep(5)
-        resp = api.tx_status(self.url, self.token, res)['results']
-        print(resp)
-        for el in resp:
-            actual = resp[el]['errmsg']['error']
-            break
-        self.unit.assertEqual(contract['asert'], actual, resp)
+        resp = actions.tx_get_error(self.url, 30, res, self.token)
+        self.unit.assertEqual(contract['asert'], resp['error'], resp)
 
     def test_contract_NotValidStringUTF8(self):
         contract = self.contracts['NotValidStringUTF8']

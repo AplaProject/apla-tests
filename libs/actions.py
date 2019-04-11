@@ -77,6 +77,22 @@ def tx_status(url, sleep_time, hsh, jvt_token):
         return {'blockid': int(jresp['blockid']), 'result': jresp['result'], 'error': None}
     else:
         return {'blockid': 0, 'error': jresp['errmsg']['error'], 'result': None}
+    
+def tx_get_error(url, sleep_time, hsh, jvt_token):
+    print('hh')
+    sec = 0
+    while sec < sleep_time:
+        time.sleep(1)
+        resp = api.tx_status(url, jvt_token, hsh)
+        jresp = resp['results'][hsh]
+        if len(jresp['blockid']) > 0:
+            return None
+            break
+        if 'errmsg' in json.dumps(jresp) or 'errmsg' in json.dumps(jresp):
+            return jresp['errmsg']
+            break
+        else:
+            sec = sec + 1
 
 
 def tx_status_multi(url, sleep_time, hshs, jvt_token):
