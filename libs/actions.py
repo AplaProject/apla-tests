@@ -79,7 +79,6 @@ def tx_status(url, sleep_time, hsh, jvt_token):
         return {'blockid': 0, 'error': jresp['errmsg']['error'], 'result': None}
     
 def tx_get_error(url, sleep_time, hsh, jvt_token):
-    print('hh')
     sec = 0
     while sec < sleep_time:
         time.sleep(1)
