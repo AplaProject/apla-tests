@@ -5,6 +5,8 @@ import time
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
 
+from libs import tools
+
 
 def call_get_api(url, data, token):
     resp = requests.get(
@@ -47,7 +49,8 @@ def getuid(url):
 
 
 def login(url, token, uid, private_key, role_id=0, ecosystem=1, expire=3600):
-    signature = sign(private_key, 'LOGIN' + uid)
+    
+    signature = sign(private_key, 'LOGIN' + tools.read_config('test')['networkID'] + uid)
     pubkey = get_public_key(private_key)
     full_token = 'Bearer ' + token
     data = {
