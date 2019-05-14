@@ -109,6 +109,7 @@ config1 = subprocess.Popen([
     '--centUrl='+centrifugo_url,
     '--centSecret='+centrifugo_secret,
     '--dbName='+args.dbName1,
+    '--dbPort='+args.dbPort,
     '--networkID=130186'
 ])
 log.info('Generated config for first node')
@@ -159,6 +160,7 @@ generateConfig2 = subprocess.Popen([
     '--dataDir='+workDir2,
     '--firstBlock='+firstBlockPath,
     '--dbName='+args.dbName2,
+    '--dbPort='+args.dbPort,
     '--tcpPort='+args.tcpPort2,
     '--httpPort='+args.httpPort2,
     '--firstBlock='+firstBlockPath,
@@ -187,6 +189,7 @@ generateConfig3 = subprocess.Popen([
     '--dataDir='+workDir3,
     '--firstBlock='+firstBlockPath,
     '--dbName=' + args.dbName3,
+    '--dbPort='+args.dbPort,
     '--tcpPort='+args.tcpPort3,
     '--httpPort='+args.httpPort3,
     '--firstBlock='+firstBlockPath,
