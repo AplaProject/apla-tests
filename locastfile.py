@@ -13,10 +13,20 @@ class WebsiteTasks(TaskSet):
         self.token = self.data['jwtToken']
         keys = tools.read_fixtures('keys')
         self.ldata = actions.login(self.config[1]['url'], keys['key2'], 0)
-        print("Count transactions on start ", api.metrics(self.url, self.token, 'transactions'))
+        self.before_time = datetime.datetime.now()
+        self.before_trs = api.metrics(self.url, self.token, 'transactions')['count']
         
     def on_stop(self):
-        print("Count transactions on stop ", api.metrics(self.url, self.token, 'transactions'))
+        after_time = datetime.datetime.now()
+        after_trs = api.metrics(self.url, self.token, 'transactions')['count']
+        trs = int(after_trs) - int(self.before_trs)
+        dur = after_time - self.before_time
+        speed = trs/dur
+        data = {"speed": speed}
+        print("Speed: ", str(speed), " in second")
+        file = os.path.join(os.getcwd(), 'speed.txt')
+        with open(file, 'w') as f:
+            f.write(data)
     
     @task
     def NewContract(self):
