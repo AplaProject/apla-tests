@@ -13,10 +13,11 @@ class WebsiteTasks(TaskSet):
         self.token = self.data['jwtToken']
         keys = tools.read_fixtures('keys')
         self.ldata = actions.login(self.config[1]['url'], keys['key2'], 0)
-        print("Count transactions on start ", api.metrics(self.url, self.token, 'transactions')
-              
+        print("Count transactions on start ", api.metrics(self.url, self.token, 'transactions'))
+        
     def on_stop(self):
-        print("Count transactions on stop ", api.metrics(self.url, self.token, 'transactions')
+        print("Count transactions on stop ", api.metrics(self.url, self.token, 'transactions'))
+    
     @task
     def NewContract(self):
         contract_name = 'NewContract'
