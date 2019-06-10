@@ -36,6 +36,11 @@ class TestApi():
                 expected, actual, 'Incorrect error ' + str(result))
         return result
 
+    def test_auth_status(self):
+        asserts = ['active', 'exp']
+        res = api.auth_status(self.url, self.token)
+        self.check_result(res, asserts)
+    
     def test_balance(self):
         asserts = ['amount', 'money']
         res = api.balance(self.url, self.token, self.data['address'])

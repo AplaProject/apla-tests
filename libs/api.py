@@ -34,6 +34,12 @@ def call_post_api(url, data, token):
     )
     return resp.json()
 
+def auth_status(url, token):
+    data = {}
+    endpoint = '/auth/status'
+    url += endpoint
+    return call_get_api(url, data, token)
+
 
 def getuid(url):
     endpoint = '/getuid'

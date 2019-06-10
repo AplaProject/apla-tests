@@ -13,6 +13,14 @@ def generate_random_name():
         name.append(sym)
     return ''.join(name)
 
+def generate_random_name_ch():
+    name = []
+    for i in range(1,6):
+        for _ in ['abcdefghijklmnopqastuvwxyz']:
+            sym = random.choice(string.ascii_lowercase)
+            name.append(sym)
+    return ''.join(name)
+
 
 def generate_name_and_code(source_code):
     name = 'Cont_' + generate_random_name()
