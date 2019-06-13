@@ -286,6 +286,8 @@ def get_table_hashes(url, token, db_inf, ecos='1'):
     for table in list:
         tables[table['name']] = db.get_table_hash(
             db_inf, ecos + '_' + table['name'])
+    tables.update({"rollback_tx": db.get_table_hash(
+            db_inf, "rollback_tx")})
     return tables
 
 
