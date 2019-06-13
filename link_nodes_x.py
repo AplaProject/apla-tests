@@ -1,0 +1,41 @@
+import time
+import json
+
+from libs import actions, tools, loger, check
+
+
+log = loger.create_loger(__name__)
+
+
+if __name__ == '__main__':
+    log.info('Start ' + __name__)
+    wait = tools.read_config('test')['wait_tx_status']
+    conf = tools.read_config('nodes')
+    url = conf[0]['url']
+    pr_key1 = conf[0]['private_key']
+    pr_key2 = conf[1]['private_key']
+    pr_key3 = conf[2]['private_key']
+    data = actions.login(url, pr_key1, 0)
+    token1 = data['jwtToken']
+    actions.imp_app('system', url, pr_key1, token1)
+    actions.imp_app('lang_res', url, pr_key1, token1)
+    actions.imp_app('companies_registry', url, pr_key1, token1)
+    full_nodes = json.dumps([{'tcp_address': conf[0]['tcp_address'],
+                        'api_address': conf[0]['api_address'],
+                        'key_id': conf[0]['keyID'],
+                        'public_key': conf[0]['pubKey']}, {'tcp_address': conf[1]['tcp_address'],
+                        'api_address': conf[1]['api_address'],
+                        'key_id': conf[1]['keyID'],
+                        'public_key': conf[1]['pubKey']}, {'tcp_address': conf[2]['tcp_address'],
+                        'api_address': conf[2]['api_address'],
+                        'key_id': conf[2]['keyID'],
+                        'public_key': conf[2]['pubKey']}])
+    print("Strt update full_nodes")
+    data = {'Name': 'full_nodes', 'Value': full_nodes}
+    res = actions.call_contract(url, pr_key1, 'UpdateSysParam', data, token1)
+    if check.is_tx_in_block(url, wait, {'hash': res}, token1):
+        log.info('Nodes successfully linked')
+        exit(0)
+    else:
+        log.error('Nodes is not linked')
+        exit(1)

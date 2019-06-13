@@ -20,6 +20,7 @@ if __name__ == '__main__':
     actions.imp_app('system', url, pr_key1, token1)
     actions.imp_app('conditions', url, pr_key1, token1)
     actions.imp_app('basic', url, pr_key1, token1)
+   # actions.imp_app('companies_registry', url, pr_key1, token1)
     actions.imp_app('lang_res', url, pr_key1, token1)
     actions.roles_install(url, pr_key1, token1, wait)
     actions.set_apla_consensus(conf[0]['keyID'], url, pr_key1, token1, wait)

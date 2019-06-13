@@ -1,0 +1,25 @@
+{
+    "name": "testApp",
+    "conditions": "true",
+    "data": [
+        {
+            "Type": "contracts",
+            "Name": "testUpdate",
+            "Value": "contract testUpdate {\n    data {\n        id int;\n        new_greeting string;\n    }\n    conditions {\n\n    }\n    action {\n        DBUpdate(\"greeting\", $id, {\"greeting\": $new_greeting});\n    }\n}\n",
+            "Conditions": "true"
+        },
+        {
+            "Type": "contracts",
+            "Name": "testInsert",
+            "Value": "contract testInsert {\n    data {\n        greeting string;\n    }\n    conditions {\n\n    }\n    action {\n        var m map\n        m[\"greeting\"] = $greeting\n        DBInsert(\"greeting\", m);\n    }\n}",
+            "Conditions": "true"
+        },
+        {
+            "Type": "tables",
+            "Name": "greeting",
+            "Conditions": "ContractAccess(\"@1EditTable\")",
+            "Columns": "[{\"name\":\"greeting\",\"conditions\":\"true\",\"type\":\"text\"}]",
+            "Permissions": "{\"read\": \"true\", \"insert\": \"true\", \"update\": \"true\", \"new_column\": \"true\"}"
+        }
+    ]
+}
