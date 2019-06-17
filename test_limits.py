@@ -1,4 +1,5 @@
 import unittest
+import time
 
 from libs import actions, tools, contract, check, loger
 
@@ -98,7 +99,7 @@ class TestLimits():
         default_param_value = actions.get_sysparams_value(self.url,
                                                           self.token,
                                                           MAX_TX_SIZE)
-        self.update_sys_param(MAX_TX_SIZE, '500')
+        self.update_sys_param(MAX_TX_SIZE, '530')
         tx = contract.new_contract(self.url,
                                    self.pr_key,
                                    self.token,
@@ -140,11 +141,8 @@ class TestLimits():
                                        self.pr_key,
                                        self.token,
                                        source=self.contracts['limits']['code'])
-            check.is_tx_in_block(self.url,
-                                 self.wait,
-                                 tx,
-                                 self.token)
             i = i + 1
+        time.sleep(20)
         max_block = actions.get_max_block_id(self.url, self.token)
         self.update_sys_param(MAX_TX_BLOCK_PER_USER, str(default_param_value))
         is_one_or_two = actions.is_count_tx_in_block(self.url,
