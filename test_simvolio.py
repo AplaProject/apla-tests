@@ -248,7 +248,7 @@ class TestSimvolio():
         res = actions.call_contract(self.url, self.pr_key, contractName,
                                     {"table": tab}, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' is not empty',
+        self.unit.assertIn('Table 1_' + tab + ' is not empty', result['error'],
                               'Erorr in deleting tables by DelTab funtion')
         
     def test_del_table_not_present(self):
@@ -262,7 +262,7 @@ class TestSimvolio():
         res = actions.call_contract(self.url, self.pr_key, contractName,
                                     {"table": tab}, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' has not been found',
+        self.unit.assertIn('Table 1_' + tab + ' has not been found', result['error'],
                               'Erorr in deleting tables by DelTab funtion' + result['error'])
         
     def test_del_table_empty(self):
@@ -289,7 +289,7 @@ class TestSimvolio():
         res = actions.call_contract(self.url, self.pr_key, contractName,
                                     {'table': tab, 'col': 'name'}, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' is not empty',
+        self.unit.assertIn('Table 1_' + tab + ' is not empty', result['error'],
                               'Erorr in deleting tables by DelTab funtion' + result['error'])
         
     def test_del_column_not_present_table(self):
@@ -303,7 +303,7 @@ class TestSimvolio():
         res = actions.call_contract(self.url, self.pr_key, contractName,
                                     {'table': tab, 'col': 'name'}, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' has not been found',
+        self.unit.assertIn('Table 1_' + tab + ' has not been found', result['error'],
                               'Erorr in deleting tables by DelTab funtion' + result['error'])
         
     def test_del_column_not_present_column(self):
@@ -319,7 +319,7 @@ class TestSimvolio():
         res = actions.call_contract(self.url, self.pr_key, contractName,
                                     {'table': tx_tab['name'], 'col': col}, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertEqual(result['error'], 'column ' + col + " doesn't exist",
+        self.unit.assertIn('column ' + col + " doesn't exist", result['error'],
                               'Erorr in deleting tables by DelTab funtion' + result['error'])
         
     def test_del_column_not_empty(self):
@@ -438,8 +438,7 @@ class TestSimvolio():
                 var_list[i] + ' cannot be changed'
             expexted_dict[i] = exp_result
             actual_dict[i] = st['error']
-            self.unit.assertDictEqual(
-                expexted_dict, actual_dict, 'Dictionaries is different')
+            self.unit.assertIn(exp_result, st['error'], 'Dictionaries is different')
 
     def get_metrics(self, ecosystem_num, metric_name):
         # get metrics count
@@ -657,7 +656,7 @@ class TestSimvolio():
         tx = contracts.new_contract(
             self.url, self.pr_key, self.token, source=contract['code'])
         result = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        self.unit.assertEqual(result['error'], contract['asert'], 'Error messages is different')
+        self.unit.assertIn(contract['asert'],result['error'], 'Error messages is different')
 
     def test_transactionInfo(self):
         res = contracts.new_contract(self.url,
@@ -683,7 +682,7 @@ class TestSimvolio():
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
         resp = actions.tx_get_error(self.url, 30, res, self.token)
-        self.unit.assertDictEqual(contract['asert']['errmsg'], resp, resp)
+        self.unit.assertIn(contract['asert']['errmsg']['error'], resp['error'], resp)
 
     def test_contract_UpdateNotifications(self):
         contract = self.contracts['UpdateNotifications']
@@ -711,7 +710,7 @@ class TestSimvolio():
         resp = actions.tx_get_error(self.url, 30, res, self.token)
         print(contract['asert'])
         print(resp['error'])
-        self.unit.assertEqual(contract['asert'], resp['error'], str(resp))
+        self.unit.assertIn(contract['asert'], resp['error'], str(resp))
 
     def test_contract_LogZero(self):
         contract = self.contracts['LogZero']
@@ -721,7 +720,7 @@ class TestSimvolio():
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
         resp = actions.tx_get_error(self.url, 30, res, self.token)
-        self.unit.assertEqual(contract['asert'], resp['error'], resp)
+        self.unit.assertIn(contract['asert'], resp['error'], resp)
 
     def test_contract_Log10(self):
         contract = self.contracts['Log10']
@@ -735,7 +734,7 @@ class TestSimvolio():
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
         resp = actions.tx_get_error(self.url, 30, res, self.token)
-        self.unit.assertEqual(contract['asert'], resp['error'], resp)
+        self.unit.assertIn(contract['asert'], resp['error'], resp)
 
     def test_contract_Log10Zero(self):
         contract = self.contracts['Log10Zero']
@@ -745,7 +744,7 @@ class TestSimvolio():
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
         resp = actions.tx_get_error(self.url, 30, res, self.token)
-        self.unit.assertEqual(contract['asert'], resp['error'], resp)
+        self.unit.assertIn(contract['asert'], resp['error'], resp)
 
     def test_contract_Pow(self):
         contract = self.contracts['Pow']
@@ -759,7 +758,7 @@ class TestSimvolio():
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
         resp = actions.tx_get_error(self.url, 30, res, self.token)
-        self.unit.assertEqual(contract['asert'], resp['error'], resp)
+        self.unit.assertIn(contract['asert'], resp['error'], resp)
 
     def test_contract_Round(self):
         contract = self.contracts['Round']
@@ -777,7 +776,7 @@ class TestSimvolio():
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
         resp = actions.tx_get_error(self.url, 30, res, self.token)
-        self.unit.assertEqual(contract['asert'], resp['error'], resp)
+        self.unit.assertIn(contract['asert'], resp['error'], resp)
 
     def test_contract_NotValidStringUTF8(self):
         contract = self.contracts['NotValidStringUTF8']
