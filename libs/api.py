@@ -9,11 +9,14 @@ from libs import tools
 
 
 def call_get_api(url, data, token):
+    print(url)
     resp = requests.get(
         url,
         params=data,
         headers={'Authorization': token}
     )
+    print(resp)
+    print(resp.content)
     return resp.json()
 
 
@@ -428,6 +431,14 @@ def page_validators_count(url, token, name):
     endpoint = '/page/validators_count/{name}'.format(
         name=name
     )
+    url += endpoint
+    return call_get_api(url, data, token)
+
+def get_row(url, token, table, column, value):
+    data={}
+    endpoint = '/row/{table}/{column}/{value}?columns=name'.format(
+        table=table, column=column, value=value
+        )
     url += endpoint
     return call_get_api(url, data, token)
 

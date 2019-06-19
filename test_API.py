@@ -186,6 +186,10 @@ class TestApi():
         asserts = ['value']
         res = api.row(self.url, self.token, 'contracts', 2)
         self.check_result(res, asserts)
+        
+    def test_get_row(self):
+        row = api.get_row(self.url, self.token, 'contracts', 'name', 'MainCondition')
+        self.unit.assertIn("'value': {'name': 'MainCondition'}", str(row), 'Incorrect result of row/contracts')
 
     def test_get_incorrect_table_data_row(self):
         table = 'tab'
