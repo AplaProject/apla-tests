@@ -9,14 +9,11 @@ from libs import tools
 
 
 def call_get_api(url, data, token):
-    print(url)
     resp = requests.get(
         url,
         params=data,
         headers={'Authorization': token}
     )
-    print(resp)
-    print(resp.content)
     return resp.json()
 
 
