@@ -31,7 +31,6 @@ class TestBlockChain():
                                             self.token)
             i = i + 1
             time.sleep(1)
-        time.sleep(120)
         amounts_after = actions.get_user_token_amounts(
             self.config1['url'], self.token)
         expect = {'isTheSameNodes': True, 'isTheSameDB': True,
@@ -49,7 +48,6 @@ class TestBlockChain():
         check.is_tx_in_block(self.config1['url'], self.wait, tx, self.token)
         id = actions.get_object_id(
             self.config1['url'], tx['name'], 'menu', self.token)
-        time.sleep(10)
         i = 1
         amounts_b = actions.get_user_token_amounts(
             self.config1['url'], self.token)
@@ -59,7 +57,6 @@ class TestBlockChain():
                                          self.config1['private_key'],
                                          self.token, id)
             i = i + 1
-        time.sleep(120)
         amounts_after = actions.get_user_token_amounts(
             self.config1['url'], self.token)
         expect = {'isTheSameNodes': True, 'isTheSameDB': True,
