@@ -393,7 +393,6 @@ def imp_app(app_name, url, pr_key, token):
         data = [{'contract': contract_name,
                  'params': import_app_data[i]} for i in range(len(import_app_data))]
         resp = call_multi_contract(url, pr_key, contract_name, data, token)
-        time.sleep(wait)
         if 'hashes' in resp:
             hashes = resp['hashes']
             result = tx_status_multi(url, wait, hashes, token)

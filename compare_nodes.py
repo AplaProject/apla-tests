@@ -16,10 +16,6 @@ class TestCompareNodes(unittest.TestCase):
         data = actions.login(url, self.config[0]['private_key'])
         token = data['jwtToken']
         if not check.compare_db(self.config, url, token):
-            print('Error in test_compare_db, send one more transaction')
-            tx = contract.new_contract(url, self.config[0]['private_key'], token)
-            check.is_tx_in_block(url, 30, tx, token)
-            time.sleep(20)
             self.unit.assertTrue(check.compare_db(self.config, url, token),
                             'Error in test_compare_db')
 

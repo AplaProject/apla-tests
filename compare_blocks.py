@@ -9,6 +9,7 @@ class CompareBlocks(unittest.TestCase):
     def test_compare_blocks(self):
         node_conf = tools.read_config('nodes')
         test_conf = tools.read_config('test')
+        actions.is_sync(node_conf, test_conf['wait_sync'], len(node_conf))
         data2 = actions.login(
             node_conf[1]['url'], node_conf[0]['private_key'], 0)
         max_block_id2 = actions.get_max_block_id(
