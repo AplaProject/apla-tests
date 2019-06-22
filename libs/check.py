@@ -1,6 +1,6 @@
 import unittest
 import time
-from libs import db, actions, loger, api
+from libs import db, actions, loger, api, tools
 
 
 log = loger.create_loger(__name__)
@@ -8,45 +8,42 @@ log = loger.create_loger(__name__)
 
 def compare_nodes(config):
     nodes = len(config)
+    wait_time = tools.read_config('test')['wait_sync']
     amounts = []
     data = []
-    max_block_id = []
-    i = 0
-    while i < nodes:
-        data = actions.login(config[i]['url'], config[i]['private_key'])
-        token = data['jwtToken']
-        amounts.append(actions.get_user_token_amounts(config[i]['url'], token))
-        max_block_id.append(actions.get_max_block_id(config[i]['url'], token))
-        i += 1
-    print("Max blocks: ", max_block_id)
-    max_block = max(max_block_id)
-    min_block = min(max_block_id)
-    if max_block - min_block > 5:
-        print('One of nodes has blocks less than others. Max block is ' + str(max_block) +\
-              ' Min block is ' + str(min_block))
-        return False
-    hash = []
-    i = 0
-    while i < nodes:
-        hash.append(db.get_blockchain_hash(config[i]['db'], max_block))
-        i += 1
-    node_position = db.compare_node_positions(
-        config[0]['db'], max_block, nodes)
-
-    main_dict = {'amounts': str(amounts[0]), 'hash': str(
-        hash[0]), 'node_pos': 'True'}
-    dict = []
-    i = 0
-    while i < nodes:
-        dict.append({'amounts': str(amounts[i]), 'hash': str(hash[i]),
-                     'node_pos': str(node_position)})
-        if main_dict != dict[i]:
-            print('Error in node ' + str(i) + 'dict Main is ' + str(main_dict) +
-                  ', current is ' + str(dict[i]))
-            return False
-        else:
+    if actions.is_sync(config, wait_time, nodes):    
+        i = 0
+        while i < nodes:
+            data = actions.login(config[i]['url'], config[i]['private_key'])
+            token = data['jwtToken']
+            amounts.append(actions.get_user_token_amounts(config[i]['url'], token))
             i += 1
-    return True
+        hash = []
+        max_block = actions.get_max_block_id(config[0]['url'], token)
+        i = 0
+        while i < nodes:
+            hash.append(db.get_blockchain_hash(config[i]['db'], max_block))
+            i += 1
+        node_position = db.compare_node_positions(
+            config[0]['db'], max_block, nodes)
+    
+        main_dict = {'amounts': str(amounts[0]), 'hash': str(
+            hash[0]), 'node_pos': 'True'}
+        dict = []
+        i = 0
+        while i < nodes:
+            dict.append({'amounts': str(amounts[i]), 'hash': str(hash[i]),
+                         'node_pos': str(node_position)})
+            if main_dict != dict[i]:
+                print('Error in node ' + str(i) + 'dict Main is ' + str(main_dict) +
+                      ', current is ' + str(dict[i]))
+                return False
+            else:
+                i += 1
+        return True
+    else:
+        print("Nodes didn't downloads all blocks")
+        return True
 
 
 def is_tx_in_block(url, wait, tx, token):

@@ -33,6 +33,7 @@ class TestBlockChain():
             time.sleep(1)
         amounts_after = actions.get_user_token_amounts(
             self.config1['url'], self.token)
+        
         expect = {'isTheSameNodes': True, 'isTheSameDB': True,
                   'sumAmounts': sum_amounts_before}
         dict = {'isTheSameNodes': check.compare_nodes(self.full_config),

@@ -2,6 +2,7 @@ import requests
 import json
 import time
 import os
+from itertools import groupby
 
 
 from genesis_blockchain_tools.contract import Contract
@@ -77,6 +78,23 @@ def tx_status(url, sleep_time, hsh, jvt_token):
         return {'blockid': int(jresp['blockid']), 'result': jresp['result'], 'error': None}
     else:
         return {'blockid': 0, 'error': jresp['errmsg']['error'], 'result': None}
+    
+def is_sync(config, wait_time, nodes):
+    max_block_id = []
+    sec = 0
+    while sec < wait_time:
+        i = 0
+        while i < nodes:
+            data = login(config[i]['url'], config[i]['private_key'])
+            token = data['jwtToken']
+            max_block_id.append(get_max_block_id(config[i]['url'], token))
+            i += 1
+        new_x = [el for el, _ in groupby(max_block_id)]
+        if len(new_x) > 1:
+             sec = sec + 1
+        else:
+            return True
+    return False
     
 def tx_get_error(url, sleep_time, hsh, jvt_token):
     sec = 0
