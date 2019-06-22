@@ -60,23 +60,26 @@ def is_tx_in_block(url, wait, tx, token):
 
 
 def compare_db(config, url, token):
-    time.sleep(60)
     nodes = len(config)
     dbInformation = []
-    first_db = actions.get_count_DB_objects(url, token)
-    first_hashes = actions.get_table_hashes(url, token, config[0]['db'])
-    i = 1
-    while i < nodes:
-        current_db = actions.get_count_DB_objects(url, token)
-        current_hashes = actions.get_table_hashes(url, token, config[i]['db'])
-        if current_db != first_db or current_hashes != first_hashes:
-            print('Errorin db: Different info about ' + str(current_db) +
-                  ' != ' + str(first_db) + ' current node is ' + str(i) +
-                  'hashes: First: ' + str(first_hashes) + 'current: ' +
-                  str(current_hashes))
-            return False
-        i += 1
-    return True
+    if actions.is_sync(config, wait_time, nodes):
+        first_db = actions.get_count_DB_objects(url, token)
+        first_hashes = actions.get_table_hashes(url, token, config[0]['db'])
+        i = 1
+        while i < nodes:
+            current_db = actions.get_count_DB_objects(url, token)
+            current_hashes = actions.get_table_hashes(url, token, config[i]['db'])
+            if current_db != first_db or current_hashes != first_hashes:
+                print('Errorin db: Different info about ' + str(current_db) +
+                      ' != ' + str(first_db) + ' current node is ' + str(i) +
+                      'hashes: First: ' + str(first_hashes) + 'current: ' +
+                      str(current_hashes))
+                return False
+            i += 1
+        return True
+    else:
+        print("Nodes didn't downloads all blocks")
+        return True
 
 
 def is_new_key_in_keys(url, token, key_id, attempts, ecosystem=1):

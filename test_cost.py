@@ -84,7 +84,6 @@ class TestCost():
         res = actions.call_contract(self.conf[1]['url'], self.keys['key2'],
                                     'CostContract', {"State": 1}, token_runner)
         result = actions.tx_status(self.conf[1]['url'], self.wait, res, token_runner)
-        time.sleep(10)
         node = db.get_block_gen_node(self.conf[0]['db'], result['blockid'])
         platforma_commissions = actions.get_commission_from_history(self.conf[1]['url'],
                                                                   token_runner,
@@ -223,7 +222,6 @@ class TestCost():
                                     'CostContract', {'State': 0}, token_runner)
         result = actions.tx_status(
             self.conf[1]['url'], self.wait, res, token_runner)
-        time.sleep(10)
         balance_contract_owner_a = actions.get_balance_by_id(self.conf[1]['url'], self.token,
                                                              wallet_id)
         balance_node_owner_a = actions.get_balance_by_id(self.conf[1]['url'], self.token,

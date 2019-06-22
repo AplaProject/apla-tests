@@ -447,7 +447,6 @@ def edit_app_param(name, val, url, pr_key, token, wait):
 
 def update_profile(name, url, pr_key, token, wait):
     log.info('UpdateProfile started')
-    time.sleep(5)
     data = {'member_name': name}
     resp = call_contract(url, pr_key, 'ProfileEdit',
                                  data, token)

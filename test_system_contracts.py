@@ -88,7 +88,6 @@ class TestSystemContracts():
 
     def test_tokens_send(self):
         ldata = actions.login(self.url, self.keys['key2'])
-        time.sleep(10)
         sum = '1000'
         tx = contract.tokens_send(self.url, self.pr_key, self.token, ldata['address'], sum)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
