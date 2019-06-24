@@ -64,6 +64,7 @@ def compare_db(config, url, token):
     dbInformation = []
     wait_time = tools.read_config('test')['wait_sync']
     if actions.is_sync(config, wait_time, nodes):
+        time.sleep(20)
         first_db = actions.get_count_DB_objects(url, token)
         first_hashes = actions.get_table_hashes(url, token, config[0]['db'])
         i = 1

@@ -95,7 +95,7 @@ class TestLimits():
                              self.token)
 
 
-    def test_max_tx_size(self):
+    def utest_max_tx_size(self):
         default_param_value = actions.get_sysparams_value(self.url,
                                                           self.token,
                                                           MAX_TX_SIZE)
@@ -110,7 +110,7 @@ class TestLimits():
         self.update_sys_param(MAX_TX_SIZE, str(default_param_value))
 
 
-    def test_max_block_size(self):
+    def utest_max_block_size(self):
         default_param_value = actions.get_sysparams_value(self.url,
                                                      self.token,
                                                      MAX_BLOCK_SIZE)
@@ -129,7 +129,7 @@ class TestLimits():
         self.update_sys_param(MAX_BLOCK_SIZE, str(default_param_value))
 
 
-    def test_max_tx_block_per_user(self):
+    def utest_max_tx_block_per_user(self):
         count_tx = 1
         default_param_value = actions.get_sysparams_value(self.url,
                                                           self.token,
@@ -152,7 +152,7 @@ class TestLimits():
         self.unit.assertTrue(is_one_or_two,
                              'One of block contains more than {} transaction'.format(count_tx))
 
-    def test_max_tx_block(self):
+    def utest_max_tx_block(self):
         count_tx = 2
         max_tx_block = actions.get_sysparams_value(self.url,
                                                    self.token,
