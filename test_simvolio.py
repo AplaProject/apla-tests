@@ -188,6 +188,14 @@ class TestSimvolio():
     def test_contract_type_money(self):
         contract = self.contracts['type_money']
         self.check_contract(contract['code'], contract['asert'])
+        
+    def test_contract_date_time_location(self):
+        contract = self.contracts['DateTimeLocation']
+        self.check_contract(contract['code'], contract['asert'])
+        
+    def test_contract_unix_date_time_location(self):
+        contract = self.contracts['UnixDateTimeLocation']
+        self.check_contract(contract['code'], contract['asert'])
 
     def test_contract_type_float(self):
         contract = self.contracts['type_float']

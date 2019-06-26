@@ -591,6 +591,13 @@ class TestPrototipo():
         content = self.check_page(cont['code'])
         self.uni.assertEqual(str(content['tree'][0]['text']), cont['content']['text'],
                              'getColumnType has problem: ' + str(content['tree']))
+        
+    def test_date_time(self):
+        cont = self.pages['date_time']
+        content = self.check_page(cont['code'])
+        print(content)
+        self.uni.assertEqual(str(content['tree'][0]['text']), cont['content']['tree'][0]['text'],
+                             'getColumnType has problem: ' + str(content['tree']))
 
     def test_page_sys_var_isMobile(self):
         cont = self.pages['sys_var_isMobile']

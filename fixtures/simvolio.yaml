@@ -1323,4 +1323,26 @@ DBFindSortedUserTable:
     }
   asert: ""
 
-
+DateTimeLocation:
+  code: |
+    {
+      data {
+      }
+      conditions {}
+      action {
+        $result = DateTimeLocation(1560938400, "Europe/Moscow")
+      }
+    }
+  asert: "2019-06-19 13:00:00"
+  
+UnixDateTimeLocation:
+  code: |
+    {
+      data {
+      }
+      conditions {}
+      action {
+        $result = UnixDateTimeLocation("2019-06-19 12:00:00", "Europe/Luxembourg")
+      }
+    }
+  asert: "1560938400"

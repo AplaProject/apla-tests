@@ -20,6 +20,13 @@
 				"attr": {"hide": [{"Test": "Hello"}]}
 				}
 	},
+	"date_time":{
+		"code": "DateTime(DateTime: 1560938400, Location: \"Europe/Moscow\")",
+		"menu": "default_menu",
+		"content":  {
+				 "tree": [{"tag": "text", "text": "2019-06-19 13:00:00"}]
+				}
+	},
 	"show2":{
 		"code": "Input(Name: \"Test\", Value: \"Hello\")\n Input(Name: \"Test2\", Value: \"World\")\n Div(){\n Hello world!\n }.Show(\"Test=Hello,Test2=World\")",
 		"menu": "default_menu",
