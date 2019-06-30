@@ -87,18 +87,11 @@ get_keyId:
 limits:
   code: |
     {
-      data {}
+      data {
+      Par string
+      }
       conditions {}
       action {
-        var i int
-        var res array
-        while i < 5 {
-          var res array
-          res = DBFind("contracts").Columns("name")
-          i = i + 1
-          Println(Str(i))
-        }
-        Println("ok")
       }
     }
   asert: ""

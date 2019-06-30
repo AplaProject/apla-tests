@@ -9,6 +9,7 @@ from genesis_blockchain_tools.contract import Contract
 from libs import api, db, tools, loger, check, contract
 
 wait = tools.read_config('test')['wait_tx_status']
+wait_multi = tools.read_config('test')['wait_tx_status_multi']
 log = loger.create_loger(__name__)
 
 
@@ -114,7 +115,6 @@ def tx_get_error(url, sleep_time, hsh, jvt_token):
 
 def tx_status_multi(url, sleep_time, hshs, jvt_token):
     url_end = url + '/txstatus'
-    allTxInBlocks = False
     sec = 0
     list = []
     for hash in hshs:
@@ -124,16 +124,16 @@ def tx_status_multi(url, sleep_time, hshs, jvt_token):
         resp = requests.post(url_end, params={'data': json.dumps({'hashes': list})},
                              headers={'Authorization': jvt_token})
         jresp = resp.json()['results']
+        allTxInBlocks = True
         for status in jresp.values():
-            if (len(status['blockid']) > 0 and 'errmsg' not in json.dumps(status)):
-                allTxInBlocks = True
+            if (len(status['blockid']) > 0 or 'errmsg' in json.dumps(status)):
+                continue
             else:
                 allTxInBlocks = False
+                sec = sec + 1
         if allTxInBlocks:
             return jresp
-        else:
-            sec = sec + 1
-    return jresp
+    return None
 
 
 def call_get_api(url, data, token):
@@ -393,10 +393,9 @@ def imp_app(app_name, url, pr_key, token):
         data = [{'contract': contract_name,
                  'params': import_app_data[i]} for i in range(len(import_app_data))]
         resp = call_multi_contract(url, pr_key, contract_name, data, token)
-        time.sleep(wait)
         if 'hashes' in resp:
             hashes = resp['hashes']
-            result = tx_status_multi(url, wait, hashes, token)
+            result = tx_status_multi(url, wait_multi, hashes, token)
             for status in result.values():
                 log.debug(str(status))
                 if int(status['blockid']) < 1:

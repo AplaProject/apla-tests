@@ -111,7 +111,8 @@ config1 = subprocess.Popen([
     '--dbName='+args.dbName1,
     '--dbPort='+args.dbPort,
     '--mpgt=2000',
-    '--networkID=130186'
+    '--networkID=130186',
+    '--mbs=64000000'
 ])
 log.info('Generated config for first node')
 time.sleep(wait)
@@ -170,7 +171,8 @@ generateConfig2 = subprocess.Popen([
     '--centSecret='+centrifugo_secret,
     '--nodesAddr='+'127.0.0.1:'+args.tcpPort1,
     '--mpgt=2000',
-    '--networkID=130186'
+    '--networkID=130186',
+    '--mbs=64000000'
 ])
 log.info('Generated config for second node')
 time.sleep(wait)
@@ -200,7 +202,8 @@ generateConfig3 = subprocess.Popen([
     '--centSecret='+centrifugo_secret,
     '--nodesAddr='+'127.0.0.1:'+args.tcpPort1,
     '--mpgt=2000',
-    '--networkID=130186'
+    '--networkID=130186',
+    '--mbs=64000000'
 ])
 log.info('Generated config for third node')
 time.sleep(wait)
