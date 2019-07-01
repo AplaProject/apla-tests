@@ -51,16 +51,13 @@ class TestLimits():
                 sym = random.choice(string.ascii_lowercase)
                 st.append(sym)
         st_s = ''.join(st)
-        print("String: ", st_s)
         return st_s
 
     def assert_multi_tx_in_block(self, result, jwt_token):
         result = actions.tx_status_multi(
             self.url, self.wait_multi, result['hashes'], jwt_token)
-        print("Result: ", result)
         for status in result.values():
             self.unit.assertNotIn('errmsg', status)
-            print("Status: ", str(status))
             self.unit.assertGreater(
                 int(status['blockid']), 0, 'BlockID not generated')
             
@@ -130,13 +127,11 @@ class TestLimits():
                                                           MAX_TX_SIZE)
         par = self.generate_param(max_tx_size_value)
         data = {'Par': par}
-        print(data)
         tx = actions.call_contract(self.url,
                                     self.pr_key,
                                     CONT_NAME,
                                     data,
                                     self.token)
-        print('tx: ', tx)
         msg = 'The size of tx is too big'
         self.unit.assertIn(msg, tx['msg'],
                            'Incorrect error: ' + str(tx))
@@ -174,8 +169,8 @@ class TestLimits():
         resp = actions.call_multi_contract(self.url, self.pr_key,
                                            CONT_NAME, data,
                                            self.token, False)
-        resp = self.assert_multi_tx_in_block(resp, self.token)
-        
+        self.assert_multi_tx_in_block(resp, self.token)
+       # check.multi_tx_in_block(resp, self.wait_multi, self.url, self.token)
         if actions.is_sync(self.conf, self.wait_sync, len(self.conf)):
             max_block = actions.get_max_block_id(self.url, self.token)
             self.update_sys_param(MAX_TX_BLOCK, str(max_tx_block))

@@ -4,6 +4,7 @@ from libs import db, actions, loger, api, tools
 
 
 log = loger.create_loger(__name__)
+unit = unittest.TestCase()
 
 
 def compare_nodes(config):
@@ -109,3 +110,11 @@ def is_updating(url):
         return True
     else:
         return False
+    
+def multi_tx_in_block(result, wait, url, jwt_token):
+    result = actions.tx_status_multi(url, wait, result['hashes'], jwt_token)
+    for status in result.values():
+        if 'errmsg' not in status:
+            unit.fail('Transaction has error')
+        if int(status['blockid']) > 0:
+            unit.fail('BlockID not generated')
