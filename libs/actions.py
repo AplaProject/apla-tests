@@ -121,6 +121,7 @@ def tx_status_multi(url, sleep_time, hshs, jvt_token):
         list.append(hshs[hash])
     while sec < sleep_time:
         time.sleep(1)
+        sec = sec + 1
         resp = requests.post(url_end, params={'data': json.dumps({'hashes': list})},
                              headers={'Authorization': jvt_token})
         jresp = resp.json()['results']
@@ -130,7 +131,7 @@ def tx_status_multi(url, sleep_time, hshs, jvt_token):
                 continue
             else:
                 allTxInBlocks = False
-                sec = sec + 1
+
         if allTxInBlocks:
             return jresp
     return None

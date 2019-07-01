@@ -156,9 +156,10 @@ class TestLimits():
         data = {'Par': par}
         tx = actions.call_contract(self.url, self.pr_key, CONT_NAME,
                                    data, self.token)
+        st = actions.tx_status(self.url, self.wait, tx, self.token)
         self.update_sys_param(MAX_BLOCK_SIZE, str(max_block_size))
         msg = 'stop generating block'
-        self.unit.assertEqual(msg, tx['error'],
+        self.unit.assertEqual(msg, st['error'],
                           'Incorrect error: ' + str(tx))
 
     def test_max_tx_block(self):
