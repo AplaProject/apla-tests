@@ -49,12 +49,10 @@ def compare_nodes(config):
 
 def is_tx_in_block(url, wait, tx, token):
     status = actions.tx_status(url, wait, tx['hash'], token)
-    print(status)
     if status['blockid'] > 0:
         return status['blockid']
     else:
         msg = 'Transaction not in block. Status: ' + str(status)
-        print(msg)
         log.error(msg)
         unittest.TestCase.fail(msg)
         return None
@@ -114,7 +112,7 @@ def is_updating(url):
 def multi_tx_in_block(result, wait, url, jwt_token):
     result = actions.tx_status_multi(url, wait, result['hashes'], jwt_token)
     for status in result.values():
-        if 'errmsg' not in status:
-            unit.fail('Transaction has error')
-        if int(status['blockid']) > 0:
+        if 'errmsg' in status:
+            unittest.TestCase.fail('Transaction has error')
+        if int(status['blockid']) < 0:
             unit.fail('BlockID not generated')

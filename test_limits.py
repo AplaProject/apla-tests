@@ -169,8 +169,7 @@ class TestLimits():
         resp = actions.call_multi_contract(self.url, self.pr_key,
                                            CONT_NAME, data,
                                            self.token, False)
-        self.assert_multi_tx_in_block(resp, self.token)
-       # check.multi_tx_in_block(resp, self.wait_multi, self.url, self.token)
+        check.multi_tx_in_block(resp, self.wait_multi, self.url, self.token)
         if actions.is_sync(self.conf, self.wait_sync, len(self.conf)):
             max_block = actions.get_max_block_id(self.url, self.token)
             self.update_sys_param(MAX_TX_BLOCK, str(max_tx_block))
