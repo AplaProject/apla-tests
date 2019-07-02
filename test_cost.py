@@ -9,6 +9,7 @@ PLATFORM_COMISSION = 432000000000
 
 class TestCost():
     wait = tools.read_config('test')['wait_tx_status']
+    wait_sync = tools.read_config('test')['wait_upating_node']
     conf = tools.read_config('nodes')
     keys = tools.read_fixtures('keys')
 
@@ -138,6 +139,7 @@ class TestCost():
     def test_unbind_wallet(self):
         if actions.is_contract_activated(self.conf[1]['url'], 'CostContract', self.token):
             self.unbind_wallet()
+        actions.is_sync(self.conf, self.wait_sync, len(self.conf))
         wallet_id = actions.get_activated_wallet(self.conf[1]['url'],
                                                  'CostContract', self.token)
         summ_before = sum(actions.get_user_token_amounts(self.conf[1]['url'], self.token))
@@ -150,6 +152,7 @@ class TestCost():
                                     'CostContract', {'State': 1}, token_runner)
         result = actions.tx_status(
             self.conf[1]['url'], self.wait, res, token_runner)
+        actions.is_sync(self.conf, self.wait_sync, len(self.conf))
         node = db.get_block_gen_node(self.conf[0]['db'], result['blockid'])
         platforma_commissions = actions.get_commission_from_history(self.conf[1]['url'],
                                                                   token_runner,
