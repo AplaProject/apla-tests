@@ -4,7 +4,7 @@ import psycopg2
 # here
 def submit_query(query, db):
     connect = psycopg2.connect(host=db['dbHost'], dbname=db['dbName'],
-                               user=db['login'], password=db['pass'], port=5433)
+                               user=db['login'], password=db['pass'])
     cursor = connect.cursor()
     cursor.execute(query)
     return cursor.fetchall()
