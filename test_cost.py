@@ -152,8 +152,10 @@ class TestCost():
                                     'CostContract', {'State': 1}, token_runner)
         result = actions.tx_status(
             self.conf[1]['url'], self.wait, res, token_runner)
+        time.sleep(20)
         actions.is_sync(self.conf, self.wait_sync, len(self.conf))
         node = db.get_block_gen_node(self.conf[0]['db'], result['blockid'])
+        print('Node generated block is ', node)
         platforma_commissions = actions.get_commission_from_history(self.conf[1]['url'],
                                                                   token_runner,
                                                                   data_runner['key_id'],
