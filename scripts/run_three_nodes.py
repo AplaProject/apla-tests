@@ -295,7 +295,8 @@ config = [
             'dbHost': args.dbHost,
             'dbName': args.dbName1,
             'login': args.dbUser,
-            'pass': args.dbPassword
+            'pass': args.dbPassword,
+            'port': args.dbPort
         }
     },
     {
@@ -310,7 +311,8 @@ config = [
             'dbHost': args.dbHost,
             'dbName': args.dbName2,
             'login': args.dbUser,
-            'pass': args.dbPassword
+            'pass': args.dbPassword,
+            'port': args.dbPort
         }
     },
     {
@@ -325,7 +327,8 @@ config = [
             'dbHost': args.dbHost,
             'dbName': args.dbName3,
             'login': args.dbUser,
-            'pass': args.dbPassword
+            'pass': args.dbPassword,
+            'port': args.dbPort
         }
     }]
 
