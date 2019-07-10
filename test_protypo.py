@@ -678,6 +678,7 @@ class TestPrototipo():
     def test_db_find_where_count(self):
         cont = self.pages['dbfindWhereCount']
         content = self.check_page(cont['code'])
+        print("Content: ", content)
         required_num = self.find_position_element_in_tree(
             content['tree'], 'em')
         page = content['tree'][required_num]['children'][0]['text']

@@ -29,8 +29,9 @@ class TestBlockChain():
             tx_cont = contract.new_contract(self.config1['url'],
                                             self.config1['private_key'],
                                             self.token)
+            check.is_tx_in_block(self.config1['url'], self.wait, tx_cont, self.token)
             i = i + 1
-            time.sleep(1)
+           # time.sleep(1)
         amounts_after = actions.get_user_token_amounts(
             self.config1['url'], self.token)
         
@@ -43,7 +44,7 @@ class TestBlockChain():
         self.uni.assertDictEqual(expect, dict, 'Error in test_block_chain')
 
     def test_block_chain_edit(self):
-        ts_count = 100
+        ts_count = 30
         tx = contract.new_menu(
             self.config1['url'], self.config1['private_key'], self.token)
         check.is_tx_in_block(self.config1['url'], self.wait, tx, self.token)
@@ -57,6 +58,7 @@ class TestBlockChain():
             tx_edit = contract.edit_menu(self.config1['url'],
                                          self.config1['private_key'],
                                          self.token, id)
+            check.is_tx_in_block(self.config1['url'], self.wait, tx_edit, self.token)
             i = i + 1
         amounts_after = actions.get_user_token_amounts(
             self.config1['url'], self.token)
