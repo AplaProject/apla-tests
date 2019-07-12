@@ -77,8 +77,8 @@ def login(url, token, uid, private_key, role_id=0, ecosystem=1, expire=3600):
             'uid': uid,
             'jwtToken': 'Bearer ' + res['token'],
             'pubkey': pubkey,
-            'address': res['address'],
             'key_id': res['key_id'],
+            'account': res['account'],
             'ecosystem_id': res['ecosystem_id']
             }
         return result

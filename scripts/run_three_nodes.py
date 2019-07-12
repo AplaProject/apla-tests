@@ -132,7 +132,7 @@ firstBlock = subprocess.Popen([
     binary,
     'generateFirstBlock',
     '--config='+workDir1+'/config.toml',
-    '--private=false', 
+    '--private=true', 
     '--test='+args.test
 ])
 log.info('First block generated')

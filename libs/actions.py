@@ -376,7 +376,7 @@ def is_contract_present(url, token, name):
         return True
 
 
-def imp_app(app_name, url, pr_key, token):
+def imp_app(app_name, url, pr_key, token, account):
     log.info('Start install "{app_name}"'.format(app_name=app_name))
     path = os.path.join(os.getcwd(), 'fixtures', 'basic', app_name + '.json')
     resp = call_contract(url, pr_key, 'ImportUpload',
@@ -386,8 +386,10 @@ def imp_app(app_name, url, pr_key, token):
         founder_id = get_parameter_value(url, 'founder_account', token)
         bufer_data_list = get_list(url, 'buffer_data', token)['list']
         for item in bufer_data_list:
+            print('Item: ', item)
+            print("F_id: ", founder_id)
             if item['key'] == 'import' \
-                    and item['member_id'] == founder_id:
+                    and item['account'] == account:
                 import_app_data = json.loads(item['value'])['data']
                 break
         contract_name = 'Import'
