@@ -124,8 +124,9 @@ def get_max_id_from_table(db, table):
 
 # system_contracts
 def get_import_app_data(db, member_id):
-    request = "SELECT value FROM \"1_buffer_data\" WHERE key = 'import' AND member_id = " + \
-        str(member_id)
+    print('member_id', member_id)
+    request = "SELECT value FROM \"1_buffer_data\" WHERE key = 'import' AND account = '" + \
+        str(member_id) + "'"
     result = submit_query(request, db)
     return result[0][0]
 

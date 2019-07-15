@@ -35,7 +35,14 @@ if __name__ == '__main__':
     res = actions.call_contract(url, pr_key1, 'UpdateSysParam', data, token1)
     if check.is_tx_in_block(url, wait, {'hash': res}, token1):
         log.info('Nodes successfully linked')
-        exit(0)
     else:
         log.error('Nodes is not linked')
+        exit(1)
+    call_dep = actions.call_contract(url, pr_key1, 'Deploy',
+                                 {}, token1)
+    if check.is_tx_in_block(url, wait, {'hash': call_dep}, token1):
+        log.info('X_reg successfully deployed')
+        exit(0)
+    else:
+        log.error('X_reg is not deployed')
         exit(1)

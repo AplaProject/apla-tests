@@ -271,9 +271,10 @@ def get_ecosys_tables(url, token):
 def get_export_app_data(url, token, app_id, member_id):
     result = api.list(url, token, 'binaries')
     for item in result['list']:
+        print(item)
         if item['name'] == 'export' \
                 and item['app_id'] == str(app_id) \
-                and item['member_id'] == str(member_id):
+                and item['account'] == str(member_id):
             return str(item['data'])
     return None
 
@@ -386,8 +387,6 @@ def imp_app(app_name, url, pr_key, token, account):
         founder_id = get_parameter_value(url, 'founder_account', token)
         bufer_data_list = get_list(url, 'buffer_data', token)['list']
         for item in bufer_data_list:
-            print('Item: ', item)
-            print("F_id: ", founder_id)
             if item['key'] == 'import' \
                     and item['account'] == account:
                 import_app_data = json.loads(item['value'])['data']
