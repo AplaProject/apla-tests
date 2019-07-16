@@ -109,6 +109,8 @@ config1 = subprocess.Popen([
     '--dbUser='+args.dbUser,
     '--centUrl='+centrifugo_url,
     '--centSecret='+centrifugo_secret,
+    '--tcpPort='+args.tcpPort1,
+    '--httpPort='+args.httpPort1,
     '--dbName='+args.dbName1,
     '--dbPort='+args.dbPort,
     '--mpgt=2000',
@@ -132,7 +134,7 @@ firstBlock = subprocess.Popen([
     binary,
     'generateFirstBlock',
     '--config='+workDir1+'/config.toml',
-    '--private=false', 
+    '--private=true', 
     '--test='+args.test
 ])
 log.info('First block generated')

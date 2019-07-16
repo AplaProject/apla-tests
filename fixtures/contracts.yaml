@@ -95,6 +95,55 @@ limits:
       }
     }
   asert: ""
+  
+external_cont:
+  code: |
+    {
+      data {
+      Par string
+      }
+      conditions {}
+      action {
+      		Println("SUCCESS",  $Par)
+      }
+    }
+  asert: ""
+  
+call_ex_cont:
+  code: |
+    {
+      data {
+      Url string
+      ResCont string
+      ExCont string
+      }
+      conditions {}
+      action {
+      var params map
+      params["Par"] = "Hello"
+      SendExternalTransaction( "123456", $Url, $ExCont, params, $ResCont)
+      }
+    }
+  asert: ""
+  
+result_cont:
+  code: |
+    {
+      data {
+         Status int
+         Msg string
+         Block int
+         UID string
+    }
+    conditions {
+
+    }
+    action {
+    Println("Result Contract", $UID, $Status, $Block, $Msg )
+    $result = $UID
+    }
+    }
+  asert: ""
 
 
 UpdateSysParam_mock:

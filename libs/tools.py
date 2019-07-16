@@ -43,6 +43,8 @@ def read_config(type):
         path = os.path.join(os.getcwd(), 'config.json')
     if type == 'nodes':
         path = os.path.join(os.getcwd(), 'nodesConfig.json')
+    if type == 'nodes_ex':
+        path = os.path.join(os.getcwd(), 'nodesConfig_ex.json')
     if type == 'test':
         path = os.path.join(os.getcwd(), 'testConfig.json')
     with open(path, 'r') as f:
