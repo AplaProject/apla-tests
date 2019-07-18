@@ -23,7 +23,6 @@ class TestBlockChain():
         i = 1
         amounts_b = actions.get_user_token_amounts(
             self.config1['url'], self.token)
-        print('amounts_b', amounts_b)
         sum_amounts_before = sum(amounts_b)
         while i < ts_count:
             tx_cont = contract.new_contract(self.config1['url'],

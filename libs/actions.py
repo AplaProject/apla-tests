@@ -32,7 +32,6 @@ def login_cors(url, pr_key, role=0, ecosystem=1):
 
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
     schema = api.contract(url, jvtToken, name)
-    print("Scheme: ", schema)
     contract = Contract(schema=schema,
                         private_key=prKey,
                         ecosystem_id=ecosystem,
@@ -185,7 +184,6 @@ def get_object_id(url, name, object, token, ecosystem=1):
     if object == 'members':
         param_name = 'account'
     res = get_list(url, object, token)
-    print("Members:", res['list'])
     for object in res['list']:
         if object[param_name] == name:
             if ecosystem > 0:
@@ -274,7 +272,6 @@ def get_ecosys_tables(url, token):
 def get_export_app_data(url, token, app_id, member_id):
     result = api.list(url, token, 'binaries')
     for item in result['list']:
-        print(item)
         if item['name'] == 'export' \
                 and item['app_id'] == str(app_id) \
                 and item['account'] == str(member_id):
