@@ -86,10 +86,11 @@ class TestSystemContracts():
         msg = 'The ecosystem {id} does not exist'.format(id=id)
         self.unit.assertIn(msg, status['error'], 'Is not equals')
 
-    def test_tokens_send(self):
+    def tokens_send(self):
         ldata = actions.login(self.url, self.keys['key2'])
+        print(ldata)
         sum = '1000'
-        tx = contract.tokens_send(self.url, self.pr_key, self.token, ldata['address'], sum)
+        tx = contract.tokens_send(self.url, self.pr_key, self.token, ldata['account'], sum)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         is_commission_in_history = actions.is_commission_in_history(
             self.url, self.token,
@@ -98,35 +99,35 @@ class TestSystemContracts():
         )
         self.unit.assertTrue(is_commission_in_history, 'No TokensSend resord in history')
 
-    def test_tokens_send_incorrect_wallet(self):
+    def tokens_send_incorrect_wallet(self):
         wallet = '0005-2070-2000-0006'
         msg = 'The recipient 0005-2070-2000-0006 is not valid'
         tx = contract.tokens_send(self.url, self.pr_key, self.token, wallet, '1000')
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         self.unit.assertIn(msg, status['error'], 'Incorrect message' + msg)
 
-    def test_tokens_send_incorrect_keyid(self):
+    def tokens_send_incorrect_keyid(self):
         wallet = '-3449126383880043801'
         msg = 'The recipient {wallet} is not valid'.format(wallet=wallet)
         tx = contract.tokens_send(self.url, self.pr_key, self.token, wallet, '1000')
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         self.unit.assertIn(msg, status['error'], 'Incorrect message' + msg)
 
-    def test_tokens_send_zero_amount(self):
+    def tokens_send_zero_amount(self):
         ldata = actions.login(self.url, self.keys['key2'], 0)
         tx = contract.tokens_send(self.url, self.pr_key, self.token, ldata['address'], '0')
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'The specified amount is zero'
         self.unit.assertIn(msg, status['error'], 'Incorrect message' + str(status))
 
-    def test_tokens_send_negative_amount(self):
+    def tokens_send_negative_amount(self):
         ldata = actions.login(self.url, self.keys['key2'], 0)
         msg = 'The specified amount is less than zero'
         tx = contract.tokens_send(self.url, self.pr_key, self.token, ldata['address'], '-1000')
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         self.unit.assertIn(msg, status['error'], 'Incorrect message' + msg)
 
-    def test_tokens_send_amount_as_string(self):
+    def tokens_send_amount_as_string(self):
         amount = 'tttt'
         ldata = actions.login(self.url, self.keys['key2'], 0)
         msg = "Invalid param 'Amount': can't convert {amount} to decimal".format(amount=amount)
@@ -197,21 +198,21 @@ class TestSystemContracts():
         msg = 'Item {id} has not been found'.format(id=id)
         self.unit.assertIn(msg, status['error'], 'Incorrect message: ' + str(status))
 
-    def test_bind_wallet(self):
+    def bind_wallet(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         id = actions.get_contract_id(self.url, tx['name'], self.token)
         tx = contract.bind_wallet(self.url, self.pr_key, self.token, id)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
-    def test_bind_wallet_incorrect_contract(self):
+    def bind_wallet_incorrect_contract(self):
         id = '99999'
         tx = contract.bind_wallet(self.url, self.pr_key, self.token, id)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
         msg = 'Contract {id} does not exist'.format(id=id)
         self.unit.assertIn(msg, status['error'], 'Incorrect message: ' + str(status))
 
-    def test_bind_wallet_incorrect_wallet(self):
+    def bind_wallet_incorrect_wallet(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         id = actions.get_contract_id(self.url, tx['name'], self.token)
@@ -221,7 +222,7 @@ class TestSystemContracts():
         msg = 'The key ID is not found'
         self.unit.assertIn(msg, status['error'], 'Incorrect message: ' + str(status))
 
-    def test_unbind_wallet(self):
+    def unbind_wallet(self):
         tx = contract.new_contract(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         id = actions.get_contract_id(self.url, tx['name'], self.token)
@@ -230,7 +231,7 @@ class TestSystemContracts():
         tx = contract.unbind_wallet(self.url, self.pr_key, self.token, id)
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
 
-    def test_unbind_wallet_incorrect_wallet(self):
+    def unbind_wallet_incorrect_wallet(self):
         id = '99999'
         tx = contract.unbind_wallet(self.url, self.pr_key, self.token, id)
         status = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
@@ -861,9 +862,9 @@ class TestSystemContracts():
         data = {}
         res_export = actions.call_contract(self.url, self.pr_key, 'Export', data, self.token)
         res = check.is_tx_in_block(self.url, self.wait, {'hash': res_export}, self.token)
-        founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
+        #founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
         app_id = 1
-        export_app_data = actions.get_export_app_data(self.url, self.token, app_id, founder_id)
+        export_app_data = actions.get_export_app_data(self.url, self.token, app_id, self.data['account'])
         path = os.path.join(os.getcwd(), 'fixtures', 'exportApp1.json')
         with open(path, 'w', encoding='UTF-8') as f:
             f.write(export_app_data)
@@ -880,8 +881,7 @@ class TestSystemContracts():
         path = os.path.join(os.getcwd(), 'fixtures', 'exportApp1.json')
         tx = contract.import_upload(self.url, self.pr_key, self.token, path)
         tx0 = check.is_tx_in_block(self.url, self.wait, tx, self.token)
-        founder_id = actions.get_parameter_value(self.url, 'founder_account', self.token)
-        import_app_data = db.get_import_app_data(self.db, founder_id)
+        import_app_data = db.get_import_app_data(self.db, self.data['account'])
         import_app_data = import_app_data['data']
         contract_name = 'Import'
         data = [{'contract': contract_name,

@@ -18,8 +18,8 @@ class TestPrototipo():
     def setup_class(self):
         self.maxDiff = None
         self.uni = unittest.TestCase()
-        data = actions.login(self.url, self.pr_key, 0)
-        self.token = data['jwtToken']
+        self.data = actions.login(self.url, self.pr_key, 0)
+        self.token = self.data['jwtToken']
 
     def assert_tx_in_block(self, result, jwt_token):
         status = actions.tx_status(self.url,
@@ -712,7 +712,7 @@ class TestPrototipo():
             self.url, 'founder_account', self.token)
         last_rec = actions.get_count(self.url, 'binaries', self.token)
         content = self.check_page('Binary(Name: ' + name + ', AppID: ' + app_id +
-                                  ', MemberID: ' + member_id + ')')
+                                  ', Account: ' + self.data['account'] + ')')
         msg = 'test_binary has problem. Content = ' + str(content['tree'])
         file_hash = '122e37a4a7737e0e8663adad6582fc355455f8d5d35bd7a08ed00c87f3e5ca05'
         self.uni.assertEqual('/data/1_binaries/'+last_rec+'/data/' + file_hash,
@@ -754,7 +754,7 @@ class TestPrototipo():
             self.url, 'founder_account', self.token)
         last_rec = actions.get_count(self.url, 'binaries', self.token)
         content = self.check_page("Image(Binary(Name: " + name + ", AppID: " + app_id +
-                                  ", MemberID: " + member_id + "))")
+                                  ", Account: " + self.data['account'] + "))")
         part_content = content['tree'][0]
         file_hash = '122e37a4a7737e0e8663adad6582fc355455f8d5d35bd7a08ed00c87f3e5ca05'
         must_be = dict(tag=part_content['tag'],

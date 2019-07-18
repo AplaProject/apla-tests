@@ -21,7 +21,7 @@
 				}
 	},
 	"date_time":{
-		"code": "DateTime(DateTime: 1560938400, Location: \"Europe/Moscow\")",
+		"code": "SetVar(t_zone, \"Europe/Moscow\")\n DateTime(DateTime: 1560938400, Location: #t_zone#)",
 		"menu": "default_menu",
 		"content":  {
 				 "tree": [{"tag": "text", "text": "2019-06-19 13:00:00"}]

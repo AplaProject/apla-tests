@@ -271,9 +271,10 @@ def get_ecosys_tables(url, token):
 def get_export_app_data(url, token, app_id, member_id):
     result = api.list(url, token, 'binaries')
     for item in result['list']:
+        print(item)
         if item['name'] == 'export' \
                 and item['app_id'] == str(app_id) \
-                and item['member_id'] == str(member_id):
+                and item['account'] == str(member_id):
             return str(item['data'])
     return None
 
@@ -376,7 +377,7 @@ def is_contract_present(url, token, name):
         return True
 
 
-def imp_app(app_name, url, pr_key, token):
+def imp_app(app_name, url, pr_key, token, account):
     log.info('Start install "{app_name}"'.format(app_name=app_name))
     path = os.path.join(os.getcwd(), 'fixtures', 'basic', app_name + '.json')
     resp = call_contract(url, pr_key, 'ImportUpload',
@@ -387,7 +388,7 @@ def imp_app(app_name, url, pr_key, token):
         bufer_data_list = get_list(url, 'buffer_data', token)['list']
         for item in bufer_data_list:
             if item['key'] == 'import' \
-                    and item['member_id'] == founder_id:
+                    and item['account'] == account:
                 import_app_data = json.loads(item['value'])['data']
                 break
         contract_name = 'Import'
