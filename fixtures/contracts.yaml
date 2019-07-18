@@ -139,7 +139,7 @@ result_cont:
 
     }
     action {
-    Println("Result Contract", $UID, $Status, $Block, $Msg )
+    DBInsert("external", {UID: $UID, Status: $Status, Block:$Block, Msg:$Msg})
     $result = $UID
     }
     }

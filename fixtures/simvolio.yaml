@@ -13,7 +13,6 @@ dbFind:
     }
   asert: "admin_index"
   
-  
 Throw:
   code: |
     {

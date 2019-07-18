@@ -3,6 +3,7 @@
 "wait_tx_status_multi": 3000,
 "wait_upating_node": 6000,
 "wait_sync": 60,
+"wait_external": 60,
 "networkID": "130186",
 "maxBodySize": 64000000
 }
