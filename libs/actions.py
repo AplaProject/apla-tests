@@ -29,8 +29,10 @@ def login_cors(url, pr_key, role=0, ecosystem=1):
     token, uid = api.getuid(url)
     result = api.cors(url, 'POST')
     return result
+
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
     schema = api.contract(url, jvtToken, name)
+    print("Scheme: ", schema)
     contract = Contract(schema=schema,
                         private_key=prKey,
                         ecosystem_id=ecosystem,
@@ -181,8 +183,9 @@ def get_object_id(url, name, object, token, ecosystem=1):
     id = None
     param_name = 'name'
     if object == 'members':
-        param_name = 'member_name'
+        param_name = 'account'
     res = get_list(url, object, token)
+    print("Members:", res['list'])
     for object in res['list']:
         if object[param_name] == name:
             if ecosystem > 0:

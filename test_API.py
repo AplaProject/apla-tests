@@ -43,7 +43,7 @@ class TestApi():
     
     def test_balance(self):
         asserts = ['amount', 'money']
-        res = api.balance(self.url, self.token, self.data['address'])
+        res = api.balance(self.url, self.token, self.data['account'])
         self.check_result(res, asserts)
 
     def test_balance_incorrect_wallet(self):
@@ -66,8 +66,8 @@ class TestApi():
                                     tools.generate_random_name())
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         # test
-        res = api.keyinfo(self.url, token='', key_id=new_user_data['address'])
-        for item in res:
+        res = api.keyinfo(self.url, token='', key_id=new_user_data['key_id'])
+        for item in res['ecosystems']:
             self.check_result(item, asserts)
         self.unit.assertEqual(len(res), 2, 'Length response is not equals')
 
@@ -78,7 +78,7 @@ class TestApi():
         check.is_new_key_in_keys(self.url, self.token,
                                  new_user_data['key_id'], self.wait)
         data = {'Rid': 2,
-                'MemberId': new_user_data['key_id']}
+                'MemberAccount': new_user_data['account']}
         res = actions.call_contract(self.url,
                                     self.pr_key,
                                     'RolesAssign',
@@ -88,9 +88,10 @@ class TestApi():
         check.is_tx_in_block(self.url, self.wait, status, self.token)
         # test
         res = api.keyinfo(self.url, token='', key_id=new_user_data['key_id'])
-        for item in res:
+        print(res)
+        for item in res['ecosystems']:
             self.check_result(item, asserts)
-        self.unit.assertEqual(len(res), 1, 'Length response is not equals')
+        self.unit.assertEqual(len(res['ecosystems']), 1, 'Length response is not equals')
 
     def test_keyinfo_by_address_incorrect(self):
         asserts = ['error', 'msg']
@@ -676,10 +677,11 @@ class TestApi():
         check.is_tx_in_block(self.url, self.wait, res, self.token)
         last_rec = actions.get_count(self.url, 'binaries', self.token)
         founder_id = actions.get_object_id(
-            self.url, 'founder', 'members', self.token)
+            self.url, self.data["account"], 'members', self.token)
         # change avatar in profile
         data = {
-            'Name': 'founder',
+            'MemberAccount': self.data['account'],
+            'CompanyName': 'founder',
             'ImageId': last_rec
         }
         res = actions.call_contract(self.url,
@@ -690,7 +692,7 @@ class TestApi():
         status = {'hash': res}
         check.is_tx_in_block(self.url, self.wait, status, self.token)
         # test
-        resp = api.avatar(self.url, token='', member=founder_id, ecosystem=1)
+        resp = api.avatar(self.url, token='', member=self.data['account'], ecosystem=1)
         msg = 'Content-Length is different!'
         self.unit.assertIn('71926', str(resp.headers['Content-Length']), msg)
 
