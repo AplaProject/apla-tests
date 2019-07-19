@@ -19,6 +19,7 @@ if __name__ == '__main__':
     token1 = data['jwtToken']
     actions.imp_app('system', url, pr_key1, token1, data['account'])
     actions.imp_app('lang_res', url, pr_key1, token1, data['account'])
+    actions.imp_app('conditions', url, pr_key1, token1, data['account'])
     actions.imp_app('companies_registry', url, pr_key1, token1, data['account'])
     full_nodes = json.dumps([{'tcp_address': conf[0]['tcp_address'],
                         'api_address': conf[0]['api_address'],
