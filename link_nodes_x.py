@@ -39,6 +39,10 @@ if __name__ == '__main__':
     else:
         log.error('Nodes is not linked')
         exit(1)
+    data = {'Name': 'max_block_generation_time', 'Value': '10000'}
+    res = actions.call_contract(url, pr_key1, 'UpdateSysParam', data, token1)
+    check.is_tx_in_block(url, wait, {'hash': res}, token1)
+    
     call_dep = actions.call_contract(url, pr_key1, 'Deploy',
                                  {}, token1)
     if check.is_tx_in_block(url, wait, {'hash': call_dep}, token1):
@@ -47,3 +51,6 @@ if __name__ == '__main__':
     else:
         log.error('X_reg is not deployed')
         exit(1)
+    data = {'Name': 'max_block_generation_time', 'Value': '2000'}
+    res = actions.call_contract(url, pr_key1, 'UpdateSysParam', data, token1)
+    check.is_tx_in_block(url, wait, {'hash': res}, token1)
