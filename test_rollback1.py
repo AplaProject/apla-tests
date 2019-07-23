@@ -413,8 +413,8 @@ class TestRollback1():
     def test_rollback1(self):
         self.log.info('Start rollback test')
         # Install apps
-        actions.imp_app('system', self.url, self.pr_key, self.token)
-        actions.imp_app('basic', self.url, self.pr_key, self.token)
+        actions.imp_app('system', self.url, self.pr_key, self.token, self.l_data['account'])
+        actions.imp_app('basic', self.url, self.pr_key, self.token, self.l_data['account'])
         table_name = self.add_user_table()
         self.insert_to_user_table(table_name)
         # Save to file block id for rollback
