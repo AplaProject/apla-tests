@@ -54,7 +54,7 @@ class TestApi():
         msg = 'Wallet {} is not valid'.format(wallet)
         self.check_result(res, asserts, error, msg)
 
-    def test_keyinfo_by_address(self):
+    def keyinfo_by_address(self):
         asserts = {'ecosystem', 'name'}
         new_pr_key = tools.generate_pr_key()
         new_user_data = actions.login(self.url, new_pr_key)
