@@ -68,7 +68,7 @@ class TestCost():
                                     token_creater, id)
         check.is_tx_in_block(self.conf[0]['url'], self.wait, tx, token_creater)
 
-    def test_bind_wallet(self):
+    def bind_wallet(self):
         if not actions.is_contract_activated(self.conf[1]['url'], 'CostContract', self.token):
             bind_wallet = self.bind_wallet()
         wallet_id = actions.get_activated_wallet(self.conf[1]['url'],
@@ -136,7 +136,7 @@ class TestCost():
         self.u.assertDictEqual(dict_valid, dict_expect,
                                'Error in comissions for bind_wallet' + str(node) + inf1 + inf2)
 
-    def test_unbind_wallet(self):
+    def unbind_wallet(self):
         if actions.is_contract_activated(self.conf[1]['url'], 'CostContract', self.token):
             self.unbind_wallet()
         actions.is_sync(self.conf, self.wait_sync, len(self.conf))
@@ -206,7 +206,7 @@ class TestCost():
         self.u.assertDictEqual(dict_valid, dict_expect,
                                'Error in comissions for unbind_wallet' + str(node) + inf1 + inf2)
 
-    def test_bind_wallet_with_err(self):
+    def bind_wallet_with_err(self):
         if not actions.is_contract_activated(self.conf[1]['url'], 'CostContract', self.token):
             self.bind_wallet()
         wallet_id = actions.get_activated_wallet(self.conf[1]['url'], 'CostContract',
@@ -246,7 +246,7 @@ class TestCost():
         self.u.assertDictEqual(dict_valid, dict_expect,
                                'Error in test_bind_wallet_with_err')
 
-    def test_deactive_contract_with_err(self):
+    def deactive_contract_with_err(self):
         if actions.is_contract_activated(self.conf[1]['url'], 'CostContract', self.token):
             self.unbind_wallet()
         wallet_id = actions.get_activated_wallet(
