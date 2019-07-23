@@ -41,7 +41,6 @@ class WebsiteTasks(TaskSet):
         self.client.post('/sendTx', files={'call1': tx_bin_data},
                          headers={'Authorization': self.token}, name=contract_name)
 
-    @task
     def TokensSend(self):
         contract_name = 'TokensSend'
         data = {'Recipient': self.ldata['address'],
