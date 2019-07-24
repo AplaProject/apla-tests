@@ -1,5 +1,5 @@
 {
-"wait_tx_status": 60,
+"wait_tx_status": 100,
 "wait_tx_status_multi": 3000,
 "wait_upating_node": 6000,
 "wait_sync": 60,
