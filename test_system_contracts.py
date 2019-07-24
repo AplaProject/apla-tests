@@ -856,6 +856,10 @@ class TestSystemContracts():
 
 
     def test_import_export(self):
+        #changing limits
+        data = {'Name': 'max_block_generation_time', 'Value': '10000'}
+        res = actions.call_contract(self.url, self.pr_key, 'UpdateSysParam', data, self.token)
+        check.is_tx_in_block(self.url, self.wait, {'hash': res}, self.token)
         # Export
         tx_ex = contract.export_new_app(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx_ex, self.token)
@@ -886,4 +890,8 @@ class TestSystemContracts():
         contract_name = 'Import'
         data = [{'contract': contract_name,
                  'params': import_app_data[i]} for i in range(len(import_app_data))]
-        self.callMulti(contract_name, data, 60)
+        self.callMulti(contract_name, data, 3000)
+        #limits
+        data = {'Name': 'max_block_generation_time', 'Value': '2000'}
+        res = actions.call_contract(self.url, self.pr_key, 'UpdateSysParam', data, self.token)
+        check.is_tx_in_block(self.url, self.wait, {'hash': res}, self.token)
