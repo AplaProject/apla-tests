@@ -690,6 +690,8 @@ class TestSimvolio():
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
         resp = actions.tx_get_error(self.url, 30, res, self.token)
+        print("contract: ", contract)
+        print("resp: ", resp)
         self.unit.assertIn(contract['asert']['errmsg']['error'], resp['error'], resp)
 
     def test_contract_UpdateNotifications(self):

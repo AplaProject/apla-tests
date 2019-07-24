@@ -103,6 +103,7 @@ def tx_get_error(url, sleep_time, hsh, jvt_token):
     while sec < sleep_time:
         time.sleep(1)
         resp = api.tx_status(url, jvt_token, hsh)
+        print("tx_get_error - resp: ", resp)
         jresp = resp['results'][hsh]
         if len(jresp['blockid']) > 0:
             return None
