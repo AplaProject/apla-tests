@@ -175,6 +175,11 @@ class TestApi():
         error = 'E_TABLENOTFOUND'
         msg = 'Table ' + table + ' has not been found'
         self.check_result(res, asserts, error, msg)
+        
+    def test_appparams(self):
+        asserts = ['app_id', 'list']
+        resp = api.appparams(self.url, self.token, 1)
+        self.check_result(resp, asserts)
 
     def test_get_table_data(self):
         asserts = ['count', 'list']
