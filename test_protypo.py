@@ -637,7 +637,7 @@ class TestPrototipo():
 
     def test_page_sys_var_ecosystem_name(self):
         # get ecosystem name from api
-        count = api.ecosystems(self.url, self.token)['number']
+        count = api.metrics(self.url, self.token, 'ecosystems')['count']
         res = api.list(self.url, self.token, 'ecosystems', limit=count)
         id = 1
         i = 0
