@@ -101,11 +101,6 @@ class TestApi():
         res = api.keyinfo(self.url, token='', key_id=address)
         self.check_result(res, asserts, error, msg)
 
-    def test_get_ecosystem(self):
-        asserts = ['number']
-        res = api.ecosystems(self.url, self.token)
-        self.check_result(res, asserts)
-
     def test_get_param_current_ecosystem(self):
         asserts = ['list']
         res = api.ecosystemparams(self.url, self.token)
@@ -395,7 +390,7 @@ class TestApi():
                                      self.token,
                                      ecosys_name)
         check.is_tx_in_block(self.url, self.wait, res, self.token)
-        ecosys_num = api.ecosystems(self.url, self.token)['number']
+        ecosys_num = api.metrics(self.url, self.token, 'ecosystems')['count']
         # login founder in new ecosystem
         data2 = actions.login(self.url, self.pr_key, 0, ecosys_num)
         token2 = data2['jwtToken']
@@ -475,7 +470,7 @@ class TestApi():
                                      self.token,
                                      ecosys_name)
         check.is_tx_in_block(self.url, self.wait, res, self.token)
-        ecosys_num = api.ecosystems(self.url, self.token)['number']
+        ecosys_num = api.metrics(self.url, self.token, 'ecosystems')['count']
         # login founder in new ecosystem
         data2 = actions.login(self.url, self.pr_key, 0, ecosys_num)
         token2 = data2['jwtToken']

@@ -133,13 +133,6 @@ def ecosystemname(url, token, id=1):
     return call_get_api(url, data, token)
 
 
-def ecosystems(url, token):
-    data = {}
-    endpoint = '/ecosystems'
-    url += endpoint
-    return call_get_api(url, data, token)
-
-
 def appparams(url, token, appid, ecosystem=1, names=''):
     data = {}
     data['ecosystem'] = ecosystem
@@ -420,7 +413,9 @@ def metrics(url, token, name):
       name=name
     )
     url += endpoint
-    return call_get_api(url, data, token)
+    resp = call_get_api(url, data, token)
+    print(resp)
+    return resp
 
   
 def page_validators_count(url, token, name):
