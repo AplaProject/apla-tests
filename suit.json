@@ -1,0 +1,18 @@
+{
+	"xreg":
+		{
+			"link": "link_nodes_x.py",
+			"quick": ["test_API.py", test_limits.py],
+			"rollback": [test_rollback1.py, test_rollback2.py],
+			"full": [test_block_chain.py, test_multiAPI.py, test_system_contracts.py,
+					test_simvolio.py, test_protypo.py, compare_blocks.py, compare_nodes.py]
+		},
+	"public":
+		{
+			"link": "link_nodes.py",
+			"quick": ["test_API.py", test_limits.py, test_cost.py],
+			"rollback": [test_rollback1.py, test_rollback2.py],
+			"full": [test_block_chain.py, test_multiAPI.py, test_system_contracts.py,
+					test_simvolio.py, test_protypo.py, compare_blocks.py, compare_nodes.py]
+		}
+}
