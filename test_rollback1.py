@@ -18,7 +18,7 @@ class TestRollback1():
     l_data = actions.login(url, pr_key, 0)
     token = l_data['jwtToken']
     wait = tools.read_config('test')['wait_tx_status']
-    log = loger.create_loger(__name__, 'rollback.log')
+    log = loger.create_loger(__name__)
 
     def setup_class(self):
         self.unit = unittest.TestCase()
@@ -333,7 +333,7 @@ class TestRollback1():
                         "insert": "false",
                         "update" : "false",
                         "new_column": "false"}'''
-        table_name = 'TAB_' + tools.generate_random_name()
+        table_name = 'tab_' + tools.generate_random_name()
         res = contract.new_table(self.url,
                                  self.pr_key,
                                  self.token,
