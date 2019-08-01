@@ -3,6 +3,7 @@ import json
 import random
 import string
 import yaml
+import hashlib
 
 
 def generate_random_name():
@@ -10,6 +11,14 @@ def generate_random_name():
     for _ in range(1, 30):
         sym = random.choice(string.ascii_lowercase)
         name.append(sym)
+    return ''.join(name)
+
+def generate_random_name_ch():
+    name = []
+    for i in range(1,6):
+        for _ in ['abcdefghijklmnopqastuvwxyz']:
+            sym = random.choice(string.ascii_lowercase)
+            name.append(sym)
     return ''.join(name)
 
 
@@ -34,6 +43,8 @@ def read_config(type):
         path = os.path.join(os.getcwd(), 'config.json')
     if type == 'nodes':
         path = os.path.join(os.getcwd(), 'nodesConfig.json')
+    if type == 'nodes_ex':
+        path = os.path.join(os.getcwd(), 'nodesConfig_ex.json')
     if type == 'test':
         path = os.path.join(os.getcwd(), 'testConfig.json')
     with open(path, 'r') as f:
@@ -67,3 +78,9 @@ def read_fixtures_yaml(type):
 
 def generate_pr_key():
     return ''.join(random.choice('0123456789abcdef') for _ in range(64))
+
+
+def get_hash_sha256(str_content):
+    m = hashlib.sha256()
+    m.update(bytes(str_content, 'utf-8'))
+    return m.hexdigest()

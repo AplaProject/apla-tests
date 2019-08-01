@@ -87,19 +87,61 @@ get_keyId:
 limits:
   code: |
     {
-      data {}
+      data {
+      Par string
+      }
       conditions {}
       action {
-        var i int
-        var res array
-        while i < 5 {
-          var res array
-          res = DBFind("contracts").Columns("name")
-          i = i + 1
-          Println(Str(i))
-        }
-        Println("ok")
       }
+    }
+  asert: ""
+  
+external_cont:
+  code: |
+    {
+      data {
+      Par string
+      }
+      conditions {}
+      action {
+      		Println("SUCCESS",  $Par)
+      }
+    }
+  asert: ""
+  
+call_ex_cont:
+  code: |
+    {
+      data {
+      Url string
+      ResCont string
+      ExCont string
+      }
+      conditions {}
+      action {
+      var params map
+      params["Par"] = "Hello"
+      SendExternalTransaction( "123456", $Url, $ExCont, params, $ResCont)
+      }
+    }
+  asert: ""
+  
+result_cont:
+  code: |
+    {
+      data {
+         Status int
+         Msg string
+         Block int
+         UID string
+    }
+    conditions {
+
+    }
+    action {
+    DBInsert("external", {UID: $UID, Status: $Status, Block:$Block, Msg:$Msg})
+    $result = $UID
+    }
     }
   asert: ""
 

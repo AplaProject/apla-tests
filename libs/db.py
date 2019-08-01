@@ -4,7 +4,7 @@ import psycopg2
 # here
 def submit_query(query, db):
     connect = psycopg2.connect(host=db['dbHost'], dbname=db['dbName'],
-                               user=db['login'], password=db['pass'])
+                               user=db['login'], password=db['pass'], port=db['port'])
     cursor = connect.cursor()
     cursor.execute(query)
     return cursor.fetchall()
@@ -12,12 +12,12 @@ def submit_query(query, db):
 
 # block_chain
 def compare_node_positions(db, max_block_id, nodes):
-    count_rec = nodes * 3 + nodes
-    min_block = max_block_id - count_rec + 1
+    count_rec = nodes * 3 + nodes # 12
+    min_block = max_block_id - 10 + 1
     request = 'SELECT node_position, count(node_position) FROM block_chain WHERE id>' + str(
         min_block) + ' AND id<' + str(max_block_id) + 'GROUP BY node_position'
     positions = submit_query(request, db)
-    countBlocks = round(count_rec / nodes / 10 * 7)
+    countBlocks = round(count_rec / nodes / 10 * 7) 
     if len(positions) < nodes:
         print('One of nodes does not generate blocks' + str(positions))
         return False
@@ -124,7 +124,51 @@ def get_max_id_from_table(db, table):
 
 # system_contracts
 def get_import_app_data(db, member_id):
-    request = "SELECT value FROM \"1_buffer_data\" WHERE key = 'import' AND member_id = " + \
-        str(member_id)
+    print('member_id', member_id)
+    request = "SELECT value FROM \"1_buffer_data\" WHERE key = 'import' AND account = '" + \
+        str(member_id) + "'"
     result = submit_query(request, db)
     return result[0][0]
+
+
+# func for sorted DBFind test
+def get_all_sorted_records_from_table(db, table):
+    if table == 'keys' or table == 'members':
+        request = 'SELECT id, ecosystem FROM "1_' + table + '" ORDER BY ecosystem, id LIMIT 250'
+    else:
+        request = 'SELECT id, name FROM "1_' + table + '" ORDER BY id LIMIT 250'
+    result = submit_query(request, db)
+    return result
+
+def increase_blocks(db):
+    request = 'UPDATE info_block SET block_id = block_id + 100'
+    connect = psycopg2.connect(host=db['dbHost'], dbname=db['dbName'],
+                               user=db['login'], password=db['pass'])
+    cursor = connect.cursor()
+    cursor.execute(request)
+    connect.commit()
+    
+def change_hash_block_chain(db):
+    request = "UPDATE block_chain SET rollbacks_hash = '0a0638f1411c71353f358fc4472f476ea10e8d8b6a3a17926489684c3aa08e72'"
+    connect = psycopg2.connect(host=db['dbHost'], dbname=db['dbName'],
+                               user=db['login'], password=db['pass'])
+    cursor = connect.cursor()
+    cursor.execute(request)
+    connect.commit()
+    
+def change_hash_info_block(db):
+    request = "UPDATE info_block SET rollbacks_hash = '0a0638f1411c71353f358fc4472f476ea10e8d8b6a3a17926489684c3aa08e72'"
+    connect = psycopg2.connect(host=db['dbHost'], dbname=db['dbName'],
+                               user=db['login'], password=db['pass'])
+    cursor = connect.cursor()
+    cursor.execute(request)
+    connect.commit()
+    
+def change_content(db):
+    request = "UPDATE \"1_greeting\" SET greeting='hacked' where id=1"
+    connect = psycopg2.connect(host=db['dbHost'], dbname=db['dbName'],
+                               user=db['login'], password=db['pass'])
+    cursor = connect.cursor()
+    cursor.execute(request)
+    connect.commit()
+    

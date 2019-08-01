@@ -2,12 +2,14 @@ import requests
 import json
 import time
 import os
+from itertools import groupby
 
 
 from genesis_blockchain_tools.contract import Contract
-from libs import api, db, tools, loger, check
+from libs import api, db, tools, loger, check, contract
 
 wait = tools.read_config('test')['wait_tx_status']
+wait_multi = tools.read_config('test')['wait_tx_status_multi']
 log = loger.create_loger(__name__)
 
 
@@ -27,6 +29,7 @@ def login_cors(url, pr_key, role=0, ecosystem=1):
     token, uid = api.getuid(url)
     result = api.cors(url, 'POST')
     return result
+
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
     schema = api.contract(url, jvtToken, name)
     contract = Contract(schema=schema,
@@ -77,30 +80,63 @@ def tx_status(url, sleep_time, hsh, jvt_token):
         return {'blockid': int(jresp['blockid']), 'result': jresp['result'], 'error': None}
     else:
         return {'blockid': 0, 'error': jresp['errmsg']['error'], 'result': None}
+    
+def is_sync(config, wait_time, nodes):
+    max_block_id = []
+    sec = 0
+    while sec < wait_time:
+        i = 0
+        while i < nodes:
+            data = login(config[i]['url'], config[i]['private_key'])
+            token = data['jwtToken']
+            max_block_id.append(get_max_block_id(config[i]['url'], token))
+            i += 1
+        new_x = [el for el, _ in groupby(max_block_id)]
+        if len(new_x) > 1:
+             sec = sec + 1
+        else:
+            return True
+    return False
+    
+def tx_get_error(url, sleep_time, hsh, jvt_token):
+    sec = 0
+    while sec < sleep_time:
+        time.sleep(1)
+        resp = api.tx_status(url, jvt_token, hsh)
+        print("tx_get_error - resp: ", resp)
+        jresp = resp['results'][hsh]
+        if len(jresp['blockid']) > 0:
+            return None
+            break
+        if 'errmsg' in json.dumps(jresp) or 'errmsg' in json.dumps(jresp):
+            return jresp['errmsg']
+            break
+        else:
+            sec = sec + 1
 
 
 def tx_status_multi(url, sleep_time, hshs, jvt_token):
     url_end = url + '/txstatus'
-    allTxInBlocks = False
     sec = 0
     list = []
     for hash in hshs:
         list.append(hshs[hash])
     while sec < sleep_time:
         time.sleep(1)
+        sec = sec + 1
         resp = requests.post(url_end, params={'data': json.dumps({'hashes': list})},
                              headers={'Authorization': jvt_token})
         jresp = resp.json()['results']
+        allTxInBlocks = True
         for status in jresp.values():
-            if (len(status['blockid']) > 0 and 'errmsg' not in json.dumps(status)):
-                allTxInBlocks = True
+            if (len(status['blockid']) > 0 or 'errmsg' in json.dumps(status)):
+                continue
             else:
                 allTxInBlocks = False
+
         if allTxInBlocks:
             return jresp
-        else:
-            sec = sec + 1
-    return jresp
+    return None
 
 
 def call_get_api(url, data, token):
@@ -147,7 +183,7 @@ def get_object_id(url, name, object, token, ecosystem=1):
     id = None
     param_name = 'name'
     if object == 'members':
-        param_name = 'member_name'
+        param_name = 'account'
     res = get_list(url, object, token)
     for object in res['list']:
         if object[param_name] == name:
@@ -239,7 +275,7 @@ def get_export_app_data(url, token, app_id, member_id):
     for item in result['list']:
         if item['name'] == 'export' \
                 and item['app_id'] == str(app_id) \
-                and item['member_id'] == str(member_id):
+                and item['account'] == str(member_id):
             return str(item['data'])
     return None
 
@@ -271,6 +307,8 @@ def get_table_hashes(url, token, db_inf, ecos='1'):
     for table in list:
         tables[table['name']] = db.get_table_hash(
             db_inf, ecos + '_' + table['name'])
+    tables.update({"rollback_tx": db.get_table_hash(
+            db_inf, "rollback_tx")})
     return tables
 
 
@@ -340,32 +378,31 @@ def is_contract_present(url, token, name):
         return True
 
 
-def imp_app(app_name, url, pr_key, token):
+def imp_app(app_name, url, pr_key, token, account):
     log.info('Start install "{app_name}"'.format(app_name=app_name))
     path = os.path.join(os.getcwd(), 'fixtures', 'basic', app_name + '.json')
     resp = call_contract(url, pr_key, 'ImportUpload',
-                         {'input_file': {'Path': path}}, token)
+                         {'Data': {'Path': path}}, token)
     res_import_upload = tx_status(url, wait, resp, token)
     if int(res_import_upload['blockid']) > 0:
         founder_id = get_parameter_value(url, 'founder_account', token)
         bufer_data_list = get_list(url, 'buffer_data', token)['list']
         for item in bufer_data_list:
             if item['key'] == 'import' \
-                    and item['member_id'] == founder_id:
+                    and item['account'] == account:
                 import_app_data = json.loads(item['value'])['data']
                 break
         contract_name = 'Import'
         data = [{'contract': contract_name,
                  'params': import_app_data[i]} for i in range(len(import_app_data))]
         resp = call_multi_contract(url, pr_key, contract_name, data, token)
-        time.sleep(wait)
         if 'hashes' in resp:
             hashes = resp['hashes']
-            result = tx_status_multi(url, wait, hashes, token)
+            result = tx_status_multi(url, wait_multi, hashes, token)
             for status in result.values():
                 log.debug(str(status))
                 if int(status['blockid']) < 1:
-                    log.error('Import "{app_name}" is failed'.format(app_name=app_name))
+                    log.error('Import "{app_name}" is failed'.format(app_name=app_name) + status)
                     exit(1)
             log.info('"{app_name}" successfully installed'.format(app_name=app_name))
 
@@ -392,7 +429,7 @@ def roles_install(url, pr_key, token, wait):
 
 
 def voting_templates_install(url, pr_key, token, wait):
-    data = {}
+    data = {'SetDefault': 'yes'}
     log.info('VotingTemplatesInstall started')
     call = call_contract(url, pr_key, 'VotingTemplatesInstall',
                                  data, token)
@@ -404,17 +441,14 @@ def voting_templates_install(url, pr_key, token, wait):
 def edit_app_param(name, val, url, pr_key, token, wait):
     log.info('EditAppParam started')
     id = get_object_id(url, name, 'app_params', token)
-    data = {'Id': id, 'Value': val, 'Conditions': 'true'}
-    call = call_contract(url, pr_key, 'EditAppParam',
-                                 data, token)
-    if check.is_tx_in_block(url, wait, {'hash': call}, token) < 1:
+    tx = contract.edit_app_param(url, pr_key, token, int(id), value=val)
+    if check.is_tx_in_block(url, wait, tx, token) < 1:
         log.error('EditAppParam ' + name + ' is failed')
         exit(1)
 
 
 def update_profile(name, url, pr_key, token, wait):
     log.info('UpdateProfile started')
-    time.sleep(5)
     data = {'member_name': name}
     resp = call_contract(url, pr_key, 'ProfileEdit',
                                  data, token)
@@ -425,7 +459,7 @@ def update_profile(name, url, pr_key, token, wait):
 
 def set_apla_consensus(id, url, pr_key, token, wait):
     log.info('setAplaconsensus started')
-    data = {'member_id': id, 'rid': 3}
+    data = {'MemberId': id, 'Rid': 3}
     call = call_contract(url, pr_key, 'RolesAssign',
                                  data, token)
     if check.is_tx_in_block(url, wait, {'hash': call}, token) < 1:
@@ -442,7 +476,24 @@ def create_voiting(tcp_address, api_address, key_id, pub_key, url, pr_key, token
     if check.is_tx_in_block(url, wait, {'hash': call}, token) < 1:
         log.error('VotingNodeAdd is failed')
         exit(1)
-
+        
+def validator_request(tcp_address, api_address, key_id, pub_key, url, pr_key, token, wait):
+    log.info('ValidatorRequest started')
+    data = {'TcpAddress': tcp_address, 'ApiAddress': api_address,
+            'KeyId': key_id, 'PubKey': pub_key}
+    call = call_contract(url, pr_key, 'ValidatorRequest',
+                                 data, token)
+    if tx_status(url, wait, call, token)['blockid'] < 1:
+        log.error('ValidatorRequest is failed')
+        
+        
+def run_voting(id_voting, url, pr_key, token, wait):
+    log.info('VotingRunNewValidator started')
+    data = {'ValidatorId': id_voting}
+    call = call_contract(url, pr_key, 'VotingRunNewValidator', data, token)
+    if tx_status(url, wait, call, token)['blockid'] < 1:
+        log.error('VotingRunNewValidator is failed')
+        
 
 def voting_status_update(url, pr_key, token, wait):
     log.info('VotingStatusUpdate started')
@@ -456,7 +507,7 @@ def voting_status_update(url, pr_key, token, wait):
 
 def voiting(id, url, pr_key, token, wait):
     log.info('VotingDecisionAccept started')
-    data = {'votingID': id,
+    data = {'VotingId': id,
             'RoleId': 3}
     call = call_contract(url, pr_key, 'VotingDecisionAccept',
                                  data, token)

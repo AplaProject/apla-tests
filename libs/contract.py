@@ -1,4 +1,6 @@
 from libs import tools, actions
+from genesis_blockchain_tools.crypto import gen_keypair
+
 
 
 def new_contract(url, pr_key, token, source='',
@@ -28,6 +30,15 @@ def new_ecosystem(url, pr_key, token, name='', ecosystem=1):
                                 data, token, ecosystem=ecosystem)
     return {'hash': res,
             'name': name}
+    
+def new_user(url, pr_key, token, pub_key='', ecosystem=1):
+    if not pub_key:
+        priv_key, pub_key = gen_keypair()
+    data = {'NewPubkey': pub_key}
+    res = actions.call_contract(url, pr_key, '@1NewUser',
+                                data, token, ecosystem=ecosystem)
+    return {'hash': res,
+            'pub_key': pub_key}
 
 
 def new_application(url, pr_key, token, name='', condition='true', ecosystem=1):
@@ -398,7 +409,7 @@ def upload_binary(url, pr_key, token, path, name='', app_id='1', ecosystem=1):
 
 
 def import_upload(url, pr_key, token, path, ecosystem=1):
-    data = {'input_file': {'Path': path}}
+    data = {'Data': {'Path': path}}
     res = actions.call_contract(url, pr_key, '@1ImportUpload',
                                 data, token, ecosystem=ecosystem)
     return {'hash': res}
@@ -422,10 +433,10 @@ def new_section(url, pr_key, token, title='',
     if not urlname:
         urlname = 'url_' + tools.generate_random_name()
     data = {
-        'title': title,
-        'status': status,
-        'urlname': urlname,
-        'page': page
+        'Title': title,
+        'Status': status,
+        'Urlname': urlname,
+        'Page': page
     }
     res = actions.call_contract(url, pr_key, '@1NewSection',
                                 data, token, ecosystem=ecosystem)

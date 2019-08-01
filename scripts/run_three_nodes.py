@@ -106,9 +106,16 @@ config1 = subprocess.Popen([
     '--dataDir='+workDir1,
     '--firstBlock='+firstBlockPath,
     '--dbPassword='+args.dbPassword,
+    '--dbUser='+args.dbUser,
     '--centUrl='+centrifugo_url,
     '--centSecret='+centrifugo_secret,
-    '--dbName='+args.dbName1
+    '--tcpPort='+args.tcpPort1,
+    '--httpPort='+args.httpPort1,
+    '--dbName='+args.dbName1,
+    '--dbPort='+args.dbPort,
+    '--mpgt=2000',
+    '--networkID=130186',
+    '--mbs=64000000'
 ])
 log.info('Generated config for first node')
 time.sleep(wait)
@@ -127,6 +134,7 @@ firstBlock = subprocess.Popen([
     binary,
     'generateFirstBlock',
     '--config='+workDir1+'/config.toml',
+    '--private=true', 
     '--test='+args.test
 ])
 log.info('First block generated')
@@ -157,13 +165,18 @@ generateConfig2 = subprocess.Popen([
     '--dataDir='+workDir2,
     '--firstBlock='+firstBlockPath,
     '--dbName='+args.dbName2,
+    '--dbPort='+args.dbPort,
+    '--dbUser='+args.dbUser,
     '--tcpPort='+args.tcpPort2,
     '--httpPort='+args.httpPort2,
     '--firstBlock='+firstBlockPath,
     '--dbPassword='+args.dbPassword,
     '--centUrl='+centrifugo_url,
     '--centSecret='+centrifugo_secret,
-    '--nodesAddr='+'127.0.0.1:'+args.tcpPort1
+    '--nodesAddr='+'127.0.0.1:'+args.tcpPort1,
+    '--mpgt=2000',
+    '--networkID=130186',
+    '--mbs=64000000'
 ])
 log.info('Generated config for second node')
 time.sleep(wait)
@@ -184,13 +197,18 @@ generateConfig3 = subprocess.Popen([
     '--dataDir='+workDir3,
     '--firstBlock='+firstBlockPath,
     '--dbName=' + args.dbName3,
+    '--dbPort='+args.dbPort,
+    '--dbUser='+args.dbUser,
     '--tcpPort='+args.tcpPort3,
     '--httpPort='+args.httpPort3,
     '--firstBlock='+firstBlockPath,
     '--dbPassword='+args.dbPassword,
     '--centUrl='+centrifugo_url,
     '--centSecret='+centrifugo_secret,
-    '--nodesAddr='+'127.0.0.1:'+args.tcpPort1
+    '--nodesAddr='+'127.0.0.1:'+args.tcpPort1,
+    '--mpgt=2000',
+    '--networkID=130186',
+    '--mbs=64000000'
 ])
 log.info('Generated config for third node')
 time.sleep(wait)
@@ -279,7 +297,8 @@ config = [
             'dbHost': args.dbHost,
             'dbName': args.dbName1,
             'login': args.dbUser,
-            'pass': args.dbPassword
+            'pass': args.dbPassword,
+            'port': args.dbPort
         }
     },
     {
@@ -294,7 +313,8 @@ config = [
             'dbHost': args.dbHost,
             'dbName': args.dbName2,
             'login': args.dbUser,
-            'pass': args.dbPassword
+            'pass': args.dbPassword,
+            'port': args.dbPort
         }
     },
     {
@@ -309,7 +329,8 @@ config = [
             'dbHost': args.dbHost,
             'dbName': args.dbName3,
             'login': args.dbUser,
-            'pass': args.dbPassword
+            'pass': args.dbPassword,
+            'port': args.dbPort
         }
     }]
 

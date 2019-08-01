@@ -1,8 +1,11 @@
 import requests
 import json
+import time
 
 from genesis_blockchain_tools.crypto import sign
 from genesis_blockchain_tools.crypto import get_public_key
+
+from libs import tools
 
 
 def call_get_api(url, data, token):
@@ -31,19 +34,29 @@ def call_post_api(url, data, token):
     )
     return resp.json()
 
+def auth_status(url, token):
+    data = {}
+    endpoint = '/auth/status'
+    url += endpoint
+    return call_get_api(url, data, token)
+
 
 def getuid(url):
     endpoint = '/getuid'
     url += endpoint
     response = requests.get(url)
     result = response.json()
-    token = result['token']
-    uid = result['uid']
-    return token, uid
+    if 'token' and 'uid' in result:
+        token = result['token']
+        uid = result['uid']
+        return token, uid
+    else:
+        return False
 
 
 def login(url, token, uid, private_key, role_id=0, ecosystem=1, expire=3600):
-    signature = sign(private_key, 'LOGIN' + uid)
+    
+    signature = sign(private_key, 'LOGIN' + tools.read_config('test')['networkID'] + uid)
     pubkey = get_public_key(private_key)
     full_token = 'Bearer ' + token
     data = {
@@ -59,12 +72,13 @@ def login(url, token, uid, private_key, role_id=0, ecosystem=1, expire=3600):
     headers = []
     if cors(full_url, url, 'POST'):
         res = call_post_api(full_url, data, full_token)
+        print("Result of login: ", res)
         result = {
             'uid': uid,
             'jwtToken': 'Bearer ' + res['token'],
             'pubkey': pubkey,
-            'address': res['address'],
             'key_id': res['key_id'],
+            'account': res['account'],
             'ecosystem_id': res['ecosystem_id']
             }
         return result
@@ -115,13 +129,6 @@ def keyinfo(url, token, key_id):
 def ecosystemname(url, token, id=1):
     data = {'id': id}
     endpoint = '/ecosystemname'
-    url += endpoint
-    return call_get_api(url, data, token)
-
-
-def ecosystems(url, token):
-    data = {}
-    endpoint = '/ecosystems'
     url += endpoint
     return call_get_api(url, data, token)
 
@@ -395,6 +402,35 @@ def avatar(url, token, member, ecosystem=1):
 def config_centrifugo(url, token):
     data = {}
     endpoint = '/config/centrifugo'
+    url += endpoint
+    return call_get_api(url, data, token)
+
+
+def metrics(url, token, name):
+    # name = [blocks, transactions, ecosystems, keys, fullnodes]
+    data = {}
+    endpoint = '/metrics/{name}'.format(
+      name=name
+    )
+    url += endpoint
+    resp = call_get_api(url, data, token)
+    print(resp)
+    return resp
+
+  
+def page_validators_count(url, token, name):
+    data = {}
+    endpoint = '/page/validators_count/{name}'.format(
+        name=name
+    )
+    url += endpoint
+    return call_get_api(url, data, token)
+
+def get_row(url, token, table, column, value):
+    data={}
+    endpoint = '/row/{table}/{column}/{value}?columns=name'.format(
+        table=table, column=column, value=value
+        )
     url += endpoint
     return call_get_api(url, data, token)
 

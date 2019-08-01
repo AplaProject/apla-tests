@@ -25,9 +25,7 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], data, self.token)
-        print(res)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        print(result)
         self.unit.assertIn(check_point, result['result'], 'ERROR: ' +
                            str(result))
 
@@ -190,6 +188,14 @@ class TestSimvolio():
     def test_contract_type_money(self):
         contract = self.contracts['type_money']
         self.check_contract(contract['code'], contract['asert'])
+        
+    def test_contract_date_time_location(self):
+        contract = self.contracts['DateTimeLocation']
+        self.check_contract(contract['code'], contract['asert'])
+        
+    def test_contract_unix_date_time_location(self):
+        contract = self.contracts['UnixDateTimeLocation']
+        self.check_contract(contract['code'], contract['asert'])
 
     def test_contract_type_float(self):
         contract = self.contracts['type_float']
@@ -250,7 +256,7 @@ class TestSimvolio():
         res = actions.call_contract(self.url, self.pr_key, contractName,
                                     {"table": tab}, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' is not empty',
+        self.unit.assertIn('Table 1_' + tab + ' is not empty', result['error'],
                               'Erorr in deleting tables by DelTab funtion')
         
     def test_del_table_not_present(self):
@@ -264,7 +270,7 @@ class TestSimvolio():
         res = actions.call_contract(self.url, self.pr_key, contractName,
                                     {"table": tab}, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' has not been found',
+        self.unit.assertIn('Table 1_' + tab + ' has not been found', result['error'],
                               'Erorr in deleting tables by DelTab funtion' + result['error'])
         
     def test_del_table_empty(self):
@@ -291,7 +297,7 @@ class TestSimvolio():
         res = actions.call_contract(self.url, self.pr_key, contractName,
                                     {'table': tab, 'col': 'name'}, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' is not empty',
+        self.unit.assertIn('Table 1_' + tab + ' is not empty', result['error'],
                               'Erorr in deleting tables by DelTab funtion' + result['error'])
         
     def test_del_column_not_present_table(self):
@@ -305,7 +311,7 @@ class TestSimvolio():
         res = actions.call_contract(self.url, self.pr_key, contractName,
                                     {'table': tab, 'col': 'name'}, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertEqual(result['error'], 'Table 1_' + tab + ' has not been found',
+        self.unit.assertIn('Table 1_' + tab + ' has not been found', result['error'],
                               'Erorr in deleting tables by DelTab funtion' + result['error'])
         
     def test_del_column_not_present_column(self):
@@ -321,7 +327,7 @@ class TestSimvolio():
         res = actions.call_contract(self.url, self.pr_key, contractName,
                                     {'table': tx_tab['name'], 'col': col}, self.token)
         result = actions.tx_status(self.url, self.wait, res, self.token)
-        self.unit.assertEqual(result['error'], 'column ' + col + " doesn't exist",
+        self.unit.assertIn('column ' + col + " doesn't exist", result['error'],
                               'Erorr in deleting tables by DelTab funtion' + result['error'])
         
     def test_del_column_not_empty(self):
@@ -440,8 +446,7 @@ class TestSimvolio():
                 var_list[i] + ' cannot be changed'
             expexted_dict[i] = exp_result
             actual_dict[i] = st['error']
-            self.unit.assertDictEqual(
-                expexted_dict, actual_dict, 'Dictionaries is different')
+            self.unit.assertIn(exp_result, st['error'], 'Dictionaries is different')
 
     def get_metrics(self, ecosystem_num, metric_name):
         # get metrics count
@@ -659,7 +664,7 @@ class TestSimvolio():
         tx = contracts.new_contract(
             self.url, self.pr_key, self.token, source=contract['code'])
         result = actions.tx_status(self.url, self.wait, tx['hash'], self.token)
-        self.unit.assertEqual(result['error'], contract['asert'], 'Error messages is different')
+        self.unit.assertIn(contract['asert'],result['error'], 'Error messages is different')
 
     def test_transactionInfo(self):
         res = contracts.new_contract(self.url,
@@ -684,12 +689,9 @@ class TestSimvolio():
         check.is_tx_in_block(self.url, self.wait, tx, self.token)
         res = actions.call_contract(
             self.url, self.pr_key, tx['name'], {}, self.token)
-        time.sleep(5)
-        resp = api.tx_status(self.url, self.token, res)['results']
-        for el in resp:
-            actual = resp[el]
-            break
-        self.unit.assertEqual(contract['asert'], actual, resp)
+        resp = actions.tx_get_error(self.url, 30, res, self.token)
+        print("resp: ", resp)
+        self.unit.assertIn(contract['asert']['errmsg']['error'], resp['error'], resp)
 
     def test_contract_UpdateNotifications(self):
         contract = self.contracts['UpdateNotifications']
@@ -698,3 +700,221 @@ class TestSimvolio():
     def test_contract_UpdateRolesNotifications(self):
         contract = self.contracts['UpdateRolesNotifications']
         self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_Floor(self):
+        contract = self.contracts['Floor']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_Log(self):
+        contract = self.contracts['Log']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_LogNegative(self):
+        contract = self.contracts['LogNegative']
+        tx = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(
+            self.url, self.pr_key, tx['name'], {}, self.token)
+        resp = actions.tx_get_error(self.url, 30, res, self.token)
+        print(contract['asert'])
+        print(resp['error'])
+        self.unit.assertIn(contract['asert'], resp['error'], str(resp))
+
+    def test_contract_LogZero(self):
+        contract = self.contracts['LogZero']
+        tx = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(
+            self.url, self.pr_key, tx['name'], {}, self.token)
+        resp = actions.tx_get_error(self.url, 30, res, self.token)
+        self.unit.assertIn(contract['asert'], resp['error'], resp)
+
+    def test_contract_Log10(self):
+        contract = self.contracts['Log10']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_Log10Negative(self):
+        contract = self.contracts['Log10Negative']
+        tx = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(
+            self.url, self.pr_key, tx['name'], {}, self.token)
+        resp = actions.tx_get_error(self.url, 30, res, self.token)
+        self.unit.assertIn(contract['asert'], resp['error'], resp)
+
+    def test_contract_Log10Zero(self):
+        contract = self.contracts['Log10Zero']
+        tx = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(
+            self.url, self.pr_key, tx['name'], {}, self.token)
+        resp = actions.tx_get_error(self.url, 30, res, self.token)
+        self.unit.assertIn(contract['asert'], resp['error'], resp)
+
+    def test_contract_Pow(self):
+        contract = self.contracts['Pow']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_PowError(self):
+        contract = self.contracts['PowError']
+        tx = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(
+            self.url, self.pr_key, tx['name'], {}, self.token)
+        resp = actions.tx_get_error(self.url, 30, res, self.token)
+        self.unit.assertIn(contract['asert'], resp['error'], resp)
+
+    def test_contract_Round(self):
+        contract = self.contracts['Round']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_Sqrt(self):
+        contract = self.contracts['Sqrt']
+        self.check_contract(contract['code'], contract['asert'])
+
+    def test_contract_SqrtError(self):
+        contract = self.contracts['SqrtError']
+        tx = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        res = actions.call_contract(
+            self.url, self.pr_key, tx['name'], {}, self.token)
+        resp = actions.tx_get_error(self.url, 30, res, self.token)
+        self.unit.assertIn(contract['asert'], resp['error'], resp)
+
+    def test_contract_NotValidStringUTF8(self):
+        contract = self.contracts['NotValidStringUTF8']
+        tx = contracts.new_contract(self.url, self.pr_key, self.token, source=contract['code'])
+        check.is_tx_in_block(self.url, self.wait, tx, self.token)
+        msg = contract['asert']
+        tx_call = actions.call_contract(self.url, self.pr_key, tx['name'], {}, self.token)
+        status = actions.tx_status(self.url, self.wait, tx_call, self.token)
+        self.unit.assertEqual(msg, status['error'], 'Incorect messages: ' + str(status))
+
+    def test_dbfind_sorted_keys(self):
+        table = 'keys'
+        # create new ecosystem
+        tx_ecos = contracts.new_ecosystem(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_ecos, self.token)
+        # create new contract for run it in loop
+        contract = self.contracts['DBFindSorted']
+        tx_cont = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # get result from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get result from contract
+            data = {"Table": table}
+            res = actions.call_contract(
+                self.url, self.pr_key, tx_cont['name'], data, self.token)
+            actual_hash = actions.tx_status(self.url, self.wait, res, self.token)['result']
+            actual_list[i] = actual_hash
+            i += 1
+        self.unit.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
+
+    def test_dbfind_sorted_members(self):
+        table = 'members'
+        # create new ecosystem
+        tx_ecos = contracts.new_ecosystem(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_ecos, self.token)
+        # create new contract for run it in loop
+        contract = self.contracts['DBFindSorted']
+        tx_cont = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # get result from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get result from contract
+            data = {"Table": table}
+            res = actions.call_contract(
+                self.url, self.pr_key, tx_cont['name'], data, self.token)
+            actual_hash = actions.tx_status(self.url, self.wait, res, self.token)['result']
+            actual_list[i] = actual_hash
+            i += 1
+        self.unit.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
+
+    def test_dbfind_sorted_contracts(self):
+        table = 'contracts'
+        # create new contract for run it in loop
+        contract = self.contracts['DBFindSorted']
+        tx_cont = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # get result from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get result from contract
+            data = {"Table": table}
+            res = actions.call_contract(
+                self.url, self.pr_key, tx_cont['name'], data, self.token)
+            actual_hash = actions.tx_status(self.url, self.wait, res, self.token)['result']
+            actual_list[i] = actual_hash
+            i += 1
+        self.unit.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
+
+    def test_dbfind_sorted_user_table(self):
+        # create user table
+        table_name = tools.generate_random_name()
+        columns = '''[{"name":"name","type":"varchar",
+                "index": "1",  "conditions":"true"}]'''
+        tx_cont = contracts.new_table(
+            self.url, self.pr_key, self.token, name=table_name, columns=columns )
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # create new contract for insert data in user table
+        contract = self.contracts['DBFindSortedUserTable']
+        tx_cont = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # call contract, which insert data in user table
+        data = {"TableName": table_name}
+        res = actions.call_contract(
+            self.url, self.pr_key, tx_cont['name'], data, self.token)
+        actions.tx_status(self.url, self.wait, res, self.token)['result']
+        # create new contract for run it in loop
+        contract = self.contracts['DBFindSorted']
+        tx_cont = contracts.new_contract(
+            self.url, self.pr_key, self.token, source=str(contract['code']))
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # get result from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table_name)
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get result from contract
+            data = {"Table": table_name}
+            res = actions.call_contract(
+                self.url, self.pr_key, tx_cont['name'], data, self.token)
+            actual_hash = actions.tx_status(self.url, self.wait, res, self.token)['result']
+            actual_list[i] = actual_hash
+            i += 1
+        self.unit.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
+

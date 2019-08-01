@@ -1,8 +1,9 @@
 import unittest
 import json
 import os
+import hashlib
 
-from libs import actions, tools, contract, check, api
+from libs import actions, tools, contract, check, api, db
 
 
 class TestPrototipo():
@@ -10,14 +11,15 @@ class TestPrototipo():
     pages = tools.read_fixtures('pages')
     url = conf[0]['url']
     pr_key = conf[0]['private_key']
+    db1 = conf[0]['db']
     wait = tools.read_config('test')['wait_tx_status']
 
     @classmethod
     def setup_class(self):
         self.maxDiff = None
         self.uni = unittest.TestCase()
-        data = actions.login(self.url, self.pr_key, 0)
-        self.token = data['jwtToken']
+        self.data = actions.login(self.url, self.pr_key, 0)
+        self.token = self.data['jwtToken']
 
     def assert_tx_in_block(self, result, jwt_token):
         status = actions.tx_status(self.url,
@@ -71,6 +73,7 @@ class TestPrototipo():
     def test_page_button(self):
         cont = self.pages['button']
         content = self.check_page(cont['code'])
+        print(content)
         self.uni.assertEqual(content['tree'][0]['tag'], 'button',
                              'There is no button in content' + str(content['tree']))
 
@@ -220,6 +223,35 @@ class TestPrototipo():
                 result = part['attr']
         self.uni.assertEqual(part['attr'], cont['content']['attr'],
                              'show has problem: ' + str(content['tree']))
+
+    def test_page_varAsIs(self):
+        cont = self.pages['varAsIs']
+        contract_content = cont['content']
+        content = self.check_page(cont['code'])
+        part_content = content['tree']
+        required_tag_num = self.find_position_element_in_tree(
+            content['tree'], 'span')
+        span = part_content[required_tag_num]
+        required_tag_num = self.find_position_element_in_tree(
+            content['tree'], 'em')
+        em = part_content[required_tag_num]
+        required_tag_num = self.find_position_element_in_tree(
+            content['tree'], 'div')
+        div = part_content[required_tag_num]
+        must_be = dict(tagSpan=contract_content[0]['tag'],
+                       childrenSpanText=contract_content[0]['children'][0]['text'],
+                       tagEm=contract_content[1]['tag'],
+                       childrenEmText=contract_content[1]['children'][0]['text'],
+                       tagDiv=contract_content[2]['tag'],
+                       childrenDivText=contract_content[2]['children'][0]['text'])
+        page = dict(tagSpan=span['tag'],
+                    childrenSpanText=span['children'][0]['text'],
+                    tagEm=em['tag'],
+                    childrenEmText=em['children'][0]['text'],
+                    tagDiv=div['tag'],
+                    childrenDivText=div['children'][0]['text'])
+        self.uni.assertDictEqual(must_be, page,
+                                 'varAsIs has problem: ' + str(content['tree']))
 
     def test_page_setVar(self):
         cont = self.pages['setVar']
@@ -559,6 +591,13 @@ class TestPrototipo():
         content = self.check_page(cont['code'])
         self.uni.assertEqual(str(content['tree'][0]['text']), cont['content']['text'],
                              'getColumnType has problem: ' + str(content['tree']))
+        
+    def test_date_time(self):
+        cont = self.pages['date_time']
+        content = self.check_page(cont['code'])
+        print(content)
+        self.uni.assertEqual(str(content['tree'][0]['text']), cont['content']['tree'][0]['text'],
+                             'getColumnType has problem: ' + str(content['tree']))
 
     def test_page_sys_var_isMobile(self):
         cont = self.pages['sys_var_isMobile']
@@ -598,7 +637,7 @@ class TestPrototipo():
 
     def test_page_sys_var_ecosystem_name(self):
         # get ecosystem name from api
-        count = api.ecosystems(self.url, self.token)['number']
+        count = api.metrics(self.url, self.token, 'ecosystems')['count']
         res = api.list(self.url, self.token, 'ecosystems', limit=count)
         id = 1
         i = 0
@@ -639,6 +678,7 @@ class TestPrototipo():
     def test_db_find_where_count(self):
         cont = self.pages['dbfindWhereCount']
         content = self.check_page(cont['code'])
+        print("Content: ", content)
         required_num = self.find_position_element_in_tree(
             content['tree'], 'em')
         page = content['tree'][required_num]['children'][0]['text']
@@ -672,7 +712,7 @@ class TestPrototipo():
             self.url, 'founder_account', self.token)
         last_rec = actions.get_count(self.url, 'binaries', self.token)
         content = self.check_page('Binary(Name: ' + name + ', AppID: ' + app_id +
-                                  ', MemberID: ' + member_id + ')')
+                                  ', Account: ' + self.data['account'] + ')')
         msg = 'test_binary has problem. Content = ' + str(content['tree'])
         file_hash = '122e37a4a7737e0e8663adad6582fc355455f8d5d35bd7a08ed00c87f3e5ca05'
         self.uni.assertEqual('/data/1_binaries/'+last_rec+'/data/' + file_hash,
@@ -714,7 +754,7 @@ class TestPrototipo():
             self.url, 'founder_account', self.token)
         last_rec = actions.get_count(self.url, 'binaries', self.token)
         content = self.check_page("Image(Binary(Name: " + name + ", AppID: " + app_id +
-                                  ", MemberID: " + member_id + "))")
+                                  ", Account: " + self.data['account'] + "))")
         part_content = content['tree'][0]
         file_hash = '122e37a4a7737e0e8663adad6582fc355455f8d5d35bd7a08ed00c87f3e5ca05'
         must_be = dict(tag=part_content['tag'],
@@ -987,11 +1027,15 @@ class TestPrototipo():
                        data1=part_content['attr']['data'][0],
                        data2=part_content['attr']['data'][1],
                        data3=part_content['attr']['data'][2],
+                       data4=part_content['attr']['data'][3],
+                       data5=part_content['attr']['data'][4],
                        source=part_content['attr']['source'])
         page = dict(tag=contract_content['tag'],
                     data1=contract_content['attr']['data'][0],
                     data2=contract_content['attr']['data'][1],
                     data3=contract_content['attr']['data'][2],
+                    data4=contract_content['attr']['data'][3],
+                    data5=contract_content['attr']['data'][4],
                     source=contract_content['attr']['source'])
         self.uni.assertDictEqual(must_be, page,
                                  'arrayToSource has problem: \n' + str(content['tree']))
@@ -1037,3 +1081,158 @@ class TestPrototipo():
         expected_str = '"contract":"@1NewContract","params":{"ApplicationId":1'
         self.uni.assertIn(expected_str, str(part_content),
                           'transactionInfo has problem: ' + str(content['tree']))
+
+    def test_DBFindSortedKeys(self):
+        table = 'keys'
+        # create new ecosystem
+        tx_ecos = contract.new_ecosystem(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_ecos, self.token)
+        # get data from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        # get hash from data
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        cont = self.pages['DBFindSortedKeys']
+        # create page with content
+        tx = contract.new_page(self.url, self.pr_key, self.token, value=cont['code'])
+        check.is_tx_in_block(self.url, tools.read_config('test')['wait_tx_status'],
+                             tx, self.token)
+        page_name = tx['name']
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get content from page
+            content = actions.get_content(
+                self.url, 'page', page_name, '', 1, self.token)
+            dbfind_list = []
+            dbfind_data = content['tree'][0]['attr']['data']
+            for el in dbfind_data:
+                id = int(el[0])
+                ecos = int(el[1])
+                t = (id, ecos)
+                dbfind_list.append(t)
+            actual_hash = tools.get_hash_sha256(str(dbfind_list))
+            actual_list[i] = actual_hash
+            i += 1
+        self.uni.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
+
+    def test_DBFindSortedMembers(self):
+        table = 'members'
+        # create new ecosystem
+        tx_ecos = contract.new_ecosystem(self.url, self.pr_key, self.token)
+        check.is_tx_in_block(self.url, self.wait, tx_ecos, self.token)
+        # get data from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        # get hash from data
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        cont = self.pages['DBFindSortedMembers']
+        # create page with content
+        tx = contract.new_page(self.url, self.pr_key, self.token, value=cont['code'])
+        check.is_tx_in_block(self.url, tools.read_config('test')['wait_tx_status'],
+                             tx, self.token)
+        page_name = tx['name']
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get content from page
+            content = actions.get_content(
+                self.url, 'page', page_name, '', 1, self.token)
+            dbfind_list = []
+            dbfind_data = content['tree'][0]['attr']['data']
+            for el in dbfind_data:
+                id = int(el[0])
+                ecos = int(el[1])
+                t = (id, ecos)
+                dbfind_list.append(t)
+            actual_hash = tools.get_hash_sha256(str(dbfind_list))
+            actual_list[i] = actual_hash
+            i += 1
+        self.uni.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
+
+    def test_DBFindSortedPages(self):
+        table = 'pages'
+        # create page with content
+        cont = self.pages['DBFindSortedPages']
+        tx = contract.new_page(self.url, self.pr_key, self.token, value=cont['code'])
+        check.is_tx_in_block(self.url, tools.read_config('test')['wait_tx_status'],
+                             tx, self.token)
+        page_name = tx['name']
+        # get data from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        # get hash from data
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get content from page
+            content = actions.get_content(
+                self.url, 'page', page_name, '', 1, self.token)
+            dbfind_list = []
+            dbfind_data = content['tree'][0]['attr']['data']
+            for el in dbfind_data:
+                id = int(el[0])
+                name = el[1]
+                t = (id, name)
+                dbfind_list.append(t)
+            actual_hash = tools.get_hash_sha256(str(dbfind_list))
+            actual_list[i] = actual_hash
+            i += 1
+        self.uni.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')
+
+    def test_DBFindSortedUserTable(self):
+        # create user table
+        table = tools.generate_random_name()
+        columns = '''[{"name":"name","type":"varchar",
+                       "index": "1",  "conditions":"true"}]'''
+        tx_cont = contract.new_table(
+            self.url, self.pr_key, self.token, name=table, columns=columns)
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # create new contract for insert data in user table
+        contr = tools.read_fixtures_yaml('simvolio')
+        cont = contr['DBFindSortedUserTable']
+        tx_cont = contract.new_contract(
+            self.url, self.pr_key, self.token, source=str(cont['code']))
+        check.is_tx_in_block(self.url, self.wait, tx_cont, self.token)
+        # call contract, which insert data in user table
+        data = {"TableName": table}
+        res = actions.call_contract(
+            self.url, self.pr_key, tx_cont['name'], data, self.token)
+        actions.tx_status(self.url, self.wait, res, self.token)['result']
+        # create page with content
+        page_value = 'DBFind("{}").Columns("id,name").Limit(250)'.format(table)
+        tx = contract.new_page(self.url, self.pr_key, self.token, value=page_value)
+        check.is_tx_in_block(self.url, tools.read_config('test')['wait_tx_status'],
+                             tx, self.token)
+        page_name = tx['name']
+        # get data from db
+        db_res = db.get_all_sorted_records_from_table(self.db1, table)
+        # get hash from data
+        expected_hash = tools.get_hash_sha256(str(db_res))
+        # test
+        expected_list = {}
+        actual_list = {}
+        i = 0
+        while i < 10:
+            expected_list[i] = expected_hash
+            # get content from page
+            content = actions.get_content(
+                self.url, 'page', page_name, '', 1, self.token)
+            dbfind_list = []
+            dbfind_data = content['tree'][0]['attr']['data']
+            for el in dbfind_data:
+                id = int(el[0])
+                name = el[1]
+                t = (id, name)
+                dbfind_list.append(t)
+            actual_hash = tools.get_hash_sha256(str(dbfind_list))
+            actual_list[i] = actual_hash
+            i += 1
+        self.uni.assertDictEqual(expected_list, actual_list, 'Hashes is not equals')

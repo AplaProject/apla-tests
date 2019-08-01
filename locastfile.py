@@ -1,3 +1,4 @@
+import datetime
 from locust import HttpLocust, TaskSet, task
 from libs import actions, tools, api
 from genesis_blockchain_tools.contract import Contract
@@ -6,14 +7,28 @@ from genesis_blockchain_tools.contract import Contract
 class WebsiteTasks(TaskSet):
     def on_start(self):
         self.config = tools.read_config('nodes')
-        self.url = self.config[1]['url']
+        self.url = self.client.base_url
         self.pause = tools.read_config('test')['wait_tx_status']
         self.pr_key = self.config[0]['private_key']
         self.data = actions.login(self.url, self.pr_key, 0)
         self.token = self.data['jwtToken']
         keys = tools.read_fixtures('keys')
         self.ldata = actions.login(self.config[1]['url'], keys['key2'], 0)
-
+        self.before_time = datetime.datetime.now()
+        self.before_trs = api.metrics(self.url, self.token, 'transactions')['count']
+        
+    def on_stop(self):
+        after_time = datetime.datetime.now()
+        after_trs = api.metrics(self.url, self.token, 'transactions')['count']
+        trs = int(after_trs) - int(self.before_trs)
+        dur = after_time - self.before_time
+        speed = trs/dur
+        data = {"speed": speed}
+        print("Speed: ", str(speed), " in second")
+        file = os.path.join(os.getcwd(), 'speed.txt')
+        with open(file, 'w') as f:
+            f.write(data)
+    
     @task
     def NewContract(self):
         contract_name = 'NewContract'
@@ -26,7 +41,6 @@ class WebsiteTasks(TaskSet):
         self.client.post('/sendTx', files={'call1': tx_bin_data},
                          headers={'Authorization': self.token}, name=contract_name)
 
-    @task
     def TokensSend(self):
         contract_name = 'TokensSend'
         data = {'Recipient': self.ldata['address'],

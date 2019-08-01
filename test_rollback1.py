@@ -186,21 +186,6 @@ class TestRollback1():
         self.log.debug(res)
         check.is_tx_in_block(self.url, self.wait, res, self.token)
 
-    def tokens_send(self):
-        new_user_data = actions.login(self.url,
-                                      tools.generate_pr_key())
-        wallet = new_user_data['address']
-        amount = '1000'
-        comment = 'Send {} tokens on {}'.format(amount, wallet)
-        res = contract.tokens_send(self.url,
-                                   self.pr_key,
-                                   self.token,
-                                   wallet,
-                                   amount,
-                                   comment)
-        self.log.debug(res)
-        check.is_tx_in_block(self.url, self.wait, res, self.token)
-
     def edit_contract(self, contract_name, code):
         id = actions.get_contract_id(self.url,
                                      contract_name,
@@ -413,8 +398,8 @@ class TestRollback1():
     def test_rollback1(self):
         self.log.info('Start rollback test')
         # Install apps
-        actions.imp_app('system', self.url, self.pr_key, self.token)
-        actions.imp_app('basic', self.url, self.pr_key, self.token)
+        actions.imp_app('system', self.url, self.pr_key, self.token, self.l_data['account'])
+        actions.imp_app('basic', self.url, self.pr_key, self.token, self.l_data['account'])
         table_name = self.add_user_table()
         self.insert_to_user_table(table_name)
         # Save to file block id for rollback
@@ -443,11 +428,8 @@ class TestRollback1():
         self.create_ecosystem()
         self.add_notification()
         self.add_binary()
-        self.tokens_send()
         cont, code = self.create_empty_contract()
         self.edit_contract(cont, code)
-        self.bind_wallet(cont)
-        self.unbind_wallet(cont)
         param = self.new_parameter()
         self.edit_parameter(param)
         menu = self.new_menu()
@@ -464,5 +446,5 @@ class TestRollback1():
         self.edit_column(table, column)
         lang = self.new_lang()
         self.edit_lang(lang)
-        actions.imp_app('conditions', self.url, self.pr_key, self.token)
+        actions.imp_app('conditions', self.url, self.pr_key, self.token, self.l_data['account'])
         self.log.info('End rollback test')
