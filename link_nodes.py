@@ -17,13 +17,12 @@ if __name__ == '__main__':
     pr_key3 = conf[2]['private_key']
     data = actions.login(url, pr_key1, 0)
     token1 = data['jwtToken']
-    actions.imp_app('system', url, pr_key1, token1)
-    actions.imp_app('conditions', url, pr_key1, token1)
-    actions.imp_app('basic', url, pr_key1, token1)
-   # actions.imp_app('companies_registry', url, pr_key1, token1)
-    actions.imp_app('lang_res', url, pr_key1, token1)
+    actions.imp_app('system', url, pr_key1, token1, data['account'], pub=True)
+    actions.imp_app('conditions', url, pr_key1, token1, data['account'], pub=True)
+    actions.imp_app('basic', url, pr_key1, token1, data['account'], pub=True)
+    actions.imp_app('lang_res', url, pr_key1, token1, data['account'], pub=True)
     actions.roles_install(url, pr_key1, token1, wait)
-    actions.set_apla_consensus(conf[0]['keyID'], url, pr_key1, token1, wait)
+    actions.set_apla_consensus(data['account'], url, pr_key1, token1, wait)
     actions.voting_templates_install(url, pr_key1, token1, wait)
     node1 = json.dumps({'tcp_address': conf[0]['tcp_address'],
                         'api_address': conf[0]['api_address'],
@@ -33,20 +32,20 @@ if __name__ == '__main__':
     data2 = actions.login(url, pr_key2, 0)
     token2 = data2['jwtToken']
     actions.validator_request(conf[1]['tcp_address'], conf[1]['api_address'],
-                              conf[1]['keyID'], conf[1]['pubKey'],
+                              data2['account'], data2['pubkey'],
                               url, pr_key2, token2, wait)
-    id_validator = actions.get_count(url, 'validator_candidates', token1)
+    id_validator = actions.get_count(url, 'consortium_member_requests', token1)
     actions.run_voting(id_validator, url, pr_key1, token1, wait)
     actions.voiting(id_validator, url, pr_key1, token1, wait)
     
     data3 = actions.login(url, pr_key3, 0)
     token3 = data3['jwtToken']
     actions.validator_request(conf[2]['tcp_address'], conf[2]['api_address'],
-                              conf[2]['keyID'], conf[2]['pubKey'],
+                              data3['account'], data3['pubkey'],
                               url, pr_key3, token3, wait)
-    id_validator2 = actions.get_count(url, 'validator_candidates', token1)
+    id_validator2 = actions.get_count(url, 'consortium_member_requests', token1)
     actions.run_voting(id_validator2, url, pr_key1, token1, wait)
-    if actions.voiting(id_validator2, url, pr_key1, token1, wait):
+    if actions.voiting(id_validator2, url, pr_key1, token1, wait) and actions.voiting(id_validator2, url, pr_key2, token2, wait):
         log.info('Nodes successfully linked')
         exit(0)
     else:

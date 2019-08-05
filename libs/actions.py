@@ -32,6 +32,7 @@ def login_cors(url, pr_key, role=0, ecosystem=1):
 
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
     schema = api.contract(url, jvtToken, name)
+    print("Scheme: ", schema)
     contract = Contract(schema=schema,
                         private_key=prKey,
                         ecosystem_id=ecosystem,
@@ -156,6 +157,7 @@ def call_post_api(url, data, token):
 
 def get_count(url, name, token):
     res = api.list(url, token, name, limit=1)
+    print("res", res)
     return res['count']
 
 
@@ -378,9 +380,13 @@ def is_contract_present(url, token, name):
         return True
 
 
-def imp_app(app_name, url, pr_key, token, account):
+def imp_app(app_name, url, pr_key, token, account, pub=False):
+    if pub:
+        folder = 'basic_pub'
+    else:
+        folder = 'basic'
     log.info('Start install "{app_name}"'.format(app_name=app_name))
-    path = os.path.join(os.getcwd(), 'fixtures', 'basic', app_name + '.json')
+    path = os.path.join(os.getcwd(), 'fixtures', folder, app_name + '.json')
     resp = call_contract(url, pr_key, 'ImportUpload',
                          {'Data': {'Path': path}}, token)
     res_import_upload = tx_status(url, wait, resp, token)
@@ -459,7 +465,7 @@ def update_profile(name, url, pr_key, token, wait):
 
 def set_apla_consensus(id, url, pr_key, token, wait):
     log.info('setAplaconsensus started')
-    data = {'MemberId': id, 'Rid': 3}
+    data = {'MemberAccount': id, 'Rid': 3}
     call = call_contract(url, pr_key, 'RolesAssign',
                                  data, token)
     if check.is_tx_in_block(url, wait, {'hash': call}, token) < 1:
@@ -478,19 +484,19 @@ def create_voiting(tcp_address, api_address, key_id, pub_key, url, pr_key, token
         exit(1)
         
 def validator_request(tcp_address, api_address, key_id, pub_key, url, pr_key, token, wait):
-    log.info('ValidatorRequest started')
+    log.info('ConsortiumMemberRequest started')
     data = {'TcpAddress': tcp_address, 'ApiAddress': api_address,
-            'KeyId': key_id, 'PubKey': pub_key}
-    call = call_contract(url, pr_key, 'ValidatorRequest',
+            'CandidateAccount': key_id, 'PubKey': pub_key}
+    call = call_contract(url, pr_key, 'ConsortiumMemberRequest',
                                  data, token)
     if tx_status(url, wait, call, token)['blockid'] < 1:
-        log.error('ValidatorRequest is failed')
+        log.error('ConsortiumMemberRequest is failed')
         
         
 def run_voting(id_voting, url, pr_key, token, wait):
     log.info('VotingRunNewValidator started')
-    data = {'ValidatorId': id_voting}
-    call = call_contract(url, pr_key, 'VotingRunNewValidator', data, token)
+    data = {'ConsortiumMemberId': id_voting}
+    call = call_contract(url, pr_key, 'VotingRunNewConsortiumMember', data, token)
     if tx_status(url, wait, call, token)['blockid'] < 1:
         log.error('VotingRunNewValidator is failed')
         
