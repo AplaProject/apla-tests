@@ -32,7 +32,7 @@ if __name__ == '__main__':
     data2 = actions.login(url, pr_key2, 0)
     token2 = data2['jwtToken']
     actions.validator_request(conf[1]['tcp_address'], conf[1]['api_address'],
-                              data2['account'], data2['pubkey'],
+                              data2['account'], conf[1]['pubKey'],
                               url, pr_key2, token2, wait)
     id_validator = actions.get_count(url, 'consortium_member_requests', token1)
     actions.run_voting(id_validator, url, pr_key1, token1, wait)
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     data3 = actions.login(url, pr_key3, 0)
     token3 = data3['jwtToken']
     actions.validator_request(conf[2]['tcp_address'], conf[2]['api_address'],
-                              data3['account'], data3['pubkey'],
+                              data3['account'], conf[2]['pubKey'],
                               url, pr_key3, token3, wait)
     id_validator2 = actions.get_count(url, 'consortium_member_requests', token1)
     actions.run_voting(id_validator2, url, pr_key1, token1, wait)

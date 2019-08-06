@@ -36,6 +36,7 @@ def compare_nodes(config):
             dict.append({'amounts': str(amounts[i]), 'hash': str(hash[i]),
                          'node_pos': str(node_position)})
             if main_dict != dict[i]:
+                print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
                 print('Error in node ' + str(i) + 'dict Main is ' + str(main_dict) +
                       ', current is ' + str(dict[i]))
                 return False
