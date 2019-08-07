@@ -741,6 +741,7 @@ class TestSystemContracts():
         # wait block_id until run CallDelayedContract
         self.wait_block_id(old_block_id, editLimit)
         # verify records count in table
+        print("table: ", tx['name'])
         count = actions.get_count(self.url, tx['name'], self.token)
         self.unit.assertEqual(int(count), new_limit + editLimit)
 

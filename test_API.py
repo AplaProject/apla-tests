@@ -674,11 +674,18 @@ class TestApi():
         founder_id = actions.get_object_id(
             self.url, self.data["account"], 'members', self.token)
         # change avatar in profile
-        data = {
-            'MemberAccount': self.data['account'],
-            'CompanyName': 'founder',
+        private = actions.get_sysparams_value(self.url, self.token, 'private_blockchain')
+        if int(private) == 0:
+          data = {
+            'Name': 'founder',
             'ImageId': last_rec
-        }
+            }
+        else:
+            data = {
+                'MemberAccount': self.data['account'],
+                'CompanyName': 'founder',
+                'ImageId': last_rec
+                }
         res = actions.call_contract(self.url,
                                     self.pr_key,
                                     'ProfileEdit',
