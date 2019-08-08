@@ -675,6 +675,7 @@ class TestApi():
             self.url, self.data["account"], 'members', self.token)
         # change avatar in profile
         private = actions.get_sysparams_value(self.url, self.token, 'private_blockchain')
+        print("private: ", str(private))
         if int(private) == 0:
           data = {
             'Name': 'founder',
