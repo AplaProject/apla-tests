@@ -12,6 +12,7 @@ class TestApi():
     config = tools.read_config('nodes')
     url = config[1]['url']
     wait = tools.read_config('test')['wait_tx_status']
+    net_type = tools.read_config('test')['net_work']
     pr_key = config[0]['private_key']
     data = actions.login(url, pr_key, 0)
     token = data['jwtToken']
@@ -674,10 +675,8 @@ class TestApi():
         founder_id = actions.get_object_id(
             self.url, self.data["account"], 'members', self.token)
         # change avatar in profile
-        private = actions.get_sysparams_value(self.url, self.token, 'private_blockchain')
-        print("private: ", str(private))
-        if int(private) == 0:
-          data = {
+        if self.net_type == 'cn':
+            data = {
             'Name': 'founder',
             'ImageId': last_rec
             }
