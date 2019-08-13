@@ -136,7 +136,7 @@ class TestCost():
         self.u.assertDictEqual(dict_valid, dict_expect,
                                'Error in comissions for bind_wallet' + str(node) + inf1 + inf2)
 
-    def unbind_wallet(self):
+    def test_unbind_wallet(self):
         if actions.is_contract_activated(self.conf[1]['url'], 'CostContract', self.token):
             self.unbind_wallet()
         actions.is_sync(self.conf, self.wait_sync, len(self.conf))
