@@ -639,12 +639,13 @@ class TestApi():
         self.check_result(res, asserts, error, msg)
 
     def test_login(self):
-        keys = tools.read_fixtures('keys')
-        data1 = actions.login(self.url, keys['key5'], 0)
-        check.is_new_key_in_keys(self.url, self.token,
-                                 data1['key_id'], self.wait)
-        res = actions.is_wallet_created(self.url, self.token, data1['key_id'])
-        self.unit.assertTrue(res, 'Wallet for new user did not created')
+        if self.net_type == 'cn':
+            keys = tools.read_fixtures('keys')
+            data1 = actions.login(self.url, keys['key5'], 0)
+            check.is_new_key_in_keys(self.url, self.token,
+                                     data1['key_id'], self.wait)
+            res = actions.is_wallet_created(self.url, self.token, data1['key_id'])
+            self.unit.assertTrue(res, 'Wallet for new user did not created')
 
     def test_login2(self):
         is_one = False
@@ -662,41 +663,43 @@ class TestApi():
             self.unit.assertTrue(is_one, 'Wallet for new user did not created')
 
     def test_get_avatar_without_login(self):
-        # add file in binaries
-        name = 'file_' + tools.generate_random_name()
-        path = os.path.join(os.getcwd(), 'fixtures', 'image2.jpg')
-        res = contract.upload_binary(self.url,
-                                     self.pr_key,
-                                     self.token,
-                                     path,
-                                     name)
-        check.is_tx_in_block(self.url, self.wait, res, self.token)
-        last_rec = actions.get_count(self.url, 'binaries', self.token)
-        founder_id = actions.get_object_id(
-            self.url, self.data["account"], 'members', self.token)
-        # change avatar in profile
         if self.net_type == 'cn':
-            data = {
-            'Name': 'founder',
-            'ImageId': last_rec
-            }
-        else:
-            data = {
-                'MemberAccount': self.data['account'],
-                'CompanyName': 'founder',
+            # add file in binaries
+            name = 'file_' + tools.generate_random_name()
+            path = os.path.join(os.getcwd(), 'fixtures', 'image2.jpg')
+            res = contract.upload_binary(self.url,
+                                         self.pr_key,
+                                         self.token,
+                                         path,
+                                         name)
+            check.is_tx_in_block(self.url, self.wait, res, self.token)
+            last_rec = actions.get_count(self.url, 'binaries', self.token)
+            founder_id = actions.get_object_id(
+                self.url, self.data["account"], 'members', self.token)
+            # change avatar in profile
+            if self.net_type == 'cn':
+                data = {
+                'Name': 'founder',
                 'ImageId': last_rec
                 }
-        res = actions.call_contract(self.url,
-                                    self.pr_key,
-                                    'ProfileEdit',
-                                    data,
-                                    self.token)
-        status = {'hash': res}
-        check.is_tx_in_block(self.url, self.wait, status, self.token)
-        # test
-        resp = api.avatar(self.url, token='', member=self.data['account'], ecosystem=1)
-        msg = 'Content-Length is different!'
-        self.unit.assertIn('71926', str(resp.headers['Content-Length']), msg)
+            else:
+                data = {
+                    'MemberAccount': self.data['account'],
+                    'CompanyName': 'founder',
+                    'ImageId': last_rec
+                    }
+            res = actions.call_contract(self.url,
+                                        self.pr_key,
+                                        'ProfileEdit',
+                                        data,
+                                        self.token)
+            status = {'hash': res}
+            check.is_tx_in_block(self.url, self.wait, status, self.token)
+            # test
+            resp = api.avatar(self.url, token='', member=self.data['account'], ecosystem=1)
+            msg = 'Content-Length is different!'
+            self.unit.assertIn('71926', str(resp.headers['Content-Length']), msg)
+        
 
     def test_get_centrifugo_address_without_login(self):
         asserts = ['ws://']
