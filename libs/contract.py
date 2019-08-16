@@ -14,7 +14,6 @@ def new_contract(url, pr_key, token, source='',
     data = {'Value': code,
             'ApplicationId': app,
             'Conditions': condition}
-    print(data)
     res = actions.call_contract(url, pr_key, '@1NewContract',
                                 data,  token, ecosystem=ecosystem)
     return {'hash': res,
