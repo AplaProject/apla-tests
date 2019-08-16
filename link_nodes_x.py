@@ -16,12 +16,13 @@ if __name__ == '__main__':
     pr_key2 = conf[1]['private_key']
     pr_key3 = conf[2]['private_key']
     test_config = tools.read_config('test')
-    print(test_config)
     test_config.update({'net_work': 'xreg'})
-    print(test_config)
     tools.write_config(test_config)
     data = actions.login(url, pr_key1, 0)
     token1 = data['jwtToken']
+    data_sys = {'Name': 'max_block_generation_time', 'Value': '10000'}
+    res_sys = actions.call_contract(url, pr_key1, 'UpdateSysParam', data_sys, token1)
+    check.is_tx_in_block(url, wait, {'hash': res_sys}, token1)
     actions.imp_app('system', url, pr_key1, token1, data['account'])
     actions.imp_app('lang_res', url, pr_key1, token1, data['account'])
     actions.imp_app('conditions', url, pr_key1, token1, data['account'])
