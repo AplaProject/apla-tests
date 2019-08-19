@@ -43,7 +43,7 @@ parser.add_argument('-gapBetweenBlocks', default='2')
 parser.add_argument('-centrifugo', required=True)
 parser.add_argument('-test', default='true')
 parser.add_argument('-wait', default='3')
-parser.add_argument('-private', default='true')
+
 
 args = parser.parse_args()
 
@@ -65,7 +65,6 @@ log.info('Work dirs created')
 
 # Set centrifugo variables
 centrifugo_secret = '4597e75c-4376-42a6-8c1f-7e3fc7eb2114'
-centKey = '123456'
 centrifugo_url = 'http://127.0.0.1:8000'
 cenConfig = os.path.join(args.centrifugo, 'config.json')
 cenPath = os.path.join(args.centrifugo, 'centrifugo')
@@ -74,7 +73,6 @@ log.info('Setted centrifugo variables')
 # Create config for centrifugo
 cen_config_string = {
     'secret': centrifugo_secret,
-    "api_key": centKey,
     'admin_secret': 'admin'
 }
 with open(cenConfig, 'w') as cen_conf_file:
@@ -111,7 +109,6 @@ config1 = subprocess.Popen([
     '--dbUser='+args.dbUser,
     '--centUrl='+centrifugo_url,
     '--centSecret='+centrifugo_secret,
-    '--centKey='+centKey,
     '--tcpPort='+args.tcpPort1,
     '--httpPort='+args.httpPort1,
     '--dbName='+args.dbName1,
@@ -137,7 +134,7 @@ firstBlock = subprocess.Popen([
     binary,
     'generateFirstBlock',
     '--config='+workDir1+'/config.toml',
-    '--private='+args.private, 
+    '--private=true', 
     '--test='+args.test
 ])
 log.info('First block generated')
@@ -176,7 +173,6 @@ generateConfig2 = subprocess.Popen([
     '--dbPassword='+args.dbPassword,
     '--centUrl='+centrifugo_url,
     '--centSecret='+centrifugo_secret,
-    '--centKey='+centKey,
     '--nodesAddr='+'127.0.0.1:'+args.tcpPort1,
     '--mpgt=2000',
     '--networkID=130186',
@@ -209,7 +205,6 @@ generateConfig3 = subprocess.Popen([
     '--dbPassword='+args.dbPassword,
     '--centUrl='+centrifugo_url,
     '--centSecret='+centrifugo_secret,
-    '--centKey='+centKey,
     '--nodesAddr='+'127.0.0.1:'+args.tcpPort1,
     '--mpgt=2000',
     '--networkID=130186',
