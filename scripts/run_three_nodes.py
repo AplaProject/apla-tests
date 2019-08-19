@@ -43,6 +43,7 @@ parser.add_argument('-gapBetweenBlocks', default='2')
 parser.add_argument('-centrifugo', required=True)
 parser.add_argument('-test', default='true')
 parser.add_argument('-wait', default='3')
+parser.add_argument('-private', default='true')
 
 
 args = parser.parse_args()
@@ -134,7 +135,7 @@ firstBlock = subprocess.Popen([
     binary,
     'generateFirstBlock',
     '--config='+workDir1+'/config.toml',
-    '--private=true', 
+    '--private='+args.private, 
     '--test='+args.test
 ])
 log.info('First block generated')
