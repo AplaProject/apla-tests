@@ -10,6 +10,7 @@ class TestSystemContracts():
     url = config[2]['url']
     db = config[0]['db']
     wait = tools.read_config('test')['wait_tx_status']
+    net_type = tools.read_config('test')['net_work']
     pr_key = config[0]['private_key']
     data = actions.login(url, pr_key, 0)
     token = data['jwtToken']
@@ -859,7 +860,7 @@ class TestSystemContracts():
     def test_import_export(self):
         #changing limits
         private = actions.get_sysparams_value(self.url, self.token, 'private_blockchain')
-        if int(private) == 1:
+        if self.net_type == 'xreg':
             data = {'Name': 'max_block_generation_time', 'Value': '10000'}
             res = actions.call_contract(self.url, self.pr_key, 'UpdateSysParam', data, self.token)
             check.is_tx_in_block(self.url, self.wait, {'hash': res}, self.token)
