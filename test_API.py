@@ -639,23 +639,42 @@ class TestApi():
         self.check_result(res, asserts, error, msg)
 
     def test_login(self):
-        if self.net_type == 'cn':
+        print('net_type: ', self.net_type)
+        if self.net_type is 'xreg':
             keys = tools.read_fixtures('keys')
-            data1 = actions.login(self.url, keys['key5'], 0)
-            check.is_new_key_in_keys(self.url, self.token,
+            key =  keys['key5']
+        else:
+            tx = contract.new_user(self.url, self.pr_key, self.token)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+            key = tx['priv_key']
+        data1 = actions.login(self.url, key, 0)
+        check.is_new_key_in_keys(self.url, self.token,
                                      data1['key_id'], self.wait)
-            res = actions.is_wallet_created(self.url, self.token, data1['key_id'])
-            self.unit.assertTrue(res, 'Wallet for new user did not created')
+        res = actions.is_wallet_created(self.url, self.token, data1['key_id'])
+        self.unit.assertTrue(res, 'Wallet for new user did not created')
 
     def test_login2(self):
         is_one = False
-        keys = tools.read_fixtures('keys')
-        data1 = actions.login(self.url, keys['key3'], 0)
+        if self.net_type is 'xreg':
+            keys = tools.read_fixtures('keys')
+            key =  keys['key3']
+        else:
+            tx = contract.new_user(self.url, self.pr_key, self.token)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+            key = tx['priv_key']
+        data1 = actions.login(self.url, key, 0)
         check.is_new_key_in_keys(self.url, self.token,
                                  data1['key_id'], self.wait)
         res = actions.is_wallet_created(self.url, self.token, data1['key_id'])
         if res:
-            data2 = actions.login(self.url, keys['key1'], 0)
+            if self.net_type is 'xreg':
+                keys = tools.read_fixtures('keys')
+                key2 =  keys['key1']
+            else:
+                tx = contract.new_user(self.url, self.pr_key, self.token)
+                check.is_tx_in_block(self.url, self.wait, tx, self.token)
+                key2 = tx['priv_key']
+            data2 = actions.login(self.url, key2, 0)
             check.is_new_key_in_keys(
                 self.url, self.token, data2['key_id'], self.wait)
             is_one = actions.is_wallet_created(
@@ -663,7 +682,7 @@ class TestApi():
             self.unit.assertTrue(is_one, 'Wallet for new user did not created')
 
     def test_get_avatar_without_login(self):
-        if self.net_type == 'cn':
+        if self.net_type is 'cn':
             # add file in binaries
             name = 'file_' + tools.generate_random_name()
             path = os.path.join(os.getcwd(), 'fixtures', 'image2.jpg')
@@ -677,7 +696,7 @@ class TestApi():
             founder_id = actions.get_object_id(
                 self.url, self.data["account"], 'members', self.token)
             # change avatar in profile
-            if self.net_type == 'cn':
+            if self.net_type is 'cn':
                 data = {
                 'Name': 'founder',
                 'ImageId': last_rec
