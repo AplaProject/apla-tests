@@ -57,8 +57,14 @@ class TestApi():
 
     def keyinfo_by_address(self):
         asserts = {'ecosystem', 'name'}
-        new_pr_key = tools.generate_pr_key()
-        new_user_data = actions.login(self.url, new_pr_key)
+        if self.net_type is 'xreg':
+            keys = tools.read_fixtures('keys')
+            key =  keys['key5']
+        else:
+            tx = contract.new_user(self.url, self.pr_key, self.token)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+            key = tx['priv_key']
+        new_user_data = actions.login(self.url, key)
         check.is_new_key_in_keys(self.url, self.token,
                                  new_user_data['key_id'], self.wait)
         tx = contract.new_ecosystem(self.url,
@@ -74,8 +80,14 @@ class TestApi():
 
     def test_keyinfo_by_keyid(self):
         asserts = {'ecosystem', 'name', 'roles'}
-        new_pr_key = tools.generate_pr_key()
-        new_user_data = actions.login(self.url, new_pr_key)
+        if self.net_type is 'xreg':
+            keys = tools.read_fixtures('keys')
+            key =  keys['key5']
+        else:
+            tx = contract.new_user(self.url, self.pr_key, self.token)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+            key = tx['priv_key']
+        new_user_data = actions.login(self.url, key)
         check.is_new_key_in_keys(self.url, self.token,
                                  new_user_data['key_id'], self.wait)
         data = {'Rid': 2,
