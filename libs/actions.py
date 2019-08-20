@@ -88,7 +88,7 @@ def is_sync(config, wait_time, nodes):
     while sec < wait_time:
         i = 0
         while i < nodes:
-            data = login(config[i]['url'], config[i]['private_key'])
+            data = login(config[i]['url'], config[0]['private_key'])
             token = data['jwtToken']
             max_block_id.append(get_max_block_id(config[i]['url'], token))
             i += 1
