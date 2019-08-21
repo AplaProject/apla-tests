@@ -1107,8 +1107,14 @@ class TestApi():
         # test
         # enter in first ecosystem
         asserts = ['uid', 'jwtToken', 'pubkey']
-        new_key = tools.generate_pr_key()
-        login_1 = actions.login(self.url, new_key, ecosystem=1)
+        if self.net_type is 'xreg':
+            keys = tools.read_fixtures('keys')
+            key =  keys['key5']
+        else:
+            tx = contract.new_user(self.url, self.pr_key, self.token)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+            key = tx['priv_key']
+        login_1 = actions.login(self.url, key, ecosystem=1)
         self.check_result(login_1, asserts)
         # enter in created ecosystem
         token, uid = api.getuid(self.url)
