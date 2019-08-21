@@ -1118,8 +1118,8 @@ class TestApi():
         self.check_result(login_1, asserts)
         # enter in created ecosystem
         token, uid = api.getuid(self.url)
-        signature = sign(new_key, 'LOGIN' + uid)
-        pubkey = get_public_key(new_key)
+        signature = sign(key, 'LOGIN' + uid)
+        pubkey = get_public_key(key)
         full_token = 'Bearer ' + token
         data = {
             'role_id': 0,
