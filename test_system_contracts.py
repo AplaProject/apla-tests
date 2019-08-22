@@ -895,7 +895,7 @@ class TestSystemContracts():
                  'params': import_app_data[i]} for i in range(len(import_app_data))]
         self.callMulti(contract_name, data, 3000)
         #limits
-        if int(private) == 1:
+        if self.type_net is 'xreg':
             data = {'Name': 'max_block_generation_time', 'Value': '2000'}
             res = actions.call_contract(self.url, self.pr_key, 'UpdateSysParam', data, self.token)
             check.is_tx_in_block(self.url, self.wait, {'hash': res}, self.token)
