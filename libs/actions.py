@@ -32,7 +32,6 @@ def login_cors(url, pr_key, role=0, ecosystem=1):
 
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
     schema = api.contract(url, jvtToken, name)
-    print("Scheme: ", schema)
     contract = Contract(schema=schema,
                         private_key=prKey,
                         ecosystem_id=ecosystem,
@@ -88,7 +87,7 @@ def is_sync(config, wait_time, nodes):
     while sec < wait_time:
         i = 0
         while i < nodes:
-            data = login(config[i]['url'], config[i]['private_key'])
+            data = login(config[i]['url'], config[0]['private_key'])
             token = data['jwtToken']
             max_block_id.append(get_max_block_id(config[i]['url'], token))
             i += 1
@@ -104,7 +103,6 @@ def tx_get_error(url, sleep_time, hsh, jvt_token):
     while sec < sleep_time:
         time.sleep(1)
         resp = api.tx_status(url, jvt_token, hsh)
-        print("tx_get_error - resp: ", resp)
         jresp = resp['results'][hsh]
         if len(jresp['blockid']) > 0:
             return None
@@ -157,7 +155,6 @@ def call_post_api(url, data, token):
 
 def get_count(url, name, token):
     res = api.list(url, token, name, limit=1)
-    print("res", res)
     return res['count']
 
 

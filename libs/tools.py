@@ -52,6 +52,12 @@ def read_config(type):
     return json.loads(data)
 
 
+def write_config(new_conf):
+    path = os.path.join(os.getcwd(), 'testConfig.json')
+    with open(path, 'w') as fconf:
+        fconf.write(json.dumps(new_conf, indent=4))
+
+
 def read_fixtures(type):
     path = ''
     if type == 'pages':

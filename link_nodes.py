@@ -15,6 +15,9 @@ if __name__ == '__main__':
     pr_key1 = conf[0]['private_key']
     pr_key2 = conf[1]['private_key']
     pr_key3 = conf[2]['private_key']
+    test_config = tools.read_config('test')
+    test_config.update({'net_work': 'cn'})
+    tools.write_config(test_config)
     data = actions.login(url, pr_key1, 0)
     token1 = data['jwtToken']
     actions.imp_app('system', url, pr_key1, token1, data['account'], pub=True)
