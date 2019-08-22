@@ -15,7 +15,7 @@ def compare_nodes(config):
     if actions.is_sync(config, wait_time, nodes):    
         i = 0
         while i < nodes:
-            data = actions.login(config[i]['url'], config[i]['private_key'])
+            data = actions.login(config[i]['url'], config[0]['private_key'])
             token = data['jwtToken']
             amounts.append(actions.get_user_token_amounts(config[i]['url'], token))
             i += 1
