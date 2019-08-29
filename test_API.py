@@ -57,8 +57,14 @@ class TestApi():
 
     def keyinfo_by_address(self):
         asserts = {'ecosystem', 'name'}
-        new_pr_key = tools.generate_pr_key()
-        new_user_data = actions.login(self.url, new_pr_key)
+        if self.net_type is 'xreg':
+            keys = tools.read_fixtures('keys')
+            key =  keys['key5']
+        else:
+            tx = contract.new_user(self.url, self.pr_key, self.token)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+            key = tx['priv_key']
+        new_user_data = actions.login(self.url, key)
         check.is_new_key_in_keys(self.url, self.token,
                                  new_user_data['key_id'], self.wait)
         tx = contract.new_ecosystem(self.url,
@@ -74,8 +80,14 @@ class TestApi():
 
     def test_keyinfo_by_keyid(self):
         asserts = {'ecosystem', 'name', 'roles'}
-        new_pr_key = tools.generate_pr_key()
-        new_user_data = actions.login(self.url, new_pr_key)
+        if self.net_type is 'xreg':
+            keys = tools.read_fixtures('keys')
+            key =  keys['key5']
+        else:
+            tx = contract.new_user(self.url, self.pr_key, self.token)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+            key = tx['priv_key']
+        new_user_data = actions.login(self.url, key)
         check.is_new_key_in_keys(self.url, self.token,
                                  new_user_data['key_id'], self.wait)
         data = {'Rid': 2,
@@ -639,22 +651,42 @@ class TestApi():
         self.check_result(res, asserts, error, msg)
 
     def test_login(self):
-        keys = tools.read_fixtures('keys')
-        data1 = actions.login(self.url, keys['key5'], 0)
+        print('net_type: ', self.net_type)
+        if self.net_type is 'xreg':
+            keys = tools.read_fixtures('keys')
+            key =  keys['key5']
+        else:
+            tx = contract.new_user(self.url, self.pr_key, self.token)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+            key = tx['priv_key']
+        data1 = actions.login(self.url, key, 0)
         check.is_new_key_in_keys(self.url, self.token,
-                                 data1['key_id'], self.wait)
+                                     data1['key_id'], self.wait)
         res = actions.is_wallet_created(self.url, self.token, data1['key_id'])
         self.unit.assertTrue(res, 'Wallet for new user did not created')
 
     def test_login2(self):
         is_one = False
-        keys = tools.read_fixtures('keys')
-        data1 = actions.login(self.url, keys['key3'], 0)
+        if self.net_type is 'xreg':
+            keys = tools.read_fixtures('keys')
+            key =  keys['key3']
+        else:
+            tx = contract.new_user(self.url, self.pr_key, self.token)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+            key = tx['priv_key']
+        data1 = actions.login(self.url, key, 0)
         check.is_new_key_in_keys(self.url, self.token,
                                  data1['key_id'], self.wait)
         res = actions.is_wallet_created(self.url, self.token, data1['key_id'])
         if res:
-            data2 = actions.login(self.url, keys['key1'], 0)
+            if self.net_type is 'xreg':
+                keys = tools.read_fixtures('keys')
+                key2 =  keys['key1']
+            else:
+                tx = contract.new_user(self.url, self.pr_key, self.token)
+                check.is_tx_in_block(self.url, self.wait, tx, self.token)
+                key2 = tx['priv_key']
+            data2 = actions.login(self.url, key2, 0)
             check.is_new_key_in_keys(
                 self.url, self.token, data2['key_id'], self.wait)
             is_one = actions.is_wallet_created(
@@ -662,41 +694,43 @@ class TestApi():
             self.unit.assertTrue(is_one, 'Wallet for new user did not created')
 
     def test_get_avatar_without_login(self):
-        # add file in binaries
-        name = 'file_' + tools.generate_random_name()
-        path = os.path.join(os.getcwd(), 'fixtures', 'image2.jpg')
-        res = contract.upload_binary(self.url,
-                                     self.pr_key,
-                                     self.token,
-                                     path,
-                                     name)
-        check.is_tx_in_block(self.url, self.wait, res, self.token)
-        last_rec = actions.get_count(self.url, 'binaries', self.token)
-        founder_id = actions.get_object_id(
-            self.url, self.data["account"], 'members', self.token)
-        # change avatar in profile
-        if self.net_type == 'cn':
-            data = {
-            'Name': 'founder',
-            'ImageId': last_rec
-            }
-        else:
-            data = {
-                'MemberAccount': self.data['account'],
-                'CompanyName': 'founder',
+        if self.net_type is 'cn':
+            # add file in binaries
+            name = 'file_' + tools.generate_random_name()
+            path = os.path.join(os.getcwd(), 'fixtures', 'image2.jpg')
+            res = contract.upload_binary(self.url,
+                                         self.pr_key,
+                                         self.token,
+                                         path,
+                                         name)
+            check.is_tx_in_block(self.url, self.wait, res, self.token)
+            last_rec = actions.get_count(self.url, 'binaries', self.token)
+            founder_id = actions.get_object_id(
+                self.url, self.data["account"], 'members', self.token)
+            # change avatar in profile
+            if self.net_type is 'cn':
+                data = {
+                'Name': 'founder',
                 'ImageId': last_rec
                 }
-        res = actions.call_contract(self.url,
-                                    self.pr_key,
-                                    'ProfileEdit',
-                                    data,
-                                    self.token)
-        status = {'hash': res}
-        check.is_tx_in_block(self.url, self.wait, status, self.token)
-        # test
-        resp = api.avatar(self.url, token='', member=self.data['account'], ecosystem=1)
-        msg = 'Content-Length is different!'
-        self.unit.assertIn('71926', str(resp.headers['Content-Length']), msg)
+            else:
+                data = {
+                    'MemberAccount': self.data['account'],
+                    'CompanyName': 'founder',
+                    'ImageId': last_rec
+                    }
+            res = actions.call_contract(self.url,
+                                        self.pr_key,
+                                        'ProfileEdit',
+                                        data,
+                                        self.token)
+            status = {'hash': res}
+            check.is_tx_in_block(self.url, self.wait, status, self.token)
+            # test
+            resp = api.avatar(self.url, token='', member=self.data['account'], ecosystem=1)
+            msg = 'Content-Length is different!'
+            self.unit.assertIn('71926', str(resp.headers['Content-Length']), msg)
+        
 
     def test_get_centrifugo_address_without_login(self):
         asserts = ['ws://']
@@ -1073,13 +1107,19 @@ class TestApi():
         # test
         # enter in first ecosystem
         asserts = ['uid', 'jwtToken', 'pubkey']
-        new_key = tools.generate_pr_key()
-        login_1 = actions.login(self.url, new_key, ecosystem=1)
+        if self.net_type is 'xreg':
+            keys = tools.read_fixtures('keys')
+            key =  keys['key5']
+        else:
+            tx = contract.new_user(self.url, self.pr_key, self.token)
+            check.is_tx_in_block(self.url, self.wait, tx, self.token)
+            key = tx['priv_key']
+        login_1 = actions.login(self.url, key, ecosystem=1)
         self.check_result(login_1, asserts)
         # enter in created ecosystem
         token, uid = api.getuid(self.url)
-        signature = sign(new_key, 'LOGIN' + uid)
-        pubkey = get_public_key(new_key)
+        signature = sign(key, 'LOGIN' + uid)
+        pubkey = get_public_key(key)
         full_token = 'Bearer ' + token
         data = {
             'role_id': 0,

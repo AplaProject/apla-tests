@@ -14,7 +14,6 @@ def new_contract(url, pr_key, token, source='',
     data = {'Value': code,
             'ApplicationId': app,
             'Conditions': condition}
-    print(data)
     res = actions.call_contract(url, pr_key, '@1NewContract',
                                 data,  token, ecosystem=ecosystem)
     return {'hash': res,
@@ -38,7 +37,8 @@ def new_user(url, pr_key, token, pub_key='', ecosystem=1):
     res = actions.call_contract(url, pr_key, '@1NewUser',
                                 data, token, ecosystem=ecosystem)
     return {'hash': res,
-            'pub_key': pub_key}
+            'pub_key': pub_key,
+            'priv_key': priv_key}
 
 
 def new_application(url, pr_key, token, name='', condition='true', ecosystem=1):

@@ -32,7 +32,7 @@ def login_cors(url, pr_key, role=0, ecosystem=1):
 
 def call_contract(url, prKey, name, data, jvtToken, ecosystem=1):
     schema = api.contract(url, jvtToken, name)
-    print("Scheme: ", schema)
+    print('Scheme: ', schema)
     contract = Contract(schema=schema,
                         private_key=prKey,
                         ecosystem_id=ecosystem,
@@ -88,7 +88,7 @@ def is_sync(config, wait_time, nodes):
     while sec < wait_time:
         i = 0
         while i < nodes:
-            data = login(config[i]['url'], config[i]['private_key'])
+            data = login(config[i]['url'], config[0]['private_key'])
             token = data['jwtToken']
             max_block_id.append(get_max_block_id(config[i]['url'], token))
             i += 1
@@ -481,11 +481,11 @@ def create_voiting(tcp_address, api_address, key_id, pub_key, url, pr_key, token
         log.error('VotingNodeAdd is failed')
         exit(1)
         
-def validator_request(tcp_address, api_address, key_id, pub_key, url, pr_key, token, wait):
+def validator_request(tcp_address, api_address, pub_key, url, pr_key, token, wait):
     log.info('ConsortiumMemberRequest started')
     data = {'TcpAddress': tcp_address, 'ApiAddress': api_address,
-            'CandidateAccount': key_id, 'PubKey': pub_key}
-    call = call_contract(url, pr_key, 'ConsortiumMemberRequest',
+            'PubKey': pub_key}
+    call = call_contract(url, pr_key, 'CNConnectionRequest',
                                  data, token)
     if tx_status(url, wait, call, token)['blockid'] < 1:
         log.error('ConsortiumMemberRequest is failed')
@@ -493,8 +493,8 @@ def validator_request(tcp_address, api_address, key_id, pub_key, url, pr_key, to
         
 def run_voting(id_voting, url, pr_key, token, wait):
     log.info('VotingRunNewValidator started')
-    data = {'ConsortiumMemberId': id_voting}
-    call = call_contract(url, pr_key, 'VotingRunNewConsortiumMember', data, token)
+    data = {'RequestId': id_voting}
+    call = call_contract(url, pr_key, 'VotingRunNewCNConnection', data, token)
     if tx_status(url, wait, call, token)['blockid'] < 1:
         log.error('VotingRunNewValidator is failed')
         

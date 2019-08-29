@@ -16,9 +16,7 @@ if __name__ == '__main__':
     pr_key2 = conf[1]['private_key']
     pr_key3 = conf[2]['private_key']
     test_config = tools.read_config('test')
-    print(test_config)
     test_config.update({'net_work': 'xreg'})
-    print(test_config)
     tools.write_config(test_config)
     data = actions.login(url, pr_key1, 0)
     token1 = data['jwtToken']
@@ -28,13 +26,10 @@ if __name__ == '__main__':
     actions.imp_app('companies_registry', url, pr_key1, token1, data['account'])
     full_nodes = json.dumps([{'tcp_address': conf[0]['tcp_address'],
                         'api_address': conf[0]['api_address'],
-                        'key_id': conf[0]['keyID'],
                         'public_key': conf[0]['pubKey']}, {'tcp_address': conf[1]['tcp_address'],
                         'api_address': conf[1]['api_address'],
-                        'key_id': conf[1]['keyID'],
                         'public_key': conf[1]['pubKey']}, {'tcp_address': conf[2]['tcp_address'],
                         'api_address': conf[2]['api_address'],
-                        'key_id': conf[2]['keyID'],
                         'public_key': conf[2]['pubKey']}])
     print("Strt update full_nodes")
     data = {'Name': 'full_nodes', 'Value': full_nodes}
