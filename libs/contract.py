@@ -36,9 +36,13 @@ def new_user(url, pr_key, token, pub_key='', ecosystem=1):
     data = {'NewPubkey': pub_key}
     res = actions.call_contract(url, pr_key, '@1NewUser',
                                 data, token, ecosystem=ecosystem)
-    return {'hash': res,
+    if not pub_key:
+        return {'hash': res,
             'pub_key': pub_key,
             'priv_key': priv_key}
+    else:
+        return {'hash': res,
+            'pub_key': pub_key}
 
 
 def new_application(url, pr_key, token, name='', condition='true', ecosystem=1):
