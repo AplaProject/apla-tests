@@ -708,7 +708,7 @@ class TestSystemContracts():
         tx2 = contract.edit_app_param(self.url, self.pr_key, self.token, 1)
         check.is_tx_in_block(self.url, self.wait, tx2, self.token)
 
-    def test_delayed_contracts(self):
+    def delayed_contracts(self):
         # add table for test
         column = '''[{"name":"id_block","type":"number", "index": "1",  "conditions":"true"}]'''
         tx = contract.new_table(self.url, self.pr_key, self.token, columns=column)
