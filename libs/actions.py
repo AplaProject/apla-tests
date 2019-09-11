@@ -79,6 +79,7 @@ def tx_status(url, sleep_time, hsh, jvt_token):
     if 'errmsg' not in jresp and int(jresp['blockid']) > 0:
         return {'blockid': int(jresp['blockid']), 'result': jresp['result'], 'error': None}
     else:
+        print('error in block', jresp['errmsg']['error'])
         return {'blockid': 0, 'error': jresp['errmsg']['error'], 'result': None}
     
 def is_sync(config, wait_time, nodes):
@@ -156,7 +157,6 @@ def call_post_api(url, data, token):
 
 def get_count(url, name, token):
     res = api.list(url, token, name, limit=1)
-    print("res", res)
     return res['count']
 
 

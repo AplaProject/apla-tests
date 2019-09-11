@@ -34,6 +34,7 @@ if __name__ == '__main__':
     print("Strt update full_nodes")
     data = {'Name': 'full_nodes', 'Value': full_nodes}
     res = actions.call_contract(url, pr_key1, 'UpdateSysParam', data, token1)
+    print('here')
     if check.is_tx_in_block(url, wait, {'hash': res}, token1):
         log.info('Nodes successfully linked')
     else:
