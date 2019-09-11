@@ -23,14 +23,11 @@ if __name__ == '__main__':
     actions.imp_app('companies_registry', url, pr_key1, token1, data['account'])
     full_nodes = json.dumps([{'tcp_address': conf[0]['tcp_address'],
                         'api_address': conf[0]['api_address'],
-                        'key_id': conf[0]['keyID'],
-                        'public_key': conf[0]['pubKey']}, {'tcp_address': conf[1]['tcp_address'],
+                        'public_key': conf[0]['node_pub_key']}, {'tcp_address': conf[1]['tcp_address'],
                         'api_address': conf[1]['api_address'],
-                        'key_id': conf[1]['keyID'],
-                        'public_key': conf[1]['pubKey']}, {'tcp_address': conf[2]['tcp_address'],
+                        'public_key': conf[1]['node_pub_key']}, {'tcp_address': conf[2]['tcp_address'],
                         'api_address': conf[2]['api_address'],
-                        'key_id': conf[2]['keyID'],
-                        'public_key': conf[2]['pubKey']}])
+                        'public_key': conf[2]['node_pub_key']}])
     print("Strt update full_nodes")
     data = {'Name': 'full_nodes', 'Value': full_nodes}
     res = actions.call_contract(url, pr_key1, 'UpdateSysParam', data, token1)
