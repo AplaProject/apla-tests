@@ -70,6 +70,7 @@ def tx_status(url, sleep_time, hsh, jvt_token):
         time.sleep(1)
         resp = api.tx_status(url, jvt_token, hsh)
         jresp = resp['results'][hsh]
+        print(jresp)
         if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
             break
         else:
