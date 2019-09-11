@@ -49,6 +49,7 @@ def compare_nodes(config):
 
 def is_tx_in_block(url, wait, tx, token):
     status = actions.tx_status(url, wait, tx['hash'], token)
+    print('status: ', status)
     if status['blockid'] > 0:
         return status['blockid']
     else:
