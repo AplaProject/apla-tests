@@ -294,7 +294,8 @@ config = [
         'url': 'http://localhost:' + args.httpPort1 + '/api/v2',
         'private_key': priv_key1,
         'keyID': key_id1,
-        'pubKey': node_pub_key1,
+        'pubKey': pubKey1,
+        'node_pub_key': node_pub_key1,
         'tcp_address': 'localhost:' + args.tcpPort1,
         'api_address': 'http://localhost:' + args.httpPort1,
         'db':
@@ -310,7 +311,8 @@ config = [
         'url': 'http://localhost:' + args.httpPort2 + '/api/v2',
         'private_key': priv_key2,
         'keyID': key_id2,
-        'pubKey': node_pub_key2,
+        'pubKey': pubKey2,
+        'node_pub_key': node_pub_key2,
         'tcp_address': 'localhost:' + args.tcpPort2,
         'api_address': 'http://localhost:' + args.httpPort2,
         'db':
@@ -326,7 +328,8 @@ config = [
         'url': 'http://localhost:' + args.httpPort3 + '/api/v2',
         'private_key': priv_key3,
         'keyID': key_id3,
-        'pubKey': node_pub_key3,
+        'pubKey': pubKey3,
+        'node_pub_key': node_pub_key3,
         'tcp_address': 'localhost:' + args.tcpPort3,
         'api_address': 'http://localhost:' + args.httpPort3,
         'db':

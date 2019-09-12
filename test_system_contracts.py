@@ -10,6 +10,7 @@ class TestSystemContracts():
     url = config[2]['url']
     db = config[0]['db']
     wait = tools.read_config('test')['wait_tx_status']
+    type_net = tools.read_config('test')['net_work']
     pr_key = config[0]['private_key']
     data = actions.login(url, pr_key, 0)
     token = data['jwtToken']
@@ -707,7 +708,7 @@ class TestSystemContracts():
         tx2 = contract.edit_app_param(self.url, self.pr_key, self.token, 1)
         check.is_tx_in_block(self.url, self.wait, tx2, self.token)
 
-    def test_delayed_contracts(self):
+    def delayed_contracts(self):
         # add table for test
         column = '''[{"name":"id_block","type":"number", "index": "1",  "conditions":"true"}]'''
         tx = contract.new_table(self.url, self.pr_key, self.token, columns=column)
@@ -741,6 +742,7 @@ class TestSystemContracts():
         # wait block_id until run CallDelayedContract
         self.wait_block_id(old_block_id, editLimit)
         # verify records count in table
+        print("table: ", tx['name'])
         count = actions.get_count(self.url, tx['name'], self.token)
         self.unit.assertEqual(int(count), new_limit + editLimit)
 
@@ -857,9 +859,10 @@ class TestSystemContracts():
 
     def test_import_export(self):
         #changing limits
-        data = {'Name': 'max_block_generation_time', 'Value': '10000'}
-        res = actions.call_contract(self.url, self.pr_key, 'UpdateSysParam', data, self.token)
-        check.is_tx_in_block(self.url, self.wait, {'hash': res}, self.token)
+        if self.type_net is 'xreg':
+            data = {'Name': 'max_block_generation_time', 'Value': '10000'}
+            res = actions.call_contract(self.url, self.pr_key, 'UpdateSysParam', data, self.token)
+            check.is_tx_in_block(self.url, self.wait, {'hash': res}, self.token)
         # Export
         tx_ex = contract.export_new_app(self.url, self.pr_key, self.token)
         check.is_tx_in_block(self.url, self.wait, tx_ex, self.token)
@@ -892,6 +895,7 @@ class TestSystemContracts():
                  'params': import_app_data[i]} for i in range(len(import_app_data))]
         self.callMulti(contract_name, data, 3000)
         #limits
-        data = {'Name': 'max_block_generation_time', 'Value': '2000'}
-        res = actions.call_contract(self.url, self.pr_key, 'UpdateSysParam', data, self.token)
-        check.is_tx_in_block(self.url, self.wait, {'hash': res}, self.token)
+        if self.type_net is 'xreg':
+            data = {'Name': 'max_block_generation_time', 'Value': '2000'}
+            res = actions.call_contract(self.url, self.pr_key, 'UpdateSysParam', data, self.token)
+            check.is_tx_in_block(self.url, self.wait, {'hash': res}, self.token)

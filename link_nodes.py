@@ -1,7 +1,7 @@
 import time
 import json
 
-from libs import actions, tools, loger
+from libs import actions, tools, loger, contract, check
 
 
 log = loger.create_loger(__name__)
@@ -15,6 +15,9 @@ if __name__ == '__main__':
     pr_key1 = conf[0]['private_key']
     pr_key2 = conf[1]['private_key']
     pr_key3 = conf[2]['private_key']
+    test_config = tools.read_config('test')
+    test_config.update({'net_work': 'cn'})
+    tools.write_config(test_config)
     data = actions.login(url, pr_key1, 0)
     token1 = data['jwtToken']
     actions.imp_app('system', url, pr_key1, token1, data['account'], pub=True)
@@ -27,25 +30,37 @@ if __name__ == '__main__':
     node1 = json.dumps({'tcp_address': conf[0]['tcp_address'],
                         'api_address': conf[0]['api_address'],
                         'key_id': conf[0]['keyID'],
-                        'public_key': conf[0]['pubKey']})
+                        'public_key': conf[0]['node_pub_key']})
     actions.edit_app_param('first_node', node1, url, pr_key1, token1, wait)
+    #add nodes pubkey
+    print('Add nodes pubkey')
+    tx_u1 = contract.new_user(url, pr_key1, token1, pub_key=conf[0]['node_pub_key'])
+    check.is_tx_in_block(url, wait, tx_u1, token1)
+    
+    tx_u2 = contract.new_user(url, pr_key1, token1, pub_key=conf[1]['node_pub_key'])
+    check.is_tx_in_block(url, wait, tx_u2, token1)
+    
+    tx_u3 = contract.new_user(url, pr_key1, token1, pub_key=conf[2]['node_pub_key'])
+    check.is_tx_in_block(url, wait, tx_u3, token1)
+    
     data2 = actions.login(url, pr_key2, 0)
     token2 = data2['jwtToken']
     actions.validator_request(conf[1]['tcp_address'], conf[1]['api_address'],
-                              data2['account'], data2['pubkey'],
+                              conf[1]['node_pub_key'],
                               url, pr_key2, token2, wait)
-    id_validator = actions.get_count(url, 'consortium_member_requests', token1)
-    actions.run_voting(id_validator, url, pr_key1, token1, wait)
-    actions.voiting(id_validator, url, pr_key1, token1, wait)
+    id_validator = actions.get_count(url, 'cn_connection_requests', token1)
+    actions.run_voting(1, url, pr_key1, token1, wait)
+    actions.voiting(1, url, pr_key1, token1, wait)
     
     data3 = actions.login(url, pr_key3, 0)
     token3 = data3['jwtToken']
     actions.validator_request(conf[2]['tcp_address'], conf[2]['api_address'],
-                              data3['account'], data3['pubkey'],
+                              conf[2]['node_pub_key'],
                               url, pr_key3, token3, wait)
-    id_validator2 = actions.get_count(url, 'consortium_member_requests', token1)
+    id_validator2 = actions.get_count(url, 'cn_connection_requests', token1)
     actions.run_voting(id_validator2, url, pr_key1, token1, wait)
-    if actions.voiting(id_validator2, url, pr_key1, token1, wait) and actions.voiting(id_validator2, url, pr_key2, token2, wait):
+    if actions.voiting(id_validator2, url, pr_key1, token1, wait):
+        # and actions.voiting(id_validator2, url, pr_key2, token2, wait):
         log.info('Nodes successfully linked')
         exit(0)
     else:

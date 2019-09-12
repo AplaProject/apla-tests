@@ -89,7 +89,7 @@ def is_sync(config, wait_time, nodes):
     while sec < wait_time:
         i = 0
         while i < nodes:
-            data = login(config[i]['url'], config[i]['private_key'])
+            data = login(config[i]['url'], config[0]['private_key'])
             token = data['jwtToken']
             max_block_id.append(get_max_block_id(config[i]['url'], token))
             i += 1
@@ -105,7 +105,6 @@ def tx_get_error(url, sleep_time, hsh, jvt_token):
     while sec < sleep_time:
         time.sleep(1)
         resp = api.tx_status(url, jvt_token, hsh)
-        print("tx_get_error - resp: ", resp)
         jresp = resp['results'][hsh]
         if len(jresp['blockid']) > 0:
             return None
@@ -483,11 +482,11 @@ def create_voiting(tcp_address, api_address, key_id, pub_key, url, pr_key, token
         log.error('VotingNodeAdd is failed')
         exit(1)
         
-def validator_request(tcp_address, api_address, key_id, pub_key, url, pr_key, token, wait):
+def validator_request(tcp_address, api_address, pub_key, url, pr_key, token, wait):
     log.info('ConsortiumMemberRequest started')
     data = {'TcpAddress': tcp_address, 'ApiAddress': api_address,
-            'CandidateAccount': key_id, 'PubKey': pub_key}
-    call = call_contract(url, pr_key, 'ConsortiumMemberRequest',
+            'PubKey': pub_key}
+    call = call_contract(url, pr_key, 'CNConnectionRequest',
                                  data, token)
     if tx_status(url, wait, call, token)['blockid'] < 1:
         log.error('ConsortiumMemberRequest is failed')
@@ -495,8 +494,8 @@ def validator_request(tcp_address, api_address, key_id, pub_key, url, pr_key, to
         
 def run_voting(id_voting, url, pr_key, token, wait):
     log.info('VotingRunNewValidator started')
-    data = {'ConsortiumMemberId': id_voting}
-    call = call_contract(url, pr_key, 'VotingRunNewConsortiumMember', data, token)
+    data = {'RequestId': id_voting}
+    call = call_contract(url, pr_key, 'VotingRunNewCNConnection', data, token)
     if tx_status(url, wait, call, token)['blockid'] < 1:
         log.error('VotingRunNewValidator is failed')
         
