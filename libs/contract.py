@@ -31,7 +31,7 @@ def new_ecosystem(url, pr_key, token, name='', ecosystem=1):
             'name': name}
     
 def new_user(url, pr_key, token, pub_key='', ecosystem=1):
-    if not pub_key:
+    if pub_key == '':
         priv_key, pub_key = gen_keypair()
     data = {'NewPubkey': pub_key}
     res = actions.call_contract(url, pr_key, '@1NewUser',
