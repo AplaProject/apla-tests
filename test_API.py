@@ -57,7 +57,7 @@ class TestApi():
 
     def keyinfo_by_address(self):
         asserts = {'ecosystem', 'name'}
-        if self.net_type is 'xreg':
+        if self.net_type == 'xreg':
             keys = tools.read_fixtures('keys')
             key =  keys['key5']
         else:
@@ -80,7 +80,7 @@ class TestApi():
 
     def test_keyinfo_by_keyid(self):
         asserts = {'ecosystem', 'name', 'roles'}
-        if self.net_type is 'xreg':
+        if self.net_type == 'xreg':
             keys = tools.read_fixtures('keys')
             key =  keys['key5']
         else:
@@ -652,7 +652,7 @@ class TestApi():
 
     def test_login(self):
         print('net_type: ', self.net_type)
-        if self.net_type is 'xreg':
+        if self.net_type == 'xreg':
             keys = tools.read_fixtures('keys')
             key =  keys['key5']
         else:
@@ -667,7 +667,7 @@ class TestApi():
 
     def test_login2(self):
         is_one = False
-        if self.net_type is 'xreg':
+        if self.net_type == 'xreg':
             keys = tools.read_fixtures('keys')
             key =  keys['key3']
         else:
@@ -679,7 +679,7 @@ class TestApi():
                                  data1['key_id'], self.wait)
         res = actions.is_wallet_created(self.url, self.token, data1['key_id'])
         if res:
-            if self.net_type is 'xreg':
+            if self.net_type == 'xreg':
                 keys = tools.read_fixtures('keys')
                 key2 =  keys['key1']
             else:
@@ -1107,7 +1107,7 @@ class TestApi():
         # test
         # enter in first ecosystem
         asserts = ['uid', 'jwtToken', 'pubkey']
-        if self.net_type is 'xreg':
+        if self.net_type == 'xreg':
             keys = tools.read_fixtures('keys')
             key =  keys['key5']
         else:
