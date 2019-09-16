@@ -395,7 +395,7 @@ class TestApi():
                           name, page_params=page_params)
         self.unit.assertEqual(value, res['tree'][0]['text'])
 
-    def test_get_content_from_another_ecosystem(self):
+    def get_content_from_another_ecosystem(self):
         # create new ecosystem
         ecosys_name = 'Ecosys_' + tools.generate_random_name()
         res = contract.new_ecosystem(self.url,
@@ -1032,31 +1032,31 @@ class TestApi():
         self.unit.assertEqual(expected_admin, actual_admin, 'Dict admin is not equals')
         self.unit.assertEqual(expected_user, actual_user, 'Dict user is not equals')
 
-    def test_metrics_blocks(self):
+    def metrics_blocks(self):
         asserts = ['count']
         token = ''
         res = api.metrics(self.url, token, 'blocks')
         self.check_result(res, asserts)
 
-    def test_metrics_transactions(self):
+    def metrics_transactions(self):
         asserts = ['count']
         token = ''
         res = api.metrics(self.url, token, 'transactions')
         self.check_result(res, asserts)
 
-    def test_metrics_ecosystems(self):
+    def metrics_ecosystems(self):
         asserts = ['count']
         token = ''
         res = api.metrics(self.url, token, 'ecosystems')
         self.check_result(res, asserts)
 
-    def test_metrics_keys(self):
+    def metrics_keys(self):
         asserts = ['count']
         token = ''
         res = api.metrics(self.url, token, 'keys')
         self.check_result(res, asserts)
 
-    def test_metrics_fullnodes(self):
+    def metrics_fullnodes(self):
         asserts = ['count']
         token = ''
         res = api.metrics(self.url, token, 'fullnodes')
