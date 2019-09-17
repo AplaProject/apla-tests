@@ -458,7 +458,7 @@ class TestSimvolio():
                 return res['list'][i]['value']
             i += 1
 
-    def test_z1_db_select_metrics_min(self):
+    def z1_db_select_metrics_min(self):
         # func generate contract which return block_id and increment count blocks
         def wait_block_id(old_block_id, limit):
             while True:
@@ -488,13 +488,13 @@ class TestSimvolio():
         contract = self.contracts['dbSelectMetricsMin']
         self.check_contract(contract['code'], str(ecosystem_tx))
 
-    def test_z2_db_select_metrics_max(self):
+    def z2_db_select_metrics_max(self):
         # Run test after test_z1_db_select_metrics_min
         ecosystem_members = self.get_metrics(1, 'ecosystem_members')
         contract = self.contracts['dbSelectMetricsMax']
         self.check_contract(contract['code'], str(ecosystem_members))
 
-    def test_z3_db_select_metrics_max(self):
+    def z3_db_select_metrics_max(self):
         # Run test after test_z1_db_select_metrics_min
         ecosystem_pages = self.get_metrics(1, 'ecosystem_pages')
         contract = self.contracts['dbSelectMetricsAvg']
