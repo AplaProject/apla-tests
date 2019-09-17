@@ -19,6 +19,8 @@ class TestApi():
 
     @classmethod
     def setup_class(self):
+        print('()()()()))()()(')
+        print('type_net', self.net_type)
         self.unit = unittest.TestCase()
 
     def check_result(self, result, keys, error='', msg=''):
