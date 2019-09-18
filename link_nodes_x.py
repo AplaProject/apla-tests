@@ -16,7 +16,9 @@ if __name__ == '__main__':
     pr_key2 = conf[1]['private_key']
     pr_key3 = conf[2]['private_key']
     test_config = tools.read_config('test')
+    print("Config: ", test_config)
     test_config.update({'net_work': 'xreg'})
+    print("Config updated: ", test_config)
     tools.write_config(test_config)
     data = actions.login(url, pr_key1, 0)
     token1 = data['jwtToken']
