@@ -39,17 +39,30 @@ def generate_code(contract_name, source_code):
 
 def read_config(type):
     path = ''
-    if type == 'main':
-        path = os.path.join(os.getcwd(), 'config.json')
-    if type == 'nodes':
-        path = os.path.join(os.getcwd(), 'nodesConfig.json')
-    if type == 'nodes_ex':
-        path = os.path.join(os.getcwd(), 'nodesConfig_ex.json')
     if type == 'test':
-        path = os.path.join(os.getcwd(), 'testConfig.json')
-    with open(path, 'r') as f:
-        data = f.read()
-    return json.loads(data)
+        path1 = os.path.join(os.getcwd(), 'testConfig.json')
+        path2 = os.path.join(os.getcwd(), 'testConfig.default.json')
+        with open(path1, 'r') as f1:
+            data1 = f1.read()
+        conf = json.loads(data1)
+        print('conf1:', conf)
+        with open(path2, 'r') as f2:
+            data2 = f2.read()
+        conf_d = json.loads(data2)
+        print('conf_d:', conf_d)
+        conf_d.update(conf)
+        print('full_conf:', conf_d)
+        return conf_d
+    else:
+        if type == 'main':
+            path = os.path.join(os.getcwd(), 'config.json')
+        if type == 'nodes':
+            path = os.path.join(os.getcwd(), 'nodesConfig.json')
+        if type == 'nodes_ex':
+            path = os.path.join(os.getcwd(), 'nodesConfig_ex.json')
+        with open(path, 'r') as f:
+            data = f.read()
+        return json.loads(data)
 
 
 def write_config(new_conf):

@@ -44,6 +44,7 @@ parser.add_argument('-centrifugo', required=True)
 parser.add_argument('-test', default='true')
 parser.add_argument('-wait', default='3')
 parser.add_argument('-private', default='true')
+parser.add_argument('-net_type', default='cn')
 
 args = parser.parse_args()
 
@@ -342,11 +343,17 @@ config = [
         }
     }]
 
-# Update config for tests
+# Update configs for tests
 confPath = os.path.join(curDir + '/../', 'nodesConfig.json')
+confTestPath = os.path.join(curDir + '/../', 'testConfig.json')
 
 with open(confPath, 'w') as fconf:
     fconf.write(json.dumps(config, indent=4))
 log.info('Updated file nodesConfig.json')
+
+testConf = {"net_work": args.net_type}
+with open(confTestPath, 'w') as tconf:
+    tconf.write(json.dumps(testConf, indent=4))
+log.info('Updated file testConfig.json')
 
 log.info('Nodes successfully started')
