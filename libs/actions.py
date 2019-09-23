@@ -70,6 +70,7 @@ def tx_status(url, sleep_time, hsh, jvt_token):
         time.sleep(1)
         resp = api.tx_status(url, jvt_token, hsh)
         jresp = resp['results'][hsh]
+        print(jresp)
         if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
             break
         else:
@@ -79,6 +80,7 @@ def tx_status(url, sleep_time, hsh, jvt_token):
     if 'errmsg' not in jresp and int(jresp['blockid']) > 0:
         return {'blockid': int(jresp['blockid']), 'result': jresp['result'], 'error': None}
     else:
+        print('error in block', jresp['errmsg']['error'])
         return {'blockid': 0, 'error': jresp['errmsg']['error'], 'result': None}
     
 def is_sync(config, wait_time, nodes):
