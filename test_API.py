@@ -19,6 +19,8 @@ class TestApi():
 
     @classmethod
     def setup_class(self):
+        print('()()()()))()()(')
+        print('type_net', self.net_type)
         self.unit = unittest.TestCase()
 
     def check_result(self, result, keys, error='', msg=''):
@@ -57,7 +59,7 @@ class TestApi():
 
     def keyinfo_by_address(self):
         asserts = {'ecosystem', 'name'}
-        if self.net_type is 'xreg':
+        if self.net_type == 'xreg':
             keys = tools.read_fixtures('keys')
             key =  keys['key5']
         else:
@@ -80,7 +82,7 @@ class TestApi():
 
     def test_keyinfo_by_keyid(self):
         asserts = {'ecosystem', 'name', 'roles'}
-        if self.net_type is 'xreg':
+        if self.net_type == 'xreg':
             keys = tools.read_fixtures('keys')
             key =  keys['key5']
         else:
@@ -395,7 +397,7 @@ class TestApi():
                           name, page_params=page_params)
         self.unit.assertEqual(value, res['tree'][0]['text'])
 
-    def test_get_content_from_another_ecosystem(self):
+    def get_content_from_another_ecosystem(self):
         # create new ecosystem
         ecosys_name = 'Ecosys_' + tools.generate_random_name()
         res = contract.new_ecosystem(self.url,
@@ -652,7 +654,7 @@ class TestApi():
 
     def test_login(self):
         print('net_type: ', self.net_type)
-        if self.net_type is 'xreg':
+        if self.net_type == 'xreg':
             keys = tools.read_fixtures('keys')
             key =  keys['key5']
         else:
@@ -667,7 +669,7 @@ class TestApi():
 
     def test_login2(self):
         is_one = False
-        if self.net_type is 'xreg':
+        if self.net_type == 'xreg':
             keys = tools.read_fixtures('keys')
             key =  keys['key3']
         else:
@@ -679,7 +681,7 @@ class TestApi():
                                  data1['key_id'], self.wait)
         res = actions.is_wallet_created(self.url, self.token, data1['key_id'])
         if res:
-            if self.net_type is 'xreg':
+            if self.net_type == 'xreg':
                 keys = tools.read_fixtures('keys')
                 key2 =  keys['key1']
             else:
@@ -1032,31 +1034,31 @@ class TestApi():
         self.unit.assertEqual(expected_admin, actual_admin, 'Dict admin is not equals')
         self.unit.assertEqual(expected_user, actual_user, 'Dict user is not equals')
 
-    def test_metrics_blocks(self):
+    def metrics_blocks(self):
         asserts = ['count']
         token = ''
         res = api.metrics(self.url, token, 'blocks')
         self.check_result(res, asserts)
 
-    def test_metrics_transactions(self):
+    def metrics_transactions(self):
         asserts = ['count']
         token = ''
         res = api.metrics(self.url, token, 'transactions')
         self.check_result(res, asserts)
 
-    def test_metrics_ecosystems(self):
+    def metrics_ecosystems(self):
         asserts = ['count']
         token = ''
         res = api.metrics(self.url, token, 'ecosystems')
         self.check_result(res, asserts)
 
-    def test_metrics_keys(self):
+    def metrics_keys(self):
         asserts = ['count']
         token = ''
         res = api.metrics(self.url, token, 'keys')
         self.check_result(res, asserts)
 
-    def test_metrics_fullnodes(self):
+    def metrics_fullnodes(self):
         asserts = ['count']
         token = ''
         res = api.metrics(self.url, token, 'fullnodes')
@@ -1107,7 +1109,7 @@ class TestApi():
         # test
         # enter in first ecosystem
         asserts = ['uid', 'jwtToken', 'pubkey']
-        if self.net_type is 'xreg':
+        if self.net_type == 'xreg':
             keys = tools.read_fixtures('keys')
             key =  keys['key5']
         else:

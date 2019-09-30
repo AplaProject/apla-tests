@@ -1,7 +1,7 @@
 import time
 import json
 
-from libs import actions, tools, loger
+from libs import actions, tools, loger, contract, check
 
 
 log = loger.create_loger(__name__)
@@ -30,12 +30,23 @@ if __name__ == '__main__':
     node1 = json.dumps({'tcp_address': conf[0]['tcp_address'],
                         'api_address': conf[0]['api_address'],
                         'key_id': conf[0]['keyID'],
-                        'public_key': conf[0]['pubKey']})
+                        'public_key': conf[0]['node_pub_key']})
     actions.edit_app_param('first_node', node1, url, pr_key1, token1, wait)
+    #add nodes pubkey
+    print('Add nodes pubkey')
+    tx_u1 = contract.new_user(url, pr_key1, token1, pub_key=conf[0]['node_pub_key'])
+    check.is_tx_in_block(url, wait, tx_u1, token1)
+    
+    tx_u2 = contract.new_user(url, pr_key1, token1, pub_key=conf[1]['node_pub_key'])
+    check.is_tx_in_block(url, wait, tx_u2, token1)
+    
+    tx_u3 = contract.new_user(url, pr_key1, token1, pub_key=conf[2]['node_pub_key'])
+    check.is_tx_in_block(url, wait, tx_u3, token1)
+    
     data2 = actions.login(url, pr_key2, 0)
     token2 = data2['jwtToken']
     actions.validator_request(conf[1]['tcp_address'], conf[1]['api_address'],
-                              conf[1]['pubKey'],
+                              conf[1]['node_pub_key'],
                               url, pr_key2, token2, wait)
     id_validator = actions.get_count(url, 'cn_connection_requests', token1)
     actions.run_voting(1, url, pr_key1, token1, wait)
@@ -44,7 +55,7 @@ if __name__ == '__main__':
     data3 = actions.login(url, pr_key3, 0)
     token3 = data3['jwtToken']
     actions.validator_request(conf[2]['tcp_address'], conf[2]['api_address'],
-                              conf[2]['pubKey'],
+                              conf[2]['node_pub_key'],
                               url, pr_key3, token3, wait)
     id_validator2 = actions.get_count(url, 'cn_connection_requests', token1)
     actions.run_voting(id_validator2, url, pr_key1, token1, wait)

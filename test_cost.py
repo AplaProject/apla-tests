@@ -10,6 +10,7 @@ PLATFORM_COMISSION = 432000000000
 class TestCost():
     wait = tools.read_config('test')['wait_tx_status']
     wait_sync = tools.read_config('test')['wait_upating_node']
+    net = tools.read_config('test')['net_work']
     conf = tools.read_config('nodes')
     keys = tools.read_fixtures('keys')
 

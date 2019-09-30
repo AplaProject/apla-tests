@@ -72,6 +72,7 @@ def login(url, token, uid, private_key, role_id=0, ecosystem=1, expire=3600):
     headers = []
     if cors(full_url, url, 'POST'):
         res = call_post_api(full_url, data, full_token)
+        print('result of login', res)
         result = {
             'uid': uid,
             'jwtToken': 'Bearer ' + res['token'],
