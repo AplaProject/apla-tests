@@ -9,15 +9,14 @@ log = loger.create_loger(__name__)
 
 if __name__ == '__main__':
     log.info('Start ' + __name__)
+    config = tools.read_config('test')
+    print('TestConfig: ', config)
     wait = tools.read_config('test')['wait_tx_status']
     conf = tools.read_config('nodes')
     url = conf[0]['url']
     pr_key1 = conf[0]['private_key']
     pr_key2 = conf[1]['private_key']
     pr_key3 = conf[2]['private_key']
-    test_config = tools.read_config('test')
-    test_config.update({'net_work': 'xreg'})
-    tools.write_config(test_config)
     data = actions.login(url, pr_key1, 0)
     token1 = data['jwtToken']
     actions.imp_app('system', url, pr_key1, token1, data['account'])

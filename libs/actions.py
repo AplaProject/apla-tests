@@ -15,6 +15,7 @@ log = loger.create_loger(__name__)
 
 def login(url, pr_key, role=0, ecosystem=1):
     token, uid = api.getuid(url)
+    print('UID: ', uid)
     result = api.login(
         url=url,
         token=token,
