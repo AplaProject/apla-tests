@@ -45,13 +45,11 @@ def read_config(type):
         with open(path1, 'r') as f1:
             data1 = f1.read()
         conf = json.loads(data1)
-        print('conf1:', conf)
+        print('testConfig.json: ', conf)
         with open(path2, 'r') as f2:
             data2 = f2.read()
         conf_d = json.loads(data2)
-        print('conf_d:', conf_d)
         conf_d.update(conf)
-        print('full_conf:', conf_d)
         return conf_d
     else:
         if type == 'main':
