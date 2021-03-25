@@ -8,5 +8,5 @@ selenium==3.6.0
 urllib3==1.22
 locustio==0.8.1
 pytest==3.7.1
-PyYAML==3.13
+PyYAML==5.4
 git+https://github.com/blitzstern5/genesis-blockchain-tools@feature/send-tx
